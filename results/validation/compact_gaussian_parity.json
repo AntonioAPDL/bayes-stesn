@@ -1,0 +1,12 @@
+{
+  "mode": "compact_independent_observation_space_reference",
+  "passed": true,
+  "dimensions": {
+    "n": 5,
+    "T": 8,
+    "p": 3,
+    "d": 4
+  },
+  "log_likelihood_abs": 0.0,
+  "scope": "Standalone algebra check only; original V3 artifacts were not supplied."
+}

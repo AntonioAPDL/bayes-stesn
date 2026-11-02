@@ -1,0 +1,38 @@
+schema_version: 1
+simulation:
+  n_times: 780
+  grid_size: 7
+  input_sizes: [25]
+  scenario: matched_gaussian
+  seed: 405
+model:
+  name: reproducible_demo
+  features:
+    modes: 6
+    units: [16, 16]
+    input_scales: [0.4, 0.8]
+    lags: [1, 2]
+    squares: 8
+    seed: 731
+  spatial_mean:
+    side: 5
+    width: 0.2
+  prior:
+    kind: ridge
+  covariance:
+    kind: matern
+    nu: 1.5
+  innovations: iid
+split:
+  conditioning: 100
+  fitting_stop: 700
+sampler:
+  chains: 4
+  warmup: 500
+  draws: 1000
+  seed: 406
+forecast:
+  horizon: 40
+  paths: 128
+  seed: 407
+

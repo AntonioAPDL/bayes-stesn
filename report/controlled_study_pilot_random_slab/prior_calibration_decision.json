@@ -1,0 +1,11 @@
+{
+  "status": "random-slab RHS failed6000-draw convergence gate",
+  "random_slab_sd_pilot_quantiles_05_50_95": [
+    45.6,
+    55.1,
+    78.0
+  ],
+  "decision": "fixed finite slab c=64, calibrated using separate development-pilot data; remove weakly identified slab hyperparameter; keep original failed result visible",
+  "why_not_c5": "normalized spatial and temporal dictionaries require larger coefficient scales; c=5 is far below the development posterior slab range",
+  "final_stage_generated": false
+}

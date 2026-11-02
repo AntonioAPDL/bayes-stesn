@@ -1,0 +1,64 @@
+{
+  "html_sha256": "5d34b0b263b3ea4b6f9b4cc9b9837bacc2eefad96ccdec0c4682ddefb22fb725",
+  "embedded_asset_count": 9,
+  "videos": 3,
+  "no_external_resource_requests": true,
+  "valid_base64": true,
+  "assets": [
+    {
+      "tag": "video",
+      "mime": "video/mp4",
+      "bytes": 761276,
+      "sha256": "d1e06a884e7a71f99e4a405c4a7b50c2a8107fcdb29a4f25b99488eb4caad17a"
+    },
+    {
+      "tag": "video",
+      "mime": "video/mp4",
+      "bytes": 565349,
+      "sha256": "4973f3b416a26e1fc98bb9b25aac3c12ba570d1b2ca398699c6284aabcd0373d"
+    },
+    {
+      "tag": "video",
+      "mime": "video/mp4",
+      "bytes": 617489,
+      "sha256": "2f05774db3b44151ecdf4ecc1070ee197d99a7979cdd6613ff8538d649f10e40"
+    },
+    {
+      "tag": "img",
+      "mime": "image/png",
+      "bytes": 362339,
+      "sha256": "4e9b0b01a705d0eb7bed29738c538e7a348cbeca55976bcd14e1752d0bf66c50"
+    },
+    {
+      "tag": "img",
+      "mime": "image/png",
+      "bytes": 633173,
+      "sha256": "036db7e7936a5bb14dd5929ec9e82118108350fc46776839b04489cd4883aea3"
+    },
+    {
+      "tag": "img",
+      "mime": "image/png",
+      "bytes": 398721,
+      "sha256": "dd3f6825cdab339bd6fc7e43b33dbf0795e21a22466d26086e0581bf7b4ace84"
+    },
+    {
+      "tag": "img",
+      "mime": "image/png",
+      "bytes": 340112,
+      "sha256": "ebe7545eb3bfc8435ae38e2de91ee9b7c3f2b1c82ecdf741e203886fe749b71f"
+    },
+    {
+      "tag": "img",
+      "mime": "image/png",
+      "bytes": 300209,
+      "sha256": "e025103e22e8570e334c7d67b0ea884d43f0c30abb18d19b0d1d4e947194fda1"
+    },
+    {
+      "tag": "img",
+      "mime": "image/png",
+      "bytes": 287482,
+      "sha256": "857499a5ee0a71f0c55ec8afb715fca8c2e180e2d268152ad9869da569b857b2"
+    }
+  ],
+  "qa": "Static structural/embedded-byte checks; PDF and saved plot/media frames visually inspected."
+}

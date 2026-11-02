@@ -1,0 +1,212 @@
+schema_version: 1
+release_scope: Bayesian spatiotemporal ESN research implementation
+authoritative_model_document: models.md
+authoritative_validation_document: validation.md
+authoritative_release_evidence: ../results/release_manifest.json
+
+status_definitions:
+  implemented: Working public implementation with numerical or integration checks; does not imply predictive superiority or convergence on arbitrary data.
+  experimental: Working sampler or workflow with small-case verification and explicit research/resource limitations; not promoted to unrestricted large-data use.
+  reference_implementation: Genuine algorithmic primitives and reference-size fitting integration; incomplete end-to-end scaling integration is explicitly identified.
+
+global_contracts:
+  observations: Complete regularly spaced panel at fixed input sites; public arrays time-by-site, inference arrays site-by-time.
+  causal_features: Transformations and encoder learning use conditioning data; forecasting feeds simulated observations back at input sites.
+  parameter_policy: Frozen posterior with explicit observed-state updating; parameter refitting is a separate operation.
+  posterior_scale: Proper noise-scaled coefficient prior; IG shape/scale convention except separate physical scales.
+  precision_order: Column-major vec(C).
+  checkpointing: Gaussian and augmented samplers preserve RNG and transition state with data/model signatures.
+  evidence_policy: Unit tests, baseline parity, conjugate SBC and comparative studies answer different questions.
+  missing_data: No arbitrary missing panel masks or unimplemented multivariate state-space backend.
+
+resource_gates:
+  generic_covariance_max_dense_sites_default: 2000
+  general_coefficient_dense_threshold_default: 900
+  general_coefficient_dense_work_budget_bytes_default: 268435456
+  retained_state_budget_bytes_default: 536870912
+  function_penalty_max_coefficients_default: 900
+  augmented_max_sites: 100
+  augmented_max_times: 2000
+  heteroskedastic_max_coefficients: 900
+  variance_covariates_min: 1
+  variance_covariates_max: 12
+  nonstationary_geometry_terms_max: 9
+  numerical_policy: Finite-tolerance CG is marked approximate and achieved residuals are checked; bounded dense fallback is reported when available.
+
+models:
+  M0:
+    name: Scalar Gaussian ridge
+    status: implemented
+    api: PriorSpec.ridge
+    modules: [priors.py, gaussian.py, sampling.py]
+    inference: Exact spectral collapse of C and common IG scale, or ordinary conditional inference.
+    evidence: Full V3 fixed-hyperparameter parity, independent dense references, conditional conjugate SBC and MCMC quadrature checks.
+    caveat: Full-dimensional parity is not a new full-dimensional posterior or forecasting study.
+  M1:
+    name: Grouped Gaussian shrinkage
+    status: implemented
+    api: PriorSpec.grouped
+    modules: [priors.py, gaussian.py, sampling.py]
+    inference: Column-separable precision; exact prior-whitened eigensystem; proper log-precision hyperpriors.
+    caveat: Actual temporal group labels are taken from the frozen feature map, not hardcoded to five groups.
+  M2:
+    name: Group or column regularized horseshoe
+    status: experimental
+    api: [PriorSpec.group_rhs, PriorSpec.column_rhs]
+    modules: [priors.py, gaussian.py, sampling.py]
+    inference: Finite-slab RHS targets; conditional slice kernels or exact separable collapsed targets.
+    caveat: Both random-slab and fixed-slab development pilots failed the strict convergence gate. Correctness checks do not establish reliable mixing or predictive advantage; retained diagnostics and configurations are in report/controlled_study_pilot_random_slab and report/controlled_study_pilot_fixed_slab.
+  M3:
+    name: Entrywise regularized horseshoe
+    status: experimental
+    api: PriorSpec.entry_rhs
+    modules: [priors.py, gaussian.py, sampling.py]
+    inference: Conditional Gaussian coefficients; dense or perturb-and-CG; finite-slab log-scale slice updates.
+    caveat: No separable spectral determinant or falsely cheap generic collapse; many local scales need performance and mixing assessment.
+  M4:
+    name: Group inverse-gamma gamma shrinkage
+    status: experimental
+    api: PriorSpec.gigg
+    modules: [priors.py, gaussian.py, sampling.py]
+    inference: Group GIG, local IG, global IG and auxiliary IG full conditionals; dense or checked matrix-free coefficients.
+    caveat: Positive group shape parameters are fixed settings; empirical-Bayes shape fitting is not implemented.
+  M5:
+    name: Reference expected-variance allocation
+    status: experimental
+    api: PriorSpec.reference_r2
+    modules: [priors.py, gaussian.py, sampling.py, dynamics.py]
+    inference: Frozen centered reference energies; Beta allocation scale; Dirichlet or logistic-normal group allocation; covariance coupling retained.
+    caveat: Not a literal Beta prior on realized R-squared. Augmented models use trace(V+qK)/n as baseline Gaussian reference, excluding Student-t inflation and nonzero variance covariates.
+  M6:
+    name: Proper correction-subspace and function-penalty shrinkage
+    status: experimental
+    api: [PriorSpec.correction, PriorSpec.function_penalty]
+    modules: [priors.py, features.py, gaussian.py, sampling.py]
+    inference: Frozen reference residualization for correction features; or proper lambda0 I plus tau^-2 F0 precision with full determinant.
+    caveat: General penalty has a bounded dense gate. This implementation does not inherit functional-horseshoe asymptotic theorems.
+  C1:
+    name: Global anisotropic Matern
+    status: implemented
+    api: CovarianceSpec(anisotropy=True)
+    modules: [spatial.py]
+    inference: Determinant-one exp([[a,b],[b,-a]]) metric; proper Gaussian anisotropy prior.
+    caveat: Two-dimensional anisotropy; length ell and practical range 2*ell are distinct named quantities.
+  C2:
+    name: Static spatial nugget variation
+    status: implemented
+    api: CovarianceSpec(static_variance=True)
+    modules: [spatial.py]
+    inference: Centered input-reference geometry basis with Gaussian coefficients in log nugget variance.
+    unsupported_with: [D2, L2]
+    caveat: sigma2 is geometric reference nugget scale; actual diagonal is sigma2*diag(V).
+  C3:
+    name: Finite Matern smoothness mixture
+    status: implemented
+    api: CovarianceSpec(infer_nu=True)
+    modules: [spatial.py, sampling.py, dynamics.py]
+    inference: Exact conditional categorical probabilities; default choices [0.5, 1.5, 2.5].
+    unsupported_with: SPDE backend
+  C4:
+    name: Valid nonstationary local geometry and amplitude
+    status: experimental
+    api: CovarianceSpec(nonstationary=True)
+    modules: [spatial.py]
+    inference: Paciorek-Schervish covariance with four small geometry-basis coefficient blocks and fixed proper Gaussian shrinkage scales.
+    unsupported_with: SPDE backend
+    caveat: Hyperpriors on geometry coefficient standard deviations and elliptical-slice/interweaving specializations are not implemented; ordinary MH is used. q is reference amplitude, not constant marginal spatial variance.
+  C5:
+    name: PC range and separate physical scales
+    status: implemented
+    api: ["CovarianceSpec(range_prior='pc')", "CovarianceSpec(range_prior='pc',scale_mode='separate')"]
+    modules: [spatial.py, sampling.py]
+    inference: Transformed two-dimensional PC range density; optional half-normal nugget SD and exponential spatial SD with C-only collapse or conditional inference.
+    separate_scales_supported_with: [iid, full_residual_ar]
+    caveat: No IG common-scale update under separate scales. Nonstationary use is a reference-scale prior, not a joint PC prior for all geometry coefficients.
+  D1:
+    name: AR of the complete residual
+    status: implemented
+    api: ModelSpec(innovations='full_residual_ar')
+    modules: [gaussian.py, sampling.py, prediction.py]
+    inference: Stationary AR whitening of Y and Z with temporal determinant; transformed proper rho prior.
+    caveat: Nugget and spatial components both inherit temporal AR dependence.
+  D2:
+    name: Latent spatial AR with iid measurement nugget
+    status: experimental
+    api: ModelSpec(innovations='latent_ar')
+    modules: [dynamics.py, prediction.py]
+    inference: Exact eigenmode FFBS followed by ordinary Gibbs/MH; terminal field filtered and conditionally extended to targets.
+    unsupported_with: [static_variance, separate_physical_scales, local_t_measurements, missing_panel_masks]
+    caveat: Complete fixed-site reference-size backend; initial latent state independent of the fixed conditioning history. SPDE interpolation must have full row rank, otherwise refine the mesh or use Gaussian residual inference.
+  L1:
+    name: Whole-field Student-t innovations
+    status: experimental
+    api: ModelSpec(innovations='field_t')
+    modules: [dynamics.py, prediction.py]
+    inference: One Gamma precision per time, weighted Gaussian coefficients, common IG scale and log(nu-2) MH.
+    caveat: Both field and nugget share each future weight; marginal variance inflation is nu/(nu-2).
+  L2:
+    name: Local Student-t measurement errors
+    status: experimental
+    api: ModelSpec(innovations='local_t')
+    modules: [dynamics.py, prediction.py]
+    inference: Iid spatial fields, one Gamma precision per site-time, dense or checked weighted matrix-free coefficient sampling.
+    unsupported_with: [static_variance, separate_physical_scales, latent_ar_fields]
+    caveat: Gaussian field plus local-t convolution, not a whole-field multivariate Student-t. Per-time spatial factorizations are processed without retaining all factors. SPDE interpolation must have full row rank for the observed-site latent-field sampler.
+  L3:
+    name: General predictable site-time heteroskedasticity
+    status: experimental
+    api: ModelSpec(innovations='heteroskedastic')
+    modules: [dynamics.py, model.py, prediction.py]
+    inference: Known centered/scaled variance covariates; exact dense sum-of-Kronecker coefficient precision; proper Gaussian variance-coefficient MH.
+    caveat: Dense coefficient gate; future predictors must be known at origin or supplied predictably, never future responses.
+  F1:
+    name: Spatially informed reservoir inputs
+    status: implemented
+    api: [FeatureSpec(kind='pca_esn'), FeatureSpec(kind='local_features_esn'), FeatureSpec(kind='graph_features_esn')]
+    modules: [features.py, _reservoir.py]
+    inference: Deterministic causal features with conditioning-only normalization and fixed random reservoirs.
+    caveat: Feature seeds and dimensions are model settings; architecture selection belongs to earlier validation.
+  F2:
+    name: Separately learned frozen spatial encoder
+    status: experimental
+    api: FeatureSpec(kind='frozen_encoder_esn')
+    modules: [features.py]
+    inference: Small nonlinear tanh encoder with linear decoder, trained on conditioning data and frozen before readout inference.
+    caveat: Conditional-on-encoder uncertainty only; not full Bayesian encoder/recurrent-weight learning or a reproduction of CESAR.
+  E1:
+    name: Reservoir trajectory ensemble
+    status: implemented
+    api: [fit_ensemble, fit_stacking_weights, simulate_ensemble, mix_trajectories]
+    modules: [ensemble.py, workflow.py]
+    inference: Equal or validation-optimized log-score/CRPS weights; one member and complete path selected per trajectory.
+    caveat: Stacking is predictive optimization; members must share forecast target/domain and declared parameter policy.
+  E2:
+    name: Bayesian finite reservoir index
+    status: experimental
+    api: [fit_reservoir_index, sample_model_index]
+    modules: [index_model.py, ensemble.py]
+    inference: Common-dimensional Gibbs index and MH hyperparameters with properly normalized likelihoods; high-level ridge/iid Gaussian fixed-nu workflow.
+    caveat: Sampled hyperparameter dimensions must agree; integrated coefficient dimensions may differ. No reversible-jump inference or plug-in model evidence approximation.
+  U1:
+    name: Predictive interval calibration
+    status: implemented
+    api: [CalibrationSpec, fit_calibration, apply_calibration, reservoir_weighted_calibration]
+    modules: [calibration.py, workflow.py]
+    inference: Historical forecast-block standardized scores; marginal, per-horizon field or simultaneous trajectory bands; no invented MCMC block.
+    caveat: Raw draws remain unchanged. Weighted state-local option is empirical, not published ResCP; no automatic exchangeability or dependent-series coverage guarantee.
+  S1:
+    name: Vecchia and integer-order FEM SPDE spatial backends
+    status: reference_implementation
+    api: [CovarianceSpec(kind='vecchia'), CovarianceSpec(kind='spde'), SpatialOperator]
+    modules: [spatial.py]
+    inference: Genuine sparse precision construction, Woodbury solves/log determinants and bounded actual marginal-diagonal calculation; dense covariance integration for reference fits.
+    caveat: No end-to-end large-site sparse MCMC claim. Vecchia input order is fixed and targets appended; fixed master target ordering needed for subset consistency. SPDE is 2D with alpha=2 giving nu=1 or alpha=3 giving nu=2, natural Neumann boundaries, fixed padded mesh, no fractional alpha 2.5.
+    actual_variance_reporting: operator(coordinates,parameters).marginal_variances()
+
+unsupported_global_combinations:
+  - Latent-AR field combined with local Student-t or arbitrary time-varying measurement masks under scalar FFBS.
+  - Separate physical-scale PC hierarchy inside augmented common-IG samplers.
+  - SPDE nonstationary geometry, discrete inferred smoothness, or fractional order 2.5.
+  - Arbitrary covariance callbacks without a declared prior and coherent forecast rule.
+  - Reversible-jump or different sampled-hyperparameter dimensions in Bayesian reservoir index sampling.
+  - Learned encoder weight uncertainty treated as if sampled by readout MCMC.

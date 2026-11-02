@@ -1,0 +1,15 @@
+{
+  "protocol_sha256": "433815f95bc67b3761fb32bf40044155e615960d16c9b9d0932e84b487bbf963",
+  "renderer_sha256": "8d6c8972d271b740dfc8a5939a205b39ae437602825f6e666122465306245331",
+  "outputs": {
+    "report/bayes_stesn_implementation_report.pdf": {
+      "sha256": "d63f4192971fa9feebc7a4d478f1b625a9effa4b3b0362edb73974aaf7476595",
+      "bytes": 2867123
+    },
+    "report/bayes_stesn_results.html": {
+      "sha256": "5d34b0b263b3ea4b6f9b4cc9b9837bacc2eefad96ccdec0c4682ddefb22fb725",
+      "bytes": 5700576
+    }
+  },
+  "policy": "Read-only rendering of saved results; no refitting, selection or recalibration"
+}

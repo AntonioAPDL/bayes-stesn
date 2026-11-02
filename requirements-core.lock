@@ -1,0 +1,6 @@
+# Verified release environment: CPython 3.12, Linux x86_64.
+# Exact direct and transitive runtime pins; install from https://pypi.org/simple.
+# This is a version lock, not a cross-platform artifact-hash lock.
+numpy==2.3.5
+scipy==1.17.0
+PyYAML==6.0.3

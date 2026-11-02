@@ -1,0 +1,48 @@
+schema_version: 1
+model:
+  name: v3_reference
+  features:
+    kind: pca_esn
+    modes: 16
+    units: [256, 256]
+    input_scales: [0.4, 0.8]
+    leak_patterns: [[0.2, 0.5, 0.9], [0.05, 0.2, 0.6]]
+    lags: [1]
+    squares: 128
+    products: 0
+    score_bound: 3.0
+    recurrent_norm: 0.9
+    connectivity: 0.08
+    feature_scale_floor: 0.04
+    seed: 731
+  spatial_mean:
+    side: 13
+    width: 0.18
+    bounds: [[0, 1], [0, 1]]
+  prior:
+    kind: ridge
+    mean_log_precision: -2.302585092994046
+    sd_log_precision: 1.5
+  covariance:
+    kind: matern
+    nu: 1.5
+    log_q_mean: 0.0
+    log_q_sd: 1.25
+    log_ell_mean: -1.7147984280919266
+    log_ell_sd: 0.65
+  innovations: iid
+split:
+  conditioning: 600
+  fitting_stop: 8200
+sampler:
+  chains: 4
+  warmup: 1000
+  draws: 2000
+  a0: 2.0
+  b0: 0.05
+  seed: 20261102
+forecast:
+  horizon: 200
+  paths: 512
+  seed: 20261103
+

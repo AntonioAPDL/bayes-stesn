@@ -1,0 +1,31 @@
+{
+  "module_origins": {
+    "bayes_stesn": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/__init__.py",
+    "bayes_stesn._reservoir": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/_reservoir.py",
+    "bayes_stesn.assessment": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/assessment.py",
+    "bayes_stesn.basis": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/basis.py",
+    "bayes_stesn.calibration": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/calibration.py",
+    "bayes_stesn.data": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/data.py",
+    "bayes_stesn.diagnostics": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/diagnostics.py",
+    "bayes_stesn.dynamics": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/dynamics.py",
+    "bayes_stesn.ensemble": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/ensemble.py",
+    "bayes_stesn.features": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/features.py",
+    "bayes_stesn.gaussian": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/gaussian.py",
+    "bayes_stesn.index_model": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/index_model.py",
+    "bayes_stesn.io": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/io.py",
+    "bayes_stesn.model": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/model.py",
+    "bayes_stesn.prediction": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/prediction.py",
+    "bayes_stesn.priors": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/priors.py",
+    "bayes_stesn.sampling": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/sampling.py",
+    "bayes_stesn.scoring": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/scoring.py",
+    "bayes_stesn.simulation": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/simulation.py",
+    "bayes_stesn.spatial": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/spatial.py",
+    "bayes_stesn.workflow": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/workflow.py"
+  },
+  "package_origin": "/tmp/bstesn-release-venv/lib/python3.12/site-packages/bayes_stesn/__init__.py",
+  "package_version": "0.1.0",
+  "pytest_exit_code": 0,
+  "source_imports_detected": {},
+  "warning_count": 0,
+  "warnings": []
+}

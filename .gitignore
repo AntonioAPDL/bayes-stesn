@@ -1,0 +1,21 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+dist/
+build/
+results/
+checkpoints/
+report/build/
+*.tmp
+
+
+# Generated scientific evidence is distributed as release assets.
+report/controlled_study*/
+report/figures/
+report/media/
+report/*.pdf
+report/*.html
+report/*manifest.json

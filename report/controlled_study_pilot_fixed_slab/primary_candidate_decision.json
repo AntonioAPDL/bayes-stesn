@@ -1,0 +1,8 @@
+{
+  "status": "fixed finite slab c64 RHS also failed6000-draw convergence gate",
+  "max_rhat": 1.096875807598309,
+  "min_bulk_ess": 29.90365832381647,
+  "decision": "fourth primary candidate becomes grouped Gaussian M1, same expressive features and data; both RHS variants remain implemented and numerically verified but unvalidated for primary performance at this computational budget",
+  "final_stage_generated": false,
+  "no_further_algorithm_search": true
+}

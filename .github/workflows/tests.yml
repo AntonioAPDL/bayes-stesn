@@ -1,0 +1,42 @@
+name: numerical-and-api-checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      MPLBACKEND: Agg
+      MPLCONFIGDIR: /tmp/bstesn-mpl
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install project and test dependencies
+        run: python -m pip install '.[report,dev]'
+      - name: Numerical, sampling and complete workflow checks
+        run: python -m pytest tests --junitxml=results/tests.xml
+      - name: Installed command-line smoke reproduction
+        run: bstesn demo --smoke --output results/cli_smoke
+      - name: Source and wheel packaging
+        run: python -m build
+      - name: Dependency consistency
+        run: python -m pip check
+

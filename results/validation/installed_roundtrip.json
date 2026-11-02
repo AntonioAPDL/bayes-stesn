@@ -1,0 +1,14 @@
+{
+  "latent_bitwise_equal": true,
+  "observation_bitwise_equal": true,
+  "passed": true,
+  "posterior_identity": "4b864bf8c2f4782bed9c745253a2ec7840265823574601ce78735ad1d46afb0c",
+  "rhs_tradeoff_scale": 0.5,
+  "safe_numeric_npz_only": true,
+  "sampler_initialization": "auto",
+  "shape": [
+    16,
+    10,
+    25
+  ]
+}

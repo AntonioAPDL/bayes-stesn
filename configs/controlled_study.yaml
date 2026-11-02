@@ -1,0 +1,76 @@
+schema_version: 1
+study_name: controlled_compact_esn
+root_seed: 20261102
+grid_size: 11
+n_inputs: 49
+conditioning: 160
+fitting_stop: 1700
+short_fit_times: 740
+long_fit_times: 1540
+validation_blocks:
+  - [1700, 1740]
+final_blocks:
+  - [1740, 1780]
+  - [1780, 1820]
+scenarios: [matched_gaussian, anisotropic_gaussian]
+feature_seed: 731
+modes: 10
+lags: [1, 2, 4]
+compact_units: [16, 16]
+compact_squares: 8
+expressive_units: [32, 32]
+expressive_squares: 16
+spatial_basis_side: 7
+spatial_basis_width: 0.18
+candidate_names:
+  - ridge_short
+  - ridge_long
+  - ridge_expressive_long
+  - group_gaussian_expressive_long
+rhs_prior:
+  tau0: 0.1
+  slab_scale: 64.0
+  slab_df: 4.0
+  fixed_slab: true
+sampler:
+  chains: 4
+  warmup: 800
+  draw_targets: [1500, 3000, 6000]
+  draw_targets_by_candidate:
+    ridge_short: [1500, 3000]
+    ridge_long: [1500, 3000]
+    ridge_expressive_long: [1500, 3000, 6000]
+    group_gaussian_expressive_long: [1500, 3000, 6000]
+  proposal_scale: 0.12
+  initialize: auto
+  init_maxiter: 100
+  init_max_evaluations: 2000
+  init_max_dimension: 20
+  init_dispersion: 2.0
+  rhs_tradeoff_scale: 0.5
+  checkpoint_every: 0
+  rhat_limit: 1.01
+  min_ess: 400
+  functional_draws: 512
+paths: 128
+illustration_paths: 256
+illustration_replication: 0
+planned_replications: 8
+minimum_replications: 6
+maximum_replications: 10
+workers: 4
+final_wall_budget_seconds: 900
+bootstrap_resamples: 2000
+policy: frozen_parameters_observed_state_update_at_origins
+selection: validation_observation_CRPS_at_input_sites_then_RMSE_then_fit_seconds
+failure_policy: report_all_failures_exclude_failed_diagnostics_from_validated_scores
+notes:
+  - This is a compact resource-limited study, not the full 25x25 30-replication preregistered profile.
+  - All candidates share conditioning preprocessing, geometry, fitting endpoint, validation and final blocks.
+  - The short model has the same causal history but a shorter recent likelihood window.
+  - Independent simulation replications are the bootstrap unit; forecast origins are averaged within replication.
+  - No guarantees of improved prediction are assumed.
+  - The finite RHS slab c=64 is calibrated on an independent development pilot; the failed random-slab pilot remains archived.
+  - Ridge short and long passed the 1500-draw development gate; their predeclared final maximum is 3000, with unchanged convergence thresholds and explicit failure reporting.
+  - The final runtime ceiling was amended from 12 to 15 minutes before any final-stage data generation.
+  - Both random-slab and fixed-slab RHS pilots failed the diagnostic gate; the fourth primary candidate is grouped Gaussian M1, with unchanged data and expressive features.

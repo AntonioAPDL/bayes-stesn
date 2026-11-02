@@ -1,0 +1,9 @@
+{
+  "source_files": {
+    "temporal_features_v3.py": "4db9827498584c5ade3a4a599df042beba7f4f9bf808907f6ba98bc2a582064d",
+    "spatial_v3.py": "709239a7a5221d86729fa6ab8755de924545413331776d3121feb10911e72750"
+  },
+  "generation_seed": 773,
+  "feature_seed": 731,
+  "purpose": "Numerical compatibility of frozen PCA/reservoir/spatial dictionary equations"
+}

@@ -1,0 +1,87 @@
+{
+  "mode": "original_v3_full_dimension_fixed_parameter_parity",
+  "passed": true,
+  "dimensions": {
+    "n": 256,
+    "T": 7600,
+    "p": 172,
+    "d": 657,
+    "coefficients": 113004
+  },
+  "theta_order": [
+    "log_lambda",
+    "log_q",
+    "log_ell"
+  ],
+  "theta": [
+    -5.423593440734141,
+    0.6062029351029075,
+    -2.4645438365449253
+  ],
+  "checks": {
+    "frozen_feature_endpoint_max_abs": 0.0,
+    "R_max_abs": 4.440892098500626e-16,
+    "log_likelihood_abs": 1.1175870895385742e-08,
+    "Q_relative": 1.0840894476574497e-14,
+    "bn_relative": 1.0840849608671163e-14,
+    "coefficient_mean_relative_frobenius": 2.4784568912800633e-12,
+    "coefficient_mean_max_abs": 2.847234670255716e-10,
+    "field_covariance_relative_frobenius": 1.0108830644784561e-14,
+    "sigma2_posterior_mean_relative": 1.0895559106043491e-14
+  },
+  "tolerances": {
+    "frozen_feature_endpoint_max_abs": 1e-11,
+    "R_max_abs": 1e-12,
+    "log_likelihood_abs": 1e-05,
+    "Q_relative": 1e-10,
+    "bn_relative": 1e-10,
+    "coefficient_mean_relative_frobenius": 1e-08,
+    "coefficient_mean_max_abs": 1e-07,
+    "field_covariance_relative_frobenius": 1e-09,
+    "sigma2_posterior_mean_relative": 1e-10
+  },
+  "normalized_log_likelihood": {
+    "legacy": 769190.7337617222,
+    "new": 769190.7337617334
+  },
+  "timings_seconds": {
+    "feature_replay": 1.1279841120012861,
+    "legacy_precompute": 0.3680635730015638,
+    "new_precompute": 0.21676281199870573,
+    "legacy_evaluation": 0.020322244001363288,
+    "new_evaluation": 0.013268110000353772,
+    "total": 1.76781052700062
+  },
+  "peak_rss_mib": 235.3359375,
+  "dense_coefficient_precision_bytes_avoided": 102159232128,
+  "sources": {
+    "training": {
+      "file": "results/training_observations.npz",
+      "sha256": "9bc4584e9ffeef47f1e4224f32b186f74a1548c527d0c5cb1b434dbc07aa49da"
+    },
+    "features": {
+      "file": "results/expanded_observations_features.npz",
+      "sha256": "018523e424b732e48b42cad00c95305fa83655ba735e8b1bb720ab09ae7c407e"
+    },
+    "spatial": {
+      "file": "results/expanded_observations_spatial_dictionary.npz",
+      "sha256": "a1774560547601d92475bca0f56ce71fe81f8a79ca14a0e7a8b6fd3067302f74"
+    },
+    "chains": {
+      "file": "results/expanded_observations_chains.npz",
+      "sha256": "5ea1d92fbd30dd2305b9e134eb2e409c6485a6909bcb1b8d18b679ed68a15ff5"
+    },
+    "summary": {
+      "file": "results/expanded_observations_mcmc_summary.json",
+      "sha256": "5bef9b8fe467a6b9bc7053ba0401f0454d66d23f83d761848ca69144ac57a407"
+    },
+    "legacy_engine": {
+      "file": "bayes_core.py",
+      "sha256": "6a8e60a6ef435975c3f0df6fb955f98f780806dbf3767814ac7245cb77d90ebd"
+    }
+  },
+  "new_engine_sha256": "285dc5fe5e59991ef6a72cc6c2f5855eb07833271b78c705a23a5ec39155994e",
+  "scope": "Fixed hyperparameters, all original training rows/sites/features; no new MCMC or forecast claim.",
+  "conditional_covariance_check": "Nine matched spatial/temporal linear functionals; sigma2 integrated analytically.",
+  "numerical_note": "Tolerance permits double-precision accumulation/cancellation across 1,945,600 observations; raw errors reported."
+}

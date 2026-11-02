@@ -1,0 +1,141 @@
+{
+  "renderer": "report/render_figures.py",
+  "renderer_sha256": "f08cec1b17fa52bd2d1a4d4c71c95fd6d3b4a49ea3c2b5bfe11b52c933d4502d",
+  "created_utc": "2026-11-02T20:19:29.816169+00:00",
+  "source_sha256": {
+    "results/statistical_validation.json": "8a0253c27f0eaac9996284040807733acdfee467daec90bb65d930995897f6ad",
+    "results/statistical_validation.npz": "ccc4b4ce8277c8253530f57b0564652b8ca4526cf7248a272ad87d33f5029883",
+    "results/spatial_approximation_validation.json": "2bed8c768a1e0deeb30bf4ba05010777d4bb01d0b8c80df6b94f738444e11511",
+    "results/spatial_approximation_validation.npz": "2a0bf4db057f0d6f62ae040922c178e816701d846028b885358e15f49c662787",
+    "report/controlled_study/protocol.json": "53ab9844f36b98c9dcf7d4fffc804b36f503df5e2869be3b62ea3b72c4e172a4",
+    "report/controlled_study/summary.json": "a528514b4a76a9231812f3614834a713a9b383c7b2772aaaf482cb45f3809c4d",
+    "report/controlled_study/final/anisotropic_gaussian/replication_000/result.json": "974ae9b824945c1281f7657575cb7d88d6ffa3ac52cd48e25b5a1da88b9bbd2a",
+    "report/controlled_study/final/anisotropic_gaussian/replication_001/result.json": "b480628c611b362f075d4daf40bf29b3e3d9bdcd993daecab9a7d3e07aef1dba",
+    "report/controlled_study/final/matched_gaussian/replication_001/result.json": "bda2333753a2301a589c679bb22fd6c17866b64195c12391606a2875044d63fe",
+    "report/controlled_study/final/matched_gaussian/replication_000/result.json": "ed6ff3a898cdfb512fad5fb84c8a6b96f3acfc4bade35bdce88b4d8a29b8f4f9",
+    "report/controlled_study/final/matched_gaussian/replication_002/result.json": "7e5170d0c432f11525f11ee023f1774a5885f1347001c1f90b63865343cd51aa",
+    "report/controlled_study/final/anisotropic_gaussian/replication_003/result.json": "e0a8be2aff21c34de769971789fc4641d35e43019f93c9819847b0f1c5166c86",
+    "report/controlled_study/final/matched_gaussian/replication_003/result.json": "795270d9da663972db046cbcaf9796768a9044456cef26260f92bea2e404e40d",
+    "report/controlled_study/final/anisotropic_gaussian/replication_002/result.json": "2e9478bafc945a6e412779789035a04c311ee303f8c88259431b67cdb1d63c1c",
+    "report/controlled_study/final/matched_gaussian/replication_004/result.json": "5f3846bde373d924aca7b1cf83a9a5544d504a06726f097a391f82c4983d158b",
+    "report/controlled_study/final/anisotropic_gaussian/replication_004/result.json": "603f33f3a2e70998636cf9db95d6258cd95e3c5fc97dadea5ddade145ea3868b",
+    "report/controlled_study/final/matched_gaussian/replication_005/result.json": "ec4cb2183ebce82aca49e121bf4f0419ac3315de3bcad52714b84e3246c05581",
+    "report/controlled_study/final/anisotropic_gaussian/replication_005/result.json": "d443e8b6b9a96639695dc8ead8c721862dab5f8da6e3c42c1b122b4ebe96308a",
+    "report/controlled_study/final/matched_gaussian/replication_000/selection.json": "52eeb620af76f38cd1e721ca1261d6b108ad496fa11964b6cbb399b7b30795e7",
+    "report/controlled_study/final/matched_gaussian/replication_000/illustration.npz": "b2be63e5b81eb39275eca9bb641481027583df892719bd8809b0d2d72affaa14",
+    "report/controlled_study/final/matched_gaussian/replication_000/forecast_summaries.npz": "002da1c5d1bacdd2586ed4a4038ad0eda758e77247486cc3878045ca38925356"
+  },
+  "protocol_sha256": "433815f95bc67b3761fb32bf40044155e615960d16c9b9d0932e84b487bbf963",
+  "render_scope": "full_study",
+  "status": "complete",
+  "full_study_summary_loaded": true,
+  "expected_final_cases": 12,
+  "loaded_final_cases": 12,
+  "missing_required_figures": [],
+  "illustration": {
+    "scenario": "matched_gaussian",
+    "replication": 0,
+    "selected_model": "ridge_expressive_long",
+    "forecast_origin": 1739,
+    "horizon": 80,
+    "posterior_paths": 256,
+    "posterior_identity": "7f21b8e8cacbdd3f3764ed8946ce49f3d88d96199fb55dff5d89f02935a4f5e1",
+    "selection_rule": "saved validation-only choice; no renderer model selection",
+    "error_definition": "forecast observation mean minus actual observation",
+    "field_color_limits": [
+      -1.535602800057378,
+      1.535602800057378
+    ],
+    "error_color_limits": [
+      -1.2566476175703238,
+      1.2566476175703238
+    ],
+    "forecast_mean_check_max_abs": 0.0
+  },
+  "figures": {
+    "sbc_calibration.png": {
+      "file": "figures/sbc_calibration.png",
+      "sha256": "e025103e22e8570e334c7d67b0ea884d43f0c30abb18d19b0d1d4e947194fda1",
+      "pixel_dimensions": [
+        2891,
+        1825
+      ],
+      "dpi": 220,
+      "meaning": "Conditional conjugate SBC rank histograms, reference count band, exact interval coverages and explicit scope limits."
+    },
+    "spatial_approximations.png": {
+      "file": "figures/spatial_approximations.png",
+      "sha256": "857499a5ee0a71f0c55ec8afb715fca8c2e180e2d268152ad9869da569b857b2",
+      "pixel_dimensions": [
+        3072,
+        1199
+      ],
+      "dpi": 220,
+      "meaning": "Vecchia neighbour fidelity, FEM mesh/padding sensitivity, and actual unrenormalized spatial marginal variances."
+    },
+    "forecast_scores.png": {
+      "file": "figures/forecast_scores.png",
+      "sha256": "4e9b0b01a705d0eb7bed29738c538e7a348cbeca55976bcd14e1752d0bf66c50",
+      "pixel_dimensions": [
+        3000,
+        1888
+      ],
+      "dpi": 220,
+      "meaning": "Final observation RMSE/CRPS at input and held-out sites, with replicate-level bootstrap uncertainty and explicit validation failures."
+    },
+    "sampler_diagnostics.png": {
+      "file": "figures/sampler_diagnostics.png",
+      "sha256": "ebe7545eb3bfc8435ae38e2de91ee9b7c3f2b1c82ecdf741e203886fe749b71f",
+      "pixel_dimensions": [
+        3059,
+        1784
+      ],
+      "dpi": 220,
+      "meaning": "All final fits' maximum R-hat and minimum bulk/tail ESS, with composite gate outcomes and missing traces explicitly counted."
+    },
+    "forecast_montage.png": {
+      "file": "figures/forecast_montage.png",
+      "sha256": "de4493f3873928f62096c4a8230ebd00eebf63379e131ff796e10585d79523ad",
+      "pixel_dimensions": [
+        2900,
+        2160
+      ],
+      "dpi": 220,
+      "meaning": "Observed field, predictive observation mean and signed forecast-minus-observation error at four prespecified horizon fractions."
+    },
+    "horizon_diagnostics.png": {
+      "file": "figures/horizon_diagnostics.png",
+      "sha256": "dd3f6825cdab339bd6fc7e43b33dbf0795e21a22466d26086e0581bf7b4ace84",
+      "pixel_dimensions": [
+        2708,
+        1951
+      ],
+      "dpi": 220,
+      "meaning": "Uninterrupted illustrative forecast: lead-wise observation RMSE, raw 90% interval coverage and width, split by input/held-out domain."
+    },
+    "site_trajectories.png": {
+      "file": "figures/site_trajectories.png",
+      "sha256": "036db7e7936a5bb14dd5929ec9e82118108350fc46776839b04489cd4883aea3",
+      "pixel_dimensions": [
+        2728,
+        1951
+      ],
+      "dpi": 220,
+      "meaning": "Observed and forecast trajectories at three prespecified spatial anchors with raw 90% and 95% predictive intervals."
+    }
+  },
+  "warnings": [],
+  "style": {
+    "font": "DejaVu Sans",
+    "navy": "#14283b",
+    "teal": "#007f88",
+    "coral": "#e76750",
+    "gold": "#c5a056"
+  },
+  "uncertainty_policy": "Forecast score intervals resample independent replication averages; no forecast-origin pseudoreplication.",
+  "score_uncertainty": {
+    "resamples": 2000,
+    "interval": "95% percentile bootstrap of eligible-fit score means; paired contrast claims use the saved study summary"
+  },
+  "selection_policy": "No fitting or model selection performed by this renderer."
+}

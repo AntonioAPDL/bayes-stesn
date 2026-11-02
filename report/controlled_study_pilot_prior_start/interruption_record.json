@@ -1,0 +1,115 @@
+{
+  "status": "development pilot interrupted before final protocol freeze",
+  "reason": "prior-centered initialization gave inadequate mixing after 6000 retained draws per chain; root authorized bounded MAP/Laplace initialization and an exact RHS tradeoff move before a fresh pilot",
+  "kernel": {
+    "initialize": "prior",
+    "rhs_tradeoff_scale": 0
+  },
+  "configuration": {
+    "schema_version": 1,
+    "study_name": "controlled_compact_esn",
+    "root_seed": 20261102,
+    "grid_size": 11,
+    "n_inputs": 49,
+    "conditioning": 160,
+    "fitting_stop": 1700,
+    "short_fit_times": 740,
+    "long_fit_times": 1540,
+    "validation_blocks": [
+      [
+        1700,
+        1740
+      ]
+    ],
+    "final_blocks": [
+      [
+        1740,
+        1780
+      ],
+      [
+        1780,
+        1820
+      ]
+    ],
+    "scenarios": [
+      "matched_gaussian",
+      "anisotropic_gaussian"
+    ],
+    "feature_seed": 731,
+    "modes": 10,
+    "lags": [
+      1,
+      2,
+      4
+    ],
+    "compact_units": [
+      16,
+      16
+    ],
+    "compact_squares": 8,
+    "expressive_units": [
+      32,
+      32
+    ],
+    "expressive_squares": 16,
+    "spatial_basis_side": 7,
+    "spatial_basis_width": 0.18,
+    "candidate_names": [
+      "ridge_short",
+      "ridge_long",
+      "ridge_expressive_long",
+      "group_rhs_expressive_long"
+    ],
+    "sampler": {
+      "chains": 4,
+      "warmup": 800,
+      "draw_targets": [
+        1500,
+        3000,
+        6000
+      ],
+      "proposal_scale": 0.12,
+      "checkpoint_every": 0,
+      "rhat_limit": 1.01,
+      "min_ess": 400,
+      "functional_draws": 512
+    },
+    "paths": 128,
+    "illustration_paths": 256,
+    "illustration_replication": 0,
+    "planned_replications": 8,
+    "minimum_replications": 6,
+    "maximum_replications": 10,
+    "workers": 4,
+    "final_wall_budget_seconds": 720,
+    "bootstrap_resamples": 2000,
+    "policy": "frozen_parameters_observed_state_update_at_origins",
+    "selection": "validation_observation_CRPS_at_input_sites_then_RMSE_then_fit_seconds",
+    "failure_policy": "report_all_failures_exclude_failed_diagnostics_from_validated_scores",
+    "notes": [
+      "This is a compact resource-limited study, not the full 25x25 30-replication preregistered profile.",
+      "All candidates share conditioning preprocessing, geometry, fitting endpoint, validation and final blocks.",
+      "The short model has the same causal history but a shorter recent likelihood window.",
+      "Independent simulation replications are the bootstrap unit; forecast origins are averaged within replication.",
+      "No guarantees of improved prediction are assumed."
+    ]
+  },
+  "observed_gates": {
+    "ridge_short": {
+      "draws": 6000,
+      "max_rhat": 1.0187293906569899,
+      "min_bulk_ess": 223.41188571924317
+    },
+    "ridge_long": {
+      "draws": 6000,
+      "max_rhat": 1.1333189945107782,
+      "min_bulk_ess": 20.372293533801283
+    },
+    "ridge_expressive_long": {
+      "draws": 3000,
+      "max_rhat": 1.0167066159966032,
+      "min_bulk_ess": 177.03281796612225
+    }
+  },
+  "final_stage_generated": false
+}
