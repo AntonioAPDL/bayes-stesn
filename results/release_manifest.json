@@ -25,18 +25,18 @@
   },
   "artifacts": [
     {
-      "bytes": 201683,
+      "bytes": 201869,
       "file": "dist/bayes_stesn-0.2.0-py3-none-any.whl",
-      "sha256": "ec791ffbba6e2407fa00261a1da414b8f658e8939f9c309fe7c7ca849f7c2194"
+      "sha256": "afcf8701dd27f2758f239cb006d80c1b18a3cdc94e3dd3ca37263bcb1fd4443c"
     },
     {
-      "bytes": 1138214,
+      "bytes": 1150032,
       "file": "dist/bayes_stesn-0.2.0.tar.gz",
-      "sha256": "a3fab32b46f735b90bb6e38903bed98e5c4b1c4fff45144f017b9d62919a2a48"
+      "sha256": "f0d7fcc958494266d10209df0a8d249ed790f21e480f66f7be16e9d2551a12ae"
     }
   ],
   "benchmark_smoke": {
-    "artifact_directory": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_",
+    "artifact_directory": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw",
     "comparison_status": "execution only",
     "jobs": 13,
     "passed": true,
@@ -88,13 +88,13 @@
   },
   "claim_scope": "Local tests, built artifacts and isolated installation; no public publication or remote CI claim.",
   "cli_smoke": {
-    "artifact_directory": "results/validation/installed_smoke/bstesn-release-work-twp529x_",
+    "artifact_directory": "results/validation/installed_smoke/bstesn-release-work-8mmz9tzw",
     "diagnostic_gate_passed": false,
     "passed": true,
     "scope": "Execution test; short-chain diagnostic failure is expected and is not convergence.",
     "smoke_only": true
   },
-  "completed_utc": "2026-11-02T22:15:32.156196+00:00",
+  "completed_utc": "2026-11-02T22:56:48.227367+00:00",
   "dependency_install_receipts": [
     {
       "file": "results/validation/fresh_install_report.json",
@@ -109,7 +109,7 @@
       "sha256": "e34af97c4a663ce3b5971b55dd23bf290c4559b0bafc6239f3f82f0ec2e66cf3"
     }
   ],
-  "elapsed_seconds": 88.64489293299994,
+  "elapsed_seconds": 88.24073828600012,
   "fresh_environment": {
     "base_prefix": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python",
     "blas_threads": {
@@ -227,7 +227,7 @@
     "package_version": "0.2.0",
     "passed": 280,
     "pytest_exit_code": 0,
-    "seconds": 28.204,
+    "seconds": 27.487,
     "skipped": 0,
     "source_imports_detected": {},
     "tests": 280,
@@ -299,7 +299,7 @@
     "CONTRIBUTING.md": "f99d9c13bfd19018b91a1a33813c8d11569437202b82f19faddcbae45e6beb17",
     "LICENSE": "6ed4978d155feeadbd3837460f4bd40470556f6b3fd9a3a4d5395eb9ec1b277e",
     "MANIFEST.in": "bd9c7ec8d9ec1bde751c91a0918045315955a4226a97149f844baa2f0c31868d",
-    "README.md": "61bc62aaae9c67789e5eaccc8b13298db3072f30c40f820ca66f72313a2294d9",
+    "README.md": "0b6960461c0d12aebce30eb02371548526d11cf79ecde959f980be6ee4d6ce4b",
     "benchmarks/controlled_study.py": "959ed1be6eac7393ba823bf2dd13d9e4b05550abda4f76afd242c676d025c9ac",
     "benchmarks/profile_checkpoint_cadence.py": "3b9d31f384de3e862617f906821a3eff360dbaf7cf6317273d9f5b08943bd3e1",
     "benchmarks/profile_sparse_workflow.py": "ea5cc412e842ceab780f63e428b115174c38fa8f8f176952f4702ec2a6f31bda",
@@ -314,10 +314,10 @@
     "configs/controlled_study.yaml": "ba5d242dea962f43baa60f7443f052b461260cf6dacd80a516ae5c6193957036",
     "configs/demo.yaml": "df16a9f3be66010eed932195adf92783898548d1dc44ebd8cfb1c405f748e1dd",
     "docs/api.md": "5e94b7005b05198644b7fc39ebadc00aa8e30fe73024d9d4a77077fdb1e1d8f9",
-    "docs/benchmark_guide.md": "d39bfa2238142857bfcef00e28716655fd83880b1fde9fe441ef320eab43ac0e",
+    "docs/benchmark_guide.md": "62191974cd8c8070fc8b8d1dba4d8ae1923bf5f29ba758f52c608a8851a02c38",
     "docs/benchmark_models.md": "f91b3fc30a81fad91f7bb3ad4d3021a062b888dded5e22ae9e1f3748b61a6d71",
     "docs/benchmark_registry.yaml": "fef7efec72faae5b44bebf2e9d695272970b52cdda4dd1eb029e7c0f488c1c14",
-    "docs/benchmark_validation.md": "064572652e93f0274f88e9ad5cd3500934e4fbe3f1eb91e02762f4006c55f926",
+    "docs/benchmark_validation.md": "f47ddeb48bf53a8c85300e7248a6e6c990ec92b3eb00c6a834adfb67b2f5b16a",
     "docs/derivations/01_scope_and_baseline.md": "edd1eb05cd653ef7605a545a0cb3a39026f588823e2c6b357a5977c6559705ad",
     "docs/derivations/02_gaussian_priors_mcmc.md": "57fcab7a7db54b4ec5e2fd66c50454f344795132917ed214a28a7b2253ff93ff",
     "docs/derivations/03_covariance_latent_mcmc.md": "434983ceecc704729cb33f53c7fd99616992fb554b0806887cad28ac253b4355",
@@ -328,16 +328,18 @@
     "docs/evidence/v01/protocol.json": "53ab9844f36b98c9dcf7d4fffc804b36f503df5e2869be3b62ea3b72c4e172a4",
     "docs/evidence/v02/calibration_verification.json": "688c89511994cfdec514f3496beb0222df1a6643eb1e96d8dfef827e73be3d44",
     "docs/evidence/v02/checkpoint_cadence.json": "280bfe646e1bc17b8d1990026552fba95f6f5a72a5a746e2c45deed5cdd72030",
+    "docs/evidence/v02/confirmation_gate.json": "a746297f5ec43a9c0625e879b83c73b9e333be7179774085224dded2a1514d38",
     "docs/evidence/v02/detail_summary.json": "2b4f4a297bb5b66eef207e2f94266d9e318fab76771763e1aba88aabaf264d9f",
     "docs/evidence/v02/generator_validation.json": "7a1659bfe28a93e6a32e78ab0814de7f29314c6fe3c184ba2ebedcc7431cd92a",
+    "docs/evidence/v02/pilot_analysis.json": "7d7f1f64a8794738eebd58d81be218b232677af0172dfc6004de570b0ea774fd",
     "docs/evidence/v02/pilot_time_validation.json": "0fb4074cd58e08f62b3c3cf2128de04cc389e732ba7d0cf0a2c73e4ae0a620ea",
     "docs/evidence/v02/sparse_4096_profile.json": "ee7bcbbb72978d633c979b8fa8a629898f0fea7bc7d34b9e68d5c0b20332b1bb",
     "docs/evidence/v02/sparse_profile.json": "810473680c9a8728ab667f1ef1e99ef192f5bbdd422c0f4438c6901697af9fee",
     "docs/implementation_registry.yaml": "c78afafcb44c616c19ff8fd3cc79788355cb8a3106a44b1bedbfeffb781c5a4f",
     "docs/models.md": "64a17776cf3f91a9f53190d294d6d2c503b34242b57993d32919f00dabd102b1",
     "docs/optimization_and_scope.md": "0b2e971378badf5c3fe8be382ccf6666979eb478527ef064f00f583e3b56c320",
-    "docs/publication.md": "d1ecf5622744941a591563df86e45842bd68a7461d74ef48591c3dbc1380b40c",
-    "docs/reproduction.md": "1363e30d7373f921501e86f44a0eeef47bc4bd1fb5128c159287f981d5a3efb1",
+    "docs/publication.md": "2b26a0529e909f5dd431449b37110c300cade8cb1bf0675c65adac96cad27d58",
+    "docs/reproduction.md": "97ca9d9b436cf927d2767242168dbf9cffd5f6bd75b71dec649075acbe15a39e",
     "docs/validation.md": "7e78404210e57684e89ace5e0e038ddc3def03d893c8de1b21370495e18b9a25",
     "examples/quickstart.py": "e3e8857c0427a5958eb5a69fe149749ce4bcb9f453b6e57e8b6fb8e59c551b0c",
     "pyproject.toml": "3fa0edde2103fc889f300ee5de2dcbdd6d4ecc5cc822e21e8d54e32f5ec012d2",
@@ -408,6 +410,7 @@
     "tools/embed_report_fonts.py": "d4c543c4998e06f81efbe0e030e9d72a6f7c6e4bed26f873f2e014fc1b045f0f",
     "tools/package_release.py": "70577a9245f350eee80ec750c1568cf5ce2c0d92ce6aa4d2e5078a71f12355ab",
     "tools/release_check.py": "ed2dfe2ac1fc62a6ed14d06863a6e397337d46974f0ff5f2cc7ab3a0571ba0ad",
+    "tools/render_benchmark_layout.py": "d270035ab5aad2df4f0444a523653bc2f947900bc7812bb8f58a64ff1d1c1c41",
     "tools/render_model_comparison.py": "ccfedc6d4c914784abf39be29d9ab7ee0f2522031b47479533199d31e38e415b",
     "tools/validate_generators.py": "dc3399ce1ca914ee9f79d22221204d28a4cfac99a1cdbb05e98c2d141e02cf73",
     "tools/verify_study_artifacts.py": "e1cd8a7d24d9f9d15afcaa133d95325c751a22dd1f5dbd2c820762b1499e2cee"
@@ -462,7 +465,7 @@
     "package_version": "0.2.0",
     "passed": 280,
     "pytest_exit_code": 0,
-    "seconds": 25.51,
+    "seconds": 25.628,
     "skipped": 0,
     "source_imports_detected": {},
     "tests": 280,
@@ -470,91 +473,91 @@
     "warning_count": 0,
     "warnings": []
   },
-  "started_utc": "2026-11-02T22:14:03.511305+00:00",
+  "started_utc": "2026-11-02T22:55:19.986631+00:00",
   "steps": [
     {
       "exit_code": 0,
       "log": "results/validation/build.log",
-      "log_sha256": "b23d0c656c3597e9367a799a0e3a164315b2f18577c116952949920278b453bc",
+      "log_sha256": "ec62314cc28b332f87cd45013c531ac2ad0b2da276eddd31bcef9679a4968be0",
       "name": "build",
-      "seconds": 1.3677501220008708
+      "seconds": 1.6709241190001194
     },
     {
       "exit_code": 0,
       "log": "results/validation/fresh_dependencies.log",
-      "log_sha256": "633f1717d996a2353e71834f2d96b482c86dad35aa84a8fc5176f4f67fcb5e09",
+      "log_sha256": "d500368dd6c737029b11324386098536f1f2547f35e9f6c9f20617fa214ccf3e",
       "name": "fresh_dependencies",
-      "seconds": 0.4154098229992087
+      "seconds": 0.5665023229994404
     },
     {
       "exit_code": 0,
       "log": "results/validation/neural_support_dependencies.log",
-      "log_sha256": "af965cf9b09f27d8212d707c8f8918814cdb8f714c38fec38850ed6eb22bc2d2",
+      "log_sha256": "03d058a85b70809af0aae751f3d362a0ec0887f6a7b93c3cd02b8f8cfe4393f0",
       "name": "neural_support_dependencies",
-      "seconds": 0.5658493180017103
+      "seconds": 0.5669953930009797
     },
     {
       "exit_code": 0,
       "log": "results/validation/neural_dependencies.log",
-      "log_sha256": "985bb38d37da1629a370a6fb1344aaa5b74857a3c70e9a102715c6ef5d4d1240",
+      "log_sha256": "56832e845059b2520537567f4686e185cae6026211b6f713f94ae7d0d99a3ab9",
       "name": "neural_dependencies",
-      "seconds": 15.731961002002208
+      "seconds": 15.172658579002018
     },
     {
       "exit_code": 0,
       "log": "results/validation/wheel_install.log",
       "log_sha256": "2012c1a6fdef222e3d274156eadb71795701f447ea14b8a81863f723fc63b6d6",
       "name": "wheel_install",
-      "seconds": 0.5153774270002032
+      "seconds": 0.6723239329985518
     },
     {
       "exit_code": 0,
       "log": "results/validation/pip_check.log",
       "log_sha256": "2749e0ffeaedec858d9688c78ba8b76e5ba11e4a2daf044c58e5095e07823f0e",
       "name": "pip_check",
-      "seconds": 0.265176414999587
+      "seconds": 0.26495124500070233
     },
     {
       "exit_code": 0,
       "log": "results/validation/fresh_environment.log",
-      "log_sha256": "3e1cbdd0e62b390f1357f20d8c95213372e1c73883e4d68c132dd4f4c056f1df",
+      "log_sha256": "b3518573539c87d771baa132df2e326f2c1645eb56bbd4bf6ceb0d41b0216819",
       "name": "fresh_environment",
-      "seconds": 2.5215360750007676
+      "seconds": 2.4716618159982318
     },
     {
       "exit_code": 0,
       "log": "results/validation/source_pytest.log",
-      "log_sha256": "e4d46992b78f6d6841e32b478bbf8b70dc32c12e7a8bfc738c6deb7da8ab25cd",
+      "log_sha256": "51b7f732d0080a411ed95071a2038ccd6e829c4445ea81d2e5b0799610c42532",
       "name": "source_pytest",
-      "seconds": 28.099127068999223
+      "seconds": 27.960209872999258
     },
     {
       "exit_code": 0,
       "log": "results/validation/installed_pytest.log",
-      "log_sha256": "a78851be7cb47bca9d9d0ef3ab2d9581f077d47959f0c85ef30d67e669b83f4e",
+      "log_sha256": "a9bbcd008c45e9725fe872dfb68f69ef0254a3ad472615eb51f07e915f73b20d",
       "name": "installed_pytest",
-      "seconds": 30.688684936001664
+      "seconds": 30.086375423998106
     },
     {
       "exit_code": 0,
       "log": "results/validation/installed_cli_smoke.log",
-      "log_sha256": "a8106a783d65f0669fd6b7dbd61a502b28256408d4f523c07378694b577374d5",
+      "log_sha256": "98f4150eb53616f1485107cf1377bdf754f0f9c569c90e98a5516101ea26ca85",
       "name": "installed_cli_smoke",
-      "seconds": 1.2173994309996488
+      "seconds": 1.1701339760002156
     },
     {
       "exit_code": 0,
       "log": "results/validation/installed_roundtrip.log",
-      "log_sha256": "c88a93f98f43aaa6536629b8c2cf640e5c798812382f4d132c47bd241413c469",
+      "log_sha256": "149c5f7b94d799a252a867c28d1a234a0fe37ee6e58f81f8f9e2a878aa8c08d8",
       "name": "installed_roundtrip",
-      "seconds": 0.8701059860031819
+      "seconds": 1.0692569249986263
     },
     {
       "exit_code": 0,
       "log": "results/validation/installed_benchmark_smoke.log",
-      "log_sha256": "6520767354df50ae7312d9dc6354f1d66d9e39cb6c8a483c3c665f2d708e30a9",
+      "log_sha256": "e071fca6c23e968867368bda5799f9ae149f4414dd00bc91b5a7140be9c2a1fa",
       "name": "installed_benchmark_smoke",
-      "seconds": 6.282513517999178
+      "seconds": 6.438813144999585
     }
   ],
   "test_policy": "All optional tests; zero skips or pytest warnings",
@@ -562,14 +565,14 @@
   "unlocked_distributions": [],
   "validation_artifacts": [
     {
-      "bytes": 22696,
+      "bytes": 22963,
       "file": "results/validation/build.log",
-      "sha256": "b23d0c656c3597e9367a799a0e3a164315b2f18577c116952949920278b453bc"
+      "sha256": "ec62314cc28b332f87cd45013c531ac2ad0b2da276eddd31bcef9679a4968be0"
     },
     {
       "bytes": 5601,
       "file": "results/validation/fresh_dependencies.log",
-      "sha256": "633f1717d996a2353e71834f2d96b482c86dad35aa84a8fc5176f4f67fcb5e09"
+      "sha256": "d500368dd6c737029b11324386098536f1f2547f35e9f6c9f20617fa214ccf3e"
     },
     {
       "bytes": 2297,
@@ -579,7 +582,7 @@
     {
       "bytes": 344,
       "file": "results/validation/fresh_environment.log",
-      "sha256": "3e1cbdd0e62b390f1357f20d8c95213372e1c73883e4d68c132dd4f4c056f1df"
+      "sha256": "b3518573539c87d771baa132df2e326f2c1645eb56bbd4bf6ceb0d41b0216819"
     },
     {
       "bytes": 500,
@@ -588,433 +591,433 @@
     },
     {
       "bytes": 11951,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_gru/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_gru/forecast.npz",
       "sha256": "a08b9cf8065bd9306423f0e6cb43135254b49980c31671902366ae9592757ddf"
     },
     {
       "bytes": 32174,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_gru/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_gru/model.npz",
       "sha256": "381392e2794be375060ab3464dee13b3e53807c86c727515b6fd134c6233e534"
     },
     {
       "bytes": 1625,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_gru/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_gru/operational_point.npz",
       "sha256": "493ecbfe68d2cbf72654fc51f80a57682db0d52c8056272e87350da824f68aad"
     },
     {
-      "bytes": 18190,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_gru/receipt.json",
-      "sha256": "09978556b1306afffd0b884e525b710fc6e6f664d1575754cd09896ef7e90ae6"
+      "bytes": 18191,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_gru/receipt.json",
+      "sha256": "a3829485432ade1e74d880747f0b07fa3c8e52b6e88745dabdc6700e77d8674e"
     },
     {
-      "bytes": 3586,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_gru/selection.json",
-      "sha256": "bf79184085d036f2b5a608aca640477aa79e52cb7d9eabda06461316649030fa"
+      "bytes": 3584,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_gru/selection.json",
+      "sha256": "954111c958222dfbaf40e4fe403cd7032ee9fa1ef93b506b9f86cd444b70db85"
     },
     {
-      "bytes": 2742,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_gru/tuning/trial_00.json",
-      "sha256": "deca08125629e431c379b46770336227072f3fa44eb9b9120572d713c3112dff"
+      "bytes": 2740,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_gru/tuning/trial_00.json",
+      "sha256": "9fc15179244dca6a2476d8626aee1be3cc6c59eed2578047f0cd19b31688c400"
     },
     {
       "bytes": 1772,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_krr/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_krr/forecast.npz",
       "sha256": "8c0d289334d175ee19aa604d7af886d0fca65b3062d8b0682de05396d0c264c3"
     },
     {
       "bytes": 66241,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_krr/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_krr/model.npz",
       "sha256": "5b8a43d1b593d3acda6dd42295de1d92889342a77227454e154a57d09fd9e623"
     },
     {
       "bytes": 1630,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_krr/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_krr/operational_point.npz",
       "sha256": "8625689474d096f245de41262db2e9dec45dda407f81e6266a1b472d76d5a303"
     },
     {
-      "bytes": 4087,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_krr/receipt.json",
-      "sha256": "a591c5c27d1e54ebc97ee0141370c944e22789641514eb855083307ef21fbef7"
+      "bytes": 4091,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_krr/receipt.json",
+      "sha256": "01e56004e2973b5f97355572a5f46d8a07b6334a51b4bd37998b67b842a58a68"
     },
     {
-      "bytes": 1925,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_krr/selection.json",
-      "sha256": "c12c8e047dafd8cfccf1fe6b866a177ea3776b5adfab7950a2a94d00c1eb68f6"
+      "bytes": 1928,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_krr/selection.json",
+      "sha256": "ff58efc46433d4df1a3c65546e60fb26cec45b70ab52fb034e7d7036cb93b343"
     },
     {
-      "bytes": 1206,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_krr/tuning/trial_00.json",
-      "sha256": "f78063cfb99e1638af14ddb510b025f5e1ded6084d6d36fd82c5915058067391"
+      "bytes": 1208,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_krr/tuning/trial_00.json",
+      "sha256": "ab4428acc8e91bb3a19956fa0e9b1d96f01f6f4fc05a9a25e173f477b2a2987f"
     },
     {
       "bytes": 11856,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_lgssm/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_lgssm/forecast.npz",
       "sha256": "aee53c3b214f70a18df1be43d462928d95a20ff758826a6844701fb6e2186735"
     },
     {
       "bytes": 15680,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_lgssm/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_lgssm/model.npz",
       "sha256": "4049fbf97322cee19b4264006ba9d8a2c1b01a9be885ff9cd81854e25ce71afc"
     },
     {
       "bytes": 1064,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_lgssm/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_lgssm/operational_point.npz",
       "sha256": "b388f4c6ebd0cb247159d4e74d8edb0ce3b1ecd551a92ec9fd4398049226740e"
     },
     {
       "bytes": 10870,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_lgssm/receipt.json",
-      "sha256": "ef2ed8ba14592e140ddea0995119fb82122eb5bb2cc28ac6e6b3bc835fb2eebd"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_lgssm/receipt.json",
+      "sha256": "48c802bd5913b3c258926e04810be9641f87024a5daf4931f7ee432a239af6d2"
     },
     {
-      "bytes": 2393,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_lgssm/selection.json",
-      "sha256": "104bff7858cdc2f3da5ce8ff530e3a81d2f13252d6d6173322622dbc4fa5aa12"
+      "bytes": 2396,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_lgssm/selection.json",
+      "sha256": "b015685a50b469fb8a48f1f45fefecdd107333371ab6d82558a372c9873f6965"
     },
     {
-      "bytes": 1677,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/basis_lgssm/tuning/trial_00.json",
-      "sha256": "156d06882300c9b29d886c791c7c0c7a8dfe4c2cf505084f1c7f1ed661164882"
+      "bytes": 1679,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/basis_lgssm/tuning/trial_00.json",
+      "sha256": "170ff0a611800a69de67262e88c6ee69d15a4ea5025be34de7f1ccd963398595"
     },
     {
       "bytes": 1827,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/dcrnn/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/dcrnn/forecast.npz",
       "sha256": "6e36bb396ba54308bc30734a7ad932272267cb06fcf15505eb64064d9e1d7883"
     },
     {
       "bytes": 51328,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/dcrnn/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/dcrnn/model.npz",
       "sha256": "b989b4daa1f61302f298f1ac8e6a3ed4aeb6a28f63898652b653c771e9a4db01"
     },
     {
       "bytes": 1591,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/dcrnn/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/dcrnn/operational_point.npz",
       "sha256": "8701faf214a801fee0bae3825410e3edcdf1413592855482dc5c286e3b7ee149"
     },
     {
-      "bytes": 5519,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/dcrnn/receipt.json",
-      "sha256": "7b6351669b99d86930a5ac588bea965d429be95afe4d0313104e78c8075cf833"
+      "bytes": 5528,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/dcrnn/receipt.json",
+      "sha256": "4983673e855c3522aea0c700eed75ede9e5bdeb99e1e02c89b2c1d9dffcdfd3a"
     },
     {
-      "bytes": 3425,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/dcrnn/selection.json",
-      "sha256": "48b5bb729a54218787f2fd6a238b969378c584668db38cfc92b8c0e5c40102f8"
+      "bytes": 3423,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/dcrnn/selection.json",
+      "sha256": "ee91f42b88fd0c46b630189be550ff0b2cd9ff469328cbf125a3838f394563de"
     },
     {
-      "bytes": 2451,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/dcrnn/tuning/trial_00.json",
-      "sha256": "9a052048d09cf669764e7e1541c657fec35b2b7f1d72531a34844d20742682ab"
+      "bytes": 2450,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/dcrnn/tuning/trial_00.json",
+      "sha256": "dc88807e2c8cf93ad4a6fa79cb586d93ba078bb11661ae6a49396f65c63bf4c6"
     },
     {
       "bytes": 4004,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/eqesn_rollout/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/eqesn_rollout/forecast.npz",
       "sha256": "195a388eadf3abc11686cb615b06ce45b68a4a7d8f1dea0774f5d6dc7b4d4d0c"
     },
     {
       "bytes": 100095,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/eqesn_rollout/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/eqesn_rollout/model.npz",
       "sha256": "22b6a86d8f611b774650d1659a0cf735da1b0f6778eb038a6f3dcab291a46287"
     },
     {
       "bytes": 1632,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/eqesn_rollout/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/eqesn_rollout/operational_point.npz",
       "sha256": "f4c57d114fee06b389f4d4d45b9df0727ad470f4f2bc5438eae46e6b1e38a389"
     },
     {
-      "bytes": 16950,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/eqesn_rollout/receipt.json",
-      "sha256": "447001cd9aae843e37e56421a37b51ad2ba9c1c3b69d86d77a7e4a6e8738813c"
+      "bytes": 16959,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/eqesn_rollout/receipt.json",
+      "sha256": "66121cb5501ead8a53b0773343e7b03e149eff5edfd6452528bbabc952c8740f"
     },
     {
       "bytes": 2367,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/eqesn_rollout/selection.json",
-      "sha256": "eeda74d209e7c603f9ad1c85ad9de1fb64ebf61ec7c434869252816cd3a06930"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/eqesn_rollout/selection.json",
+      "sha256": "f432e642b8653524d36b931e675fe133cef171a145ca74c06e8af420d1cb1e5a"
     },
     {
       "bytes": 1593,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/eqesn_rollout/tuning/trial_00.json",
-      "sha256": "6c92741fdd5be2a0cc49dcd63342160a021efaecd40b39e9ba99c98d106da6fc"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/eqesn_rollout/tuning/trial_00.json",
+      "sha256": "d4f1c3ea720cec29b614b673e5030951fcfd8fe51d83a727f373aa61be3d11a3"
     },
     {
       "bytes": 1186,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/persistence/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/persistence/forecast.npz",
       "sha256": "71410b8a896ed21287b2305c3d54152d6b839e2446d711ebea4513c044e6bdf8"
     },
     {
       "bytes": 12068,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/persistence/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/persistence/model.npz",
       "sha256": "f5bf06a12ce94138d95c86ada8d84d4450dcc72a56e31a8f69a908ab54cc984f"
     },
     {
       "bytes": 1064,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/persistence/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/persistence/operational_point.npz",
       "sha256": "7b59ffea640ec389651c6f40458536025e6a3e480e48025dff1e500121c04657"
     },
     {
-      "bytes": 3793,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/persistence/receipt.json",
-      "sha256": "f6aa33a1c80a248be4881bf9b5b6826ee9706316457184ab63a16e304f1d2fc6"
+      "bytes": 3796,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/persistence/receipt.json",
+      "sha256": "9dec147672516ff0ac4844fcc869d024718d2ee79d0ebfdd13c1fdac5a986c98"
     },
     {
-      "bytes": 1479,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/persistence/selection.json",
-      "sha256": "17a9a32dd1bda8f11576f90f0d5146765270d06890f8273b7768a34d3c702865"
+      "bytes": 1481,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/persistence/selection.json",
+      "sha256": "fac4f83c531583db7d69ad058bc876357fa935896b89852b627d770e225393bc"
     },
     {
-      "bytes": 914,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/persistence/tuning/trial_00.json",
-      "sha256": "7dd5e19ea0234d069a4fe1f5c2e14543f696ef3be0bdc458cc94d6431deb41a0"
+      "bytes": 915,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/persistence/tuning/trial_00.json",
+      "sha256": "bba352c12ca7b7c2000dbdad9601f68fe9b47bd53a825663dc318fbac00955a3"
     },
     {
       "bytes": 1769,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/seasonal_naive/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/seasonal_naive/forecast.npz",
       "sha256": "087e52b6499134784f260cf9355ab84e9de3aaace8f21f8a6eeef01e3f7671bc"
     },
     {
       "bytes": 12145,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/seasonal_naive/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/seasonal_naive/model.npz",
       "sha256": "860c70b5bf064e8608afa4f639f93068f976dbf15c945cdfb95142b193fd6930"
     },
     {
       "bytes": 1625,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/seasonal_naive/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/seasonal_naive/operational_point.npz",
       "sha256": "576d941cada2004c007f4ed2350e86d0c3be68105f72e07e5bee918e7f541111"
     },
     {
-      "bytes": 3863,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/seasonal_naive/receipt.json",
-      "sha256": "cf0ba4af09a4a4e2d11534c3e49a424caa81f30d21e8b656fc7d182b50afd116"
+      "bytes": 3861,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/seasonal_naive/receipt.json",
+      "sha256": "ee9d957b92b4a9299f3ee146f4da067a85d5aec12ce9311dba9a6d802d530726"
     },
     {
-      "bytes": 1625,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/seasonal_naive/selection.json",
-      "sha256": "5ab0cd5c4b60dfd26892711f628d38121eae24a984b2ed4891f3b7007431b370"
+      "bytes": 1623,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/seasonal_naive/selection.json",
+      "sha256": "c0ea7dbc3603d98b0f118c479a0b325b12effa67015afc5cd55757fa781c7998"
     },
     {
-      "bytes": 1023,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/seasonal_naive/tuning/trial_00.json",
-      "sha256": "c926dbc21882f8b545b5853ceed0ccc62b7142c6bea2ac7852edbdf644557137"
+      "bytes": 1022,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/seasonal_naive/tuning/trial_00.json",
+      "sha256": "f9ffb11fad57b140d3f0ca1cf628911391a97c42780b2ba88ed825d3cc3ada54"
     },
     {
       "bytes": 11933,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/separable_stgp/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/separable_stgp/forecast.npz",
       "sha256": "aef356f177d634fd98c38d78316c4c23aa2b3f54d64a865a6a9ddd042e6e0431"
     },
     {
       "bytes": 13444,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/separable_stgp/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/separable_stgp/model.npz",
       "sha256": "e9521616c7a77a953acc0f23811d647833f61d3cc5ac42cd1a0b8f3f3a09cf54"
     },
     {
       "bytes": 1064,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/separable_stgp/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/separable_stgp/operational_point.npz",
       "sha256": "b388f4c6ebd0cb247159d4e74d8edb0ce3b1ecd551a92ec9fd4398049226740e"
     },
     {
-      "bytes": 10846,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/separable_stgp/receipt.json",
-      "sha256": "60eb14c50fce37a6eb8f7e8573eb354952c56bdb1c865045b7f6a3cd56fd0f52"
+      "bytes": 10849,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/separable_stgp/receipt.json",
+      "sha256": "60102b24bc07ac5a53884bd99309584ed615a2915998bc2c1c557c6c75f2a17d"
     },
     {
-      "bytes": 2334,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/separable_stgp/selection.json",
-      "sha256": "74270763df6185b111cfaa0054708bb0a2f68dc0f9aff9b9c71527730d032d1a"
+      "bytes": 2338,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/separable_stgp/selection.json",
+      "sha256": "b7db06940a6fc511c4fb0e85cee72032f357c358195ef59991d5ae651e08d3fb"
     },
     {
-      "bytes": 1575,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/A/separable_stgp/tuning/trial_00.json",
-      "sha256": "1ddc1f385404bc3b8ccae27467744934a2aad49b3568540614f997683688a238"
+      "bytes": 1578,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/A/separable_stgp/tuning/trial_00.json",
+      "sha256": "74a91733dfd1be2b50574762ae950d2921ec6e050ba7a4375d5dfe81f3f9d876"
     },
     {
       "bytes": 14081,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_gru/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_gru/forecast.npz",
       "sha256": "e0e7e02e12e95e2512ff3f83002aebe1b4684e86360ece86e96f51d561f103a8"
     },
     {
       "bytes": 32187,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_gru/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_gru/model.npz",
       "sha256": "b923d006d158330f619017493dfed1aedf3909adf577ee71e90b99bbf3ba286c"
     },
     {
       "bytes": 1759,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_gru/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_gru/operational_point.npz",
       "sha256": "334fb547939c5f3ec2697c1fccceec971b2b0a78228910dba289f16d13295f4f"
     },
     {
-      "bytes": 21585,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_gru/receipt.json",
-      "sha256": "da2aae8ea7c880a8485784e5a5d95202e42bd428df7af9210f69f9250890bf09"
+      "bytes": 21584,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_gru/receipt.json",
+      "sha256": "85aaa317ddc91db60557ba5698ca3eeaa031cd6548b2b558f6f0d6f4b39ff981"
     },
     {
-      "bytes": 3368,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_gru/selection.json",
-      "sha256": "c04fe455587116cef6342e123af607486058f21482dc73430cefcec289c5849e"
+      "bytes": 3364,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_gru/selection.json",
+      "sha256": "2f49c94f8c4feb3a820b6b494a98339ff5f016b2a2a3bf680418c01ca264751e"
     },
     {
-      "bytes": 2563,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_gru/tuning/trial_00.json",
-      "sha256": "3d8513da800e361276d0b514f0edaa64694706ab24602029366f9543f484f46d"
+      "bytes": 2560,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_gru/tuning/trial_00.json",
+      "sha256": "aad9779debf0fb17817f19c0ee1d33abc4ad22322066c7c9c67c549157cea319"
     },
     {
       "bytes": 1916,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_krr/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_krr/forecast.npz",
       "sha256": "534330bd5a65bd81fccd4e1ee2c2bda2980204affcb30832c9e4424ac892c21d"
     },
     {
       "bytes": 66250,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_krr/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_krr/model.npz",
       "sha256": "4374d1911de9bd44157c95bf8a667934d065c543b44c3c9da6117cea6a8a5499"
     },
     {
       "bytes": 1774,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_krr/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_krr/operational_point.npz",
       "sha256": "41ff1a1cdd3896936196945690ccc7320156813cc5a18d4e577d022e16d185e2"
     },
     {
-      "bytes": 4104,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_krr/receipt.json",
-      "sha256": "906e9fd975e7d24cc743963096faf5d4176b2b7f2ea02d19ffc429d777ed0408"
+      "bytes": 4103,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_krr/receipt.json",
+      "sha256": "62d72f3fd7be1d22d8e9ce4d73367943bfb9823f722a9630b2421025beed98a0"
     },
     {
-      "bytes": 1706,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_krr/selection.json",
-      "sha256": "8b6feb96791c94d8772c5b31fa4f000e0fb0f04c88d826e8a3911d4200533307"
+      "bytes": 1705,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_krr/selection.json",
+      "sha256": "0c77106334737984413b5643d4beabd44b7f9c38a9e00d7fa7a8b2f8382fbc24"
     },
     {
-      "bytes": 1027,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_krr/tuning/trial_00.json",
-      "sha256": "cbc9ceb577aa45d5e454b49efcd20368153e7746de2dedfca5c0ab36a411e1f2"
+      "bytes": 1026,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_krr/tuning/trial_00.json",
+      "sha256": "138a814aaa9a27b89db223aecbc20fc388f2bf53fd9226ae7fc528efa8b86676"
     },
     {
       "bytes": 13911,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_lgssm/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_lgssm/forecast.npz",
       "sha256": "c9a9750b6556d3637569cf65b5bbe5dd6b71b082ce3925c25cca0cdcfad77220"
     },
     {
       "bytes": 15691,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_lgssm/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_lgssm/model.npz",
       "sha256": "a59cec0ded9ebc3cff8fdcd486d0dfe99ffa80d398bdcbb7be17e9d833710012"
     },
     {
       "bytes": 1086,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_lgssm/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_lgssm/operational_point.npz",
       "sha256": "a20bb2ef33016d46420c8e95836c36037fc2ca5319788039c6b3dc5cea9a8513"
     },
     {
-      "bytes": 12602,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_lgssm/receipt.json",
-      "sha256": "bd05db27bbec9068f36a7325827bc361cab9887885b7eac2f0b36503f2e33b8c"
+      "bytes": 12603,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_lgssm/receipt.json",
+      "sha256": "a6c7afea5645508b245298047997f74f77b749c1d656a98e7112489829f1eade"
     },
     {
-      "bytes": 2169,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_lgssm/selection.json",
-      "sha256": "177ad5d755f0fecd39ebc685ddd1e9a7d5d1e8c696d135527c5b89fac12f8fb5"
+      "bytes": 2171,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_lgssm/selection.json",
+      "sha256": "839c7560208228f019544e78cd89df3d2491b173c47963f1097a50715c5c19f9"
     },
     {
-      "bytes": 1493,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/basis_lgssm/tuning/trial_00.json",
-      "sha256": "8266c31ffee7296868d7e2f4a4bcb8193ff2368167a2d031ff915e53ca7217e2"
+      "bytes": 1494,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/basis_lgssm/tuning/trial_00.json",
+      "sha256": "14980563259ca1dc1fe573f1417cd0af51c72c2735c754c2f1a847da2ef50fe4"
     },
     {
       "bytes": 14007,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/separable_stgp/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/separable_stgp/forecast.npz",
       "sha256": "3d429d3c6279e2cc286778759008c933f2d821c26fc0c1a6e1a297c9c184f6e4"
     },
     {
       "bytes": 13450,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/separable_stgp/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/separable_stgp/model.npz",
       "sha256": "b77d29d4e5dfaa2b791f6b6b3c6662c59717a1bbe3b22a7b98321865178c24f3"
     },
     {
       "bytes": 1086,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/separable_stgp/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/separable_stgp/operational_point.npz",
       "sha256": "a20bb2ef33016d46420c8e95836c36037fc2ca5319788039c6b3dc5cea9a8513"
     },
     {
       "bytes": 12675,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/separable_stgp/receipt.json",
-      "sha256": "0d3de7226e3d1c28791b3f368ed6ef7a1c6d9f1a82adf02c20c4574540b19604"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/separable_stgp/receipt.json",
+      "sha256": "8d9006a1d638b981972b55ee639ae7d9a70fce3729ee932800b84f511d389133"
     },
     {
-      "bytes": 2114,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/separable_stgp/selection.json",
-      "sha256": "4d2ff3b3b372a2abccd3c2e6f4bfff602a5711dbbe5c64841cacbf868c9338f9"
+      "bytes": 2112,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/separable_stgp/selection.json",
+      "sha256": "839374876bfb909ff3281eb7d7223c1e66a8bb341c27f458b13c62c8876f989f"
     },
     {
-      "bytes": 1394,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/separable_stgp/tuning/trial_00.json",
-      "sha256": "72c1eb7a6f72698fb309464b13cd9d451dcf88a60784f14c989a667274fdf014"
+      "bytes": 1392,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/separable_stgp/tuning/trial_00.json",
+      "sha256": "c0803e04ff100dee5debd4920947afdb4eb0189f9a175e78cb8bef62149e6821"
     },
     {
       "bytes": 1228,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/spatial_persistence/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/spatial_persistence/forecast.npz",
       "sha256": "c5197f1e4159f4595dfd6a24d9a6ca879e6d2538456b80e97606981d9af3f8e4"
     },
     {
       "bytes": 12359,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/spatial_persistence/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/spatial_persistence/model.npz",
       "sha256": "c3af24d6c479957596670cf128a98b9a11415a1140fcead5ccade249d29b4592"
     },
     {
       "bytes": 1088,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/spatial_persistence/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/spatial_persistence/operational_point.npz",
       "sha256": "0f71c14c238c33223fb987591c93445037b62a57a936134ebd051e5a3ff78594"
     },
     {
-      "bytes": 3903,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/spatial_persistence/receipt.json",
-      "sha256": "970377030cad0d6016b9e2089cae9e6e1c1862bf0e1741f4c3ea8d404f08dcaa"
+      "bytes": 3906,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/spatial_persistence/receipt.json",
+      "sha256": "98fed52fa1eee901cdc8a2b456e5e918d9caeda319c2851658d118252e25f071"
     },
     {
-      "bytes": 1376,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/spatial_persistence/selection.json",
-      "sha256": "ba621f8481b5d5bcc02e411364f8e1d01416f72c2a2cb8c3113c773ed39aca3f"
+      "bytes": 1377,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/spatial_persistence/selection.json",
+      "sha256": "54d07ea9bba8367e1b0560cb5016eb6bb6630916e849048a549505123c39e688"
     },
     {
-      "bytes": 790,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/B/spatial_persistence/tuning/trial_00.json",
-      "sha256": "d95238dec2eb14b6a9e5c9d24fb41c76b6cd69c0073f875067f5fe9d7a21ccb1"
+      "bytes": 791,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/B/spatial_persistence/tuning/trial_00.json",
+      "sha256": "96cb5153584fc7d69039eade2cf0d0b94e2c41790d5fd28e6234265f4cef15a2"
     },
     {
       "bytes": 58386,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/g1_gaussian_ar/rep_000/simulation.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/g1_gaussian_ar/rep_000/simulation.npz",
       "sha256": "5ccce0832708737ccef421e5d7c6eb33298495570aecb40542834e65901b985e"
     },
     {
       "bytes": 2827,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/manifest.json",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/manifest.json",
       "sha256": "7992f99a6d63034dab9eb987344ba7ac93ff3dacc6d631fa41f8904e0e4c8b0c"
     },
     {
       "bytes": 797,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/resolved_protocol.yaml",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/resolved_protocol.yaml",
       "sha256": "5ecee08bf3d6d8fd1857e2cf766b2f93596c033deaf81adf45406d2484fc46ea"
     },
     {
-      "bytes": 11720,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-twp529x_/summary.json",
-      "sha256": "19205401887674ad6b4b9f20b7e83366944665b831361dca1f0f161ec9df2f7d"
+      "bytes": 11721,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-8mmz9tzw/summary.json",
+      "sha256": "08a12f55bf5efe847d1e4fb5afc0f5f32c051c08ca09d7e59fb419612c64492d"
     },
     {
-      "bytes": 5040,
+      "bytes": 5046,
       "file": "results/validation/installed_benchmark_smoke.log",
-      "sha256": "6520767354df50ae7312d9dc6354f1d66d9e39cb6c8a483c3c665f2d708e30a9"
+      "sha256": "e071fca6c23e968867368bda5799f9ae149f4414dd00bc91b5a7140be9c2a1fa"
     },
     {
       "bytes": 434,
       "file": "results/validation/installed_cli_smoke.log",
-      "sha256": "a8106a783d65f0669fd6b7dbd61a502b28256408d4f523c07378694b577374d5"
+      "sha256": "98f4150eb53616f1485107cf1377bdf754f0f9c569c90e98a5516101ea26ca85"
     },
     {
       "bytes": 686,
       "file": "results/validation/installed_pytest.log",
-      "sha256": "a78851be7cb47bca9d9d0ef3ab2d9581f077d47959f0c85ef30d67e669b83f4e"
+      "sha256": "a9bbcd008c45e9725fe872dfb68f69ef0254a3ad472615eb51f07e915f73b20d"
     },
     {
       "bytes": 29178,
       "file": "results/validation/installed_pytest.xml",
-      "sha256": "8cde8677d113c625c261d5f2f78d025f646c17e0c3dde1aff8ade843672ff1ae"
+      "sha256": "dc6270a3bf30d7822a9c1e273f78a6c9c0b84daa928abb533a7586639215392b"
     },
     {
       "bytes": 4861,
@@ -1029,52 +1032,52 @@
     {
       "bytes": 604,
       "file": "results/validation/installed_roundtrip.log",
-      "sha256": "c88a93f98f43aaa6536629b8c2cf640e5c798812382f4d132c47bd241413c469"
+      "sha256": "149c5f7b94d799a252a867c28d1a234a0fe37ee6e58f81f8f9e2a878aa8c08d8"
     },
     {
       "bytes": 20163,
-      "file": "results/validation/installed_smoke/bstesn-release-work-twp529x_/checkpoint.npz",
+      "file": "results/validation/installed_smoke/bstesn-release-work-8mmz9tzw/checkpoint.npz",
       "sha256": "e96491841991ec8cb647edb28ad81efe89a7c8fc0c1f0d694582056eaaae1149"
     },
     {
       "bytes": 6982,
-      "file": "results/validation/installed_smoke/bstesn-release-work-twp529x_/evaluation_truth.npz",
+      "file": "results/validation/installed_smoke/bstesn-release-work-8mmz9tzw/evaluation_truth.npz",
       "sha256": "627d04b0d4f432d58ea33dfb1db8ce351a07e98bfc92628b4265bfe8bf4e067e"
     },
     {
-      "bytes": 86524,
-      "file": "results/validation/installed_smoke/bstesn-release-work-twp529x_/model.npz",
-      "sha256": "fb0ac2ce3a8a0b1a263711b1bdc056435351b51e236a380e236cb3b8dd05f0f9"
+      "bytes": 86515,
+      "file": "results/validation/installed_smoke/bstesn-release-work-8mmz9tzw/model.npz",
+      "sha256": "77ff38945160148d3ba6b0111fdc1f7042f8833f2ca498d08d1749db9620c5d4"
     },
     {
-      "bytes": 86524,
-      "file": "results/validation/installed_smoke/bstesn-release-work-twp529x_/model_roundtrip.npz",
-      "sha256": "fb0ac2ce3a8a0b1a263711b1bdc056435351b51e236a380e236cb3b8dd05f0f9"
+      "bytes": 86515,
+      "file": "results/validation/installed_smoke/bstesn-release-work-8mmz9tzw/model_roundtrip.npz",
+      "sha256": "77ff38945160148d3ba6b0111fdc1f7042f8833f2ca498d08d1749db9620c5d4"
     },
     {
       "bytes": 125850,
-      "file": "results/validation/installed_smoke/bstesn-release-work-twp529x_/prediction.npz",
+      "file": "results/validation/installed_smoke/bstesn-release-work-8mmz9tzw/prediction.npz",
       "sha256": "169e684eb619dc15e08691e24ec0b15562ce5971d65525a0c79ac4db5a397145"
     },
     {
       "bytes": 125850,
-      "file": "results/validation/installed_smoke/bstesn-release-work-twp529x_/prediction_roundtrip.npz",
+      "file": "results/validation/installed_smoke/bstesn-release-work-8mmz9tzw/prediction_roundtrip.npz",
       "sha256": "169e684eb619dc15e08691e24ec0b15562ce5971d65525a0c79ac4db5a397145"
     },
     {
       "bytes": 384,
-      "file": "results/validation/installed_smoke/bstesn-release-work-twp529x_/resolved_configuration.yaml",
+      "file": "results/validation/installed_smoke/bstesn-release-work-8mmz9tzw/resolved_configuration.yaml",
       "sha256": "1307c8a580822ee22e86021a2700557df2970c4c412e59cb7fb44a952344d4e9"
     },
     {
       "bytes": 34167,
-      "file": "results/validation/installed_smoke/bstesn-release-work-twp529x_/summary.json",
-      "sha256": "90e35fb1ea9cfa3967a9ad99456392074ef07672e5c760685a9aace802055238"
+      "file": "results/validation/installed_smoke/bstesn-release-work-8mmz9tzw/summary.json",
+      "sha256": "c548fd0eeaf020c2556b12cc2c40dad1f484b7969d238517ec1205df8a10c1a0"
     },
     {
       "bytes": 1108,
       "file": "results/validation/neural_dependencies.log",
-      "sha256": "985bb38d37da1629a370a6fb1344aaa5b74857a3c70e9a102715c6ef5d4d1240"
+      "sha256": "56832e845059b2520537567f4686e185cae6026211b6f713f94ae7d0d99a3ab9"
     },
     {
       "bytes": 37521,
@@ -1084,7 +1087,7 @@
     {
       "bytes": 2323,
       "file": "results/validation/neural_support_dependencies.log",
-      "sha256": "af965cf9b09f27d8212d707c8f8918814cdb8f714c38fec38850ed6eb22bc2d2"
+      "sha256": "03d058a85b70809af0aae751f3d362a0ec0887f6a7b93c3cd02b8f8cfe4393f0"
     },
     {
       "bytes": 500,
@@ -1099,12 +1102,12 @@
     {
       "bytes": 687,
       "file": "results/validation/source_pytest.log",
-      "sha256": "e4d46992b78f6d6841e32b478bbf8b70dc32c12e7a8bfc738c6deb7da8ab25cd"
+      "sha256": "51b7f732d0080a411ed95071a2038ccd6e829c4445ea81d2e5b0799610c42532"
     },
     {
       "bytes": 29178,
       "file": "results/validation/source_pytest.xml",
-      "sha256": "ed05de298fe6301886072b21eed42751990d0f609bd0d054281c480c4b54509a"
+      "sha256": "9ab9241de371721563d236e3b943ac700391774ed5982ce8bcaa4631773bcb71"
     },
     {
       "bytes": 4661,
@@ -1120,6 +1123,6 @@
   "venv_created_this_run": false,
   "version_lock_mismatches": {},
   "with_neural": true,
-  "work_directory": "/tmp/bstesn-release-work-twp529x_",
+  "work_directory": "/tmp/bstesn-release-work-8mmz9tzw",
   "working_tree_changed_during_check": []
 }

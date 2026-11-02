@@ -161,9 +161,20 @@ The comparison API, chronology, capability gates, development/confirmation disti
 The release's primary development run and separately declared spatial illustration use `results/benchmark_v3/pilot_release` and `results/benchmark_v3/detail_release`. Render from their saved results:
 
 ```bash
-bstesn benchmark report results/benchmark_v3/pilot_release --output report/benchmark_pilot
-bstesn benchmark report results/benchmark_v3/detail_release --output report/benchmark_detail
+python tools/render_benchmark_layout.py results/benchmark_v3/pilot_release --output report/benchmark_pilot
+python tools/embed_report_fonts.py report/benchmark_pilot
+python tools/render_benchmark_layout.py results/benchmark_v3/detail_release --output report/benchmark_detail
+python tools/embed_report_fonts.py report/benchmark_detail
 ```
+
+The layout wrapper removes redundant y-axis tick labels from the second and
+third shared-geometry forecast panels and supplies half-row categorical padding.
+It delegates numerical content to the unchanged package renderer and never fits
+or forecasts a model. The wrapper and font helper are presentation tools outside
+the scientific package fingerprint; their source is still covered by the release
+validation hashes and committed history. Report manifests bind their exported
+files to the original run identity. The benchmark data were not rerun or relabeled
+when these presentation details were corrected.
 
 After the release gate succeeds and the validated source is committed, package the current benchmark evidence without requiring historical version 0.1 study arrays:
 
@@ -173,6 +184,8 @@ python tools/package_release.py --benchmark-run results/benchmark_v3/pilot_relea
   --additional-benchmark results/benchmark_v3/detail_release report/benchmark_detail \
   --supplemental-evidence results/benchmark_v3/calibration_release_A \
   --supplemental-evidence results/benchmark_v3/calibration_release_B \
+  --supplemental-evidence results/benchmark_v3/confirmation_release \
+  --supplemental-evidence results/benchmark_v3/publication \
   --output ../deliverables_v02
 ```
 

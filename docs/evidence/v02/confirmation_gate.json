@@ -1,0 +1,222 @@
+{
+  "confirmation_campaign_started": false,
+  "current_git_commit": "48d7e51b1e56f467a52f4e22e83a56a784f11732",
+  "current_runtime": {
+    "blas_threads": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "numeric_thread_policy": "one thread per process",
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "scipy": "1.17.0",
+    "threadpools": [
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "user_api": "blas",
+        "version": "0.3.30"
+      },
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "user_api": "blas",
+        "version": "0.3.30"
+      }
+    ],
+    "torch": "2.15.0+cpu"
+  },
+  "current_source_fingerprint": "7188f9ebb6ef7f3da248f38a1d851a8fdb9a5f9a035a9a9b068ebbc9228d6654",
+  "final_data_generated_by_this_attempt": false,
+  "insufficient_primary_comparison_count": 10,
+  "main_grid_numerical_evidence_preflight": {
+    "continuum_claim": false,
+    "evidence_identity": "e6b3d39478f3c5da46c70c38a4fd885a608710856db4cc5cc341dfbe075d38b0",
+    "evidence_path": "docs/evidence/v02/generator_validation.json",
+    "mesh_gate_passed": false,
+    "scope": "fixed semidiscrete spatial grid; time-step error checked on the declared independent pilot window",
+    "target_policy": "finite_semidiscrete",
+    "time_gate_passed": true,
+    "time_rmse": 0.000559881250001907,
+    "time_tolerance": 0.02,
+    "validation_type": "Independent read-only evidence preflight; the confirmation factory stopped earlier at the paired-results gate."
+  },
+  "missing_primary_pairs": [
+    {
+      "available_pairs": 2,
+      "metric": "crps",
+      "other_model": "basis_lgssm",
+      "required_pairs": 3,
+      "scenario": "g1_gaussian_ar",
+      "track": "B"
+    },
+    {
+      "available_pairs": 2,
+      "metric": "crps",
+      "other_model": "separable_stgp",
+      "required_pairs": 3,
+      "scenario": "g1_gaussian_ar",
+      "track": "B"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "basis_lgssm",
+      "required_pairs": 3,
+      "scenario": "g2_spectral_transport",
+      "track": "A"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "basis_lgssm",
+      "required_pairs": 3,
+      "scenario": "g3_excitable_field",
+      "track": "A"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "eqesn_rollout",
+      "required_pairs": 3,
+      "scenario": "g3_excitable_field",
+      "track": "A"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "separable_stgp",
+      "required_pairs": 3,
+      "scenario": "g3_excitable_field",
+      "track": "A"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "basis_lgssm",
+      "required_pairs": 3,
+      "scenario": "g3_excitable_field",
+      "track": "B"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "separable_stgp",
+      "required_pairs": 3,
+      "scenario": "g3_excitable_field",
+      "track": "B"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "basis_lgssm",
+      "required_pairs": 3,
+      "scenario": "g4_existing_fronts",
+      "track": "A"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "basis_lgssm",
+      "required_pairs": 3,
+      "scenario": "g4_existing_fronts",
+      "track": "B"
+    }
+  ],
+  "pilot_complete_jobs": 300,
+  "pilot_manifest_identity": "e0628ef407c35715d23ae8fbe5201b389816b727d8ffd76ed0ae587ede5af7f7",
+  "pilot_protocol_identity": "3b35719b501787fd7df1b941e9a933cfb7a12bd89825a5cb5aa973860ecac577",
+  "pilot_source_stable": true,
+  "pilot_summary_sha256": "6cad703b42baf5186e1774a9e06d416297a6552519b00d776055224b1d2ec89b",
+  "reason": "At least three paired development results are missing for primary comparisons: [('g1_gaussian_ar', 'B', 'basis_lgssm', 'crps'), ('g1_gaussian_ar', 'B', 'separable_stgp', 'crps'), ('g2_spectral_transport', 'A', 'basis_lgssm', 'crps'), ('g3_excitable_field', 'A', 'basis_lgssm', 'crps'), ('g3_excitable_field', 'A', 'eqesn_rollout', 'crps'), ('g3_excitable_field', 'A', 'separable_stgp', 'crps'), ('g3_excitable_field', 'B', 'basis_lgssm', 'crps'), ('g3_excitable_field', 'B', 'separable_stgp', 'crps'), ('g4_existing_fronts', 'A', 'basis_lgssm', 'crps'), ('g4_existing_fronts', 'B', 'basis_lgssm', 'crps')]",
+  "reproduction": {
+    "command_arguments": [
+      ".venv/bin/bstesn",
+      "benchmark",
+      "freeze",
+      "results/benchmark_v3/pilot_release",
+      "--config",
+      "configs/benchmark/main_draft.yaml",
+      "--output",
+      "results/benchmark_v3/confirmation_release/design.json",
+      "--resolved-config",
+      "results/benchmark_v3/confirmation_release/resolved_config.yaml",
+      "--fhn-validation",
+      "docs/evidence/v02/generator_validation.json",
+      "--target-mcse",
+      "0.02"
+    ],
+    "environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "expected_outcome": "ValueError at paired-development-results gate with the unchanged completed pilot; the caller preserved that exception as this blocked receipt.",
+    "working_directory": "/workspace/scratch/158260e8300f/bayes-stesn"
+  },
+  "requested_protocol": {
+    "ensemble_members": 30,
+    "fhn_target_policy": "finite_semidiscrete",
+    "fhn_time_tolerance": 0.02,
+    "finalist_count": 2,
+    "finalist_seeds": 3,
+    "generator_options": null,
+    "horizon": 100,
+    "initial_fit": 2000,
+    "master_seed": 20261102,
+    "mcmc_chains": 4,
+    "mcmc_continuation": 1000,
+    "mcmc_draws": 1000,
+    "mcmc_functional_draws": 512,
+    "mcmc_warmup": 500,
+    "model_options": null,
+    "models": [
+      "persistence",
+      "seasonal_naive",
+      "basis_lgssm",
+      "separable_stgp",
+      "basis_krr",
+      "bayes_esn_ridge",
+      "eqesn_rollout",
+      "dcrnn"
+    ],
+    "n_calibration": 20,
+    "n_observed": 100,
+    "n_side": 25,
+    "name": "main",
+    "neural_epochs": 200,
+    "paths": 256,
+    "replications": 20,
+    "retain_paths_replications": [
+      0
+    ],
+    "scenarios": [
+      "g1_gaussian_ar",
+      "g2_spectral_transport",
+      "g3_excitable_field",
+      "g4_existing_fronts"
+    ],
+    "schema_version": "3.0",
+    "score_observed_count": null,
+    "score_pairs": 512,
+    "stage": "confirmation",
+    "tracks": [
+      "A",
+      "B"
+    ],
+    "training_start": 0,
+    "trials": 12,
+    "validation_blocks": 3
+  },
+  "requested_protocol_identity": "84bde79d6f7299e9bdebb49cef600d373ff45467a4edaa99a15508ca81d9fcc4",
+  "required_primary_comparison_count": 64,
+  "schema": "benchmark-confirmation-blocked-1.0",
+  "status": "confirmation_gate_blocked",
+  "thresholds_relaxed": false
+}

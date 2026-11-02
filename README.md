@@ -74,6 +74,12 @@ bstesn benchmark report results/benchmark_smoke --output report/benchmark_smoke
 The smoke profile verifies execution; its deliberately short MCMC/optimization
 budgets do not qualify it as scientific evidence. Development and confirmation
 profiles are separate, and confirmation requires a frozen design/power receipt.
+The completed development pilot contains **300 model/task attempts across 20
+independent datasets**: 251 qualified fits and 49 declared point fallbacks,
+with no execution or scoring failures. Nineteen ESN fits failed MCMC diagnostics;
+30 comparator fits reached their optimizer limits. The confirmation gate remains
+blocked because ten primary comparisons lack three common qualified pilot
+replications. These are development findings, not a completed confirmatory study.
 See [the benchmark guide](docs/benchmark_guide.md),
 [model equations](docs/benchmark_models.md), and
 [the version 0.2 validation report](docs/benchmark_validation.md).

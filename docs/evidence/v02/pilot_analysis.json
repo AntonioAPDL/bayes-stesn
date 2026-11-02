@@ -1,0 +1,587 @@
+{
+  "capability_accounting": {
+    "actual_scheduled_jobs": 300,
+    "automatic_spatial_persistence_comparator_jobs": 20,
+    "interpretation": "Unsupported tracks and absent native joint probability laws are declared capability limits, not failed optimization or MCMC. Separately calibrated intervals do not supply a native joint predictive law.",
+    "native_joint_probability_not_offered_by_design_jobs": 120,
+    "native_joint_probability_not_offered_by_design_models": {
+      "basis_krr": 40,
+      "dcrnn": 20,
+      "persistence": 20,
+      "seasonal_naive": 20,
+      "spatial_persistence": 20
+    },
+    "registered_model_scenario_replication_track_slots": 360,
+    "unsupported_track_excluded_slots": 80,
+    "unsupported_track_exclusions": [
+      {
+        "excluded_slots": 20,
+        "model": "persistence",
+        "reason": "Track is not supported by the registered model; no fit was attempted.",
+        "track": "B"
+      },
+      {
+        "excluded_slots": 20,
+        "model": "seasonal_naive",
+        "reason": "Track is not supported by the registered model; no fit was attempted.",
+        "track": "B"
+      },
+      {
+        "excluded_slots": 20,
+        "model": "eqesn_rollout",
+        "reason": "Track is not supported by the registered model; no fit was attempted.",
+        "track": "B"
+      },
+      {
+        "excluded_slots": 20,
+        "model": "dcrnn",
+        "reason": "Track is not supported by the registered model; no fit was attempted.",
+        "track": "B"
+      }
+    ]
+  },
+  "compute_cost": {
+    "cost_note": "Sum of per-job elapsed costs, including tuning, final fitting, and forecasting; not wall-clock campaign duration under four workers.",
+    "dcrnn_share": 0.5694701024480712,
+    "esn_share": 0.3469133701420328,
+    "total_recorded_job_seconds_including_tuning": 10245.832304998086
+  },
+  "confirmation_block_reason": "At least three paired development results are missing for primary comparisons: [('g1_gaussian_ar', 'B', 'basis_lgssm', 'crps'), ('g1_gaussian_ar', 'B', 'separable_stgp', 'crps'), ('g2_spectral_transport', 'A', 'basis_lgssm', 'crps'), ('g3_excitable_field', 'A', 'basis_lgssm', 'crps'), ('g3_excitable_field', 'A', 'eqesn_rollout', 'crps'), ('g3_excitable_field', 'A', 'separable_stgp', 'crps'), ('g3_excitable_field', 'B', 'basis_lgssm', 'crps'), ('g3_excitable_field', 'B', 'separable_stgp', 'crps'), ('g4_existing_fronts', 'A', 'basis_lgssm', 'crps'), ('g4_existing_fronts', 'B', 'basis_lgssm', 'crps')]",
+  "confirmation_status": "confirmation_gate_blocked",
+  "failed_mcmc_quantity_counts": {
+    "functionals.log_sigma2_original_units": 16,
+    "hyperparameters.log_ell": 15,
+    "hyperparameters.log_q": 17,
+    "hyperparameters.prior.log_precision": 18
+  },
+  "failure_budget_details": {
+    "basis_gru": {
+      "covariance_optimizer_iteration_limit": 40,
+      "jobs": 4,
+      "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT"
+    },
+    "basis_lgssm": {
+      "iteration_limit": 50,
+      "jobs": 25,
+      "rejected_decreasing_steps": 0
+    },
+    "bayes_esn_ridge": {
+      "bulk_ess_failed_jobs": 14,
+      "jobs": 19,
+      "reasons_can_overlap": true,
+      "rhat_failed_jobs": 19,
+      "tail_ess_failed_jobs": 14
+    },
+    "separable_stgp": {
+      "jobs": 1,
+      "optimizer_iteration_limit": 60,
+      "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT"
+    }
+  },
+  "failure_reason_counts": {
+    "basis_gru | Residual covariance optimizer: STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT": 4,
+    "basis_lgssm | Generalized EM iteration budget reached before declared convergence": 25,
+    "bayes_esn_ridge | MCMC R-hat threshold": 19,
+    "bayes_esn_ridge | MCMC bulk ESS threshold": 14,
+    "bayes_esn_ridge | MCMC tail ESS threshold": 14,
+    "separable_stgp | GP optimizer: STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT": 1
+  },
+  "forecast_horizon": 40,
+  "git_commit": "48d7e51b1e56f467a52f4e22e83a56a784f11732",
+  "independent_replicates_per_scenario": 5,
+  "insufficient_main_primary_comparison_count": 10,
+  "main_grid_numerical_evidence_preflight": {
+    "continuum_claim": false,
+    "evidence_identity": "e6b3d39478f3c5da46c70c38a4fd885a608710856db4cc5cc341dfbe075d38b0",
+    "evidence_path": "docs/evidence/v02/generator_validation.json",
+    "mesh_gate_passed": false,
+    "scope": "fixed semidiscrete spatial grid; time-step error checked on the declared independent pilot window",
+    "target_policy": "finite_semidiscrete",
+    "time_gate_passed": true,
+    "time_rmse": 0.000559881250001907,
+    "time_tolerance": 0.02,
+    "validation_type": "Independent read-only evidence preflight; the confirmation factory stopped earlier at the paired-results gate."
+  },
+  "missing_primary_pairs": [
+    {
+      "available_pairs": 2,
+      "metric": "crps",
+      "other_model": "basis_lgssm",
+      "required_pairs": 3,
+      "scenario": "g1_gaussian_ar",
+      "track": "B"
+    },
+    {
+      "available_pairs": 2,
+      "metric": "crps",
+      "other_model": "separable_stgp",
+      "required_pairs": 3,
+      "scenario": "g1_gaussian_ar",
+      "track": "B"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "basis_lgssm",
+      "required_pairs": 3,
+      "scenario": "g2_spectral_transport",
+      "track": "A"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "basis_lgssm",
+      "required_pairs": 3,
+      "scenario": "g3_excitable_field",
+      "track": "A"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "eqesn_rollout",
+      "required_pairs": 3,
+      "scenario": "g3_excitable_field",
+      "track": "A"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "separable_stgp",
+      "required_pairs": 3,
+      "scenario": "g3_excitable_field",
+      "track": "A"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "basis_lgssm",
+      "required_pairs": 3,
+      "scenario": "g3_excitable_field",
+      "track": "B"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "separable_stgp",
+      "required_pairs": 3,
+      "scenario": "g3_excitable_field",
+      "track": "B"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "basis_lgssm",
+      "required_pairs": 3,
+      "scenario": "g4_existing_fronts",
+      "track": "A"
+    },
+    {
+      "available_pairs": 0,
+      "metric": "crps",
+      "other_model": "basis_lgssm",
+      "required_pairs": 3,
+      "scenario": "g4_existing_fronts",
+      "track": "B"
+    }
+  ],
+  "newsite_targets": 20,
+  "no_confirmation_campaign": true,
+  "observed_sites": 25,
+  "operational_leader_vs_esn": [
+    {
+      "esn_attempted": 5,
+      "esn_fallbacks": 2,
+      "esn_qualified": 3,
+      "esn_rmse_mcse": 0.05458541628305863,
+      "esn_rmse_mean": 1.0040718189139763,
+      "leader_attempted": 5,
+      "leader_fallbacks": 0,
+      "leader_model": "separable_stgp",
+      "leader_qualified": 5,
+      "leader_rmse_mcse": 0.020257026378377327,
+      "leader_rmse_mean": 0.7874842477516661,
+      "mean_mcse_units": "original response units",
+      "paired_normalized_esn_minus_leader": {
+        "ci95": [
+          0.1683772976984328,
+          0.2917271724191641
+        ],
+        "classification": "descriptive_interval_favors_other_model",
+        "difference": 0.21852887336019156,
+        "mcse": 0.035363325268692805,
+        "population": 5
+      },
+      "scenario": "g1_gaussian_ar",
+      "track": "A"
+    },
+    {
+      "esn_attempted": 5,
+      "esn_fallbacks": 3,
+      "esn_qualified": 2,
+      "esn_rmse_mcse": 0.03202227344358509,
+      "esn_rmse_mean": 1.0271200678652939,
+      "leader_attempted": 5,
+      "leader_fallbacks": 0,
+      "leader_model": "separable_stgp",
+      "leader_qualified": 5,
+      "leader_rmse_mcse": 0.04223182061646912,
+      "leader_rmse_mean": 0.9298254411713799,
+      "mean_mcse_units": "original response units",
+      "paired_normalized_esn_minus_leader": {
+        "ci95": [
+          0.00843917540814656,
+          0.17683511629198828
+        ],
+        "classification": "descriptive_interval_favors_other_model",
+        "difference": 0.09263714585006741,
+        "mcse": 0.05104497770276985,
+        "population": 5
+      },
+      "scenario": "g1_gaussian_ar",
+      "track": "B"
+    },
+    {
+      "esn_attempted": 5,
+      "esn_fallbacks": 2,
+      "esn_qualified": 3,
+      "esn_rmse_mcse": 0.08074594463531783,
+      "esn_rmse_mean": 0.7991218086035073,
+      "leader_attempted": 5,
+      "leader_fallbacks": 0,
+      "leader_model": "separable_stgp",
+      "leader_qualified": 5,
+      "leader_rmse_mcse": 0.02994813664470777,
+      "leader_rmse_mean": 0.6775202422070488,
+      "mean_mcse_units": "original response units",
+      "paired_normalized_esn_minus_leader": {
+        "ci95": [
+          0.023401607286478665,
+          0.2639682333709863
+        ],
+        "classification": "descriptive_interval_favors_other_model",
+        "difference": 0.1333490527213989,
+        "mcse": 0.07093771274475115,
+        "population": 5
+      },
+      "scenario": "g2_spectral_transport",
+      "track": "A"
+    },
+    {
+      "esn_attempted": 5,
+      "esn_fallbacks": 0,
+      "esn_qualified": 5,
+      "esn_rmse_mcse": 0.077965660099639,
+      "esn_rmse_mean": 0.8495721255098119,
+      "leader_attempted": 5,
+      "leader_fallbacks": 0,
+      "leader_model": "spatial_persistence",
+      "leader_qualified": 5,
+      "leader_rmse_mcse": 0.016488343344093652,
+      "leader_rmse_mean": 0.6930766482488628,
+      "mean_mcse_units": "original response units",
+      "paired_normalized_esn_minus_leader": {
+        "ci95": [
+          0.02882398950476219,
+          0.3414636650616393
+        ],
+        "classification": "descriptive_interval_favors_other_model",
+        "difference": 0.18204834336911646,
+        "mcse": 0.09022275786417835,
+        "population": 5
+      },
+      "scenario": "g2_spectral_transport",
+      "track": "B"
+    },
+    {
+      "esn_attempted": 5,
+      "esn_fallbacks": 5,
+      "esn_qualified": 0,
+      "esn_rmse_mcse": 0.01552486114950917,
+      "esn_rmse_mean": 1.738527833263578,
+      "leader_attempted": 5,
+      "leader_fallbacks": 0,
+      "leader_model": "eqesn_rollout",
+      "leader_qualified": 5,
+      "leader_rmse_mcse": 0.03281272561647407,
+      "leader_rmse_mean": 0.23843755608144684,
+      "mean_mcse_units": "original response units",
+      "paired_normalized_esn_minus_leader": {
+        "ci95": [
+          1.1780217157923045,
+          1.2412274295506562
+        ],
+        "classification": "descriptive_interval_favors_other_model",
+        "difference": 1.2149193916226537,
+        "mcse": 0.019619103012793238,
+        "population": 5
+      },
+      "scenario": "g3_excitable_field",
+      "track": "A"
+    },
+    {
+      "esn_attempted": 5,
+      "esn_fallbacks": 5,
+      "esn_qualified": 0,
+      "esn_rmse_mcse": 0.017541776900188367,
+      "esn_rmse_mean": 1.4301420064980854,
+      "leader_attempted": 5,
+      "leader_fallbacks": 0,
+      "leader_model": "basis_gru",
+      "leader_qualified": 5,
+      "leader_rmse_mcse": 0.007875186143678922,
+      "leader_rmse_mean": 1.1549895691381664,
+      "mean_mcse_units": "original response units",
+      "paired_normalized_esn_minus_leader": {
+        "ci95": [
+          0.20267333208770705,
+          0.2450101847388209
+        ],
+        "classification": "descriptive_interval_favors_other_model",
+        "difference": 0.22286187809800465,
+        "mcse": 0.012372454182390438,
+        "population": 5
+      },
+      "scenario": "g3_excitable_field",
+      "track": "B"
+    },
+    {
+      "esn_attempted": 5,
+      "esn_fallbacks": 0,
+      "esn_qualified": 5,
+      "esn_rmse_mcse": 0.009906359163566157,
+      "esn_rmse_mean": 0.3128459519109047,
+      "leader_attempted": 5,
+      "leader_fallbacks": 0,
+      "leader_model": "eqesn_rollout",
+      "leader_qualified": 5,
+      "leader_rmse_mcse": 0.0325892923191167,
+      "leader_rmse_mean": 0.2373071985856648,
+      "mean_mcse_units": "original response units",
+      "paired_normalized_esn_minus_leader": {
+        "ci95": [
+          0.05850055055320806,
+          0.30131370835323495
+        ],
+        "classification": "descriptive_interval_favors_other_model",
+        "difference": 0.17802307056105932,
+        "mcse": 0.06964791575560429,
+        "population": 5
+      },
+      "scenario": "g4_existing_fronts",
+      "track": "A"
+    },
+    {
+      "esn_attempted": 5,
+      "esn_fallbacks": 2,
+      "esn_qualified": 3,
+      "esn_rmse_mcse": 0.01057922201257905,
+      "esn_rmse_mean": 0.35280890664100584,
+      "leader_attempted": 5,
+      "leader_fallbacks": 0,
+      "leader_model": "basis_krr",
+      "leader_qualified": 5,
+      "leader_rmse_mcse": 0.007966335791960513,
+      "leader_rmse_mean": 0.33302248507442495,
+      "mean_mcse_units": "original response units",
+      "paired_normalized_esn_minus_leader": {
+        "ci95": [
+          0.022097976851778136,
+          0.06981892037065271
+        ],
+        "classification": "descriptive_interval_favors_other_model",
+        "difference": 0.04655826477722258,
+        "mcse": 0.013944604536283732,
+        "population": 5
+      },
+      "scenario": "g4_existing_fronts",
+      "track": "B"
+    }
+  ],
+  "operational_leader_vs_esn_interpretation": {
+    "confirmatory_superiority_claim": false,
+    "leader_selection": "Lowest observed mean operational RMSE in each pilot scenario/track; leader identity was selected after examining these development results.",
+    "mcse": "Standard error across five independent DGP replications in each row; response-unit MCSE is not a paired-difference confidence interval.",
+    "paired_comparison_note": "Stored comparison intervals are percentile-bootstrap development intervals for dimensionless paired losses. They are unadjusted for multiple comparisons and for selection of the observed leader."
+  },
+  "overall_fit_status": {
+    "completed_fit_jobs": 300,
+    "declared_point_fallback_jobs": 49,
+    "execution_error_jobs": 0,
+    "native_probability_eligible_fit_jobs": 180,
+    "qualification_denominator_note": "A final fit job is a scenario/replication/track/model cell; these 300 jobs are not 300 independent DGP replications.",
+    "qualified_fit_jobs": 251,
+    "qualified_native_probability_fit_jobs": 131,
+    "scheduled_fit_jobs": 300,
+    "scoring_error_jobs": 0,
+    "software_vs_statistical_validation": "Passing the software verification suite does not imply that every model fit passed its scientific convergence gate.",
+    "unqualified_fit_jobs": 49
+  },
+  "paired_interpretation_summary": {
+    "development_only": true,
+    "esn_g3": "All ten G3 Bayesian ESN final fits failed their MCMC gate; G3 ESN operational means are entirely fallback performance. Native ESN predictive-law comparison is unavailable there.",
+    "g4_track_a_leader_gap": "The EQESN mean is only about 0.8% below basis-KRR; its designation as the smallest pilot mean should not be read as established superiority.",
+    "no_confirmation_final_data_generated": true,
+    "no_thresholds_or_fit_budgets_modified": true,
+    "registered_primary_gate": "Ten of 64 main-draft primary comparisons have fewer than three common qualified native-CRPS pairs; the factory correctly blocked confirmation."
+  },
+  "paired_interval_categories_by_metric": {
+    "crps": {
+      "descriptive_interval_favors_bayesian_esn": 2,
+      "descriptive_interval_favors_other_model": 10,
+      "interval_includes_zero": 6
+    },
+    "rmse": {
+      "descriptive_interval_favors_bayesian_esn": 5,
+      "descriptive_interval_favors_other_model": 23,
+      "interval_includes_zero": 24
+    }
+  },
+  "pilot_manifest_identity": "e0628ef407c35715d23ae8fbe5201b389816b727d8ffd76ed0ae587ede5af7f7",
+  "pilot_summary_sha256": "6cad703b42baf5186e1774a9e06d416297a6552519b00d776055224b1d2ec89b",
+  "qualification_counts_by_model": [
+    {
+      "completed_jobs": 40,
+      "execution_error_jobs": 0,
+      "fallback_jobs": 4,
+      "fit_jobs": 40,
+      "median_seconds_including_tuning": 5.431634843498614,
+      "model": "basis_gru",
+      "qualified_jobs": 36,
+      "qualified_rate": 0.9,
+      "total_seconds_including_tuning": 249.4637631900041
+    },
+    {
+      "completed_jobs": 40,
+      "execution_error_jobs": 0,
+      "fallback_jobs": 0,
+      "fit_jobs": 40,
+      "median_seconds_including_tuning": 0.12383012649843295,
+      "model": "basis_krr",
+      "qualified_jobs": 40,
+      "qualified_rate": 1.0,
+      "total_seconds_including_tuning": 5.406648532018153
+    },
+    {
+      "completed_jobs": 40,
+      "execution_error_jobs": 0,
+      "fallback_jobs": 25,
+      "fit_jobs": 40,
+      "median_seconds_including_tuning": 7.624285717500243,
+      "model": "basis_lgssm",
+      "qualified_jobs": 15,
+      "qualified_rate": 0.375,
+      "total_seconds_including_tuning": 320.13285080903006
+    },
+    {
+      "completed_jobs": 40,
+      "execution_error_jobs": 0,
+      "fallback_jobs": 19,
+      "fit_jobs": 40,
+      "median_seconds_including_tuning": 88.52788572849931,
+      "model": "bayes_esn_ridge",
+      "qualified_jobs": 21,
+      "qualified_rate": 0.525,
+      "total_seconds_including_tuning": 3554.416214836998
+    },
+    {
+      "completed_jobs": 20,
+      "execution_error_jobs": 0,
+      "fallback_jobs": 0,
+      "fit_jobs": 20,
+      "median_seconds_including_tuning": 306.0090228079989,
+      "model": "dcrnn",
+      "qualified_jobs": 20,
+      "qualified_rate": 1.0,
+      "total_seconds_including_tuning": 5834.695172393018
+    },
+    {
+      "completed_jobs": 20,
+      "execution_error_jobs": 0,
+      "fallback_jobs": 0,
+      "fit_jobs": 20,
+      "median_seconds_including_tuning": 5.133682892501383,
+      "model": "eqesn_rollout",
+      "qualified_jobs": 20,
+      "qualified_rate": 1.0,
+      "total_seconds_including_tuning": 108.65470559398818
+    },
+    {
+      "completed_jobs": 20,
+      "execution_error_jobs": 0,
+      "fallback_jobs": 0,
+      "fit_jobs": 20,
+      "median_seconds_including_tuning": 0.009194868500344455,
+      "model": "persistence",
+      "qualified_jobs": 20,
+      "qualified_rate": 1.0,
+      "total_seconds_including_tuning": 0.18761473500489956
+    },
+    {
+      "completed_jobs": 20,
+      "execution_error_jobs": 0,
+      "fallback_jobs": 0,
+      "fit_jobs": 20,
+      "median_seconds_including_tuning": 0.01088447750407795,
+      "model": "seasonal_naive",
+      "qualified_jobs": 20,
+      "qualified_rate": 1.0,
+      "total_seconds_including_tuning": 0.23387783201178536
+    },
+    {
+      "completed_jobs": 40,
+      "execution_error_jobs": 0,
+      "fallback_jobs": 1,
+      "fit_jobs": 40,
+      "median_seconds_including_tuning": 3.922117399999479,
+      "model": "separable_stgp",
+      "qualified_jobs": 39,
+      "qualified_rate": 0.975,
+      "total_seconds_including_tuning": 172.45179286502025
+    },
+    {
+      "completed_jobs": 20,
+      "execution_error_jobs": 0,
+      "fallback_jobs": 0,
+      "fit_jobs": 20,
+      "median_seconds_including_tuning": 0.009601375502825249,
+      "model": "spatial_persistence",
+      "qualified_jobs": 20,
+      "qualified_rate": 1.0,
+      "total_seconds_including_tuning": 0.1896642109932145
+    }
+  ],
+  "qualification_failure_categories": {
+    "diagnostic_reason_counts_are_nonexclusive": true,
+    "mcmc_reason_note": "R-hat, bulk ESS, and tail ESS can fail together in a single fit; their separate counts must not be added as jobs.",
+    "models_by_category": {
+      "execution_or_numerical_failure": {},
+      "mcmc_diagnostic_failure": {
+        "bayes_esn_ridge": 19
+      },
+      "missing_requested_capability": {},
+      "optimizer_convergence_failure": {
+        "basis_gru": 4,
+        "basis_lgssm": 25,
+        "separable_stgp": 1
+      },
+      "other_qualification_failure": {}
+    },
+    "mutually_exclusive_job_counts": {
+      "execution_or_numerical_failure": 0,
+      "mcmc_diagnostic_failure": 19,
+      "missing_requested_capability": 0,
+      "optimizer_convergence_failure": 30,
+      "other_qualification_failure": 0
+    }
+  },
+  "recommended_next_steps": [
+    "Keep these completed development results and their failures unchanged.",
+    "Resolve the explicitly recorded optimizer/MCMC budget failures in a separately declared development revision before confirmation.",
+    "Obtain at least three common qualified pilot replications for every required native-CRPS primary comparison.",
+    "Run the exact source/runtime-bound freeze again only after a new completed development design is ready; keep all final-seed data sealed."
+  ],
+  "required_main_primary_comparison_count": 64,
+  "schema": "benchmark-completed-pilot-compact-analysis-1.0",
+  "source_fingerprint": "7188f9ebb6ef7f3da248f38a1d851a8fdb9a5f9a035a9a9b068ebbc9228d6654",
+  "status": "complete_development_analysis"
+}

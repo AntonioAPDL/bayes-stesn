@@ -234,8 +234,10 @@ unjustified full factorial is run by default.
 
 ## 8. Efficiency, reproducibility and reports
 
-For the final portable PDF export, run `python tools/embed_report_fonts.py
-report/benchmark_pilot` after the report command. It embeds the pinned
+For the presentation export, use `python tools/render_benchmark_layout.py
+RUN_DIR --output REPORT_DIR`. It applies shared-axis label spacing and categorical
+row padding while rendering saved numerical results. Then run
+`python tools/embed_report_fonts.py REPORT_DIR` for the portable PDF. It embeds the pinned
 Matplotlib DejaVu fonts, re-renders only the PDF from verified saved figures,
 and updates its hash inventory. Numerical artifacts and animations are unchanged.
 
@@ -264,7 +266,8 @@ fit diagnostics, the selected settings, every tuning attempt and its cost,
 failure traces, stage, data/fit/forecast seeds, and source identity.
 
 ```bash
-bstesn benchmark report results/pilot --output report/benchmark_pilot
+python tools/render_benchmark_layout.py results/pilot --output report/benchmark_pilot
+python tools/embed_report_fonts.py report/benchmark_pilot
 ```
 
 Rendering never fits a model. It produces PNG/SVG scientific figures, a PDF,
