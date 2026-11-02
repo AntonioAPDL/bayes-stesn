@@ -8,6 +8,7 @@ distribution exactly (the V-statistic, including its diagonal pairs).
 
 from __future__ import annotations
 
+from math import isqrt
 import numpy as np
 from scipy.spatial.distance import pdist
 
@@ -15,6 +16,45 @@ __all__ = [
     "crps_ensemble", "energy_score", "variogram_score", "geometry_pairs",
     "score_predictions", "paired_bootstrap", "dependence_summary",
 ]
+
+
+def _pairs_from_ranks(n, ranks):
+    """Invert lexicographic upper-triangle ranks using exact integer arithmetic."""
+    output = np.empty((len(ranks), 2), dtype=np.int64)
+    a = 2 * n - 1
+    for j, rank in enumerate(ranks):
+        r = int(rank)
+        row = (a - isqrt(a * a - 8 * r)) // 2
+        start = row * (2 * n - row - 1) // 2
+        if start > r:
+            row -= 1
+            start = row * (2 * n - row - 1) // 2
+        output[j] = row, row + 1 + r - start
+    return output
+
+
+def _unordered_pairs(n, max_pairs, seed):
+    """Uniform pairs without replacement in O(requested pairs) storage.
+
+    Floyd's algorithm avoids implementation-dependent O(total pairs)
+    allocations in a generic choice-without-replacement implementation.
+    This is pair RNG scheme ``floyd-upper-triangle-v2``; seeded selections
+    intentionally differ from the earlier all-pairs/NumPy-choice scheme.
+    """
+    if max_pairs is not None and (not isinstance(max_pairs, (int, np.integer)) or max_pairs < 1):
+        raise ValueError("max_pairs must be positive or None")
+    n = int(n)
+    total = n * (n - 1) // 2
+    if total < 1 or total > np.iinfo(np.int64).max:
+        raise ValueError("site count must define at least one int64-representable pair")
+    if max_pairs is None or max_pairs >= total:
+        return _pairs_from_ranks(n, range(total))
+    rng = np.random.default_rng(seed)
+    selected = set()
+    for j in range(total - int(max_pairs), total):
+        proposal = int(rng.integers(j + 1))
+        selected.add(j if proposal in selected else proposal)
+    return _pairs_from_ranks(n, sorted(selected))
 
 
 def _samples(draws: np.ndarray, truth: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -91,19 +131,15 @@ def geometry_pairs(
     """Select fixed geometry-only pairs and normalized nonnegative weights.
 
     Pairs are selected uniformly without replacement before seeing any
-    responses. Default weights are inverse distance on that selected
-    domain. The pair set, seed, and weights must be shared across methods.
+    responses, using O(max_pairs) pair-selection storage. ``max_pairs=None``
+    explicitly requests the full pair output. Default weights are inverse
+    distance on that selected domain. Persist the same pair set and weights
+    for every method. The RNG scheme is ``floyd-upper-triangle-v2``.
     """
     coords = np.asarray(coordinates, dtype=float)
     if coords.ndim != 2 or coords.shape[0] < 2 or not np.isfinite(coords).all():
         raise ValueError("coordinates must be a finite (site, dimension) array with at least two sites")
-    pairs = np.column_stack(np.triu_indices(coords.shape[0], k=1))
-    if max_pairs is not None:
-        if not isinstance(max_pairs, (int, np.integer)) or max_pairs < 1:
-            raise ValueError("max_pairs must be positive or None")
-        if pairs.shape[0] > max_pairs:
-            selected = np.sort(np.random.default_rng(seed).choice(pairs.shape[0], max_pairs, replace=False))
-            pairs = pairs[selected]
+    pairs = _unordered_pairs(coords.shape[0], max_pairs, seed)
     distances = np.linalg.norm(coords[pairs[:, 0]] - coords[pairs[:, 1]], axis=1)
     if np.any(distances <= 0):
         raise ValueError("distinct sites must have distinct coordinates")
@@ -125,35 +161,39 @@ def variogram_score(
     are normalized to sum to one. With omitted pairs all unordered site
     pairs receive equal weight. A variogram score is insensitive to a
     common additive field shift; assess it together with marginal/energy
-    scores. This implementation bounds temporary memory by pair chunks.
+    scores. This implementation bounds temporary memory by pair chunks,
+    including when all pairs are requested implicitly.
     """
     x, y = _samples(draws, truth)
     if y.ndim < 1 or y.shape[-1] < 2 or not 0 < power < 2:
         raise ValueError("variogram score requires >=2 sites and 0<power<2")
     n = y.shape[-1]
-    if pairs is None:
-        pairs = np.column_stack(np.triu_indices(n, k=1))
-    else:
+    all_pairs = pairs is None
+    count = n * (n - 1) // 2
+    if not all_pairs:
         supplied = np.asarray(pairs)
         if supplied.ndim != 2 or supplied.shape[1] != 2 or supplied.shape[0] == 0 or not np.isfinite(supplied).all() or np.any(supplied != np.floor(supplied)):
             raise ValueError("pairs must be a nonempty integer (pair, 2) array")
         pairs = supplied.astype(int)
-    if np.any(pairs < 0) or np.any(pairs >= n) or np.any(pairs[:, 0] == pairs[:, 1]):
-        raise ValueError("pairs contain invalid site indices")
-    w = np.ones(pairs.shape[0]) if weights is None else np.asarray(weights, dtype=float)
-    if w.shape != (pairs.shape[0],) or not np.isfinite(w).all() or np.any(w < 0) or w.sum() <= 0:
+        count = len(pairs)
+        if np.any(pairs < 0) or np.any(pairs >= n) or np.any(pairs[:, 0] == pairs[:, 1]):
+            raise ValueError("pairs contain invalid site indices")
+    w = None if weights is None else np.asarray(weights, dtype=float)
+    if w is not None and (w.shape != (count,) or not np.isfinite(w).all() or np.any(w < 0) or w.sum() <= 0):
         raise ValueError("weights must be finite, nonnegative, and sum to a positive value")
-    w = w / w.sum()
+    weight_sum = count if w is None else w.sum()
     paths = x.shape[0]
     cases = int(np.prod(y.shape[:-1]))
     xx, yy = x.reshape(paths, cases, n), y.reshape(cases, n)
     out = np.zeros(cases)
-    for j in range(cases):
-        for start in range(0, pairs.shape[0], 256):
-            pair = pairs[start : start + 256]
+    for start in range(0, count, 256):
+        stop = min(count, start + 256)
+        pair = _pairs_from_ranks(n, range(start, stop)) if all_pairs else pairs[start:stop]
+        weight = np.full(stop - start, 1. / weight_sum) if w is None else w[start:stop] / weight_sum
+        for j in range(cases):
             observed = np.abs(yy[j, pair[:, 0]] - yy[j, pair[:, 1]]) ** power
             predictive = np.mean(np.abs(xx[:, j, pair[:, 0]] - xx[:, j, pair[:, 1]]) ** power, axis=0)
-            out[j] += np.dot(w[start : start + 256], (observed - predictive) ** 2)
+            out[j] += np.dot(weight, (observed - predictive) ** 2)
     return out.reshape(y.shape[:-1])
 
 
@@ -211,16 +251,15 @@ def score_predictions(
         result.update(energy=float(energy.mean()), energy_by_lead=energy, energy_pair_count=energy_pairs)
         if y.shape[1] >= 2:
             if coordinates is None:
-                pairs = np.column_stack(np.triu_indices(y.shape[1], k=1))
-                if variogram_pairs is not None and len(pairs) > variogram_pairs:
-                    pairs = pairs[np.sort(np.random.default_rng(seed).choice(len(pairs), variogram_pairs, replace=False))]
+                pairs = _unordered_pairs(y.shape[1], variogram_pairs, seed)
                 weights = np.full(len(pairs), 1 / len(pairs))
             else:
                 if np.asarray(coordinates).shape[0] != y.shape[1]:
                     raise ValueError("coordinates must match the forecast site axis")
                 pairs, weights = geometry_pairs(coordinates, max_pairs=variogram_pairs, seed=seed)
             variogram = variogram_score(x, y, pairs=pairs, weights=weights)
-            result.update(variogram=float(variogram.mean()), variogram_by_lead=variogram, variogram_power=0.5, variogram_pair_count=len(pairs), variogram_pair_indices=pairs, variogram_weights=weights)
+            result.update(variogram=float(variogram.mean()), variogram_by_lead=variogram, variogram_power=0.5, variogram_pair_count=len(pairs), variogram_pair_indices=pairs, variogram_weights=weights,
+                          variogram_pair_rng_scheme="floyd-upper-triangle-v2")
     return result
 
 

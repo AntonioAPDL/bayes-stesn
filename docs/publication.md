@@ -1,29 +1,53 @@
 # Repository publication status
 
-The project is a local, committed Git repository with MIT-licensed source and
-a verified portable Git bundle. Its intended public repository name is
-`AntonioAPDL/bayes-stesn`.
+The intended public repository is `AntonioAPDL/bayes-stesn`. The source is
+MIT-licensed. Local tests, a source commit, and a portable Git bundle are
+separate from publishing that commit to a public remote.
 
-**Remote publication is pending authentication.** During this release, the
-connected GitHub operations did not offer repository creation, and the browser
-remained at the GitHub sign-in page after the authentication attempt. No public
-repository URL or remote CI success is claimed. All implementation, tests,
-scientific evidence and release files are available independently of that step.
+## Current version 0.2 status
 
-The included bundle can reconstruct the committed project:
+At the current preparation stage, this checkout has no configured Git remote.
+The connected GitHub capability does not offer repository creation, and the
+browser session was observed signed out. The secure authentication/repository
+creation/publication attempt for version 0.2 remains pending the final committed
+artifact. No version 0.2 public URL, successful push, or remote CI result is
+claimed by the local release checker.
+
+The final publication receipt and verified remote should supersede this pending
+status when publication completes. A receipt should identify the public
+repository URL, the pushed commit, the remote's observed commit, the observed
+visibility, and the verification time. Record CI run identifiers and outcomes
+only after observing those runs; a workflow file alone does not establish CI
+success. If publication remains blocked, record the actual blocked action and
+reason without describing an unperformed attempt as completed.
+
+## Historical version 0.1 authentication attempt
+
+During the earlier version 0.1 work, repository creation was unavailable through
+the connected GitHub operations, and the browser remained at the sign-in page
+after an authentication attempt. That historical failure is not the result of
+a version 0.2 publication attempt.
+
+## Portable delivery and remote verification
+
+The release packager creates and verifies a Git bundle for the committed
+source. It can reconstruct the project independently of remote publication:
 
 ```bash
 git clone bayes_stesn_repository.bundle bayes-stesn
 cd bayes-stesn
 ```
 
-After authenticated repository creation, the committed `main` branch can be
-pushed to the verified remote. The source includes a GitHub Actions workflow
-for Python 3.11, 3.12 and 3.13. The current recorded verification is the local
-isolated Python 3.12 release check; remote workflow results remain unverified
-until those jobs actually run.
+The version 0.2 release ZIP also carries the explicitly selected benchmark
+runs, numeric results, current validation receipts, PDF/HTML reports, vector
+figures, and animation assets. These larger generated artifacts need not be
+ordinary source-history objects. The default legacy packaging mode instead
+requires the earlier controlled-study evidence.
 
-The full release ZIP also contains numerical results, posterior illustration
-paths, wheel/source distributions and report/media assets. These larger
-generated artifacts need not be committed as source-history objects.
+After authenticated creation or verification of the intended repository, push
+the final committed branch to that verified remote and read back its commit
+and visibility. The package includes a Torch-free GitHub Actions compatibility
+matrix for Python 3.11, 3.12 and 3.13, plus a separate locked CPython 3.12 CPU
+neural release job. Their presence describes configured automation; observed
+remote runs establish whether it actually executed and passed.
 

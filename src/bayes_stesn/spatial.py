@@ -336,19 +336,12 @@ class CovarianceSpec:
         ref = coords if reference_coordinates is None else _coordinates(reference_coordinates)
         if self.kind == "matern":
             raise ValueError("the exact dense Matérn has no sparse precision operator")
+        if self.kind == "vecchia":
+            return self.prepare_geometry(coords, reference_coordinates=ref).operator(params)
         nugget = self._nugget_diagonal(coords, ref, params)
         q = float(np.exp(params["log_q"]))
         if not np.isfinite(q) or q <= 0 or not np.all(np.isfinite(nugget)):
             raise ValueError("invalid covariance scale")
-        if self.kind == "vecchia":
-            Q, conditionals = vecchia_precision(
-                coords, self.vecchia_neighbors,
-                lambda a, b: self._kernel(a, b, ref, params))
-            return SpatialOperator(Q, sparse.eye(len(coords), format="csc"), q, nugget,
-                                   {"backend": "vecchia", "conditional_variances": conditionals,
-                                    "ordering": "supplied rows; targets appended",
-                                    "neighbors": self.vecchia_neighbors,
-                                    "unit_marginal_variance": False})
         if coords.shape[1] != 2:
             raise ValueError("FEM SPDE is implemented in two spatial dimensions")
         nodes = (np.asarray(self.mesh_nodes) if self.mesh_nodes is not None
@@ -374,6 +367,19 @@ class CovarianceSpec:
                                 "mesh_triangles": len(tri.simplices),
                                 "boundary": "natural Neumann; fixed padded domain",
                                 "mass_lumping": True, "unit_marginal_variance": False})
+
+    def prepare_geometry(self, coordinates: Array, *,
+                         reference_coordinates: Array | None = None) -> "PreparedVecchia":
+        """Cache the fixed Vecchia ordering and predecessor search.
+
+        Conditional coefficients and sparse LU factors remain parameter
+        dependent and are recomputed. Only the iid Gaussian, ridge, collapsed
+        fit route currently consumes this cache end to end; other model
+        combinations retain their size-gated dense reference implementation.
+        """
+        if self.kind != "vecchia":
+            raise ValueError("Prepared sparse geometry currently supports Vecchia only")
+        return PreparedVecchia(self, coordinates, reference_coordinates)
 
     def matrices(self, coordinates: Array, params: dict[str, Any], *,
                  reference_coordinates: Array | None = None) -> tuple[Array, Array]:
@@ -422,6 +428,16 @@ def _sparse_logdet(factor: Any) -> float:
     return float(np.log(np.abs(factor.U.diagonal())).sum())
 
 
+def _sparse_factor(matrix):
+    """Normalize SuperLU's numerical-singularity exception at its boundary."""
+    try:
+        return splinalg.splu(matrix)
+    except RuntimeError as exc:
+        if "singular" in str(exc).lower():
+            raise linalg.LinAlgError(f"Sparse precision factorization failed: {exc}") from exc
+        raise
+
+
 class SpatialOperator:
     """R=diag(v)+q A Q^{-1}A' with sparse Q and interpolation A.
 
@@ -430,17 +446,32 @@ class SpatialOperator:
     """
 
     def __init__(self, precision: sparse.spmatrix, interpolation: sparse.spmatrix,
-                 q: float, nugget_diagonal: Array, metadata: dict[str, Any]) -> None:
+                 q: float, nugget_diagonal: Array, metadata: dict[str, Any], *,
+                 precision_logdet: float | None = None) -> None:
         self.precision = precision.tocsc()
         self.interpolation = interpolation.tocsc()
         self.q = q
         self.nugget_diagonal = np.asarray(nugget_diagonal, dtype=float)
         self.metadata = metadata
-        self._q_factor = splinalg.splu(self.precision)
+        self._precision_logdet = precision_logdet
+        self._q_factor_cache = None
+        if precision_logdet is None:
+            self._q_factor_cache = _sparse_factor(self.precision)
         self._vinv = 1/self.nugget_diagonal
         a = self.interpolation
+        self._identity_interpolation = (a.shape == self.precision.shape and
+                                        a.nnz == a.shape[0] and np.all(a.diagonal() == 1))
         self._updated = self.precision+q*(a.T @ sparse.diags(self._vinv) @ a)
-        self._updated_factor = splinalg.splu(self._updated.tocsc())
+        self._updated_factor = _sparse_factor(self._updated.tocsc())
+
+    @property
+    def _q_factor(self):
+        # Vecchia supplies log|Q| directly from its conditional variances.
+        # Its prior LU is needed only for explicitly requested covariance
+        # reference/marginal operations, not fit, recovery or prediction.
+        if self._q_factor_cache is None:
+            self._q_factor_cache = _sparse_factor(self.precision)
+        return self._q_factor_cache
 
     @property
     def shape(self) -> tuple[int, int]:
@@ -453,14 +484,21 @@ class SpatialOperator:
         x = rhs[:, None] if one else rhs
         if x.shape[0] != self.shape[0]:
             raise ValueError("right-hand side has wrong leading dimension")
+        if self._identity_interpolation:
+            # V^-1 (Q + q V^-1)^-1 Q x is algebraically the same
+            # Woodbury solve, without cancellation when q is very large.
+            ans = self._vinv[:, None]*self._updated_factor.solve(self.precision @ x)
+            return ans[:, 0] if one else ans
         d = self._vinv[:, None]*x
         correction = self.interpolation @ self._updated_factor.solve(self.interpolation.T @ d)
         ans = d-self.q*self._vinv[:, None]*correction
         return ans[:, 0] if one else ans
 
     def logdet(self) -> float:
+        logdet_precision = (_sparse_logdet(self._q_factor) if self._precision_logdet is None
+                            else self._precision_logdet)
         return float(np.log(self.nugget_diagonal).sum()
-                     +_sparse_logdet(self._updated_factor)-_sparse_logdet(self._q_factor))
+                     +_sparse_logdet(self._updated_factor)-logdet_precision)
 
     def spatial_covariance_dense(self) -> Array:
         a = self.interpolation
@@ -479,22 +517,16 @@ class SpatialOperator:
         return result
 
 
-def vecchia_precision(coordinates: Array, neighbours: int, kernel: Any
-                      ) -> tuple[sparse.csc_matrix, Array]:
-    """Construct a proper directed conditional approximation in fixed order.
-
-    Predecessors depend only on Euclidean geometry, not sampled hyperparameters.
-    KD-tree searches expand until sufficient preceding rows are found.
-    """
+def _vecchia_predecessors(coordinates: Array, neighbours: int) -> tuple[Array, ...]:
+    """Fixed Euclidean predecessors, with deterministic boundary ties."""
     coords = _coordinates(coordinates)
     if len(np.unique(coords, axis=0)) != len(coords):
         raise ValueError("Vecchia latent sites must be unique; deduplicate target coordinates")
+    if not isinstance(neighbours, (int, np.integer)) or neighbours < 1:
+        raise ValueError("Vecchia neighbour count must be a positive integer")
     n = len(coords)
     tree = cKDTree(coords)
-    rows: list[int] = []
-    cols: list[int] = []
-    data: list[float] = []
-    variances = np.empty(n)
+    result = []
     for i in range(n):
         count = min(neighbours, i)
         if count == 0:
@@ -521,13 +553,53 @@ def vecchia_precision(coordinates: Array, neighbours: int, kernel: Any
                     predecessors = candidates[order[:count]]
                     break
                 k = min(n, 2*k)
+        predecessors.setflags(write=False)
+        result.append(predecessors)
+    return tuple(result)
+
+
+class VecchiaFactor:
+    """Latent conditional factor B w = D**(1/2) z; Q = B' D**(-1) B.
+
+    Simulation uses a sparse triangular solve in the declared joint ordering.
+    No covariance root or spatial identity matrix is materialized.
+    """
+
+    def __init__(self, factor: sparse.spmatrix, conditional_variances: Array):
+        self.factor = factor.tocsr()
+        self.conditional_variances = np.asarray(conditional_variances, dtype=float)
+
+    def precision(self) -> sparse.csc_matrix:
+        return (self.factor.T @ sparse.diags(1/self.conditional_variances) @ self.factor).tocsc()
+
+    def sample(self, rng: np.random.Generator, size: int | None = None) -> Array:
+        if not isinstance(rng, np.random.Generator):
+            raise TypeError("An explicit NumPy Generator is required")
+        if size is None:
+            rhs = np.sqrt(self.conditional_variances)*rng.normal(size=len(self.conditional_variances))
+        else:
+            if not isinstance(size, (int, np.integer)) or size < 1:
+                raise ValueError("sample size must be a positive integer")
+            rhs = np.sqrt(self.conditional_variances)[:, None]*rng.normal(
+                size=(len(self.conditional_variances), int(size)))
+        return splinalg.spsolve_triangular(self.factor, rhs, lower=True, unit_diagonal=True)
+
+
+def _vecchia_factor(coords: Array, predecessors: tuple[Array, ...], kernel: Any) -> VecchiaFactor:
+    n = len(coords)
+    rows: list[int] = []
+    cols: list[int] = []
+    data: list[float] = []
+    variances = np.empty(n)
+    for i, preceding in enumerate(predecessors):
+        count = len(preceding)
         marginal = float(kernel(coords[i:i+1], coords[i:i+1])[0, 0])
         if count:
-            cross = kernel(coords[predecessors], coords[i:i+1])[:, 0]
-            local = kernel(coords[predecessors], coords[predecessors])
+            cross = kernel(coords[preceding], coords[i:i+1])[:, 0]
+            local = kernel(coords[preceding], coords[preceding])
             weights = linalg.solve(local, cross, assume_a="pos")
             conditional = marginal-float(cross @ weights)
-            rows.extend([i]*count); cols.extend(predecessors.tolist()); data.extend((-weights).tolist())
+            rows.extend([i]*count); cols.extend(preceding.tolist()); data.extend((-weights).tolist())
         else:
             conditional = marginal
         if not np.isfinite(conditional) or conditional <= 0:
@@ -535,8 +607,71 @@ def vecchia_precision(coordinates: Array, neighbours: int, kernel: Any
         variances[i] = conditional
         rows.append(i); cols.append(i); data.append(1.0)
     factor = sparse.coo_matrix((data, (rows, cols)), shape=(n, n)).tocsc()
-    precision = factor.T @ sparse.diags(1/variances) @ factor
-    return precision.tocsc(), variances
+    return VecchiaFactor(factor, variances)
+
+
+class PreparedVecchia:
+    """Reusable immutable input geometry, independent of sampled parameters.
+
+    The original inputs must remain the reference when targets are appended.
+    Sparse precision construction costs O(n m²) storage in the worst case;
+    sparse LU fill depends on geometry and is not guaranteed linear in n.
+    """
+
+    def __init__(self, specification: CovarianceSpec, coordinates: Array,
+                 reference_coordinates: Array | None = None):
+        if specification.kind != "vecchia":
+            raise ValueError("PreparedVecchia requires a Vecchia specification")
+        self.specification = specification
+        self.coordinates = np.array(_coordinates(coordinates), copy=True)
+        self.reference_coordinates = (self.coordinates if reference_coordinates is None else
+                                      np.array(_coordinates(reference_coordinates), copy=True))
+        if self.coordinates.shape[1] != self.reference_coordinates.shape[1]:
+            raise ValueError("Input and reference coordinate dimensions disagree")
+        self.coordinates.setflags(write=False)
+        self.reference_coordinates.setflags(write=False)
+        self.predecessors = _vecchia_predecessors(self.coordinates, specification.vecchia_neighbors)
+
+    def factor(self, params: dict[str, Any]) -> VecchiaFactor:
+        return _vecchia_factor(self.coordinates, self.predecessors,
+            lambda a, b: self.specification._kernel(a, b, self.reference_coordinates, params))
+
+    def nugget_diagonal(self, params: dict[str, Any]) -> Array:
+        diagonal = self.specification._nugget_diagonal(
+            self.coordinates, self.reference_coordinates, params)
+        if not np.isfinite(diagonal).all() or np.any(diagonal <= 0):
+            raise ValueError("Invalid nugget variances")
+        return diagonal
+
+    def operator(self, params: dict[str, Any]) -> SpatialOperator:
+        q = float(np.exp(params["log_q"]))
+        if not np.isfinite(q) or q <= 0:
+            raise ValueError("Invalid spatial variance ratio")
+        factor = self.factor(params)
+        Q = factor.precision()
+        result = SpatialOperator(Q, sparse.eye(len(self.coordinates), format="csc"),
+                                 q, self.nugget_diagonal(params),
+                                 {"backend": "vecchia", "conditional_variances": factor.conditional_variances,
+                                  "ordering": "supplied rows; targets appended",
+                                  "neighbors": self.specification.vecchia_neighbors,
+                                  "geometry_cached": True, "unit_marginal_variance": False,
+                                  "factorization": "sparse_lu", "precision_nonzeros": Q.nnz,
+                                  "precision_logdet_method": "Vecchia conditional variances"},
+                                 precision_logdet=-float(np.log(factor.conditional_variances).sum()))
+        result.metadata["lu_nonzeros"] = int(result._updated_factor.L.nnz + result._updated_factor.U.nnz)
+        return result
+
+
+def vecchia_precision(coordinates: Array, neighbours: int, kernel: Any
+                      ) -> tuple[sparse.csc_matrix, Array]:
+    """Construct the fixed-order latent conditional approximation.
+
+    Use ``CovarianceSpec.prepare_geometry`` to reuse predecessor searches
+    across parameter proposals. This convenience function rebuilds geometry.
+    """
+    coords = _coordinates(coordinates)
+    factor = _vecchia_factor(coords, _vecchia_predecessors(coords, neighbours), kernel)
+    return factor.precision(), factor.conditional_variances
 
 
 def rectangular_mesh(reference: Array, resolution: int, padding: float) -> Array:

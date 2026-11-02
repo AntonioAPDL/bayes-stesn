@@ -1,0 +1,49 @@
+schema_version: '3.0'
+name: smoke
+stage: execution_test
+initial_fit: 120
+training_start: 0
+horizon: 8
+validation_blocks: 2
+n_side: 5
+n_observed: 10
+n_calibration: 3
+paths: 16
+trials: 1
+finalist_count: 1
+finalist_seeds: 1
+replications: 1
+master_seed: 20261102
+models:
+- persistence
+- seasonal_naive
+- basis_lgssm
+- separable_stgp
+- basis_krr
+- bayes_esn_ridge
+- eqesn_rollout
+- dcrnn
+scenarios:
+- g1_gaussian_ar
+tracks:
+- A
+- B
+mcmc_warmup: 20
+mcmc_draws: 30
+mcmc_continuation: 0
+mcmc_functional_draws: 16
+mcmc_chains: 2
+neural_epochs: 2
+ensemble_members: 3
+score_pairs: 512
+score_observed_count: null
+retain_paths_replications:
+- 0
+generator_options:
+  g3_excitable_field:
+    grid_size: 32
+    dt: 0.05
+    delta: 2.0
+model_options: null
+fhn_target_policy: finite_semidiscrete
+fhn_time_tolerance: 0.02

@@ -346,6 +346,9 @@ def sample_augmented(Y: Array, Phi: Array, Z: Array, coordinates: Array,
         raise ValueError("full-residual AR cannot be combined with an augmented model in this backend")
     if getattr(config, "algorithm", "auto") == "collapsed":
         raise ValueError("augmented models require ordinary conditional Gibbs/MH, not collapsed inference")
+    if config.backend == "vecchia_operator":
+        raise ValueError("vecchia_operator supports iid Gaussian ridge collapsed inference only; "
+                         "augmented innovation models use the size-gated dense spatial reference")
     if config.backend == "temporal_whitened_spectral":
         raise ValueError("temporal_whitened_spectral is only a full-residual-AR backend")
     if config.backend == "latent_ffbs" and kind != "latent_ar":

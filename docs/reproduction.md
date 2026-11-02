@@ -8,11 +8,12 @@ The version locks target **CPython 3.12 on Linux x86_64**. The package declares 
 
 | File | Purpose |
 |---|---|
-| `requirements-core.lock` | NumPy, SciPy and PyYAML, the complete runtime dependency set |
+| `requirements-core.lock` | NumPy, SciPy, PyYAML and threadpoolctl, the complete runtime dependency set |
 | `requirements-report.lock` | Core dependencies plus plotting, image, PDF and required transitive packages |
 | `requirements-dev.lock` | Core dependencies plus pytest, package-building tools and thread control for benchmarks |
+| `requirements-neural-cpu.lock` | Optional CPU PyTorch and its pinned dependencies for Linux CPython 3.12 |
 
-These files pin versions rather than every platform-specific wheel hash. The release check downloads from `https://pypi.org/simple`, saves pip's installation receipt with distribution URLs and hashes, records the installed environment, and hashes the produced wheel and source archive. It does not copy the unrelated packages in the development machine's environment into a lockfile.
+These files pin versions rather than every platform-specific wheel hash. The release check uses `https://pypi.org/simple` for core/report/build dependencies and the non-Torch support packages in the neural lock. Only the pinned CPU Torch wheel comes from `https://download.pytorch.org/whl/cpu`, installed with `--no-deps` after its support packages. The CPU index does not provide every support-package version. The checker saves separate installation receipts, checks all installed versions against the combined locks, records the isolated environment, and hashes the produced wheel and source archive. It does not copy unrelated packages from the development machine into a lockfile.
 
 Create an isolated environment without `--system-site-packages`:
 
@@ -23,7 +24,25 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 ```
 
-For a runtime-only installation, install `requirements-core.lock` and then the supplied wheel using `pip install --no-deps dist/bayes_stesn-0.1.0-py3-none-any.whl`. Report generation additionally uses the report lock. MP4 rendering requires the external `ffmpeg` executable; GIF output and the numerical package do not require FFmpeg. PDF generation uses ReportLab and does not require LaTeX.
+For a runtime-only installation, install `requirements-core.lock` and then the supplied wheel using `pip install --no-deps dist/bayes_stesn-0.2.0-py3-none-any.whl`. To exercise `dcrnn`, `basis_gru`, and their optional tests, also install:
+
+```bash
+python - <<'PY'
+from pathlib import Path
+import subprocess, sys
+sys.path.insert(0, "tools")
+from release_check import locked_versions
+pins = locked_versions(Path("requirements-neural-cpu.lock"))
+torch_version = pins.pop("torch")
+subprocess.run([sys.executable, "-m", "pip", "install", "--index-url",
+                "https://pypi.org/simple",
+                *(f"{name}=={version}" for name, version in sorted(pins.items()))], check=True)
+subprocess.run([sys.executable, "-m", "pip", "install", "--no-deps", "--index-url",
+                "https://download.pytorch.org/whl/cpu", f"torch=={torch_version}"], check=True)
+PY
+```
+
+The statistical core does not require PyTorch. Report generation additionally uses the report lock. MP4 rendering requires the external `ffmpeg` executable; GIF output and the numerical package do not require FFmpeg. PDF generation uses ReportLab and does not require LaTeX.
 
 ## Mathematical and API verification
 
@@ -55,28 +74,35 @@ This loads the original numeric artifacts with `allow_pickle=False`, replays the
 
 ## Build and installed-package release gate
 
-The full gate builds both distributions, creates a separate isolated environment, installs only the pinned dependency closure from the public package registry, installs the wheel, and runs `pip check`. It then runs the complete tests from a temporary directory against the installed wheel, checks module origins, executes the installed CLI, and verifies exact saved-model/prediction roundtrips.
+The full version 0.2 gate builds both distributions, creates a separate isolated CPython 3.12 environment, installs the pinned dependency closure and CPU Torch, installs the wheel, and runs `pip check`. It runs source and installed-wheel tests in that environment, checks package/module origins, rejects external or unpinned distributions, executes the installed CLI and benchmark smoke, and verifies exact saved-model/prediction roundtrips. Every selected test must run without skips or pytest warnings.
 
 ```bash
-.venv/bin/python tools/release_check.py --fresh-venv /tmp/bstesn-release-venv
+.venv/bin/python tools/release_check.py --with-neural --fresh-venv /tmp/bstesn-v02-release
 ```
 
 The default path must not already exist. To revalidate the same isolated environment after a rebuild, use:
 
 ```bash
-.venv/bin/python tools/release_check.py --fresh-venv /tmp/bstesn-release-venv --reuse-venv
+.venv/bin/python tools/release_check.py --with-neural \
+  --fresh-venv /tmp/bstesn-v02-release --reuse-venv
 ```
 
-Reuse still verifies that system packages are excluded, reinstalls the built wheel, and checks the complete dependency and test gates. The manifest records whether the environment was created during that run. The gate writes:
+Reuse verifies that system/user packages are excluded, reinstalls the built wheel and CPU Torch, and checks the dependency and test gates. Neural support pins are installed from a temporary exact requirements file through PyPI; the CPU-index step force-reinstalls only Torch with `--no-deps`. Network access can still be needed; this is not an offline flag. Already installed PyPI packages may remain in place, so their installation receipts can contain no new downloads. The manifest records reuse explicitly and records both the support-package receipt and the official-host CPU wheel receipt.
+
+Omit `--with-neural` to validate a separate Torch-free core environment. That mode explicitly deselects declared optional-PyTorch test classes, records their IDs, and still rejects skips among selected tests. It rejects a reused environment that already contains Torch. The CI core matrix and the separate locked CPU-neural job exercise these distinct claims.
+
+The gate writes:
 
 - `results/release_manifest.json`: test counts, skipped tests, warnings, build hashes, package origins, versions, CLI and roundtrip status, and source provenance.
 - `results/validation/source_pytest.xml` and `installed_pytest.xml`: JUnit test receipts.
 - `results/validation/*.log`: captured commands and their outputs.
-- `results/validation/fresh_install_report.json`: pip's dependency-install receipt; a separate `public_registry_install_report.json` may record downloads made during an approved network-enabled bootstrap.
+- `results/validation/fresh_install_report.json`: pip's current core/report/build receipt; `neural_support_install_report.json` records the PyPI neural support step and `neural_install_report.json` records the CPU Torch installation when enabled.
 - `results/validation/fresh_environment.json`: the isolated environment and installed versions.
 - `dist/*.whl` and `dist/*.tar.gz`: the verified distributions.
 
-If code changes after a check, rebuild and rerun before describing that revision as verified. The manifest explicitly distinguishes local validation from publication and remote CI. A configured GitHub workflow is not an executed GitHub workflow, and a local repository is not a published public repository.
+The manifest's `validation_artifacts` inventory seals the current receipts and smoke artifacts with sizes and SHA256 values. It does not present older files in `results/validation` as current release evidence. Each CLI and benchmark smoke uses a new output directory, recorded as `cli_smoke.artifact_directory` and `benchmark_smoke.artifact_directory`, so a rebuild cannot resume a previous build's sealed benchmark or include old smoke artifacts. These smoke fits are execution checks, not convergence evidence.
+
+Finish source, documentation, configuration, dependency-lock and workflow edits before running the final gate. Their hashes, including `CONTRIBUTING.md`, `MANIFEST.in` and `.gitignore`, are checked for changes during validation and again during packaging. Point documentation to the manifest for final test counts instead of editing hashed documentation after a successful check. The manifest distinguishes local validation from publication and remote CI. A configured GitHub workflow is not an executed workflow, and a local repository is not a published public repository.
 
 ## Complete smoke and demonstration workflows
 
@@ -128,7 +154,33 @@ The additional RHS move shifts `log_tau` upward and all `log_local` values downw
 
 Named random streams control feature construction, chains and predictive paths. A predictive trajectory keeps one joint parameter draw throughout its horizon and feeds its own simulated observations back into the reservoir. Increasing the number of paths preserves the earlier path prefix. Advancing the state with subsequently observed history and refitting the parameter posterior are separate API operations.
 
-## Controlled comparisons and final evaluation
+## Version 0.2 benchmark evidence and packaging
+
+The comparison API, chronology, capability gates, development/confirmation distinction, and commands are documented in [benchmark_guide.md](benchmark_guide.md). A changed package source fingerprint requires a new run directory; completed job receipts must not be migrated from an earlier source revision.
+
+The release's primary development run and separately declared spatial illustration use `results/benchmark_v3/pilot_release` and `results/benchmark_v3/detail_release`. Render from their saved results:
+
+```bash
+bstesn benchmark report results/benchmark_v3/pilot_release --output report/benchmark_pilot
+bstesn benchmark report results/benchmark_v3/detail_release --output report/benchmark_detail
+```
+
+After the release gate succeeds and the validated source is committed, package the current benchmark evidence without requiring historical version 0.1 study arrays:
+
+```bash
+python tools/package_release.py --benchmark-run results/benchmark_v3/pilot_release \
+  --benchmark-report report/benchmark_pilot \
+  --additional-benchmark results/benchmark_v3/detail_release report/benchmark_detail \
+  --supplemental-evidence results/benchmark_v3/calibration_release_A \
+  --supplemental-evidence results/benchmark_v3/calibration_release_B \
+  --output ../deliverables_v02
+```
+
+Run this only after every named result and report is complete. Each additional benchmark/report pair undergoes the same source, identity, numeric-summary, job-receipt and report-hash checks as the primary run. Supplemental evidence must be an explicitly named subdirectory of `results/` or `report/`; symlinks and interim files are rejected. The combined default supplemental caps are 2 GiB and 10,000 files; `--supplemental-max-bytes` changes the byte cap explicitly. Its file inventory preserves the saved evidence without asserting convergence or treating serial calibration blocks as independent replications.
+
+The package includes SVG, numeric artifacts, current validation receipts, a verified Git bundle, and a SHA256 inventory. Interim render/integration folders and unrelated historical validation files are excluded. This creates a local deliverable; pushed/public status is established separately as described in [publication.md](publication.md).
+
+## Earlier controlled comparisons (version 0.1)
 
 Use the controlled study's dedicated configuration, rather than changing the demonstration ad hoc:
 
@@ -142,7 +194,7 @@ The pilot measures cost and checks diagnostics. Review it before freezing. The f
 
 Use a new output directory for a changed protocol. Preserve failed pilots as pilot evidence rather than overwriting them into an apparent successful run. When reproducing a delivered study, use its recorded configuration and protocol rather than assuming that the latest development configuration is identical. A flexible model that fails diagnostic gates remains a failed candidate, even when some of its predictive summaries look attractive.
 
-## Verify and render the delivered scientific evidence
+## Verify and render earlier version 0.1 evidence
 
 The portable unit suite does not silently skip a large-data study check. Run the
 separate evidence validator when the full release arrays are present:
@@ -161,7 +213,7 @@ The two renderers use saved results only. External output directories are
 supported; `--assets` points the PDF/HTML renderer to the directory containing
 the already generated `figures/` and `media/` folders.
 
-After the release gate and a source commit, package the complete download:
+When the historical controlled-study artifacts are available, the original package mode remains supported:
 
 ```bash
 .venv/bin/python tools/package_release.py --output ../deliverables

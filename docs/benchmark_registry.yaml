@@ -1,0 +1,154 @@
+schema_version: benchmark-implementation-3.0
+implemented:
+- name: Last-observation persistence
+  tracks:
+  - A
+  uncertainty: point
+  family: classical
+  stochastic_fit: false
+  selection_metric: rmse
+  parameter_uncertainty: false
+  id: persistence
+  status: implemented
+  source: src/bayes_stesn/benchmark/classical.py
+- name: Seasonal repetition
+  tracks:
+  - A
+  uncertainty: point
+  family: classical
+  stochastic_fit: false
+  selection_metric: rmse
+  parameter_uncertainty: false
+  id: seasonal_naive
+  status: implemented
+  source: src/bayes_stesn/benchmark/classical.py
+- name: Spatially interpolated persistence
+  tracks:
+  - A
+  - B
+  uncertainty: point
+  family: classical
+  stochastic_fit: false
+  selection_metric: rmse
+  parameter_uncertainty: false
+  id: spatial_persistence
+  status: implemented
+  source: src/bayes_stesn/benchmark/classical.py
+- name: Coordinate-basis linear Gaussian state space
+  tracks:
+  - A
+  - B
+  uncertainty: joint_plugin
+  family: classical
+  stochastic_fit: false
+  selection_metric: crps
+  parameter_uncertainty: false
+  id: basis_lgssm
+  status: implemented
+  source: src/bayes_stesn/benchmark/linear_state.py
+- name: "Separable spatial/temporal Mat\xE9rn GP"
+  tracks:
+  - A
+  - B
+  uncertainty: joint_plugin
+  family: classical
+  stochastic_fit: false
+  selection_metric: crps
+  parameter_uncertainty: false
+  id: separable_stgp
+  status: implemented
+  source: src/bayes_stesn/benchmark/gaussian_gp.py
+- name: Coordinate-basis kernel ridge
+  tracks:
+  - A
+  - B
+  uncertainty: point
+  family: classical
+  stochastic_fit: false
+  selection_metric: rmse
+  parameter_uncertainty: false
+  id: basis_krr
+  status: implemented
+  source: src/bayes_stesn/benchmark/classical.py
+- name: Bayesian spatial ESN with ridge prior
+  tracks:
+  - A
+  - B
+  uncertainty: posterior_joint
+  family: bayesian
+  stochastic_fit: true
+  selection_metric: crps
+  parameter_uncertainty: true
+  id: bayes_esn_ridge
+  status: implemented
+  source: src/bayes_stesn/benchmark/esn.py
+- name: Recursive quadratic reservoir ensemble
+  tracks:
+  - A
+  uncertainty: finite_ensemble
+  family: reservoir
+  stochastic_fit: true
+  selection_metric: crps
+  parameter_uncertainty: false
+  id: eqesn_rollout
+  status: implemented
+  source: src/bayes_stesn/benchmark/reservoir.py
+- name: Autoregressive diffusion-GRU comparator
+  tracks:
+  - A
+  uncertainty: point
+  family: neural
+  stochastic_fit: true
+  selection_metric: rmse
+  parameter_uncertainty: false
+  id: dcrnn
+  status: implemented
+  source: src/bayes_stesn/benchmark/neural.py
+- name: Coordinate-basis probabilistic GRU
+  tracks:
+  - A
+  - B
+  uncertainty: joint_plugin
+  family: neural
+  stochastic_fit: true
+  selection_metric: crps
+  parameter_uncertainty: false
+  id: basis_gru
+  status: implemented
+  source: src/bayes_stesn/benchmark/basis_gru.py
+conditional_extensions:
+- id: advection_spde
+  status: deferred_optional
+  track:
+  - A
+  - B
+  reason: Separate R/ngme2 integration, parameter estimation, mesh and joint sampling
+    audits remain preconditions; the Python latent-Vecchia backend is not a substitute.
+- id: fno_dst
+  status: deferred_optional
+  track:
+  - C
+  reason: Requires a distinct complete-grid profile, source/license/dependency audit
+    and observation-noise joint-sampling validation.
+- id: cross_scale_rc
+  status: deferred_optional
+  track:
+  - C
+  reason: Requires a separately pinned Julia environment and partition/boundary-coupling
+    checks.
+- id: diffstg
+  status: deferred_optional
+  track:
+  - A
+  reason: Additional generative comparator conditional on core accuracy/latency findings
+    and a sampled-trajectory audit.
+- id: chronos2
+  status: deferred_optional
+  track:
+  - A
+  reason: External pretrained weights require a distinct data-budget track, pinned
+    weight revision and marginal-quantile scoring; no joint distribution is fabricated.
+complete_grid_track: not activated in the core fixed-sensor comparison
+missing_data: unsupported; explicit input validation
+irregular_time: unsupported; explicit input validation
+multivariate_response: unsupported; explicit input validation

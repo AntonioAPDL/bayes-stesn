@@ -19,7 +19,7 @@ from typing import Any, Callable, Mapping, Sequence
 import numpy as np
 from scipy import linalg, optimize, special
 
-from .gaussian import GaussianRegression
+from .gaussian import GaussianRegression, OperatorGaussianRegression
 from .priors import PriorRuntime, PriorSpec, copy_state
 from .spatial import CovarianceSpec
 
@@ -70,7 +70,7 @@ class SamplerConfig:
             raise ValueError("initialize must be auto or prior")
         if self.backend not in ("auto","spectral_gaussian","temporal_whitened_spectral",
                                 "gaussian_matrixfree","matrixfree","dense",
-                                "weighted_spectral","latent_ffbs"):
+                                "weighted_spectral","latent_ffbs","vecchia_operator"):
             raise ValueError("Unknown inference backend")
         if not 0 < self.target_accept < 1:
             raise ValueError("target_accept must lie strictly between zero and one")
@@ -88,6 +88,18 @@ class SamplerConfig:
                 raise ValueError(f"{key} must be a positive integer")
         if not np.isfinite(self.init_dispersion) or self.init_dispersion<=0:
             raise ValueError("init_dispersion must be finite and positive")
+
+
+def _vecchia_operator_route(covariance, prior, config) -> bool:
+    """The deliberately narrow, validated spatially sparse inference route."""
+    supported = (covariance.kind == "vecchia" and prior.kind == "ridge" and
+                 config.temporal == "iid" and config.algorithm in ("auto", "collapsed") and
+                 config.backend in ("auto", "spectral_gaussian", "vecchia_operator"))
+    if config.backend == "vecchia_operator" and not supported:
+        raise ValueError("vecchia_operator requires Vecchia covariance, ridge prior, iid Gaussian "
+                         "innovations and collapsed inference; other combinations use the "
+                         "size-gated dense reference backend")
+    return supported
 
 
 @dataclass
@@ -130,6 +142,7 @@ class RegressionPosterior:
         self._runtime = PriorRuntime(self.prior,self.Phi.shape[1],self.Z.shape[1],self.groups,
                                      self.Phi,self.Z if self.reference_Z is None else self.reference_Z)
         self._engine = None
+        self._spatial_geometry = None
 
     @property
     def n_chains(self):
@@ -195,10 +208,17 @@ class RegressionPosterior:
             return ParameterDraw(np.array(state["C"],copy=True),float(state["sigma2"]),cov,
                                  prior_state,temporal,copy.deepcopy(state.get("solver_metadata",{})),
                                  copy.deepcopy(state.get("latent_state")))
+        operator_route = self.metadata.get("spatial_backend") == "vecchia_operator"
         if self._engine is None:
-            self._engine = GaussianRegression(self.Y,self.Phi,self.Z,self.config.a0,self.config.b0,
-                                              self.config.dense_threshold,self.config.max_dense_bytes)
-        R = self.covariance.covariance(self.coordinates,cov)
+            engine_type = OperatorGaussianRegression if operator_route else GaussianRegression
+            self._engine = engine_type(self.Y,self.Phi,self.Z,self.config.a0,self.config.b0,
+                                      self.config.dense_threshold,self.config.max_dense_bytes)
+        if operator_route:
+            if self._spatial_geometry is None:
+                self._spatial_geometry = self.covariance.prepare_geometry(self.coordinates)
+            R = self._spatial_geometry.operator(cov)
+        else:
+            R = self.covariance.covariance(self.coordinates,cov)
         precision = self._runtime.precision(prior_state,R)
         rho = temporal.get("rho") if self.config.temporal=="full_residual_ar" else None
         fixed = float(np.exp(2*cov["log_sigma_e"])) if self.covariance.scale_mode=="separate" else None
@@ -210,6 +230,10 @@ class RegressionPosterior:
         else:
             evaluation = self._engine.evaluate(R,precision=precision,sigma2=fixed,temporal_rho=rho)
             C,sigma2,meta = evaluation.draw(rng)
+        if operator_route:
+            meta.update(spatial_solver="sparse_lu", spatial_backend="vecchia_operator",
+                        precision_nonzeros=R.metadata["precision_nonzeros"],
+                        lu_nonzeros=R.metadata["lu_nonzeros"])
         return ParameterDraw(C,sigma2,cov,prior_state,temporal,meta,copy.deepcopy(state.get("latent_state")))
 
     def to_state(self) -> dict:
@@ -365,6 +389,11 @@ class _ResidualStatistics:
 
 def _signature(Y,Phi,Z,coordinates,groups,prior,covariance,config,reference_Z):
     digest = hashlib.sha256()
+    if _vecchia_operator_route(covariance, prior, config):
+        # Operator arithmetic has a different floating-point path from the
+        # former dense reference implementation. Never silently resume one
+        # algorithm's checkpoint using the other algorithm.
+        digest.update(b"vecchia-operator-regression-v1")
     for array in (Y,Phi,Z,coordinates,reference_Z):
         if array is not None:
             a = np.ascontiguousarray(array,dtype=float)
@@ -419,11 +448,19 @@ def sample_regression(Y: np.ndarray,Phi: np.ndarray,Z: np.ndarray,coordinates: n
     blocks of at most init_max_dimension parameters. This bounded search is
     solely initialization; priors and MH support remain unrestricted.
     """
-    engine = GaussianRegression(Y,Phi,Z,config.a0,config.b0,config.dense_threshold,config.max_dense_bytes)
+    operator_route = _vecchia_operator_route(covariance, prior, config)
+    engine_type = OperatorGaussianRegression if operator_route else GaussianRegression
+    engine = engine_type(Y,Phi,Z,config.a0,config.b0,config.dense_threshold,config.max_dense_bytes)
     Y,Phi,Z = engine.Y,engine.Phi,engine.Z
     coords = np.asarray(coordinates,float)
     if coords.ndim!=2 or coords.shape[0]!=engine.n or not np.isfinite(coords).all():
         raise ValueError("Coordinates require a finite row for every response site")
+    dense_cap = getattr(covariance, "max_dense_sites", None)
+    if not operator_route and dense_cap is not None and engine.n > dense_cap:
+        raise ValueError("This model combination uses a dense spatial reference likelihood, "
+                         f"limited to {dense_cap} sites. The spatial operator "
+                         "route requires iid Gaussian ridge collapsed Vecchia inference.")
+    spatial_geometry = covariance.prepare_geometry(coords) if operator_route else None
     reference = Z if reference_Z is None else np.asarray(reference_Z,float)
     runtime = PriorRuntime(prior,engine.p,engine.d,groups,Phi,reference)
     ar = config.temporal=="full_residual_ar"
@@ -481,7 +518,7 @@ def sample_regression(Y: np.ndarray,Phi: np.ndarray,Z: np.ndarray,coordinates: n
                 hp = hyperprior(ps,cp,tp)
                 if not np.isfinite(hp):
                     return -np.inf,None
-                R = covariance.covariance(coords,cp)
+                R = spatial_geometry.operator(cp) if operator_route else covariance.covariance(coords,cp)
                 precision = runtime.precision(ps,R)
                 fixed = float(np.exp(2*cp["log_sigma_e"])) if separate else None
                 evaluation = engine.evaluate(R,precision=precision,sigma2=fixed,temporal_rho=rho)
@@ -703,13 +740,23 @@ def sample_regression(Y: np.ndarray,Phi: np.ndarray,Z: np.ndarray,coordinates: n
         all_density.append(densities)
         all_acceptance.append(accepted_sampling/max(1,proposals_sampling))
         invalid_counts.append(invalid)
-    if config.backend=="dense":
+    if operator_route:
+        backend = "vecchia_operator_spectral"
+    elif config.backend=="dense":
         backend = "dense_gaussian"
     elif config.backend in ("matrixfree","gaussian_matrixfree") or not runtime.separable:
         backend = "gaussian_matrixfree"
     else:
         backend = "temporal_whitened_spectral" if ar else "spectral_gaussian"
     metadata = {"schedule":"collapsed" if collapsed else "conditional","backend":backend,
+                "spatial_backend":"vecchia_operator" if operator_route else
+                                  ("dense_exact" if covariance.kind=="matern" else "dense_reference"),
+                "spatial_dense_materialization":not operator_route,
+                "spatial_operator_scope":"iid Gaussian + ridge + collapsed Vecchia" if operator_route else None,
+                "spatial_factorization":"sparse_lu" if operator_route else "dense_cholesky",
+                "spatial_scaling_note":"Sparse LU fill depends on geometry; no guaranteed linear memory" if operator_route else
+                                       "Spatial covariance is materialized within max_dense_sites",
+                "spatial_geometry_cached":bool(operator_route),
                 "scale_integration":"coefficients_only" if separate else ("coefficients_and_sigma2" if collapsed else "none"),
                 "stored_coefficients":False,"joint_recovery":"conditional_on_retained_sigma2" if not collapsed else "sigma2_then_coefficients",
                 "warmup":config.warmup,"thin":config.thin,"adaptation_frozen_after_warmup":True,

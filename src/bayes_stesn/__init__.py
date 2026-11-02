@@ -1,4 +1,4 @@
-"""Bayesian spatiotemporal echo state networks, version 0.1.0.
+"""Bayesian spatiotemporal echo state networks, version 0.2.0.
 
 Public data arrays use [time,site]; predictive arrays use [path,lead,site].
 See docs/api.md for supported model combinations and information policies.
@@ -11,7 +11,8 @@ from .spatial import CovarianceSpec
 from .sampling import SamplerConfig
 from .model import ModelSpec, PreparedModel, FittedModel, prepare, fit, refit
 from .prediction import (ForecastContext, PredictiveSample, forecast_context,
-                         advance_state, simulate_predictive, joint_domain)
+                         advance_state, simulate_predictive, joint_domain,
+                         iter_predictive, predictive_output_bytes)
 from .scoring import score_predictions
 from .diagnostics import summarize_chains
 from .workflow import (EnsembleSpec, FittedEnsemble, fit_ensemble,
@@ -22,12 +23,12 @@ from .assessment import diagnose
 from .calibration import (CalibrationMap, fit_standardized_calibration,
                           calibrated_intervals, reservoir_weighted_calibration)
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = ["SpatioTemporalData", "SplitPlan", "EvaluationTruth", "FeatureSpec",
            "SpatialMeanSpec", "PriorSpec", "CovarianceSpec", "SamplerConfig",
            "ModelSpec", "PreparedModel", "FittedModel", "prepare", "fit", "refit",
            "ForecastContext", "PredictiveSample", "forecast_context", "advance_state",
-           "simulate_predictive", "joint_domain", "score_predictions", "summarize_chains",
+           "simulate_predictive", "iter_predictive", "predictive_output_bytes", "joint_domain", "score_predictions", "summarize_chains",
            "EnsembleSpec", "FittedEnsemble", "fit_ensemble", "fit_stacking_weights",
            "simulate_ensemble", "score", "CalibrationMap", "fit_standardized_calibration",
            "calibrated_intervals", "reservoir_weighted_calibration", "CalibrationSpec",

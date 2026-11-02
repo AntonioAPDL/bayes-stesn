@@ -99,6 +99,8 @@ def _run_demo(args):
 def main(argv=None):
     parser=argparse.ArgumentParser(prog='bstesn',description='Bayesian spatiotemporal echo state networks')
     sub=parser.add_subparsers(dest='command',required=True)
+    from .benchmark.cli import add_parser
+    add_parser(sub)
     demo=sub.add_parser('demo',help='Run a fully reproducible synthetic-data fit and forecast')
     demo.add_argument('--config');demo.add_argument('--output',default='results/demo')
     demo.add_argument('--smoke',action='store_true',help='Small execution test, intentionally not a converged scientific fit')
@@ -118,7 +120,10 @@ def main(argv=None):
     validate.add_argument('config')
     args=parser.parse_args(argv)
     try:
-        if args.command=='demo':
+        if args.command=='benchmark':
+            from .benchmark.cli import main as benchmark_main
+            return benchmark_main(args)
+        elif args.command=='demo':
             _run_demo(args)
         elif args.command=='fit':
             config=load_config(args.config)

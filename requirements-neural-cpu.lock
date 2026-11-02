@@ -1,0 +1,14 @@
+# Linux x86_64 / CPython 3.12 CPU benchmark runtime observed 2026-11-02.
+# Install non-Torch dependencies from PyPI and only Torch from the CPU index.
+# Exact commands and the automated release gate are in docs/reproduction.md.
+# Version pins, not cross-platform artifact hashes. No vendored pretrained weights.
+torch==2.15.0+cpu
+filelock==4.2.4
+sympy==1.14.0
+mpmath==1.3.0
+networkx==3.7
+jinja2==3.1.6
+MarkupSafe==3.0.3
+fsspec==2026.9.0
+typing_extensions==4.16.0
+setuptools==84.1.0

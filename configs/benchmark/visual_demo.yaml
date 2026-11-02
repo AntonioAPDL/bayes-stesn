@@ -1,0 +1,64 @@
+schema_version: '3.0'
+name: spatial_detail_demo
+stage: development
+initial_fit: 2000
+training_start: 0
+horizon: 100
+validation_blocks: 3
+n_side: 25
+n_observed: 100
+n_calibration: 20
+paths: 128
+trials: 1
+finalist_count: 1
+finalist_seeds: 1
+replications: 1
+master_seed: 20261102
+models:
+- bayes_esn_ridge
+- separable_stgp
+- basis_gru
+scenarios:
+- g4_existing_fronts
+tracks:
+- A
+- B
+mcmc_warmup: 500
+mcmc_draws: 1000
+mcmc_continuation: 1000
+mcmc_functional_draws: 512
+mcmc_chains: 4
+neural_epochs: 80
+ensemble_members: 30
+score_pairs: 512
+score_observed_count: null
+retain_paths_replications:
+- 0
+generator_options: null
+model_options:
+  bayes_esn_ridge:
+    conditioning: 200
+    features:
+      modes: 12
+      units:
+      - 64
+      - 64
+      input_scales:
+      - 0.3
+      - 0.6
+      lags:
+      - 1
+      - 2
+      - 4
+      squares: 32
+    spatial_mean:
+      side: 5
+      width: 0.22
+  basis_gru:
+    rank: 16
+    hidden_size: 32
+    lags: 12
+    epochs: 80
+    covariance_max_iter: 60
+fhn_target_policy: finite_semidiscrete
+fhn_time_tolerance: 0.02

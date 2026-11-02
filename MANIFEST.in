@@ -1,7 +1,7 @@
-include LICENSE README.md
+include LICENSE README.md CONTRIBUTING.md
 include requirements-*.lock
-recursive-include docs *.md *.yaml
-recursive-include configs *.yaml
+recursive-include docs *.md *.yaml *.json *.png *.svg
+recursive-include configs *.yaml *.json
 recursive-include examples *.py
 recursive-include benchmarks *.py
 recursive-include tests *.py *.json *.npz

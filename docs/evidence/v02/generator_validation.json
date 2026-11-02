@@ -1,0 +1,64 @@
+{
+  "schema": "benchmark-generator-validation-2.0",
+  "status": "refinement_gate_not_met",
+  "scope": "simulator-only validation; no final benchmark data or model scores inspected",
+  "extended": true,
+  "seed": 983417,
+  "physical_burnin": 200.0,
+  "n_observations": 101,
+  "observation_spacing": 1.0,
+  "fhn_time_halving": {
+    "rmse": 0.000559881250001907,
+    "max_abs": 0.005001125403890305
+  },
+  "fhn_mesh_reference_to_fine": {
+    "rmse": 0.04187732548578651,
+    "max_abs": 0.36111798263774875
+  },
+  "fhn_mesh_coarse_to_fine": {
+    "rmse": 0.20803790087323967,
+    "max_abs": 1.6071411776063287
+  },
+  "finite_grid_policy": {
+    "target": "finite_semidiscrete",
+    "grid_size": 128,
+    "dt": 0.05,
+    "refined_dt": 0.025,
+    "delta": 1.0,
+    "time_gate_passed": true,
+    "morphology_gate_passed": true,
+    "continuum_claim": false,
+    "mesh_gate_passed": false,
+    "physical_parameters": {
+      "a": 0.7,
+      "b": 0.8,
+      "epsilon": 0.08,
+      "kappa": 0.2
+    }
+  },
+  "proposed_threshold_rms": 0.02,
+  "observation_noise_sd_reference": 0.1,
+  "fhn_mean_temporal_sd": 1.23235586130524,
+  "fhn_energy_bounds": [
+    2159.886080227071,
+    3561.895216343215
+  ],
+  "fhn_max_abs_state": 1.9847695724177177,
+  "spectral_stationary_variance": 0.9999999999999996,
+  "spectral_max_transition_modulus": 0.995,
+  "runtimes": {
+    "mesh64": 1.4574485570010438,
+    "reference128": 4.596296591997088,
+    "time_half128": 10.80553184100063,
+    "mesh256": 40.87958598499972
+  },
+  "total_seconds": 57.73946763600179,
+  "qualification": "Refinement establishes only the declared pilot window; convergence must be assessed at longer horizons before continuum-fidelity claims.",
+  "numerical_versions": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "generator_source_sha256": "b62436a7b35a3f30ffb4b7492ef912b90df5b69dd4956b2d5659f547e1d06713",
+  "validation_tool_sha256": "dc3399ce1ca914ee9f79d22221204d28a4cfac99a1cdbb05e98c2d141e02cf73",
+  "identity": "e6b3d39478f3c5da46c70c38a4fd885a608710856db4cc5cc341dfbe075d38b0"
+}

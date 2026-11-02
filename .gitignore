@@ -16,6 +16,7 @@ report/build/
 report/controlled_study*/
 report/figures/
 report/media/
+report/benchmark_*/
 report/*.pdf
 report/*.html
 report/*manifest.json

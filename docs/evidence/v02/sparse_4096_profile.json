@@ -1,0 +1,28 @@
+{
+  "execution_only": true,
+  "inference_converged": false,
+  "workload_sha256": "63f5c58ceed3899d9e0f6e08b4d7ff80379785f686f73b1a7bb964fbf7b420a2",
+  "scope": "engineering smoke only; tiny chains are not convergence evidence; peak RSS includes imports; one process per size; single BLAS thread",
+  "rows": [
+    {
+      "sites": 4096,
+      "times": 50,
+      "fitting_rows": 35,
+      "neighbors": 8,
+      "chains": 1,
+      "warmup": 2,
+      "draws": 3,
+      "paths": 4,
+      "horizon": 8,
+      "prepare_seconds": 0.023486623998905998,
+      "fit_seconds": 5.4447083240011125,
+      "predict_seconds": 6.067528722000134,
+      "peak_rss_mib": 184.03125,
+      "output_bytes": 1048640,
+      "precision_nonzeros": 108780,
+      "lu_nonzeros": 1343381,
+      "backend": "vecchia_operator_spectral",
+      "spatial_dense_materialization": false
+    }
+  ]
+}

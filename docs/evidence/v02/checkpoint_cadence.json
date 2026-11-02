@@ -1,0 +1,131 @@
+{
+  "cases": {
+    "benchmark_default": {
+      "checkpoint_bytes_written": 7813380,
+      "checkpoint_cadence": {
+        "chain_endpoints_always_saved": true,
+        "every_iterations": 0,
+        "source": "benchmark_default"
+      },
+      "checkpoint_cpu_seconds": 2.7201945370000047,
+      "checkpoint_wall_seconds": 2.7375938600016525,
+      "checkpoint_writes": 8,
+      "continuations": 1,
+      "diagnostic_gates_sha256": "8af28f78166c8bc25b8448dc2e9dbcd671b57ae71019d997c37987f8421508a6",
+      "draws_per_chain": 2000,
+      "final_checkpoint_bytes": 1728321,
+      "final_checkpoint_chain_state_sha256": "0826aefca4e6f221f312537c4605b5f11fe4b0f96b380516fa8be483982e8ea0",
+      "final_checkpoint_zip_members": 8041,
+      "fit_cpu_seconds": 9.535851229999999,
+      "fit_wall_seconds": 9.555383872000675,
+      "posterior_chains_sha256": "443ace501aebe92fca5593807407b0f918d06c00ec56f251080908a9ef9516f2",
+      "posterior_log_density_sha256": "b4c4cc54b3c08612e8c6d25bb41721698d94d0c8f69dbfdffc20ccd2655d5e30",
+      "qualified": true,
+      "retained_states_rewritten": 36000,
+      "spatial_basis": 12,
+      "temporal_features": 65
+    },
+    "periodic_100": {
+      "checkpoint_bytes_written": 75725825,
+      "checkpoint_cadence": {
+        "chain_endpoints_always_saved": true,
+        "every_iterations": 100,
+        "source": "caller"
+      },
+      "checkpoint_cpu_seconds": 26.382946440000012,
+      "checkpoint_wall_seconds": 26.541479039002297,
+      "checkpoint_writes": 96,
+      "continuations": 1,
+      "diagnostic_gates_sha256": "8af28f78166c8bc25b8448dc2e9dbcd671b57ae71019d997c37987f8421508a6",
+      "draws_per_chain": 2000,
+      "final_checkpoint_bytes": 1728330,
+      "final_checkpoint_chain_state_sha256": "0826aefca4e6f221f312537c4605b5f11fe4b0f96b380516fa8be483982e8ea0",
+      "final_checkpoint_zip_members": 8041,
+      "fit_cpu_seconds": 33.480121088,
+      "fit_wall_seconds": 33.63932020100037,
+      "posterior_chains_sha256": "443ace501aebe92fca5593807407b0f918d06c00ec56f251080908a9ef9516f2",
+      "posterior_log_density_sha256": "b4c4cc54b3c08612e8c6d25bb41721698d94d0c8f69dbfdffc20ccd2655d5e30",
+      "qualified": true,
+      "retained_states_rewritten": 348000,
+      "spatial_basis": 12,
+      "temporal_features": 65
+    }
+  },
+  "config": {
+    "conditioning": 80,
+    "continuation_draws": 1000,
+    "diagnostics": {
+      "functional_draws": 512
+    },
+    "features": {
+      "input_scales": [
+        0.5
+      ],
+      "lags": [
+        1,
+        2
+      ],
+      "modes": 8,
+      "squares": 16,
+      "units": [
+        32
+      ]
+    },
+    "sampler": {
+      "chains": 4,
+      "draws": 1000,
+      "warmup": 400
+    },
+    "spatial_mean": {
+      "side": 3,
+      "width": 0.3
+    }
+  },
+  "cpu_speedup": 3.5109735125345494,
+  "data_seed": 7611,
+  "elapsed_and_checkpoint_policy_excluded_from_equality": true,
+  "environment": {
+    "blas_threads": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "scipy": "1.17.0"
+  },
+  "exact_numeric_equality": {
+    "acceptance": true,
+    "checkpoint_chain_states": true,
+    "diagnostic_gates": true,
+    "forecast_mean": true,
+    "forecast_samples": true,
+    "posterior_chains": true,
+    "posterior_log_density": true,
+    "qualification": true,
+    "recovered_C": true,
+    "recovered_sigma2": true
+  },
+  "fit_seed": 411,
+  "git_head": "fdf8b7604f85b68d15b8832abade13e2c3d5c5d8",
+  "method": "unprofiled wall/CPU timings with checkpoint-writer timing instrumentation",
+  "observation_sha256": "7b5be16a857a9e7fe2b1ee0cb1d2255aa2feff495276beb000b8722bbc97cea2",
+  "observed_panel_sha256": "082c97e355b7fb95fd2441ebdcea38e5e1c988761f9a6d3269665dd1468f20ac",
+  "observed_sites": 25,
+  "posterior_identity_note": "Artifact identities include sampler execution configuration; numerical posterior arrays are compared directly.",
+  "purpose": "engineering_checkpoint_cadence_equivalence",
+  "schema_version": 1,
+  "scientific_performance_evidence": false,
+  "source_sha256": {
+    "benchmark/esn.py": "cb4781ce9c98b999cacfeb7739c1b605274d58f9e67e58e258c0a4abe2a5809e",
+    "gaussian.py": "c7f78b8de89e4e50f58cd91e91d62cd6c8076f0c41b894bee9eec618e64d20c7",
+    "io.py": "794886f56f586c9679841f69d2d0329ea541f01c68bd1418d29972b1828e69e6",
+    "model.py": "c1e6a4a3834c35cca7d3b540a3831b746ff21644d7d579c794d4942edf48763b",
+    "prediction.py": "140d888376f1798a376adbae978760f6ff88a85664b91af480c2429392c6b2ed",
+    "sampling.py": "2e9268efc9d5cbbbadeacf698777d70cdbc0efe4b3b9deac507ba1b197eab7f7"
+  },
+  "status": "complete",
+  "times": 400,
+  "wall_speedup": 3.520457226168673
+}

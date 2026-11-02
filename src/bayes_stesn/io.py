@@ -7,8 +7,10 @@ import hashlib
 import json
 import os
 import platform
+import re
 import sys
 import tempfile
+import time
 import numpy as np
 import scipy
 
@@ -22,17 +24,76 @@ def seed_for(seed: int, *keys) -> int:
 
 
 def atomic_npz(path, **arrays):
+    """Replace one numeric archive atomically, cleaning every handled failure.
+
+    Before ``os.replace`` a failure leaves the previous canonical file intact.
+    A directory-fsync failure after replacement leaves the complete new file
+    in place, but indicates that rename durability could not be confirmed.
+    Hard termination cannot run ``finally``; :func:`cleanup_stale_npz` only
+    removes this writer's recognizable staging files from dead local PIDs.
+    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(dir=path.parent, suffix=".npz", delete=False) as stream:
-        temporary = Path(stream.name)
-        np.savez_compressed(stream, **arrays)
-        stream.flush()
-        os.fsync(stream.fileno())
+    host = hashlib.sha256(platform.node().encode()).hexdigest()[:12]
+    prefix = f".{path.name}.bstesn-{host}-{os.getpid()}-"
+    temporary = None
     try:
+        with tempfile.NamedTemporaryFile(dir=path.parent, prefix=prefix, suffix=".npz", delete=False) as stream:
+            temporary = Path(stream.name)
+            np.savez_compressed(stream, **arrays)
+            stream.flush()
+            os.fsync(stream.fileno())
         os.replace(temporary, path)
+        if hasattr(os, "O_DIRECTORY"):
+            directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+            try:
+                os.fsync(directory)
+            finally:
+                os.close(directory)
     finally:
-        temporary.unlink(missing_ok=True)
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
+def cleanup_stale_npz(path, *, older_than_seconds=86400, dry_run=True):
+    """Inspect/remove owned staging archives left by a dead local writer.
+
+    This opt-in recovery never touches canonical files, foreign-host files,
+    symlinks, files owned by another user, or a PID that may still be alive.
+    PID reuse can conservatively retain a stale file. The age threshold is
+    an additional guard, not evidence that a live writer is abandoned.
+    Returns the eligible paths; ``dry_run=True`` is the safe default.
+    """
+    if not np.isfinite(older_than_seconds) or older_than_seconds < 0:
+        raise ValueError("older_than_seconds must be finite and nonnegative")
+    path = Path(path)
+    if not path.parent.exists():
+        return []
+    host = hashlib.sha256(platform.node().encode()).hexdigest()[:12]
+    pattern = re.compile(re.escape(f".{path.name}.bstesn-{host}-") + r"([0-9]+)-[A-Za-z0-9_]+\.npz\Z")
+    cutoff = time.time() - older_than_seconds
+    eligible = []
+    for candidate in path.parent.iterdir():
+        match = pattern.fullmatch(candidate.name)
+        if match is None or candidate.is_symlink() or not candidate.is_file():
+            continue
+        try:
+            stat = candidate.stat()
+        except FileNotFoundError:
+            # Another cleanup or a completed writer may have removed it.
+            continue
+        if stat.st_mtime > cutoff or (hasattr(os, "geteuid") and stat.st_uid != os.geteuid()):
+            continue
+        try:
+            os.kill(int(match.group(1)), 0)
+        except ProcessLookupError:
+            eligible.append(candidate)
+            if not dry_run:
+                candidate.unlink(missing_ok=True)
+        except (PermissionError, OverflowError):
+            # An inaccessible or unrepresentable PID is not proven dead.
+            continue
+    return sorted(eligible)
 
 
 def _pack(value, arrays):
@@ -66,7 +127,9 @@ def _unpack(value, arrays):
         return [_unpack(v, arrays) for v in value]
     if isinstance(value, dict):
         if set(value) == {"__array__"}:
-            return np.array(arrays[value["__array__"]], copy=True)
+            # NpzFile.__getitem__ already returns a fresh owned allocation.
+            # It is detached from the archive when the file closes.
+            return arrays[value["__array__"]]
         if set(value) == {"__tuple__"}:
             return tuple(_unpack(v, arrays) for v in value["__tuple__"])
         return {k: _unpack(v, arrays) for k, v in value.items()}
@@ -82,7 +145,10 @@ def content_hash(value) -> str:
         digest.update(key.encode())
         digest.update(array.dtype.str.encode())
         digest.update(str(array.shape).encode())
-        digest.update(array.tobytes())
+        # A contiguous byte view preserves the historical hash exactly and
+        # avoids another full-size allocation for large forecast archives.
+        if array.nbytes:
+            digest.update(memoryview(array).cast("B"))
     return digest.hexdigest()
 
 

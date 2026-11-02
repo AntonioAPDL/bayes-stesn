@@ -112,31 +112,80 @@ def fit_stacking_weights(ensemble, validation_predictions, observed_validation, 
 
 def simulate_ensemble(ensemble, contexts=None, *, horizon, target_coordinates=None,
                       target_site_ids=None, paths=256, seed=20261102,
-                      future_variance_covariates=None):
+                      future_variance_covariates=None,
+                      components=("observation", "readout_mean", "conditional_mean", "latent"),
+                      path_start=0, max_output_bytes=1024**3):
+    """Draw a fixed member per trajectory using global-index RNG streams.
+
+    RNG scheme ``ensemble-global-path-v2`` replaces the old finite-pool
+    resampling scheme. Each path now draws directly from its selected fitted
+    component, without simulating unused component paths. Prefixes and path
+    batches agree exactly, but seeded ensemble values differ from v0.1.0.
+    """
+    from .prediction import (forecast_context, _integer, _prediction_components,
+                             _check_output_budget, _PREDICTIVE_COMPONENTS)
+    horizon, paths = _integer(horizon, "horizon"), _integer(paths, "paths")
+    path_start = _integer(path_start, "path_start", minimum=0)
+    components = _prediction_components(components)
+    _alignment(tuple(f.prepared for f in ensemble.components))
     contexts=[None]*len(ensemble.components) if contexts is None else list(contexts)
     if len(contexts)!=len(ensemble.components):
         raise ValueError("One forecast context per ensemble component is required")
-    samples=[simulate_predictive(f,c,horizon=horizon,target_coordinates=target_coordinates,
-                    target_site_ids=target_site_ids,paths=paths,seed=seed_for(seed,'component',j),
-                    future_variance_covariates=future_variance_covariates)
-             for j,(f,c) in enumerate(zip(ensemble.components,contexts))]
-    origins={s.metadata['forecast_origin'] for s in samples}
-    if len(origins)!=1:
+    contexts=[forecast_context(f) if c is None else c for f,c in zip(ensemble.components,contexts)]
+    if any(c.parameter_posterior_identity!=f.posterior_identity for f,c in zip(ensemble.components,contexts)):
+        raise ValueError("Ensemble forecast context belongs to a different fitted component")
+    if len({(c.origin,float(c.times[-1])) for c in contexts})!=1:
         raise ValueError("Ensemble forecast origins must agree")
-    mixture=mix_trajectories([s.observation for s in samples],ensemble.weights,paths=paths,seed=seed_for(seed,'mixture'))
-    values={}
-    for key in ('observation','latent','readout_mean','conditional_mean'):
-        values[key]=np.stack([getattr(samples[c],key)[d] for c,d in zip(mixture.component_index,mixture.draw_index)])
-    parameter_ids=np.stack([samples[c].parameter_draw_ids[d] for c,d in zip(mixture.component_index,mixture.draw_index)])
-    metadata=dict(samples[0].metadata)
+    targets=ensemble.components[0].prepared.data.coordinates if target_coordinates is None else np.asarray(target_coordinates,float)
+    if targets.ndim!=2 or len(targets)<1:
+        raise ValueError("target_coordinates must be a nonempty coordinate matrix")
+    # Include one temporary component path in the output-storage preflight.
+    peak_output_bytes=_check_output_budget(paths+1,horizon,len(targets),components,max_output_bytes)
+    values={key:np.empty((paths,horizon,len(targets))) if key in components else None for key in _PREDICTIVE_COMPONENTS}
+    parameter_ids=np.empty((paths,2),dtype=int)
+    selected=np.empty(paths,dtype=int)
+    component_seeds=[seed_for(seed,'component',j) for j in range(len(ensemble.components))]
+    weights=ensemble.weights/ensemble.weights.sum()
+    metadata=None
+    first_ids=None
+    solver_reports=[]
+    for local in range(paths):
+        global_path=path_start+local
+        member=int(np.random.default_rng(seed_for(seed,'ensemble-component-v2',global_path)).choice(len(weights),p=weights))
+        selected[local]=member
+        sample=simulate_predictive(ensemble.components[member],contexts[member],horizon=horizon,
+                    target_coordinates=target_coordinates,target_site_ids=target_site_ids,
+                    paths=1,seed=component_seeds[member],path_start=global_path,
+                    components=components,max_output_bytes=max_output_bytes,
+                    future_variance_covariates=future_variance_covariates)
+        if metadata is None:
+            metadata=dict(sample.metadata)
+            first_ids=sample.target_site_ids
+        for key in components:
+            values[key][local]=getattr(sample,key)[0]
+        parameter_ids[local]=sample.parameter_draw_ids[0]
+        for report in sample.metadata.get('solver_reports',[]):
+            solver_reports.append({**report,'ensemble_component':member,'global_path':global_path})
+        # Release the previous path before constructing another component
+        # sample; keeping it through the next RHS evaluation adds a buffer.
+        del sample
     metadata.update(parameter_posterior_identity=ensemble.posterior_identity,
                     ensemble_weights=ensemble.weights.tolist(),
-                    mixture_component_id_per_path=mixture.component_index.tolist(),
-                    component_draw_id_per_path=mixture.draw_index.tolist(),
+                    mixture_component_id_per_path=selected.tolist(),
+                    component_draw_id_per_path=list(range(path_start,path_start+paths)),
+                    component_draw_id_semantics="global path index in the selected component RNG stream",
+                    rng_scheme="ensemble-global-path-v2",
+                    solver_reports=solver_reports,
+                    component_spatial_approximations=[f.prepared.spec.covariance.kind for f in ensemble.components],
+                    component_spatial_backends=[f.posterior.metadata.get('spatial_backend','dense_reference') for f in ensemble.components],
+                    spatial_backend="component_specific",spatial_rng_scheme="component_specific",
+                    spatial_dense_materialization=any(f.posterior.metadata.get('spatial_backend')!='vecchia_operator' for f in ensemble.components),
+                    path_start=path_start,path_stop=path_start+paths,
+                    peak_output_storage_bytes=peak_output_bytes,
+                    output_storage_bytes=peak_output_bytes-8*horizon*len(targets)*len(components)-16,
                     weighting_provenance=ensemble.metadata, seed=int(seed))
-    return PredictiveSample(**values,target_coordinates=samples[0].target_coordinates,
-                            target_site_ids=samples[0].target_site_ids,
-                            parameter_draw_ids=parameter_ids,metadata=metadata)
+    return PredictiveSample._from_owned(**values,target_coordinates=targets,
+                            target_site_ids=first_ids,parameter_draw_ids=parameter_ids,metadata=metadata)
 
 
 def score(prediction, truth: EvaluationTruth, *, target="observation", **kwargs):

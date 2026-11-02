@@ -4,18 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bayes-stesn"
-version = "0.1.0"
+version = "0.2.0"
 description = "Auditable Bayesian spatiotemporal echo state networks"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{name = "bayes-stesn contributors"}]
-dependencies = ["numpy>=1.26,<3", "scipy>=1.13,<2", "PyYAML>=6,<7"]
+dependencies = ["numpy>=1.26,<3", "scipy>=1.13,<2", "PyYAML>=6,<7", "threadpoolctl>=3.5,<4"]
 
 [project.optional-dependencies]
 report = ["matplotlib>=3.8,<4", "Pillow>=10,<13", "reportlab>=4.2,<5"]
 dev = ["pytest>=8,<10", "build>=1,<2"]
+neural = ["torch>=2.7,<3"]
 
 [project.scripts]
 bstesn = "bayes_stesn.cli:main"

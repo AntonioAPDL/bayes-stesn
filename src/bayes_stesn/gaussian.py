@@ -209,7 +209,6 @@ class GaussianRegression:
         self.an = self.a0 + self.N / 2
         self.dense_threshold, self.max_dense_bytes = dense_threshold, max_dense_bytes
         self.G = self.Z.T @ self.Z
-        self.YY = self.Y @ self.Y.T
         self.YZ = self.Y @ self.Z
         self._g, self._Ug = psd_eigh(self.G)
         # Scalar-ridge proposals reuse this rotation as well as the Gram
@@ -219,6 +218,12 @@ class GaussianRegression:
         self._temporal_cache = None
         self._ar_cache = None
         self._stats_cache = None
+
+    @cached_property
+    def YY(self) -> np.ndarray:
+        # Dense reference likelihoods use this cache. Operator likelihoods
+        # deliberately never access or allocate an n-by-n response product.
+        return self.Y @ self.Y.T
 
     def _check_precision(self, precision: PrecisionSpec) -> None:
         if (precision.p, precision.d) != (self.p, self.d):
@@ -455,6 +460,98 @@ class GaussianRegression:
                                 temporal_rho: float | None = None) -> float:
         scale = self.b0 + .5*(self.residual_quadratic(C,R,temporal_rho)+precision.quadratic(C))
         return float(scale/rng.gamma(self.a0+(self.N+self.k)/2))
+
+
+class OperatorGaussianRegression(GaussianRegression):
+    """Exact iid separable Gaussian algebra using a covariance operator.
+
+    The spatial object supplies ``solve`` and ``logdet`` for R; the sufficient
+    statistics are Phi' R^-1 Phi, Phi' R^-1 Y Z and tr(Y' R^-1 Y).
+    Response quadratic forms are accumulated in bounded time-column chunks.
+    No dense n-by-n covariance, inverse or response cross-product is built.
+    The finite p-by-p and d-by-d spectral readout factors are unchanged.
+    """
+
+    def spatial_statistics(self, R) -> tuple:
+        if R.shape != (self.n, self.n) or not callable(getattr(R, "solve", None)):
+            raise ValueError("R must supply a matching spatial solve/logdet operator")
+        if self._spatial_cache is not None and self._spatial_cache[0] is R:
+            return self._spatial_cache[1]
+        RiPhi = R.solve(self.Phi)
+        B = self.Phi.T @ RiPhi
+        beta, U = psd_eigh(B)
+        sY = 0.
+        for start in range(0, self.T, 64):
+            block = self.Y[:, start:start+64]
+            sY += float(np.sum(block * R.solve(block)))
+        values = RiPhi, B, beta, U, sY, float(R.logdet())
+        self._spatial_cache = (R, values)
+        return values
+
+    def residual_quadratic(self, C, R, temporal_rho=None, chunk_size=64) -> float:
+        if temporal_rho not in (None, 0):
+            raise ValueError("The spatial operator regression supports iid time innovations only")
+        PC = self.Phi @ C
+        total = 0.
+        for start in range(0, self.T, chunk_size):
+            residual = self.Y[:, start:start+chunk_size] - PC @ self.Z[start:start+chunk_size].T
+            total += float(np.sum(residual * R.solve(residual)))
+        return total
+
+    def evaluate(self, R, column_precision=None, precision=None, sigma2=None,
+                 temporal_rho=None, details=True) -> GaussianEvaluation:
+        del details
+        if temporal_rho not in (None, 0):
+            raise ValueError("The spatial operator regression supports iid time innovations only")
+        if precision is not None and column_precision is not None:
+            raise ValueError("Supply precision or column_precision, not both")
+        if precision is None:
+            cp = np.asarray(1. if column_precision is None else column_precision)
+            precision = PrecisionSpec(self.p, self.d, "scalar" if cp.ndim == 0 else "column", cp)
+        self._check_precision(precision)
+        if not precision.separable:
+            raise ValueError("The operator regression currently supports separable coefficient precision only")
+        if sigma2 is not None and (not np.isfinite(sigma2) or sigma2 <= 0):
+            raise ValueError("Fixed sigma2 must be positive and finite")
+        RiPhi, _, beta, U, sY, logdetR = self.spatial_statistics(R)
+        columns = precision.column_values
+        g, V, unscale, lam = self._temporal_factor(self.G, columns, None)
+        if np.all(columns == columns[0]):
+            cross = U.T @ (RiPhi.T @ self._YZ_eig)
+        else:
+            J = RiPhi.T @ self.YZ
+            cross = U.T @ ((J * unscale) @ V)
+        den = lam + beta[:, None] * g[None, :]
+        if not np.isfinite(den).all():
+            raise FloatingPointError("Nonfinite spectral precision")
+        eigenmean = cross / den
+        Q = sY - float(np.sum(cross * eigenmean))
+        logratio = self.k*np.log(lam) - float(np.log(den).sum())
+        ans = GaussianEvaluation(0., self.an, 0., Q, logdetR, 0., precision,
+            spatial_vectors=U, temporal_vectors=V, eigenmean=eigenmean,
+            eigenprecision=den, column_unscale=unscale, fixed_sigma2=sigma2)
+        if Q < 1e-7*max(1., sY):
+            Q = self.residual_quadratic(ans.mean, R) + precision.quadratic(ans.mean)
+        if Q < 0 or not np.isfinite(Q):
+            raise FloatingPointError("Invalid marginal quadratic form")
+        ans.Q, ans.bn = float(Q), self.b0 + .5*float(Q)
+        base = -.5*self.N*np.log(2*np.pi) -.5*self.T*logdetR + .5*logratio
+        if sigma2 is None:
+            ans.log_marginal = float(base + self.a0*np.log(self.b0) + special.gammaln(self.an)
+                                     - special.gammaln(self.a0) - self.an*np.log(ans.bn))
+        else:
+            ans.log_marginal = float(base -.5*self.N*np.log(sigma2) -.5*Q/sigma2)
+        return ans
+
+    def draw_conditional(self, R, precision, sigma2, rng, backend="auto",
+                         rtol=1e-10, atol=0., maxiter=None, temporal_rho=None,
+                         dense_fallback=False):
+        if backend not in ("auto", "spectral_gaussian", "vecchia_operator"):
+            raise ValueError("The operator regression supports spectral coefficient draws only")
+        evaluation = self.evaluate(R, precision=precision, sigma2=sigma2, temporal_rho=temporal_rho)
+        C, _, meta = evaluation.draw(rng)
+        meta["spatial_solver"] = "sparse_lu"
+        return C, meta
 
 
 def draw_coefficients(Y: np.ndarray, Phi: np.ndarray, Z: np.ndarray, R: np.ndarray,

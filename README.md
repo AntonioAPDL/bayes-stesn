@@ -55,6 +55,41 @@ response units. A parameter draw stays fixed throughout a trajectory; its own
 simulated observations drive its future reservoir inputs. Readout means, latent
 fields and conditional observation means are labeled separately.
 
+## Version 0.2: model comparison framework
+
+The package now includes shared G1-G6 simulators, eight core observed-site
+comparators, native new-site comparators, and an optional probabilistic
+coordinate-basis GRU control. Chronological/spatial validation, independent
+final seeds, explicit failed-fit fallbacks, block calibration, matched learning
+curves, process-parallel execution, and saved-result reports use one API.
+
+```bash
+# PyTorch is optional; install it for dcrnn and basis_gru.
+python -m pip install -e '.[neural,report,dev]'
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 bstesn benchmark run \
+  --profile smoke --output results/benchmark_smoke
+bstesn benchmark report results/benchmark_smoke --output report/benchmark_smoke
+```
+
+The smoke profile verifies execution; its deliberately short MCMC/optimization
+budgets do not qualify it as scientific evidence. Development and confirmation
+profiles are separate, and confirmation requires a frozen design/power receipt.
+See [the benchmark guide](docs/benchmark_guide.md),
+[model equations](docs/benchmark_models.md), and
+[the version 0.2 validation report](docs/benchmark_validation.md).
+
+![Saved-data forecast and error comparison](docs/assets/v02_comparison.png)
+
+The image shows a preselected 100-step forecast at 505 never-observed sites.
+All three native fits qualified in this separate one-dataset illustration;
+the replicated pilot is a distinct comparison. See the
+[saved numeric summary](docs/evidence/v02/detail_summary.json).
+
+Memory-controlled predictive batches, bounded spatial-pair selection, atomic
+failure cleanup, and the narrow end-to-end latent-Vecchia route address the
+highest-impact engineering issues from the prior audit. Public data and
+forecast constructors retain defensive-copy semantics.
+
 ## Documentation
 
 - `docs/api.md`: objects, workflows, serialization and supported combinations.
@@ -74,7 +109,7 @@ failed strict mixing checks and remain documented; those failures are not
 presented as validated forecasting comparisons. Every implemented prior has
 numerical and complete-workflow tests, which are a distinct claim.
 
-## Measured results in this release
+## Earlier controlled study (version 0.1)
 
 The locked study completed **48 four-chain fits**: four candidates, two spatial
 innovation scenarios and six independent simulation replications. **47/48 fits
@@ -101,17 +136,17 @@ pilots failed convergence. These results favor expressive ridge as the first
 working baseline for this DGP, while leaving more elaborate priors available
 for tasks that justify them.
 
-![Forecast, observations and errors](report/figures/forecast_montage.png)
+![Version 0.1 forecast, observations and errors](docs/assets/v01_forecast_montage.png)
 
 The study uses 49 observed inputs on an 11-by-11 grid, 740 versus 1,540 likelihood
 times, a fixed conditioning history, and two 40-step final forecast origins.
 The animation is a separately labeled, preselected uninterrupted 80-step
 forecast. Six replications give limited precision; this is not a new full-size
 comparison against the earlier V3 forecast. Full records and media are included
-in the release download. `report/controlled_study/compact_summary.json` contains
-the compact numerical evidence used above.
+in the release download. [The archived compact summary](docs/evidence/v01/compact_summary.json) and
+[protocol](docs/evidence/v01/protocol.json) retain the numerical evidence used above.
 
-The release gate passed **149 source tests and the same 149 tests against the
+The version 0.1 release gate passed **149 source tests and the same 149 tests against the
 installed wheel**, with no failures, errors, skips or warnings, in an isolated
 Python 3.12 environment. Full-size fixed-parameter V3 parity covered 113,004
 coefficients; the coefficient-mean relative discrepancy was 2.48e-12.
@@ -125,15 +160,17 @@ Euclidean coordinates are supported. Observations at additional locations may be
 forecast jointly. Missing inputs, irregular-time dynamics, vector-valued responses,
 unprojected geographic degrees, and unsupported combinations fail explicitly.
 
-The sparse Vecchia and FEM/SPDE precision operators are real approximations with
-solve/log-determinant APIs. The initial generic fitting/prediction adapters still
-materialize their covariance at bounded sizes. This release does not claim an
-end-to-end sparse fit for millions of sites. The FEM implementation uses integer
-operator orders, with its corresponding stated Matérn smoothness.
+The iid Gaussian scalar-ridge Vecchia route now supports end-to-end operator
+inference and ancestral prediction without dense site covariance matrices.
+Sparse LU fill remains geometry-dependent. Other Vecchia combinations and
+FEM/SPDE routes remain explicitly bounded reference implementations. No
+million-site performance claim is made. The FEM implementation uses integer
+operator orders with the stated Matérn smoothness.
 
 ## Reproducibility
 
-Inference uses float64. Artifacts are atomic, checksum-verified numeric NPZ files
+The statistical core uses float64; optional PyTorch networks train on CPU in
+float32. Artifacts are atomic, checksum-verified numeric NPZ files
 with JSON metadata and `allow_pickle=False`. Named random streams do not depend on
 process completion order. Seeds, software versions, numerical approximations and
 forecast information policies are recorded. Same-environment reproducibility is
