@@ -77,3 +77,4 @@ jobs:
           python tools/release_check.py --with-neural
           --fresh-venv "${{ runner.temp }}/bstesn-neural-release"
           --output results/release_manifest_neural.json
+

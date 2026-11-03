@@ -1,0 +1,96 @@
+name: Import authorized project history
+
+# One-time publication helper. The default main branch remains the original
+# three-commit project history; this helper lives only on publication-bootstrap.
+# Before running, publish the exact source .github/workflows/tests.yml on this
+# branch through the repository owner's authenticated GitHub interface.
+on:
+  push:
+    branches: [publication-bootstrap]
+    paths:
+      - bayes_stesn_v02_source.bundle
+      - .github/workflows/import-history.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bayes-stesn-one-time-history-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    if: github.repository == 'AntonioAPDL/bayes-stesn' && github.ref == 'refs/heads/publication-bootstrap'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out the publication branch with a job-scoped credential
+        uses: actions/checkout@v7
+
+      - name: Verify the authorized bundle and publish missing refs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = 'AntonioAPDL/bayes-stesn'
+          test "$GITHUB_REF" = 'refs/heads/publication-bootstrap'
+
+          bundle='bayes_stesn_v02_source.bundle'
+          expected_commit='8ee53dfe9f2727d4bf25e26f38d4690007140fd9'
+          expected_bundle_sha='680928b913a6ffc81872478e339f904e4f656a06d1c48105e6a219d31f0c4cc3'
+          printf '%s  %s\n' "$expected_bundle_sha" "$bundle" | sha256sum --check --strict
+          git bundle verify "$bundle"
+          git fetch --no-tags "$bundle" refs/heads/main:refs/remotes/authorized-bundle/main
+          test "$(git rev-parse 'refs/remotes/authorized-bundle/main^{commit}')" = "$expected_commit"
+          test "$(git rev-list --count "$expected_commit")" = '3'
+          git fsck --full --strict --no-dangling "$expected_commit"
+
+          # The owner must publish the original approved CI workflow first.
+          # The import therefore introduces no new version of this workflow.
+          source_ci=$(git rev-parse "$expected_commit:.github/workflows/tests.yml")
+          published_ci=$(git rev-parse 'HEAD:.github/workflows/tests.yml')
+          test "$source_ci" = "$published_ci"
+
+          # A failed remote read stops the job; it is never treated as absence.
+          remote_refs=$(git ls-remote origin \
+            refs/heads/main refs/tags/v0.2.0 'refs/tags/v0.2.0^{}')
+          main_sha=$(awk '$2 == "refs/heads/main" {print $1}' <<< "$remote_refs")
+          tag_sha=$(awk '$2 == "refs/tags/v0.2.0" {print $1}' <<< "$remote_refs")
+          tag_peeled=$(awk '$2 == "refs/tags/v0.2.0^{}" {print $1}' <<< "$remote_refs")
+          tag_target=${tag_peeled:-$tag_sha}
+          refspecs=()
+
+          if [[ -z "$main_sha" ]]; then
+            refspecs+=("$expected_commit:refs/heads/main")
+          elif [[ "$main_sha" != "$expected_commit" ]]; then
+            printf 'Refusing to change existing main at %s\n' "$main_sha" >&2
+            exit 1
+          fi
+
+          if [[ -z "$tag_sha" ]]; then
+            refspecs+=("$expected_commit:refs/tags/v0.2.0")
+          elif [[ "$tag_target" != "$expected_commit" ]]; then
+            printf 'Refusing to change existing v0.2.0 targeting %s\n' "$tag_target" >&2
+            exit 1
+          fi
+
+          # No force option: a conflict rejects the entire atomic publication.
+          if (( ${#refspecs[@]} )); then
+            git push --atomic origin "${refspecs[@]}"
+          fi
+
+          published_refs=$(git ls-remote origin \
+            refs/heads/main refs/tags/v0.2.0 'refs/tags/v0.2.0^{}')
+          published_main=$(awk '$2 == "refs/heads/main" {print $1}' <<< "$published_refs")
+          published_tag=$(awk '$2 == "refs/tags/v0.2.0" {print $1}' <<< "$published_refs")
+          published_peeled=$(awk '$2 == "refs/tags/v0.2.0^{}" {print $1}' <<< "$published_refs")
+          test "$published_main" = "$expected_commit"
+          test "${published_peeled:-$published_tag}" = "$expected_commit"
+          printf 'Verified main and v0.2.0 at %s\n' "$expected_commit"
+
+          {
+            printf '## Original history published\n\n'
+            printf 'Verified `main` and `v0.2.0` at `%s`.\n\n' "$expected_commit"
+            printf 'The source contains the original three commits. No existing conflicting ref was changed.\n\n'
+            printf 'Next: make `main` the default branch, then manually run `numerical-and-api-checks` on `main`. Pushes made with `GITHUB_TOKEN` do not trigger push workflows.\n'
+          } >> "$GITHUB_STEP_SUMMARY"
