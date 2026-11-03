@@ -1962,6 +1962,27 @@ def lead_figures(run, output):
     return output_figures
 
 
+def _pipeline_cpu_text(receipts):
+    complete = [r for r in receipts if r.get("compute_accounting_complete") is True
+                and _finite(r.get("total_pipeline_cpu_seconds"))]
+    subtotal = sum(r["total_pipeline_cpu_seconds"] for r in complete) if complete else None
+    unavailable = len(receipts) - len(complete)
+    scope = (f"Full-run pipeline CPU is unavailable: {unavailable} terminal jobs have incomplete accounting or missing CPU fields. "
+             if unavailable else "All terminal job CPU fields are included in this saved pipeline subtotal. ")
+    return (f"Complete-accounting pipeline CPU subtotal over {len(complete)} of {len(receipts)} terminal jobs: {fmt(subtotal, 5)} seconds. "
+            + scope + "This subtotal includes tuning, final computation and final artifact serialization; it excludes shared data generation and controller overhead and is not elapsed campaign time. Incomplete receipt values remain in the evidence; partial or elapsed estimates may include downtime and are not exact compute totals.")
+
+
+def _history_cost_text(value):
+    return (f"Score bounds passed: {value['score_bounds_passed']}; long-history qualification not worse: {value['qualification_not_worse']}; cost gate passed: {value['cost_gate_passed']}. "
+            f"Sums of recorded pipeline fields are {fmt(value['summed_pipeline_seconds']['1000'], 5)} seconds at 1000 and {fmt(value['summed_pipeline_seconds']['2000'], 5)} at 2000; recorded long/short ratio {fmt(value['long_to_short_pipeline_time_ratio'])}. "
+            f"Complete compute accounting: {value['complete_compute_accounting']}. "
+            + ("Both histories have complete saved job accounting; these sums still exclude shared data generation and controller overhead. "
+               if value["complete_compute_accounting"] else
+               "At least one history includes incomplete timing fields. Their partial or elapsed estimates may include downtime, so these sums and their ratio are not exact computation-cost comparisons and cannot pass the complete-accounting cost gate. ")
+            + "Neither sum is elapsed campaign time.")
+
+
 def cost_figure(run, output):
     plt = plotting()
     models = list(dict.fromkeys(r["model_id"] for r in run["receipts"]))
@@ -1974,19 +1995,20 @@ def cost_figure(run, output):
         axes[1].barh(i, qualified / len(rows), color=TEAL, height=.6)
         axes[1].barh(i, 1 - qualified / len(rows), left=qualified / len(rows), color="#E7B38B", height=.6)
         axes[1].text(1.03, i, f"{qualified}/{len(rows)}", va="center", fontsize=8)
+    incomplete_models = {r["model_id"] for r in run["receipts"] if r.get("compute_accounting_complete") is not True}
     for ax in axes:
-        ax.set_yticks(range(len(models)), [PLOT_LABELS.get(m, m) for m in models], fontsize=12.5)
+        ax.set_yticks(range(len(models)), [PLOT_LABELS.get(m, m) + (" *" if m in incomplete_models else "") for m in models], fontsize=12.5)
         ax.invert_yaxis()
     axes[0].set_xlabel("Mean recorded pipeline seconds / job")
     axes[1].tick_params(axis="y", labelleft=False)
-    axes[0].set_title("Tuning + final fit + forecast + scoring", loc="left")
+    axes[0].set_title("Saved pipeline time fields", loc="left")
     axes[0].grid(axis="x", alpha=.4)
     axes[1].set_xlim(0, 1.24)
     axes[1].set_xticks([0, .5, 1], ["0%", "50%", "100%"])
     axes[1].set_xlabel("Qualified fraction; tan = declared fallback")
     axes[1].set_title("All declared final model/task jobs", loc="left")
-    incomplete = sum(not r.get("compute_accounting_complete", False) for r in run["receipts"])
-    return save_figure(fig, output, run["label"] + "_cost_qualification", f"Recorded costs averaged over the run's declared scenario/task mix; this is not machine-independent throughput. {incomplete} jobs have incomplete compute accounting after infrastructure interruption; their recorded times are lower bounds. Failed scientific attempts remain in cost and operational populations. Process peak RSS is kept in raw receipts with its measurement scope.")
+    incomplete = sum(r.get("compute_accounting_complete") is not True for r in run["receipts"])
+    return save_figure(fig, output, run["label"] + "_cost_qualification", f"Recorded pipeline fields averaged over the run's declared scenario/task mix; this is not machine-independent throughput. An asterisk marks every model mean that contains incomplete accounting ({incomplete} jobs across this run). Such partial or elapsed estimates may include downtime and are not exact compute totals; they do not support a computation-speed ranking. Failed scientific attempts remain in the recorded fields and operational populations. Process peak RSS is kept in raw receipts with its measurement scope.")
 
 
 def accuracy_time_figure(run, output):
@@ -2003,8 +2025,10 @@ def accuracy_time_figure(run, output):
                     continue
                 members = [r for r in run["receipts"] if (r["scenario"], r["track"], r["model_id"]) == (scenario, track, row["model_id"])]
                 elapsed = np.mean([r.get("total_pipeline_seconds", r["total_seconds"] + r.get("tuning_seconds", 0)) for r in members])
+                incomplete = any(r.get("compute_accounting_complete") is not True for r in members)
                 ax.scatter(elapsed, row["rmse"], color=COLORS.get(row["model_id"], GRAY), s=40,
-                           label=PLOT_LABELS.get(row["model_id"], row["model_id"]))
+                           marker="X" if incomplete else "o",
+                           label=PLOT_LABELS.get(row["model_id"], row["model_id"]) + (" *" if incomplete else ""))
             ax.set_xscale("log")
             ax.set_title(f"{short_scenario(scenario)} / track {track}", loc="left")
             ax.set_xlabel("Mean recorded pipeline seconds / job (log)")
@@ -2017,7 +2041,7 @@ def accuracy_time_figure(run, output):
             handles, labels = ax.get_legend_handles_labels()
             legend.update(zip(labels, handles))
         fig.legend(list(legend.values()), list(legend), loc="outside lower center", ncol=3, fontsize=12.5, frameon=False)
-        figures.append(save_figure(fig, output, f"{run['label']}_accuracy_time_{offset}", "Accuracy and recorded computational cost for the same declared jobs. Lower and left is preferable, but points have different qualification/fallback behavior; this plot is descriptive, not a Pareto-superiority test. Costs include tuning, final fitting, forecasting and saved-artifact serialization; lost work remains labeled incomplete."))
+        figures.append(save_figure(fig, output, f"{run['label']}_accuracy_time_{offset}", "Accuracy and recorded pipeline time fields for the same declared jobs. X markers and asterisks identify model/task cells containing incomplete accounting; their partial or elapsed estimates may include downtime and are not exact compute totals. Lower RMSE is preferable, while only fully accounted time cells support descriptive computation-cost comparisons. Qualification/fallback behavior also differs; this is not a Pareto-superiority test. Saved pipeline fields include tuning, final fitting, forecasting, scoring and artifact serialization, excluding shared generation and controller overhead."))
     return figures
 
 
@@ -2184,6 +2208,7 @@ def stress_sections(audits):
             "Each difference is stress minus control. Positive means larger loss; for coverage indicators it means more coverage, and for interval width it means a wider band. Both sides of a dimensionful loss use the same control training-only SD. Standalone G5 arm scales are preserved in their receipts but are not the comparison denominator. Coverage differences remain dimensionless.",
             f"New G5 fitting jobs: {value['new_parameter_fits']}; incremental recorded pipeline time {fmt(value['incremental_pipeline_seconds'], 5)} seconds, CPU {fmt(value['incremental_pipeline_cpu_seconds'], 5)} seconds. Historical shared G4/G2 control pipeline time is {fmt(value['historical_shared_control_pipeline_seconds'], 5)} seconds, counted once separately. Complete incremental accounting: {value['compute_accounting_complete']}.",
             "These sums have the following recorded scopes and are not elapsed parallel-campaign time: " + " ".join(scopes),
+            "A false complete-cost flag identifies sums containing incomplete timing fields. Such partial or elapsed estimates may include downtime and are not exact compute totals. Reused control costs are not new stress work and must not be added again to the core campaign costs.",
             "Coupled control/stress arms are not independent macro strata and are not pooled into the core G1-G4 macro comparison. Pointwise paired-dataset bootstrap intervals and MCSEs are exploratory with five fields. Native comparisons condition on their exact common-qualified intersections; operational point comparisons retain declared fallbacks."],
             table=(["Intervention", "New fit jobs", "Incremental wall sec", "Incremental CPU sec", "Complete cost"], [
                 [STRESS_ARMS[arm["id"]], str(arm["costs"]["new_parameter_fits"]),
@@ -2332,10 +2357,8 @@ def sections_for(data, output):
             "Negative differences favor the reference ESN. Macro estimates, when present, use the prespecified scenario weights; a missing scenario cell remains missing and weights are not renormalized. Their MCSE combines independent within-scenario paired variances. Intervals are pointwise and do not support simultaneous superiority claims.",
             "Qualification attrition is part of the result. A complete campaign can still have no usable native comparison in a cell. Confirmation planning needs at least five usable pairs in every primary cell, accounts for joint qualification, and fixes attempted replications before final seeds."], table=macro_table, figures=paired_figure(run, output)))
         sections.append(section(f"{run['label']}: error evolution", figures=lead_figures(run, output)))
-        cpu = [r.get("total_pipeline_cpu_seconds") for r in run["receipts"]]
-        total_cpu = sum(cpu) if all(_finite(value) for value in cpu) else None
         sections.append(section(f"{run['label']}: cost and reliability", [
-            f"Recorded pipeline CPU summed over terminal jobs: {fmt(total_cpu, 5)} seconds. This sum includes tuning, final computation and final artifact serialization where the new accounting fields are present; it is not elapsed parallel campaign time.",
+            _pipeline_cpu_text(run["receipts"]),
             "Fit wall time includes diagnostics. The diagnostic subcomponent is cumulative saved diagnostic-phase time and can include earlier invocations after resume; adding it again would double-count. Pipeline costs with interrupted unknown work are explicitly incomplete.",
             "Worker RSS is a process-lifetime high-water mark, including final artifact serialization. Reused-worker records are not isolated per-model memory increments, so this report does not infer a model-level accuracy-versus-memory ranking from them. The separately isolated forecast-ownership probe supports its narrower allocation comparison."],
             figures=[cost_figure(run, output), *accuracy_time_figure(run, output)]))
@@ -2409,7 +2432,7 @@ def sections_for(data, output):
                     family + " " + contrast["metric"].upper(), pairs, fmt(macro.get("difference")), fmt(macro.get("lower_one_sided95")), decision])
             sections.append(section("History length: recorded development choice", [
                 f"Selected initial supplied history: {value['selected_initial_history']} rows. The prospective rule retains 1000 by default. It promotes 2000 only if both ESN tracks have at least three common-qualified pairs per mechanism and a macro normalized native-CRPS improvement lower bound of at least 0.02, long-history qualification is not worse, and complete summed pipeline cost is at most 2.5 times the shorter history.",
-                f"Score bounds passed: {value['score_bounds_passed']}; long-history qualification not worse: {value['qualification_not_worse']}; cost gate passed: {value['cost_gate_passed']}. Summed pipeline time was {fmt(value['summed_pipeline_seconds']['1000'], 5)} seconds at 1000 and {fmt(value['summed_pipeline_seconds']['2000'], 5)} at 2000; long/short ratio {fmt(value['long_to_short_pipeline_time_ratio'])}.",
+                _history_cost_text(value),
                 "Differences are short minus long, divided by the same training-only scale; positive favors the longer history. Native CRPS and native RMSE use each model's common-qualified paired fields. Operational RMSE includes the declared fallbacks on all paired fields. Every model's effects remain visible, regardless of the ESN-centered choice.",
                 "The lower bounds are saved, stratified, one-sided 95% percentile-bootstrap development summaries. Small samples do not establish formal interval coverage or simultaneous superiority. The 0.02 improvement and 2.5 cost margins are explicit practical preferences. Retaining 1000 when the gate fails is not evidence that additional data have no benefit. No confirmation outcomes entered this choice.",
                 "Recorded retention reasons: " + ("; ".join(value["retention_reasons"]) if value["retention_reasons"] else "none; the declared promotion gate passed")],

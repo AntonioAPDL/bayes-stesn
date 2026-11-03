@@ -1012,6 +1012,51 @@ def test_check_inputs_never_fits_generates_forecasts_or_writes_output(completed_
     assert not out.exists()
 
 
+def test_incomplete_elapsed_costs_remain_marked_and_excluded_from_complete_cpu(completed_run, tmp_path, monkeypatch):
+    # The recovered elapsed value can include downtime. A finite number is not
+    # evidence of complete accounting, even when every job is terminal.
+    for path in completed_run.glob("**/receipt.json"):
+        value = json.loads(path.read_text())
+        value["total_pipeline_cpu_seconds"] = 2.
+        if value["model_id"] == "bayes_esn_ridge" and value["replication"] == 0:
+            value.update(compute_accounting_complete=False,
+                         total_pipeline_seconds=209.88, total_pipeline_cpu_seconds=999.)
+        save(path, value, "receipt_identity")
+    inputs = renderer.Inputs()
+    run = renderer.load_run(completed_run, "recovered", inputs, SOURCE)
+    captured = []
+
+    def capture(fig, output, name, caption):
+        captured.append((name, caption,
+            [tick.get_text() for tick in fig.axes[0].get_yticklabels()],
+            [patch.get_width() for patch in fig.axes[0].patches],
+            [(artist.get_label(), artist.get_offsets().copy()) for artist in fig.axes[0].collections]))
+        renderer.plotting().close(fig)
+        return {"caption": caption}
+
+    monkeypatch.setattr(renderer, "save_figure", capture)
+    renderer.cost_figure(run, tmp_path)
+    renderer.accuracy_time_figure(run, tmp_path)
+    assert captured[0][2][0].endswith(" *") and not captured[0][2][1].endswith(" *")
+    assert captured[0][3][0] == pytest.approx((209.88 + 3.2) / 2)
+    assert captured[1][4][0][0].endswith(" *")
+    assert captured[1][4][0][1][0, 0] == pytest.approx((209.88 + 3.2) / 2)
+    for _, caption, *_ in captured:
+        assert "may include downtime" in caption and "not exact compute totals" in caption
+        assert "lower bound" not in caption
+    cpu = renderer._pipeline_cpu_text(run["receipts"])
+    assert "3 of 4 terminal jobs: 6 seconds" in cpu
+    assert "Full-run pipeline CPU is unavailable" in cpu and "999" not in cpu
+    assert "may include downtime" in cpu and "lower bound" not in cpu
+    history = renderer._history_cost_text({
+        "score_bounds_passed": True, "qualification_not_worse": True, "cost_gate_passed": False,
+        "summed_pipeline_seconds": {"1000": 209.88, "2000": 300.},
+        "long_to_short_pipeline_time_ratio": 300. / 209.88, "complete_compute_accounting": False})
+    assert "may include downtime" in history and "cannot pass" in history
+    assert "not exact computation-cost comparisons" in history and "lower bound" not in history
+    inputs.verify_unchanged()
+
+
 def test_full_chart_and_html_recipe_from_synthetic_saved_values_without_pdf(completed_run, coordinates, tmp_path, monkeypatch):
     # Exercise every main figure/equation and escaped HTML without authoring a PDF.
     from bayes_stesn.benchmark import runner
