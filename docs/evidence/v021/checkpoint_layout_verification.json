@@ -1,0 +1,66 @@
+{
+  "uninterrupted_before_after": [
+    {
+      "fixture": "ridge",
+      "quantity": "chains",
+      "bitwise_equal": true
+    },
+    {
+      "fixture": "ridge",
+      "quantity": "density",
+      "bitwise_equal": true
+    },
+    {
+      "fixture": "ridge",
+      "quantity": "acceptance",
+      "bitwise_equal": true
+    },
+    {
+      "fixture": "rhs",
+      "quantity": "chains",
+      "bitwise_equal": true
+    },
+    {
+      "fixture": "rhs",
+      "quantity": "density",
+      "bitwise_equal": true
+    },
+    {
+      "fixture": "rhs",
+      "quantity": "acceptance",
+      "bitwise_equal": true
+    },
+    {
+      "fixture": "conditional",
+      "quantity": "chains",
+      "bitwise_equal": true
+    },
+    {
+      "fixture": "conditional",
+      "quantity": "density",
+      "bitwise_equal": true
+    },
+    {
+      "fixture": "conditional",
+      "quantity": "acceptance",
+      "bitwise_equal": true
+    },
+    {
+      "fixture": "prior",
+      "quantity": "chains",
+      "bitwise_equal": true
+    },
+    {
+      "fixture": "prior",
+      "quantity": "density",
+      "bitwise_equal": true
+    },
+    {
+      "fixture": "prior",
+      "quantity": "acceptance",
+      "bitwise_equal": true
+    }
+  ],
+  "cause": "Fortran-to-C array-layout conversion in checkpoint copy changed BLAS accumulation order. Canonical Fortran factors preserve the uninterrupted Cholesky traversal.",
+  "scope": "Existing exact checkpoint assertions unchanged. Four new initial/adapted and array/JSON subcases fail before fix and pass after fix. No model or prior equations changed."
+}

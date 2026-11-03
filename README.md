@@ -11,6 +11,26 @@ latent/robust models use documented conditional samplers, with explicit numerica
 and resource limits. Successful unit tests are distinct from passing an MCMC
 diagnostic gate or demonstrating improved forecasting performance.
 
+## Release and reports
+
+[Version 0.2.1](https://github.com/AntonioAPDL/bayes-stesn/releases/tag/v0.2.1)
+includes the checkpoint-continuation correction verified by the
+[passing public CI run](https://github.com/AntonioAPDL/bayes-stesn/actions/runs/41580781455).
+The original three-commit history and `v0.2.0` scientific snapshot are preserved.
+
+| Download | Contents |
+| --- | --- |
+| [Benchmark report (PDF)](https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v02_benchmark_report.pdf) | 27-page replicated development comparison |
+| [Detailed forecast report (PDF)](https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v02_detailed_forecast_report.pdf) | 10-page preselected nonlinear forecasting illustration |
+| [Forecasts, truth, and errors (MP4)](https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v02_forecast_truth_errors.mp4) | Synchronized ESN, GP, and GRU forecasts, signed errors, and RMSE evolution |
+| [Simulated data evolution (MP4)](https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v02_data_evolution.mp4) | The nonlinear field evolving through time |
+
+The release also contains both complete-result archive parts, the original Git
+bundle, and checksums. These numerical reports retain their original `v0.2.0`
+source identity; the patch adds no new simulation results. See
+[publication and validation evidence](docs/publication.md) for exact commits and
+the distinction between software checks and scientific fit qualification.
+
 ## Install
 
 ```bash

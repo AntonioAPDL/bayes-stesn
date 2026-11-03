@@ -1,0 +1,68 @@
+{
+  "benchmark_smoke": {
+    "artifact_directory": "results/validation/installed_benchmark_smoke/bstesn-release-work-xnglstwp",
+    "comparison_status": "execution only",
+    "jobs": 13,
+    "passed": true,
+    "scope": "Execution-only benchmark check; no convergence or superiority claim.",
+    "stage": "execution_test"
+  },
+  "claim_scope": "Observed remote software checks for v0.2.1. Scientific comparisons remain the archived v0.2.0 development evidence.",
+  "commit": "ebd2d1a031796cadae5dbb32a992e10b3f7cf653",
+  "core_compatibility": {
+    "optional_neural_deselected_each": 12,
+    "passed_each": 199,
+    "python": [
+      "3.11",
+      "3.12",
+      "3.13"
+    ]
+  },
+  "full_evidence_asset": "bayes_stesn_v021_ci_validation.zip",
+  "full_evidence_sha256": "a0a236bf5b6160c67b298673cd65bc657a7d6f242eee1f97e73db7a695418fde",
+  "installed_tests": {
+    "errors": 0,
+    "failures": 0,
+    "optional_deselected": [],
+    "package_version": "0.2.1",
+    "passed": 285,
+    "pytest_exit_code": 0,
+    "skipped": 0,
+    "tests": 285,
+    "warning_count": 0
+  },
+  "original_github_artifact_id": 13205522014,
+  "passed": true,
+  "safe_roundtrip": {
+    "latent_bitwise_equal": true,
+    "observation_bitwise_equal": true,
+    "passed": true,
+    "posterior_identity": "ba70310a598d0ef5b3518e2bb9836d7b5aaeca87d49340e97a8ce16c864beaf4",
+    "rhs_tradeoff_scale": 0.5,
+    "safe_numeric_npz_only": true,
+    "sampler_initialization": "auto",
+    "shape": [
+      16,
+      10,
+      25
+    ]
+  },
+  "schema_version": 1,
+  "scientific_source_drift_after_build": [],
+  "source_tests": {
+    "errors": 0,
+    "failures": 0,
+    "optional_deselected": [],
+    "package_version": "0.2.1",
+    "passed": 285,
+    "pytest_exit_code": 0,
+    "skipped": 0,
+    "tests": 285,
+    "warning_count": 0
+  },
+  "test_count_note": "Each isolated gate contains 211 parent tests and 74 subtests; JUnit totals include both.",
+  "version": "0.2.1",
+  "workflow_run_id": 41580781455,
+  "workflow_url": "https://github.com/AntonioAPDL/bayes-stesn/actions/runs/41580781455",
+  "working_tree_changed_during_check": []
+}

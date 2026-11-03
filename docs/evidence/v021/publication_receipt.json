@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-11-03T05:01:47.995Z",
+  "repository": "AntonioAPDL/bayes-stesn",
+  "repository_url": "https://github.com/AntonioAPDL/bayes-stesn",
+  "visibility": "public",
+  "default_branch": "main",
+  "release": {
+    "id": 432289151,
+    "tag": "v0.2.1",
+    "url": "https://github.com/AntonioAPDL/bayes-stesn/releases/tag/v0.2.1",
+    "published_at": "2026-11-03T04:57:55Z",
+    "draft": false,
+    "commit": "ebd2d1a031796cadae5dbb32a992e10b3f7cf653"
+  },
+  "original_scientific_snapshot": {
+    "tag": "v0.2.0",
+    "commit": "8ee53dfe9f2727d4bf25e26f38d4690007140fd9",
+    "original_commit_count": 3,
+    "commit_ids": [
+      "fdf8b7604f85b68d15b8832abade13e2c3d5c5d8",
+      "48d7e51b1e56f467a52f4e22e83a56a784f11732",
+      "8ee53dfe9f2727d4bf25e26f38d4690007140fd9"
+    ],
+    "history_preserved": true
+  },
+  "import": {
+    "run_id": 41580072870,
+    "conclusion": "success",
+    "force": false,
+    "bundle_sha256": "680928b913a6ffc81872478e339f904e4f656a06d1c48105e6a219d31f0c4cc3"
+  },
+  "remote_ci": {
+    "run_id": 41580781455,
+    "url": "https://github.com/AntonioAPDL/bayes-stesn/actions/runs/41580781455",
+    "event": "push",
+    "commit": "ebd2d1a031796cadae5dbb32a992e10b3f7cf653",
+    "conclusion": "success",
+    "jobs_passed": 4,
+    "evidence": "ci_summary.json"
+  },
+  "assets": [
+    {
+      "name": "bayes_stesn_v021_ci_validation.sha256",
+      "bytes": 101,
+      "sha256": "f955092f48735242bf1999d45de009da5050a2600efcf5b563cd71694f3344f4",
+      "url": "https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v021_ci_validation.sha256",
+      "verified_against_local": true
+    },
+    {
+      "name": "bayes_stesn_v021_ci_validation.zip",
+      "bytes": 205910,
+      "sha256": "a0a236bf5b6160c67b298673cd65bc657a7d6f242eee1f97e73db7a695418fde",
+      "url": "https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v021_ci_validation.zip",
+      "verified_against_local": true
+    },
+    {
+      "name": "bayes_stesn_v02_benchmark_report.pdf",
+      "bytes": 4107676,
+      "sha256": "ca88fa2baff51621b92d9db792ea8d7dd384e7b429769476a3d13139eb02148a",
+      "url": "https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v02_benchmark_report.pdf",
+      "verified_against_local": true
+    },
+    {
+      "name": "bayes_stesn_v02_code_reports_detail.zip",
+      "bytes": 345106573,
+      "sha256": "d1ebadc3bd1ff7e6976e3902a112204d2b45e02723d2e158ea9c65b00c5359ce",
+      "url": "https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v02_code_reports_detail.zip",
+      "verified_against_local": true
+    },
+    {
+      "name": "bayes_stesn_v02_data_evolution.mp4",
+      "bytes": 1389268,
+      "sha256": "4c5019b50cbbb65bb10bfacda10216a8bf3632914f88f077109b952c4604717c",
+      "url": "https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v02_data_evolution.mp4",
+      "verified_against_local": true
+    },
+    {
+      "name": "bayes_stesn_v02_detailed_forecast_report.pdf",
+      "bytes": 1075356,
+      "sha256": "6fe2036967ca9aee701abbb44395844f22bce4a087ec0105c91cc898b3d42876",
+      "url": "https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v02_detailed_forecast_report.pdf",
+      "verified_against_local": true
+    },
+    {
+      "name": "bayes_stesn_v02_forecast_truth_errors.mp4",
+      "bytes": 2986238,
+      "sha256": "41ce5db68f4acbfd37fb78e51343b03005122503c1e9a34a1a270f866be8bc1c",
+      "url": "https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v02_forecast_truth_errors.mp4",
+      "verified_against_local": true
+    },
+    {
+      "name": "bayes_stesn_v02_model_comparison.png",
+      "bytes": 473683,
+      "sha256": "62435f8e49e02968b92e627259d60070080c496f7b42552c1c4ec3912adab0a0",
+      "url": "https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v02_model_comparison.png",
+      "verified_against_local": true
+    },
+    {
+      "name": "bayes_stesn_v02_pilot_results.zip",
+      "bytes": 306720786,
+      "sha256": "abc9f3f8201b5e128cea3e29e0ff2dd433ca411154550250783a0060ee8f66e5",
+      "url": "https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v02_pilot_results.zip",
+      "verified_against_local": true
+    },
+    {
+      "name": "bayes_stesn_v02_source.bundle",
+      "bytes": 3405030,
+      "sha256": "680928b913a6ffc81872478e339f904e4f656a06d1c48105e6a219d31f0c4cc3",
+      "url": "https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/bayes_stesn_v02_source.bundle",
+      "verified_against_local": true
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "bytes": 828,
+      "sha256": "338b0695accee40199c8bf3b41f433da5b9b49a333bbebcbf72664e6e9964f77",
+      "url": "https://github.com/AntonioAPDL/bayes-stesn/releases/download/v0.2.1/SHA256SUMS.txt",
+      "verified_against_local": true
+    }
+  ],
+  "scope": "Public release and remote CI verification. Archived scientific reports retain their original v0.2.0 source identity. Main may advance through publication-documentation commits."
+}
