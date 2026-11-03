@@ -1,0 +1,114 @@
+{
+  "alignment": {
+    "causal_next_feature_replay_exact": true,
+    "first64_saved_observation_reconstruction_max_abs": 8.881784197001252e-16,
+    "first_evaluated_row": 520,
+    "first_evaluated_time": 1040.0,
+    "history_site_order_coordinates_scale_exact": true,
+    "last_fitted_row": 519,
+    "last_fitted_time": 1038.0,
+    "observation_spacing": 2.0,
+    "response_center": -0.660499760269267,
+    "response_scale": 1.2271485619841216,
+    "saved_feature_replay_max_abs": 0.0,
+    "saved_state_replay_max_abs": 0.0,
+    "stored_rows": 520
+  },
+  "decoder": {
+    "final40_true_field_projection_rmse": 0.6813757825129966,
+    "first_lead_outside_span_fraction_of_conditional_readout_mse64": 0.9893205117735764,
+    "first_lead_unavoidable_outside_span_rmse": 0.8001015991858235,
+    "first_lead_within_span_readout_error_rmse64": 0.08312886527739195,
+    "fitting_panel_projection_rmse": 0.6855572059105897,
+    "orthogonal_mse_decomposition_error": 1.8388068845354155e-16,
+    "rank": 12,
+    "sites": 25
+  },
+  "elapsed_diagnostic_seconds": 0.9175287249963731,
+  "identity": "e91b796e1487648487f25e9a49332d0ba0aa425499bf4d9446228b09b2313014",
+  "input_hashes": {
+    "results/v03/development/reference_release/g3_excitable_field/rep_000/A/bayes_esn_ridge/model.npz": "986b186706de6d9387e4837a8e5937516b5efca9555f3eda2068c9c171001674",
+    "results/v03/development/reference_release/g3_excitable_field/rep_000/simulation.npz": "9a87379125a1aabc8671c56750740782500b4300e7fd36632f08271ba172dddc",
+    "results/v03/extensions/release_paths_g3_excitable_field/manifest.json": "ed55455a1bd9dd3a3499b50aaa74df2ff4533a687dda691c9e23d25dd9cc20fe",
+    "results/v03/extensions/release_paths_g3_excitable_field/output_inventory.json": "df45ec43a8da1ef2ee810dcf3d5a385855a7df8e4e1922559ea00ee0266ac156",
+    "results/v03/extensions/release_paths_g3_excitable_field/path_stability_forecast.npz": "5f807bb872f72ea5747890c2a954b8587bc36a0f8a979c3af7355b4ad0f58af2"
+  },
+  "interpretation_limits": [
+    "64 conditional draws give a descriptive first-step moment reference, not an exact posterior mean.",
+    "Decoder projection uses evaluator truth only as a diagnostic; it is not a permitted forecast or a model selection result.",
+    "Growing saved-path variance demonstrates forecast dispersion under stochastic observation feedback; it does not by itself identify separate parameter-versus-innovation contributions at long leads.",
+    "No off-by-one, site-order or response-scale discrepancy was found by these exact checks."
+  ],
+  "one_step": {
+    "conditional_readout64_mcse_rms": 0.021726155044832482,
+    "conditional_readout_mean64_rmse": 0.8044084641909349,
+    "conditional_readout_variance_mean64": 0.030209652034054398,
+    "empirical_total_variance_mean_saved512": 0.5258324342114468,
+    "last_fitted_readout64_rmse": 0.7119593764529624,
+    "mean_conditional_innovation_variance64": 0.5015022234941476,
+    "mean_conditional_readout64_vs_saved512_rms": 0.02990374171598902,
+    "persistence_rmse": 0.6431121435821494,
+    "saved512_mean_rmse": 0.804625790824541,
+    "total_variance_reference64": 0.531711875528202
+  },
+  "posterior_identity": "b95696145314739f4914ffc01688bb408430469a1c81050ccec3924b5e70e2b4",
+  "saved_path_leads": [
+    {
+      "conditional_empirical_mean_mcse_max": 0.03388820261042708,
+      "conditional_empirical_mean_mcse_rms": 0.03204709773238806,
+      "decoder_projection_rmse": 0.8001015991858235,
+      "empirical_mean_rmse": 0.804625790824541,
+      "lead": 1,
+      "predictive_sd_rms": 0.7251430439654281,
+      "sample_abs_max": 4.528833963203643
+    },
+    {
+      "conditional_empirical_mean_mcse_max": 0.05988548672568607,
+      "conditional_empirical_mean_mcse_rms": 0.043914201047123964,
+      "decoder_projection_rmse": 0.8215709769757682,
+      "empirical_mean_rmse": 0.8783321870214964,
+      "lead": 2,
+      "predictive_sd_rms": 0.9936649392259437,
+      "sample_abs_max": 4.937685454559348
+    },
+    {
+      "conditional_empirical_mean_mcse_max": 0.0922529664404812,
+      "conditional_empirical_mean_mcse_rms": 0.06439057122952707,
+      "decoder_projection_rmse": 0.7112093381457418,
+      "empirical_mean_rmse": 0.8996859071896189,
+      "lead": 5,
+      "predictive_sd_rms": 1.4569923059479681,
+      "sample_abs_max": 10.856098158396431
+    },
+    {
+      "conditional_empirical_mean_mcse_max": 0.2030876532665474,
+      "conditional_empirical_mean_mcse_rms": 0.11572638995305268,
+      "decoder_projection_rmse": 0.6356417365084138,
+      "empirical_mean_rmse": 1.21141193154354,
+      "lead": 10,
+      "predictive_sd_rms": 2.6185892831373536,
+      "sample_abs_max": 37.50631068411693
+    },
+    {
+      "conditional_empirical_mean_mcse_max": 0.48249722393128264,
+      "conditional_empirical_mean_mcse_rms": 0.24257765919833804,
+      "decoder_projection_rmse": 0.7028578170722876,
+      "empirical_mean_rmse": 1.7193815344145933,
+      "lead": 20,
+      "predictive_sd_rms": 5.488905849072132,
+      "sample_abs_max": 71.2522025591838
+    },
+    {
+      "conditional_empirical_mean_mcse_max": 0.7240832946954981,
+      "conditional_empirical_mean_mcse_rms": 0.38588923909774225,
+      "decoder_projection_rmse": 0.7779197144187758,
+      "empirical_mean_rmse": 2.5848604247603815,
+      "lead": 40,
+      "predictive_sd_rms": 8.73167672809378,
+      "sample_abs_max": 79.80874568376407
+    }
+  ],
+  "schema": "saved-G3-first-step-review-1.0",
+  "scope": "Read-only saved fit and saved512-path artifact;64 original path parameter draws recovered; no refit and no new full forecast",
+  "source_fingerprint": "e5180c486ecaa849bf5efeb0a67fe8ec30e963407f3eabe8c78009f88c40dc68"
+}

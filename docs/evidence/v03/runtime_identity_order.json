@@ -1,0 +1,115 @@
+{
+  "cause": "Runtime identity incorrectly treated dynamic-library enumeration order as scientifically meaningful. Import order changes the list order, while its complete records remain identical as a multiset.",
+  "fix": {
+    "change": "Canonical JSON sort of complete selected BLAS inventory records, preserving duplicates and all numerical fields.",
+    "commit": "e68cb8dbff0b5d1ba92d0e62d6c68f742dcb0c8f",
+    "fresh_spawn_probe": {
+      "different_fields": [],
+      "entire_environments_equal": true,
+      "threadpool_record_count": 2
+    },
+    "function": "bayes_stesn.benchmark.runner.benchmark_environment",
+    "regression": "tests/test_runtime_environment_identity.py",
+    "source_fingerprint": "e5180c486ecaa849bf5efeb0a67fe8ec30e963407f3eabe8c78009f88c40dc68",
+    "suites": {
+      "locked_neural_source": {
+        "junit": "runtime_identity_locked_tests.xml",
+        "junit_sha256": "1e68328c43f87c0a7a4dd3997b32dc912b0e7bae5f0a0856e6d46d984ff97372",
+        "junit_totals": {
+          "errors": 0,
+          "failures": 0,
+          "skipped": 0,
+          "tests": 429
+        },
+        "pytest_deselected": 0,
+        "pytest_passed": 353,
+        "pytest_skipped": 0,
+        "seconds": 40.68,
+        "subtests_passed": 76
+      },
+      "unlocked_installed_core": {
+        "junit": "runtime_identity_unlocked_core_tests.xml",
+        "junit_sha256": "abbad705d95d5273ba204337c9f2ff6e717e354b1a19d3621ff4b101b8319169",
+        "junit_totals": {
+          "errors": 0,
+          "failures": 0,
+          "skipped": 2,
+          "tests": 417
+        },
+        "pytest_deselected": 12,
+        "pytest_passed": 339,
+        "pytest_skipped": 2,
+        "seconds": 35.84,
+        "subtests_passed": 76
+      }
+    },
+    "verification_status": "passed unlocked installed-core full suite and locked neural/source full suite; public matrix and final isolated release gate remain separate"
+  },
+  "independent_spawn_probe": {
+    "child_versions_in_observed_order": [
+      "0.3.31.dev",
+      "0.3.34.106.0"
+    ],
+    "different_fields": [
+      "threadpools"
+    ],
+    "entire_environment_equal_after_canonical_record_sort": true,
+    "evidence": "Pre-fix observed parent/child probe and persisted full-suite invalidation. Values are recorded here; rerunning the same probe after correction verifies equality.",
+    "fits_or_forecasts_performed": false,
+    "parent_versions_in_observed_order": [
+      "0.3.34.106.0",
+      "0.3.31.dev"
+    ],
+    "same_architecture": "SkylakeX",
+    "same_library_multiset": true,
+    "script": "investigate_runtime_order.py",
+    "threads_each": 1
+  },
+  "installation": "Noneditable package in isolated bstesn-v03-core virtual environment; PYTHONPATH explicitly unset; PyTorch absent",
+  "limitation": "CI used Python 3.12.15 and newer report dependencies; local reproduction uses Python 3.12.14 and changes only NumPy, SciPy and threadpoolctl. This is sufficient to reproduce the runtime-order failure; the full public matrix must still validate the eventual fix.",
+  "local_installed_source_fingerprint": "fb67b90f0f2c5810676617b77bca6e4f75b32d0ba06f8058d3760dee4511125e",
+  "local_python": "3.12.14",
+  "locked_core": {
+    "blas_inventory_versions": [
+      "0.3.30",
+      "0.3.30"
+    ],
+    "deselected": 12,
+    "full_suite_passed": 332,
+    "junit": "core_ci_investigation.xml",
+    "log": "core_ci_investigation.log",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "seconds": 38.76,
+    "skipped": 2,
+    "subtests_passed": 76,
+    "threadpoolctl": "3.6.0"
+  },
+  "public_ci_commit": "f44e953bd145b66d39990dec1ec1d4375ebdae22",
+  "public_ci_job_id": 125765073219,
+  "public_ci_python": "3.12.15",
+  "public_ci_run_id": 41590242502,
+  "recommended_fix": "Canonically sort complete selected BLAS records while retaining duplicates and strict version, architecture, API and thread-count fields. No identity relaxation and no numerical model changes.",
+  "repository": "AntonioAPDL/bayes-stesn",
+  "schema": "ci-runtime-order-investigation-1.0",
+  "source_edits_by_investigator": true,
+  "unlocked_numeric_core": {
+    "deselected": 12,
+    "failed_tests": [
+      "tests/test_benchmark_pipeline.py::test_parallel_spawn_matches_serial_scores",
+      "tests/test_runner_execution_v03.py::test_job_chunk_resume_changes_workers_without_changing_science"
+    ],
+    "full_suite_failed": 2,
+    "full_suite_passed": 330,
+    "isolated_chunk_resume_test_passed": true,
+    "junit": "core_ci_unlocked_full.xml",
+    "log": "core_ci_unlocked_full.log",
+    "numpy": "2.5.4",
+    "saved_state_error": "Worker numerical runtime differs from the sealed computation identity",
+    "scipy": "1.18.1",
+    "seconds": 36.2,
+    "skipped": 2,
+    "subtests_passed": 76,
+    "threadpoolctl": "3.7.0"
+  }
+}

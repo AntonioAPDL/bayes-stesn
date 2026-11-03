@@ -1,0 +1,8 @@
+{
+  "schema": "task-owned-clean-cache-advice-1.0",
+  "files": 3006,
+  "file_bytes_advised": 1890287526,
+  "cgroup_bytes_before": 8589864960,
+  "cgroup_bytes_after": 8512135168,
+  "scope": "POSIX_FADV_DONTNEED on regular task-owned files only; file contents, model budgets, source and other processes unchanged; kernel advice need not be honored"
+}

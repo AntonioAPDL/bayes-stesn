@@ -1,0 +1,870 @@
+{
+  "ablation_results": [
+    {
+      "comparisons": [
+        {
+          "common_qualified_datasets": 1,
+          "loss_difference_extension_minus_scalar": {
+            "crps": 0.0007519358222823902,
+            "mae": -0.00033539439131760607,
+            "rmse": 0.013262928509364502
+          },
+          "mcse_across_datasets": null,
+          "variant": "full_residual_ar"
+        }
+      ],
+      "evaluation": {
+        "development_manifest_sha256": "98e6db554039f402deb157ab9a8f84449040b6fd7de626676951583f34ee5bf6",
+        "history_matched_exactly": true,
+        "horizon": 40,
+        "independent_datasets": 1,
+        "manifest_identity": "baf3d92b34015049eb87e1ed803bb10c2db33759f7eed6709a94a2b95830847d",
+        "origin_index": 520,
+        "replication": 0,
+        "scenario": "g4_existing_fronts",
+        "simulation_sha256": "b2f3534026f0eda702a7467a29f460d0d61e1454650ee4a06e128e2d73f39aca",
+        "target_count": 25,
+        "track": "A"
+      },
+      "forecast_paths": 128,
+      "interpretation": "Observed G4 losses, one dataset; no general predictive superiority claim",
+      "rows": [
+        {
+          "final_gate": {
+            "chains": 4,
+            "failed_parameters": {},
+            "maximum_rhat": 1.0036991781319466,
+            "minimum_bulk_ess": 744.4478356298429,
+            "minimum_tail_ess": 900.5653714209092,
+            "passed": true,
+            "retained_per_chain": 2000
+          },
+          "fit_invocation_seconds": 8.444158404003247,
+          "forecast_seconds": 0.3961616199958371,
+          "initial_and_final_gate_passes": [
+            true
+          ],
+          "native_90_percent_interval": {
+            "coverage": 0.897,
+            "interval_score": 1.3525513407606768,
+            "width": 1.0154635681074127
+          },
+          "native_scores": {
+            "crps": 0.16509563875516706,
+            "mae": 0.226920642117147,
+            "rmse": 0.2994378610064395
+          },
+          "posterior_identity": "00289f42c65ba89a8d9755eb459c08bb8b5f08ade1d300725ef82ff186e54dd2",
+          "qualified": true,
+          "variant": "scalar_reference"
+        },
+        {
+          "final_gate": {
+            "chains": 4,
+            "failed_parameters": {},
+            "maximum_rhat": 1.0083803733808812,
+            "minimum_bulk_ess": 532.4805532088221,
+            "minimum_tail_ess": 626.314225637074,
+            "passed": true,
+            "retained_per_chain": 2000
+          },
+          "fit_invocation_seconds": 16.519382708997,
+          "forecast_seconds": 0.5227580319988192,
+          "initial_and_final_gate_passes": [
+            true
+          ],
+          "native_90_percent_interval": {
+            "coverage": 0.909,
+            "interval_score": 1.362149034775765,
+            "width": 0.982068200394972
+          },
+          "native_scores": {
+            "crps": 0.16584757457744945,
+            "mae": 0.2265852477258294,
+            "rmse": 0.312700789515804
+          },
+          "posterior_identity": "c95289f58cdbf1f1bba7aeb5959aaf3ed06705bc0ff8f08d981982175e3a4bae",
+          "qualified": true,
+          "variant": "full_residual_ar"
+        }
+      ],
+      "scenario": "g4_existing_fronts"
+    },
+    {
+      "comparisons": [
+        {
+          "common_qualified_datasets": 0,
+          "loss_difference_extension_minus_scalar": null,
+          "mcse_across_datasets": null,
+          "variant": "full_residual_ar"
+        }
+      ],
+      "evaluation": {
+        "development_manifest_sha256": "98e6db554039f402deb157ab9a8f84449040b6fd7de626676951583f34ee5bf6",
+        "history_matched_exactly": true,
+        "horizon": 40,
+        "independent_datasets": 1,
+        "manifest_identity": "baf3d92b34015049eb87e1ed803bb10c2db33759f7eed6709a94a2b95830847d",
+        "origin_index": 520,
+        "replication": 0,
+        "scenario": "g3_excitable_field",
+        "simulation_sha256": "9a87379125a1aabc8671c56750740782500b4300e7fd36632f08271ba172dddc",
+        "target_count": 25,
+        "track": "A"
+      },
+      "forecast_paths": 128,
+      "interpretation": "G3 AR failed inference qualification at its fixed budget; no native loss comparison exists",
+      "rows": [
+        {
+          "final_gate": {
+            "chains": 4,
+            "failed_parameters": {},
+            "maximum_rhat": 1.0041712583149427,
+            "minimum_bulk_ess": 1311.8226418302668,
+            "minimum_tail_ess": 1188.7756739659742,
+            "passed": true,
+            "retained_per_chain": 4000
+          },
+          "fit_invocation_seconds": 23.48575478499697,
+          "forecast_seconds": 0.5530654769972898,
+          "initial_and_final_gate_passes": [
+            false,
+            true
+          ],
+          "native_90_percent_interval": {
+            "coverage": 0.991,
+            "interval_score": 17.367380385940137,
+            "width": 17.328368971851404
+          },
+          "native_scores": {
+            "crps": 1.0209122971057416,
+            "mae": 1.0057147074824235,
+            "rmse": 1.9779326946943658
+          },
+          "posterior_identity": "1b8af0bf5d0f293c3a794783ab06bd73a54cb94fc30fa3bffcc7d04b8ea0b77b",
+          "qualified": true,
+          "variant": "scalar_reference"
+        },
+        {
+          "final_gate": {
+            "chains": 4,
+            "failed_parameters": {
+              "functionals.log_sigma2_original_units": {
+                "ess_bulk": 87.05671704067082,
+                "ess_tail": 115.74732044905703,
+                "mcse_mean": 0.039852758679705245,
+                "mean": -1.4637858432131874,
+                "passed": false,
+                "rhat": 1.0597102196876604,
+                "sd": 0.5451002372411372
+              },
+              "hyperparameters.log_ell": {
+                "ess_bulk": 338.75044767541584,
+                "ess_tail": 177.14010542333475,
+                "mcse_mean": 0.012766516009078825,
+                "mean": -3.6350072893152037,
+                "passed": false,
+                "rhat": 1.028026798942201,
+                "sd": 0.23078874312988795
+              },
+              "hyperparameters.log_q": {
+                "ess_bulk": 82.93157146373069,
+                "ess_tail": 119.06177923203347,
+                "mcse_mean": 0.14373951504343088,
+                "mean": -0.1483863239839218,
+                "passed": false,
+                "rhat": 1.065870205472904,
+                "sd": 1.2036720256104585
+              },
+              "hyperparameters.prior.log_precision": {
+                "ess_bulk": 115.05189429211843,
+                "ess_tail": 237.6598651133508,
+                "mcse_mean": 0.041179487192214745,
+                "mean": -4.722978506139315,
+                "passed": false,
+                "rhat": 1.0547953699107904,
+                "sd": 0.5503178487260836
+              }
+            },
+            "maximum_rhat": 1.065870205472904,
+            "minimum_bulk_ess": 82.93157146373069,
+            "minimum_tail_ess": 115.74732044905703,
+            "passed": false,
+            "retained_per_chain": 4000
+          },
+          "fit_invocation_seconds": 36.621376775998215,
+          "forecast_seconds": null,
+          "initial_and_final_gate_passes": [
+            false,
+            false
+          ],
+          "native_90_percent_interval": null,
+          "native_scores": null,
+          "posterior_identity": "29299ed6c36db7e627179b56538efbd07016c47cf72790bfa0b923999bb0a639",
+          "qualified": false,
+          "variant": "full_residual_ar"
+        }
+      ],
+      "scenario": "g3_excitable_field"
+    }
+  ],
+  "artifact_type": "current_source_bounded_development_findings_not_confirmation",
+  "automatic_model_promotion": false,
+  "claim_limits": [
+    "One dataset per scenario; no across-dataset MCSE or confirmatory superiority claim.",
+    "G4 AR losses are observed values from128-path empirical forecasts, not a statistically established ranking.",
+    "G3 AR is unqualified and has no native scores; do not impute a loss comparison.",
+    "Training residual ACF and group RMS are descriptive triage, not independent-site tests or causal feature importance.",
+    "Path-count selection improves the numerical budget for subsequent studies; it does not alter previously saved forecasts or establish model adequacy."
+  ],
+  "current_source_training_inspections": [
+    {
+      "fraction_abs_standardized_residual_above_3": 0.009545454545454546,
+      "future_labels_used": false,
+      "gate": {
+        "chains": 4,
+        "failed_parameters": {},
+        "maximum_rhat": 1.0071285042674663,
+        "minimum_bulk_ess": 727.6114714904127,
+        "minimum_tail_ess": 832.6057739919524,
+        "passed": true,
+        "retained_per_chain": 2000
+      },
+      "group_coefficient_rms_ratio": 1.5052165752406426,
+      "lag1_sign_agreement": 1.0,
+      "likelihood_rows": 440,
+      "mean_residual_acf": {
+        "1": 0.7718321382772426,
+        "10": 0.14860119893252305,
+        "2": 0.7287191556306041,
+        "5": 0.4988647501341598
+      },
+      "observed_sites": 25,
+      "path": "results/v03/extensions/release_ar_g4_existing_fronts/inspection.json",
+      "qualified_baseline": true,
+      "scenario": "g4_existing_fronts",
+      "sha256": "5a72b23e326d056b9d7e6b176bc2419826e929998ef2520ead0fbbb09a44d643",
+      "signals": {
+        "full_residual_ar": true,
+        "grouped_ridge": false
+      },
+      "standardized_residual_rms": 0.9746285336932317
+    },
+    {
+      "fraction_abs_standardized_residual_above_3": 0.002818181818181818,
+      "future_labels_used": false,
+      "gate": {
+        "chains": 4,
+        "failed_parameters": {},
+        "maximum_rhat": 1.0063802671091715,
+        "minimum_bulk_ess": 604.616032754245,
+        "minimum_tail_ess": 739.3730592888115,
+        "passed": true,
+        "retained_per_chain": 2000
+      },
+      "group_coefficient_rms_ratio": 1.4239395413031026,
+      "lag1_sign_agreement": 1.0,
+      "likelihood_rows": 440,
+      "mean_residual_acf": {
+        "1": 0.7423172497559262,
+        "10": -0.05046004559507269,
+        "2": 0.3771777826600048,
+        "5": -0.4085366511312506
+      },
+      "observed_sites": 25,
+      "path": "results/v03/extensions/release_ar_g3_excitable_field/inspection.json",
+      "qualified_baseline": true,
+      "scenario": "g3_excitable_field",
+      "sha256": "76f094df7b338c69bf33301121b5470558c5e12fe0f214ee274c6821b97cad46",
+      "signals": {
+        "full_residual_ar": true,
+        "grouped_ridge": false
+      },
+      "standardized_residual_rms": 0.9802075254021229
+    }
+  ],
+  "evidence_inventories": [
+    {
+      "decisions_path": "results/v03/extensions/release_ar_g4_existing_fronts/decisions.json",
+      "decisions_sha256": "88a91e93e76d702e84508a2516f71e82523ffec66aed4f8c028969c44bb9f082",
+      "identity": "1729e7da7e9c6b0a6494f0bd17010e9a6758e2c80ef8b9e63ab39a19a378eaa2",
+      "inventoried_files": 14,
+      "manifest_identity": "dbf5148fab1f6b09a9cc63c1332e5db2bda45be44ed3bde8a2731bd4e4b9af19",
+      "mode": "extensions",
+      "path": "results/v03/extensions/release_ar_g4_existing_fronts/output_inventory.json",
+      "scenario": "g4_existing_fronts",
+      "sha256": "c1f1dcab5f04a7a034e9a1c497f520ea0ddb4d5ff03d3f5bcfcff82e6e159edb"
+    },
+    {
+      "decisions_path": "results/v03/extensions/release_paths_g4_existing_fronts/decisions.json",
+      "decisions_sha256": "742c65cab57a54ba4b3a917fbf1b17d96821a169d3e98eb9755eea58d0c89a6c",
+      "identity": "cea6ba6a862f7c19d4614cd5bd3bb8185cca023f3dc66fc3280846a8f0450244",
+      "inventoried_files": 5,
+      "manifest_identity": "022ba53435b1f2142d874c4779421f114dd497355c0b3123e5ade33162159dd0",
+      "mode": "path_stability",
+      "path": "results/v03/extensions/release_paths_g4_existing_fronts/output_inventory.json",
+      "scenario": "g4_existing_fronts",
+      "sha256": "57574deaf74d8ff0a213e72fe687f9a12332270e0de2fcec9baad84608aa374f"
+    },
+    {
+      "decisions_path": "results/v03/extensions/release_ar_g3_excitable_field/decisions.json",
+      "decisions_sha256": "6cd0e6c835b64e7a5fbe7a271f933b603d0d9e2d1719e659ba20f7a28c7f04b3",
+      "identity": "425da146a468a9e1e86ba403c4daac228be63aacf96d3e7ee43ae888c1b4ff97",
+      "inventoried_files": 13,
+      "manifest_identity": "6ca4bd1e418f88b3e71aee066430936f4601065f6c99890a02e529a44441c85d",
+      "mode": "extensions",
+      "path": "results/v03/extensions/release_ar_g3_excitable_field/output_inventory.json",
+      "scenario": "g3_excitable_field",
+      "sha256": "9a8d57b11ca99bc86b50332c650ea047444b7e6d0376d4a7a70ac9ebd52bfaba"
+    },
+    {
+      "decisions_path": "results/v03/extensions/release_paths_g3_excitable_field/decisions.json",
+      "decisions_sha256": "b2bcb01245da68b89c47f891f18c107da09b4905a8a63629da4d88f3ba0b9de7",
+      "identity": "c8b87fe4ea7c6551c173cb32941a2d30899bdf6fff32891057ea88c015bfa775",
+      "inventoried_files": 5,
+      "manifest_identity": "06c517a117ca233edae9848bc48e93932fe7ffd9163883c4d77ee61c243d415b",
+      "mode": "path_stability",
+      "path": "results/v03/extensions/release_paths_g3_excitable_field/output_inventory.json",
+      "scenario": "g3_excitable_field",
+      "sha256": "df45ec43a8da1ef2ee810dcf3d5a385855a7df8e4e1922559ea00ee0266ac156"
+    }
+  ],
+  "extensions": [
+    {
+      "core_api": "PriorSpec.grouped",
+      "default_disposition": "optional_pending_qualified_baseline_and_descriptive_group_signal",
+      "disposition": "optional_not_triggered_by_current_source_training_inspections",
+      "id": "grouped_ridge",
+      "path": "bounded_opt_in_paired_ablation",
+      "rationale": "Current-source G3/G4 qualified baseline inspections give non-intercept group coefficient-RMS ratios 1.4239395413 and 1.5052165752, both below the prespecified threshold of 3. No grouped-ridge fit was run; this does not prove it cannot help.",
+      "references": [
+        "docs/derivations/02_gaussian_priors_mcmc.md",
+        "src/bayes_stesn/priors.py",
+        "tests/test_gaussian_priors.py",
+        "tests/test_extensions_api.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "grouped_ridge_signal"
+    },
+    {
+      "core_api": "PriorSpec.group_rhs / PriorSpec.column_rhs",
+      "default_disposition": "deferred_pending_declared_sparsity_prior_and_grouped_ridge_evidence",
+      "disposition": "deferred_without_sparsity_evidence_or_elicited_prior",
+      "id": "group_column_rhs",
+      "path": "existing_core_implementation_and_tests",
+      "rationale": "Neither current-source inspection triggers grouped shrinkage, and neither supplies a sparsity assumption, global scale, or slab elicitation. Do not escalate to RHS as a response to the AR negative findings.",
+      "references": [
+        "docs/derivations/02_gaussian_priors_mcmc.md",
+        "tests/test_gaussian_priors.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "Requires explicit sparsity/global-scale/slab calibration; training group amplitudes alone are insufficient."
+    },
+    {
+      "attempted_ablation_datasets": 2,
+      "core_api": "ModelSpec(innovations='full_residual_ar')",
+      "default_disposition": "optional_pending_qualified_baseline_and_residual_temporal_signal",
+      "disposition": "optional_not_promoted_primary_scalar_ridge_retained",
+      "id": "full_residual_ar",
+      "path": "bounded_opt_in_paired_ablation",
+      "qualified_ablation_datasets": 1,
+      "rationale": "On G4, both fits qualified but AR had higher observed RMSE and CRPS, a negligible lower MAE, and higher 90-percent interval score. On G3, AR failed both gates after its one permitted continuation; no native forecast or paired loss was produced. Retain scalar ridge as primary. One evaluated G4 block cannot establish general predictive harm or benefit, and G3 is an inference failure rather than a measured loss comparison.",
+      "references": [
+        "docs/derivations/03_covariance_latent_mcmc.md",
+        "src/bayes_stesn/sampling.py",
+        "tests/test_gaussian_priors.py"
+      ],
+      "scientific_ablation_executed": true,
+      "trigger": "full_residual_ar_signal"
+    },
+    {
+      "core_api": "ModelSpec(innovations='latent_ar')",
+      "default_disposition": "deferred_pending_process_vs_measurement_noise_rationale",
+      "disposition": "deferred_until_process_and_measurement_dynamics_are_identified",
+      "id": "latent_spatial_ar",
+      "path": "existing_core_implementation_and_tests",
+      "rationale": "Full-residual AR is now tested but not promoted; its G4 losses and G3 inference failure do not identify separate latent-process and fresh measurement-noise dynamics. A latent-AR model needs its own rationale and budget, not an automatic rescue attempt.",
+      "references": [
+        "src/bayes_stesn/dynamics.py",
+        "tests/test_spatial_dynamics.py",
+        "tests/test_extensions_api.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "A common residual ACF does not identify separate latent-state and measurement dynamics."
+    },
+    {
+      "core_api": "ModelSpec(innovations='field_t')",
+      "default_disposition": "deferred_to_prespecified_G5_field_shock_arm",
+      "disposition": "deferred_to_separate_G5_field_shock_study_after_temporal_repair",
+      "id": "field_t",
+      "path": "existing_core_implementation_and_tests",
+      "rationale": "The current-source G4 standardized training tail fraction is 0.009545 and G3 is 0.002818, but correlated residuals and temporal/mean misspecification confound interpretation. No contamination mechanism was established; retain the separate prespecified G5 field-shock/local-outlier studies.",
+      "references": [
+        "src/bayes_stesn/dynamics.py",
+        "tests/test_spatial_dynamics.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "Needs whole-field contamination evidence and its own compatible study; residual tails are descriptive only."
+    },
+    {
+      "core_api": "ModelSpec(innovations='local_t')",
+      "default_disposition": "deferred_to_prespecified_G5_local_outlier_arm",
+      "disposition": "deferred_to_separate_G5_local_outlier_study_after_temporal_repair",
+      "id": "local_measurement_t",
+      "path": "existing_core_implementation_and_tests",
+      "rationale": "The current-source G4 standardized training tail fraction is 0.009545 and G3 is 0.002818, but correlated residuals and temporal/mean misspecification confound interpretation. No contamination mechanism was established; retain the separate prespecified G5 field-shock/local-outlier studies.",
+      "references": [
+        "src/bayes_stesn/dynamics.py",
+        "tests/test_spatial_dynamics.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "Needs local contamination evidence; do not combine with latent AR without a supported derivation."
+    },
+    {
+      "core_api": "CovarianceSpec(anisotropy=True)",
+      "default_disposition": "optional_pending_directional_residual_variogram_analysis",
+      "disposition": "optional_pending_directional_spatial_residual_evidence",
+      "id": "anisotropy",
+      "path": "existing_core_implementation_and_tests",
+      "rationale": "The completed inspections measure temporal ACF and feature groups; no directional residual variogram was computed. A spatial anisotropy claim is therefore unsupported by these signals.",
+      "references": [
+        "src/bayes_stesn/spatial.py",
+        "tests/test_spatial_dynamics.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "Directional residual structure was not established by this tool's temporal/group inspection."
+    },
+    {
+      "core_api": "CovarianceSpec(range_prior='pc')",
+      "default_disposition": "optional_pending_spatial_units_and_prior_elicitation",
+      "disposition": "optional_prior_sensitivity_with_declared_spatial_elicitation",
+      "id": "range_prior_alternatives",
+      "path": "existing_core_implementation_and_tests",
+      "rationale": "The current coordinates are normalized, but no new elicited range information or prior-sensitivity benefit is supplied by the inspections. Preserve the current prior during the AR ablation and declare any PC prior study separately.",
+      "references": [
+        "docs/derivations/03_covariance_latent_mcmc.md",
+        "tests/test_spatial_dynamics.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "A prior change needs a declared reference scale; it is not selected from final forecast errors."
+    },
+    {
+      "core_api": "CovarianceSpec(nonstationary=True)",
+      "default_disposition": "deferred_pending_persistent_spatial_inadequacy_after_simpler_models",
+      "disposition": "deferred_until_spatial_inadequacy_persists_after_simpler_repairs",
+      "id": "nonstationarity",
+      "path": "existing_core_implementation_and_tests",
+      "rationale": "Strong temporal ACF and different residual RMS between two DGPs do not establish spatial nonstationarity. Reassess location-dependent residual inadequacy only after the simpler temporal/capacity repairs.",
+      "references": [
+        "src/bayes_stesn/spatial.py",
+        "tests/test_spatial_dynamics.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "Training residual ACF and group RMS do not establish spatial nonstationarity."
+    },
+    {
+      "core_api": "ModelSpec(innovations='heteroskedastic')",
+      "default_disposition": "deferred_without_declared_origin_available_variance_covariates",
+      "disposition": "deferred_without_origin_available_variance_predictors",
+      "id": "heteroskedasticity",
+      "path": "existing_core_implementation_and_tests",
+      "rationale": "The inspection does not supply a variance-covariate design known at forecast origin. Standardized residual scale and a few tail exceedances are insufficient to define this extension.",
+      "references": [
+        "src/bayes_stesn/dynamics.py",
+        "tests/test_extensions_api.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "Requires variance predictors known at forecast origin and the existing dense-size gates."
+    },
+    {
+      "core_api": null,
+      "default_disposition": "deferred_pending_residual_law_and_validation_design",
+      "disposition": "deferred_pending_EQESN_specific_residual_law_and_validation",
+      "id": "eqesn_residual_innovations",
+      "path": "separate_new_named_variant_required",
+      "rationale": "These are scalar Bayesian ESN residuals, not E-QESN residuals. The audited E-QESN undercoverage still motivates a separately named innovation model, but its law must be estimated from its own allowed training/validation data.",
+      "references": [
+        "src/bayes_stesn/benchmark/reservoir.py",
+        "docs/audits/post_release_2026_11_03/README.md"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "The audited undercoverage motivates research but does not specify a coherent innovation distribution."
+    },
+    {
+      "core_api": "benchmark.studies.run_calibration_study",
+      "default_disposition": "optional_via_existing_command_with_its_own_calibration_blocks",
+      "disposition": "optional_separate_calibration_study_not_available_in_current_saved_horizon",
+      "id": "interval_calibration",
+      "path": "existing_separate_calibration_workflow",
+      "rationale": "Training residual RMS is not forecast coverage. The saved development field has one 40-lead post-fit evaluation block, not the 25 calibration blocks plus independent later block prescribed by the plan. Use the existing separate calibration workflow, preserving raw native forecasts.",
+      "references": [
+        "src/bayes_stesn/benchmark/calibration.py",
+        "src/bayes_stesn/benchmark/studies.py",
+        "tests/test_benchmark_pipeline.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "Use a fixed coverage target and separate calibration/evaluation; finite 90/95 percent block ranks need at least 9/19 scores, without claiming exchangeability."
+    },
+    {
+      "core_api": null,
+      "default_disposition": "deferred_pending_temporal_kernel_inadequacy",
+      "disposition": "deferred_until_GP_specific_temporal_validation_supports_a_kernel_change",
+      "id": "periodic_gp",
+      "path": "new_declared_kernel_variant_required",
+      "rationale": "G3 baseline residual ACF is strongly negative at lag 5 and the AR fit fails qualification, but neither finding establishes an improved GP kernel. Require GP-specific temporal validation before adding a named periodic variant.",
+      "references": [
+        "src/bayes_stesn/benchmark/gaussian_gp.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "The core scenario/validation analysis must support a periodic component before adding its implementation."
+    },
+    {
+      "core_api": null,
+      "default_disposition": "deferred_pending_adequacy_of_reliably_converged_LGSSM",
+      "disposition": "deferred_until_converged_LGSSM_adequacy_analysis",
+      "id": "structured_lgssm",
+      "path": "new_declared_structure_variant_required",
+      "rationale": "The inspections concern Bayesian ESN fits and do not identify a missing LGSSM transition structure. Establish residual and validation limitations of the reliably converged baseline first.",
+      "references": [
+        "src/bayes_stesn/benchmark/linear_state.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "First establish the limitations of the stable unconstrained-coefficient transition within its norm constraint."
+    },
+    {
+      "core_api": "Existing diffusion-GRU rollout option; a basis-GRU multistep variant needs separate work",
+      "default_disposition": "optional_after_matched_horizon_stopping_and_real_tuning",
+      "disposition": "optional_after_neural_specific_horizon_matched_validation",
+      "id": "multistep_neural_training",
+      "path": "existing_diffusion_option_and_optional_new_basis_GRU_variant",
+      "rationale": "The repaired stopping horizon and existing diffusion-GRU rollout option can be evaluated with matched budgets. No neural-specific evidence is supplied by the ESN residual inspection; a basis-GRU curriculum remains a separate declared variant.",
+      "references": [
+        "src/bayes_stesn/benchmark/neural.py",
+        "src/bayes_stesn/benchmark/basis_gru.py",
+        "tests/test_benchmark_neural.py"
+      ],
+      "scientific_ablation_executed": false,
+      "trigger": "Compare a declared curriculum after the implemented stopping-horizon repairs, charging all training costs."
+    }
+  ],
+  "frozen_scope_path": "docs/evidence/v03/extension_scope.json",
+  "frozen_scope_sha256": "0bc525b1bee601727ee56a283ebf3a86b149ae1b47925724ca9711456bc19453",
+  "identity": "e39ce11b40c1063a75a03270d3867d90c1e6f04fa18f26ac871dba82dd8e478b",
+  "path_count_assessment": {
+    "cases": [
+      {
+        "posterior_identity": "b13bb6b28db8fa957e801f875d023835d7597fd98cb46dd3451fe84e670016e6",
+        "reference_receipt_path": "results/v03/development/reference_release/g4_existing_fronts/rep_000/A/bayes_esn_ridge/receipt.json",
+        "reference_receipt_sha256": "f4b31fb6b952de29f9f60e66ab2d7be44381dea8d65d49a451b53b83bf47c848",
+        "rows": [
+          {
+            "absolute_coverage90_difference_from_512": 0.017000000000000015,
+            "conditional_predictive_mean_mcse_max": 0.048200366509893254,
+            "conditional_predictive_mean_mcse_max_over_training_scale": 0.11325007463815266,
+            "conditional_predictive_mean_mcse_rms": 0.028904694734602346,
+            "conditional_predictive_mean_mcse_rms_over_training_scale": 0.06791356732556894,
+            "coverage90": 0.89,
+            "crps": 0.17082287922409484,
+            "normalized_absolute_crps_difference_from_512": 0.017041488401533193,
+            "passes_both_rules": false,
+            "paths": 128,
+            "rmse": 0.31018769287150033
+          },
+          {
+            "absolute_coverage90_difference_from_512": 0.0030000000000000027,
+            "conditional_predictive_mean_mcse_max": 0.0314186061485756,
+            "conditional_predictive_mean_mcse_max_over_training_scale": 0.07382017501096359,
+            "conditional_predictive_mean_mcse_rms": 0.02027331962952522,
+            "conditional_predictive_mean_mcse_rms_over_training_scale": 0.04763355815428511,
+            "coverage90": 0.904,
+            "crps": 0.16652734827278085,
+            "normalized_absolute_crps_difference_from_512": 0.00694884313612934,
+            "passes_both_rules": false,
+            "paths": 256,
+            "rmse": 0.302616402710854
+          },
+          {
+            "absolute_coverage90_difference_from_512": 0.0,
+            "conditional_predictive_mean_mcse_max": 0.020913347244584355,
+            "conditional_predictive_mean_mcse_max_over_training_scale": 0.04913734703441839,
+            "conditional_predictive_mean_mcse_rms": 0.014235258408284103,
+            "conditional_predictive_mean_mcse_rms_over_training_scale": 0.03344671822984309,
+            "coverage90": 0.907,
+            "crps": 0.1635698510079768,
+            "normalized_absolute_crps_difference_from_512": 0.0,
+            "passes_both_rules": true,
+            "paths": 512,
+            "rmse": 0.2978435568711704
+          }
+        ],
+        "scenario": "g4_existing_fronts",
+        "training_scale": 0.425610019807043
+      },
+      {
+        "posterior_identity": "b95696145314739f4914ffc01688bb408430469a1c81050ccec3924b5e70e2b4",
+        "reference_receipt_path": "results/v03/development/reference_release/g3_excitable_field/rep_000/A/bayes_esn_ridge/receipt.json",
+        "reference_receipt_sha256": "46c9a2e23c0d9105cdcc2dfaa6b14b6bf79a14d9ed85cb76d73bf8e72b5ce0af",
+        "rows": [
+          {
+            "absolute_coverage90_difference_from_512": 0.0020000000000000018,
+            "conditional_predictive_mean_mcse_max": 1.4564753048156633,
+            "conditional_predictive_mean_mcse_max_over_training_scale": 1.1782608398104015,
+            "conditional_predictive_mean_mcse_rms": 0.5476564101085339,
+            "conditional_predictive_mean_mcse_rms_over_training_scale": 0.4430436270141223,
+            "coverage90": 0.992,
+            "crps": 1.023907848993008,
+            "normalized_absolute_crps_difference_from_512": 0.06369882840718222,
+            "passes_both_rules": false,
+            "paths": 128,
+            "rmse": 2.032842321037443
+          },
+          {
+            "absolute_coverage90_difference_from_512": 0.0010000000000000009,
+            "conditional_predictive_mean_mcse_max": 0.9833601130451631,
+            "conditional_predictive_mean_mcse_max_over_training_scale": 0.7955196417005428,
+            "conditional_predictive_mean_mcse_rms": 0.3589308044428809,
+            "conditional_predictive_mean_mcse_rms_over_training_scale": 0.2903681989515211,
+            "coverage90": 0.989,
+            "crps": 0.9655881227568934,
+            "normalized_absolute_crps_difference_from_512": 0.01651927830751609,
+            "passes_both_rules": false,
+            "paths": 256,
+            "rmse": 1.796939282609637
+          },
+          {
+            "absolute_coverage90_difference_from_512": 0.0,
+            "conditional_predictive_mean_mcse_max": 0.7240832946954981,
+            "conditional_predictive_mean_mcse_max_over_training_scale": 0.5857696234736908,
+            "conditional_predictive_mean_mcse_rms": 0.25583193242415136,
+            "conditional_predictive_mean_mcse_rms_over_training_scale": 0.20696317098665082,
+            "coverage90": 0.99,
+            "crps": 0.9451682631677842,
+            "normalized_absolute_crps_difference_from_512": 0.0,
+            "passes_both_rules": true,
+            "paths": 512,
+            "rmse": 1.788045188891644
+          }
+        ],
+        "scenario": "g3_excitable_field",
+        "training_scale": 1.236122983642595
+      }
+    ],
+    "existing_ablation_forecast_path_count_unchanged": 128,
+    "limitations": "512 is the finite reference ceiling, not evidence that predictive Monte Carlo error is negligible. G3 RMS conditional predictive-mean MCSE at512 is about0.207 training standard deviations, with a maximum about0.586. No unplanned larger path run was performed; these MCSE estimates exclude posterior MCMC error.",
+    "passes_on_both_cases": {
+      "128": false,
+      "256": false,
+      "512": true
+    },
+    "predeclared_rule": {
+      "candidate_counts": [
+        128,
+        256,
+        512
+      ],
+      "cases": [
+        "reference_release/g3_excitable_field/rep_000/A/bayes_esn_ridge",
+        "reference_release/g4_existing_fronts/rep_000/A/bayes_esn_ridge"
+      ],
+      "conditional_mean_mcse": "report descriptively; not an additional adaptive selection criterion",
+      "declared_at": "2026-11-03T07:03:56.252181+00:00",
+      "limitations": "512paths is a finite Monte Carlo sensitivity reference, not the exact predictive distribution; nested prefixes and two development cases do not establish universal stability. Preserve E-QESN finite-ensemble interpretation.",
+      "reference": 512,
+      "rule": "Choose smallest count whose exact empirical CRPS difference versus512 divided by the saved common training scale is <=0.005 and whose absolute90percent marginal coverage difference is <=0.02 in both cases. If neither128nor256passes,use512. Use the same chosen count in subsequent history/sensor/revised studies.",
+      "status": "declared before fixed-fit path-stability outputs are inspected"
+    },
+    "predeclared_rule_document_sha256": "f1f94add8b05f7af4fd6125d20b91d7c359d1a1cc7460a53bbcb8ef4af80ef02",
+    "predeclared_rule_path": "docs/evidence/v03/development_decisions.json",
+    "prespecification_verified_against_both_first_path_invocation_times": true,
+    "selected_for_subsequent_studies": 512
+  },
+  "primary_model": "bayes_esn_ridge",
+  "resource_receipts": [
+    {
+      "invocations": [
+        {
+          "command": [
+            "/workspace/scratch/158260e8300f/bstesn-v03-env/bin/python",
+            "tools/evaluate_extensions_v03.py",
+            "--baseline",
+            "results/v03/development/reference_release/g4_existing_fronts/rep_000/A/bayes_esn_ridge/model.npz",
+            "--simulation",
+            "results/v03/development/reference_release/g4_existing_fronts/rep_000/simulation.npz",
+            "--study-manifest",
+            "results/v03/development/reference_release/manifest.json",
+            "--extensions",
+            "full_residual_ar",
+            "--track",
+            "A",
+            "--seed",
+            "20261103",
+            "--warmup",
+            "1000",
+            "--draws",
+            "2000",
+            "--continuation",
+            "2000",
+            "--paths",
+            "128",
+            "--batch-size",
+            "32",
+            "--max-memory-mb",
+            "2048",
+            "--output",
+            "results/v03/extensions/release_ar_g4_existing_fronts"
+          ],
+          "ended_utc": "2026-11-03T07:05:22.166867+00:00",
+          "exit_code": 0,
+          "memory_scope": "One CLI subprocess lifetime high-water mark, including baseline loading, diagnostics, fitting, prediction and serialization; not aggregate cgroup usage",
+          "process_lifetime_peak_rss_bytes": 192888832,
+          "started_utc": "2026-11-03T07:04:52.365537+00:00",
+          "system_seconds": 0.320755,
+          "user_seconds": 29.396424,
+          "wall_seconds": 29.80129064900393
+        }
+      ],
+      "mode": "ar",
+      "path": "results/v03/extensions/release_ar_g4_existing_fronts_resources.json",
+      "scenario": "g4_existing_fronts",
+      "sha256": "3e682ed63f4f93d76246c69a880176e748f698644d37b06e85487ac5c9cdb1be"
+    },
+    {
+      "invocations": [
+        {
+          "command": [
+            "/workspace/scratch/158260e8300f/bstesn-v03-env/bin/python",
+            "tools/evaluate_extensions_v03.py",
+            "--baseline",
+            "results/v03/development/reference_release/g4_existing_fronts/rep_000/A/bayes_esn_ridge/model.npz",
+            "--simulation",
+            "results/v03/development/reference_release/g4_existing_fronts/rep_000/simulation.npz",
+            "--study-manifest",
+            "results/v03/development/reference_release/manifest.json",
+            "--path-stability",
+            "--track",
+            "A",
+            "--seed",
+            "20261103",
+            "--batch-size",
+            "32",
+            "--max-memory-mb",
+            "2048",
+            "--output",
+            "results/v03/extensions/release_paths_g4_existing_fronts"
+          ],
+          "ended_utc": "2026-11-03T07:07:33.327505+00:00",
+          "exit_code": 0,
+          "memory_scope": "One CLI subprocess lifetime high-water mark, including baseline loading, diagnostics, fitting, prediction and serialization; not aggregate cgroup usage",
+          "process_lifetime_peak_rss_bytes": 167960576,
+          "started_utc": "2026-11-03T07:07:28.165148+00:00",
+          "system_seconds": 0.090914,
+          "user_seconds": 5.064824,
+          "wall_seconds": 5.162314442000934
+        }
+      ],
+      "mode": "paths",
+      "path": "results/v03/extensions/release_paths_g4_existing_fronts_resources.json",
+      "scenario": "g4_existing_fronts",
+      "sha256": "f7ca4fadcfb880f12cdf03579f3fc16179580de1e4dbd91862f5880cf90b018e"
+    },
+    {
+      "invocations": [
+        {
+          "command": [
+            "/workspace/scratch/158260e8300f/bstesn-v03-env/bin/python",
+            "tools/evaluate_extensions_v03.py",
+            "--baseline",
+            "results/v03/development/reference_release/g3_excitable_field/rep_000/A/bayes_esn_ridge/model.npz",
+            "--simulation",
+            "results/v03/development/reference_release/g3_excitable_field/rep_000/simulation.npz",
+            "--study-manifest",
+            "results/v03/development/reference_release/manifest.json",
+            "--extensions",
+            "full_residual_ar",
+            "--track",
+            "A",
+            "--seed",
+            "20261103",
+            "--warmup",
+            "1000",
+            "--draws",
+            "2000",
+            "--continuation",
+            "2000",
+            "--paths",
+            "128",
+            "--batch-size",
+            "32",
+            "--max-memory-mb",
+            "2048",
+            "--output",
+            "results/v03/extensions/release_ar_g3_excitable_field"
+          ],
+          "ended_utc": "2026-11-03T07:07:10.752589+00:00",
+          "exit_code": 0,
+          "memory_scope": "One CLI subprocess lifetime high-water mark, including baseline loading, diagnostics, fitting, prediction and serialization; not aggregate cgroup usage",
+          "process_lifetime_peak_rss_bytes": 237334528,
+          "started_utc": "2026-11-03T07:06:03.817376+00:00",
+          "system_seconds": 0.927052,
+          "user_seconds": 65.915165,
+          "wall_seconds": 66.93517029400391
+        }
+      ],
+      "mode": "ar",
+      "path": "results/v03/extensions/release_ar_g3_excitable_field_resources.json",
+      "scenario": "g3_excitable_field",
+      "sha256": "6b2f8e9ad3a83428dea84ebf0afa4c80b29ec450e1360fe18f9e1f2c84413739"
+    },
+    {
+      "invocations": [
+        {
+          "command": [
+            "/workspace/scratch/158260e8300f/bstesn-v03-env/bin/python",
+            "tools/evaluate_extensions_v03.py",
+            "--baseline",
+            "results/v03/development/reference_release/g3_excitable_field/rep_000/A/bayes_esn_ridge/model.npz",
+            "--simulation",
+            "results/v03/development/reference_release/g3_excitable_field/rep_000/simulation.npz",
+            "--study-manifest",
+            "results/v03/development/reference_release/manifest.json",
+            "--path-stability",
+            "--track",
+            "A",
+            "--seed",
+            "20261103",
+            "--batch-size",
+            "32",
+            "--max-memory-mb",
+            "2048",
+            "--output",
+            "results/v03/extensions/release_paths_g3_excitable_field"
+          ],
+          "ended_utc": "2026-11-03T07:08:16.442906+00:00",
+          "exit_code": 0,
+          "memory_scope": "One CLI subprocess lifetime high-water mark, including baseline loading, diagnostics, fitting, prediction and serialization; not aggregate cgroup usage",
+          "process_lifetime_peak_rss_bytes": 174759936,
+          "started_utc": "2026-11-03T07:08:11.347788+00:00",
+          "system_seconds": 0.195574,
+          "user_seconds": 4.889856,
+          "wall_seconds": 5.095076067998889
+        }
+      ],
+      "mode": "paths",
+      "path": "results/v03/extensions/release_paths_g3_excitable_field_resources.json",
+      "scenario": "g3_excitable_field",
+      "sha256": "8ae82f35842535feacf8a8199a1bf77d1f9fcc8e73f8ae2c36d97825a1b153e7"
+    }
+  ],
+  "resource_summary": {
+    "maximum_single_cli_process_lifetime_peak_rss_bytes": 237334528,
+    "model_workers": 1,
+    "numeric_threads_per_model_worker": 1,
+    "scope": "Four sequential P5 CLI subprocesses; wall total excludes pauses between commands and earlier tool validation. Peak is a child-process lifetime high-water mark, not an isolated MCMC increment or aggregate cgroup peak.",
+    "total_cli_cpu_seconds": 106.80056400000001,
+    "total_cli_wall_seconds": 106.99385145300766
+  },
+  "schema": "p5-extension-findings-1.0",
+  "scientific_results_in_this_file": true,
+  "source_fingerprint": "e5180c486ecaa849bf5efeb0a67fe8ec30e963407f3eabe8c78009f88c40dc68",
+  "tool_sha256": "4b5cd12ab7a715ce7f95678d4a579e7685d6ac600cada93bcd2166516d75a41b"
+}

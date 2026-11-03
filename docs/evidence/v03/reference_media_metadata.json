@@ -1,0 +1,115 @@
+{
+  "schema": "saved-media-metadata-check-1.0",
+  "rows": [
+    {
+      "file": "report/v03/reference/media/g1_gaussian_ar_A_forecast.mp4",
+      "width": 1320,
+      "height": 748,
+      "r_frame_rate": "10/1",
+      "duration": "4.000000",
+      "nb_frames": "40"
+    },
+    {
+      "file": "report/v03/reference/media/g1_gaussian_ar_B_forecast.mp4",
+      "width": 1320,
+      "height": 748,
+      "r_frame_rate": "10/1",
+      "duration": "4.000000",
+      "nb_frames": "40"
+    },
+    {
+      "file": "report/v03/reference/media/g1_gaussian_ar_data.mp4",
+      "width": 748,
+      "height": 692,
+      "r_frame_rate": "10/1",
+      "duration": "10.000000",
+      "nb_frames": "100"
+    },
+    {
+      "file": "report/v03/reference/media/g2_spectral_transport_A_forecast.mp4",
+      "width": 1320,
+      "height": 748,
+      "r_frame_rate": "10/1",
+      "duration": "4.000000",
+      "nb_frames": "40"
+    },
+    {
+      "file": "report/v03/reference/media/g2_spectral_transport_B_forecast.mp4",
+      "width": 1320,
+      "height": 748,
+      "r_frame_rate": "10/1",
+      "duration": "4.000000",
+      "nb_frames": "40"
+    },
+    {
+      "file": "report/v03/reference/media/g2_spectral_transport_data.mp4",
+      "width": 748,
+      "height": 692,
+      "r_frame_rate": "10/1",
+      "duration": "10.000000",
+      "nb_frames": "100"
+    },
+    {
+      "file": "report/v03/reference/media/g3_excitable_field_A_forecast.mp4",
+      "width": 1320,
+      "height": 748,
+      "r_frame_rate": "10/1",
+      "duration": "4.000000",
+      "nb_frames": "40"
+    },
+    {
+      "file": "report/v03/reference/media/g3_excitable_field_B_forecast.mp4",
+      "width": 1320,
+      "height": 748,
+      "r_frame_rate": "10/1",
+      "duration": "4.000000",
+      "nb_frames": "40"
+    },
+    {
+      "file": "report/v03/reference/media/g3_excitable_field_data.mp4",
+      "width": 748,
+      "height": 692,
+      "r_frame_rate": "10/1",
+      "duration": "10.000000",
+      "nb_frames": "100"
+    },
+    {
+      "file": "report/v03/reference/media/g4_existing_fronts_A_forecast.mp4",
+      "width": 1320,
+      "height": 748,
+      "r_frame_rate": "10/1",
+      "duration": "4.000000",
+      "nb_frames": "40"
+    },
+    {
+      "file": "report/v03/reference/media/g4_existing_fronts_B_forecast.mp4",
+      "width": 1320,
+      "height": 748,
+      "r_frame_rate": "10/1",
+      "duration": "4.000000",
+      "nb_frames": "40"
+    },
+    {
+      "file": "report/v03/reference/media/g4_existing_fronts_data.mp4",
+      "width": 748,
+      "height": 692,
+      "r_frame_rate": "10/1",
+      "duration": "10.000000",
+      "nb_frames": "100"
+    },
+    {
+      "file": "report/v03/reference_comparison/comparison.mp4",
+      "width": 2400,
+      "height": 1344,
+      "r_frame_rate": "8/1",
+      "duration": "5.000000",
+      "nb_frames": "40"
+    }
+  ],
+  "frame_inspection": "first/middle/last extracted forG3B,G4B,and fixedthree-modelG4B comparison; visual QA pending",
+  "pdf_pages_inspected": [
+    1,
+    14,
+    27
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "completed_outcomes": 8,
+  "execution_attempt": "results/v03/development/tuned_release/execution_attempts/1793689226366702625_6.json",
+  "execution_attempt_sha256": "1df6ed3a894d843cd80a29eb993b6976ac4d9ce2435ae296decb1728605e0b3e",
+  "manifest_identity": "36d66febce31aae5b042a873ee55a0d48ed63da3c74331f1da2f98df6e6ffe66",
+  "old_run": "results/v03/development/tuned_release",
+  "old_source": "e5180c486ecaa849bf5efeb0a67fe8ec30e963407f3eabe8c78009f88c40dc68",
+  "old_summary_sha256": "49d4580bbedcb22b71d972a86c67f7ca6eaf573a2d294bf9f3ff5fdd86896acd",
+  "planned_outcomes": 60,
+  "preservation": "Completed and pending old run artifacts remain unchanged. Future scientific execution uses a fresh computation identity; no source override or manual terminal-result substitution.",
+  "reason": "Raw cgroup usage includes large clean file cache in the shared environment. The guard paused correctly under its raw-usage rule. A separately recorded conservative cache-aware admission estimate is needed for scheduler liveness; it will not alter hard limits or numerical/model budgets.",
+  "schema": "resource-accounting-revision-1.0",
+  "unresolved_infrastructure_failures": 0
+}

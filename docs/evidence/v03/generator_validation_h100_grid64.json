@@ -1,0 +1,64 @@
+{
+  "schema": "benchmark-generator-validation-2.0",
+  "status": "refinement_gate_not_met",
+  "scope": "simulator-only validation; no final benchmark data or model scores inspected",
+  "extended": true,
+  "seed": 983417,
+  "physical_burnin": 200.0,
+  "n_observations": 101,
+  "observation_spacing": 2.0,
+  "fhn_time_halving": {
+    "rmse": 0.0005086895029905111,
+    "max_abs": 0.0039591926158154545
+  },
+  "fhn_mesh_reference_to_fine": {
+    "rmse": 0.16918487702174853,
+    "max_abs": 1.4114616113784815
+  },
+  "fhn_mesh_coarse_to_fine": {
+    "rmse": 0.695911354856491,
+    "max_abs": 3.098786845214227
+  },
+  "finite_grid_policy": {
+    "target": "finite_semidiscrete",
+    "grid_size": 64,
+    "dt": 0.05,
+    "refined_dt": 0.025,
+    "delta": 2.0,
+    "time_gate_passed": true,
+    "morphology_gate_passed": true,
+    "continuum_claim": false,
+    "mesh_gate_passed": false,
+    "physical_parameters": {
+      "a": 0.7,
+      "b": 0.8,
+      "epsilon": 0.08,
+      "kappa": 0.2
+    }
+  },
+  "proposed_threshold_rms": 0.02,
+  "observation_noise_sd_reference": 0.1,
+  "fhn_mean_temporal_sd": 1.218170579190521,
+  "fhn_energy_bounds": [
+    2122.945867554704,
+    3656.2208750113996
+  ],
+  "fhn_max_abs_state": 1.9818684516483285,
+  "spectral_stationary_variance": 0.9999999999999996,
+  "spectral_max_transition_modulus": 0.995,
+  "runtimes": {
+    "mesh32": 1.2234780790022342,
+    "reference64": 2.5789321240008576,
+    "time_half64": 5.704189124997356,
+    "mesh128": 12.742497548002575
+  },
+  "total_seconds": 22.24980643600429,
+  "qualification": "Refinement establishes only the declared pilot window; convergence must be assessed at longer horizons before continuum-fidelity claims.",
+  "numerical_versions": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "generator_source_sha256": "b62436a7b35a3f30ffb4b7492ef912b90df5b69dd4956b2d5659f547e1d06713",
+  "validation_tool_sha256": "dc3399ce1ca914ee9f79d22221204d28a4cfac99a1cdbb05e98c2d141e02cf73",
+  "identity": "a791c169ab6865e819be9250446bfaf27bf616bc5b45a202682c518ac932b0d6"
+}

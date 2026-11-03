@@ -1,0 +1,34 @@
+{
+  "schema": "github-actions-verification-1.0",
+  "commit": "e68cb8dbff0b5d1ba92d0e62d6c68f742dcb0c8f",
+  "source_fingerprint": "e5180c486ecaa849bf5efeb0a67fe8ec30e963407f3eabe8c78009f88c40dc68",
+  "run_id": 41592946471,
+  "url": "https://github.com/AntonioAPDL/bayes-stesn/actions/runs/41592946471",
+  "jobs": [
+    {
+      "id": 125773625834,
+      "name": "Optional CPU neural models / locked CPython 3.12",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 125773626044,
+      "name": "Core without PyTorch / Python 3.13",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 125773626094,
+      "name": "Core without PyTorch / Python 3.12",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 125773626363,
+      "name": "Core without PyTorch / Python 3.11",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "meaning": "Observed executed remote CI for implementation commit; later reporting commits require independent exact-head verification"
+}

@@ -1,0 +1,367 @@
+schema: bayes-stesn-requirements-1.0
+plan: docs/plans/PRO_IMPLEMENTATION_PLAN.md
+audit: docs/audits/post_release_2026_11_03/README.md
+starting_commit: 37d2d918aa2d03cb4f76477231df33c06ca448bd
+snapshot_date: '2026-11-03'
+path_policy: All paths are relative to the repository root.
+status_policy: >-
+  Implementation, executed evidence, and scientific conclusions are separate
+  fields. Test source paths describe checks, not proof that a final release
+  passed them. Existing integration receipts are snapshots; final source/wheel,
+  publication, and scientific receipts must bind their exact source/runtime.
+  The coordinator updates pending evidence after those gates run. Missing
+  evidence is not replaced by an implementation claim.
+overall:
+  implemented: Staged engineering and study interfaces available; conditional extensions remain gated.
+  executed: Baseline and integration snapshots and a bounded ownership probe recorded; final gates pending.
+  scientific_conclusion: No completed schema-4 confirmation or general predictive-improvement claim.
+requirements:
+  - id: P0
+    title: Baseline, provenance, and bounded execution
+    acceptance_ids: [R01, R16]
+    implemented:
+      status: implemented
+      files:
+        - src/bayes_stesn/benchmark/execution.py
+        - src/bayes_stesn/benchmark/cli.py
+        - docs/reproduction.md
+        - configs/benchmark/v03/studies/prepare.py
+        - configs/benchmark/v03/studies/training_preflight.py
+      behavior:
+        - Inspect host/cgroup memory, current occupancy, CPU quota/affinity, and storage.
+        - Bound worker count and numerical threads; plan actual scientific dimensions before fitting.
+        - Record estimates separately from measured resource evidence.
+    tests:
+      - tests/test_runner_execution_v03.py
+      - tests/test_runner_limits_v03.py
+    executed:
+      status: baseline_and_integration_snapshots_recorded
+      evidence:
+        - docs/evidence/v03/baseline_environment.json
+        - docs/evidence/v03/baseline_tests.xml
+        - docs/evidence/v03/integrated_tests.xml
+        - docs/evidence/v03/pilot_resource_plan.json
+        - docs/evidence/v03/remaining_studies_preflight/resource_plans.json
+        - docs/evidence/v03/remaining_studies_preflight/study_provenance.json
+      limitations:
+        - The resource plan is an estimate, not an executed development campaign.
+        - Remaining-study estimates use conservative reference proxies until G4 selections and six target-size training-only timing receipts are complete.
+        - Final-source installed-wheel validation is a separate pending gate.
+    scientific_conclusion:
+      status: not_applicable_engineering
+      statement: These records establish provenance and execution scope, not forecasting improvement.
+
+  - id: P1
+    title: Identities, durable recovery, retry taxonomy, and cost accounting
+    acceptance_ids: [R02, R03, R04, R16]
+    implemented:
+      status: implemented
+      files:
+        - src/bayes_stesn/benchmark/runner.py
+        - src/bayes_stesn/benchmark/execution.py
+        - src/bayes_stesn/benchmark/cli.py
+        - src/bayes_stesn/benchmark/esn.py
+        - src/bayes_stesn/model.py
+        - docs/derivations/07_sampler_coordinates_recovery.md
+      behavior:
+        - Separate scientific design, source/runtime computation, and mutable execution identities.
+        - Verify data, candidates, cached selection, checkpoints, and terminal artifacts before reuse.
+        - Preserve one initial ESN allowance and at most one predeclared continuation across interruption.
+        - Retry infrastructure failures with identical seeds; never fabricate an unattempted fallback.
+        - Keep qualified and unqualified completed scientific outcomes terminal.
+        - Flag unknown interrupted-process cost and incomplete campaigns explicitly.
+      limitations:
+        - Coordinator locking and optional fitting alarms currently require POSIX capabilities.
+        - No automatic migration of historical run manifests or cross-runtime exact continuation.
+    tests:
+      - tests/test_runner_execution_v03.py
+      - tests/test_runner_limits_v03.py
+      - tests/test_runner_selection_v03.py
+      - tests/test_esn_phase_recovery.py
+      - tests/test_benchmark_checkpoint_policy.py
+    executed:
+      status: integration_snapshot_recorded_final_gate_pending
+      evidence:
+        - docs/evidence/v03/integrated_tests.xml
+      pending:
+        - Final source and installed-wheel recovery/CLI receipts after documentation and source freeze.
+    scientific_conclusion:
+      status: not_applicable_engineering
+      statement: Recovery correctness does not establish diagnostic qualification or predictive superiority.
+
+  - id: P2
+    title: Exact sampler coordinates and bounded optimizer reliability
+    acceptance_ids: [R05, R06]
+    implemented:
+      status: implemented_with_explicit_scope
+      files:
+        - src/bayes_stesn/sampling.py
+        - src/bayes_stesn/dynamics.py
+        - src/bayes_stesn/model.py
+        - src/bayes_stesn/benchmark/optimization.py
+        - src/bayes_stesn/benchmark/linear_state.py
+        - src/bayes_stesn/benchmark/gaussian_gp.py
+        - src/bayes_stesn/benchmark/basis_gru.py
+        - tools/compare_sampler_coordinates.py
+        - docs/derivations/07_sampler_coordinates_recovery.md
+      behavior:
+        - Opt-in ridge_total_scale coordinates preserve the certified original posterior and priors.
+        - Default legacy coordinates and unsupported-route errors remain explicit.
+        - Diagnose original scientific quantities under unchanged thresholds.
+        - Bounded EM and L-BFGS-B allowances preserve tolerances and record finite progress/cap failures.
+      limitations:
+        - L-BFGS-B continuation restarts from parameters, without restoring private optimizer history.
+        - The coordinate option is certified for the documented collapsed ridge iid isotropic Matérn route.
+    tests:
+      - tests/test_sampler_coordinates.py
+      - tests/test_esn_phase_recovery.py
+      - tests/test_benchmark_optimizer_policy.py
+    executed:
+      status: correctness_snapshot_recorded_development_evidence_to_seal
+      evidence:
+        - docs/evidence/v03/integrated_tests.xml
+      pending:
+        - Bind the bounded coordinate-comparison receipts to the final scientific source identity.
+        - Record any optimizer development rescue rates separately from correctness fixtures.
+    scientific_conclusion:
+      status: development_only_no_general_promotion
+      statement: >-
+        Mathematical target equivalence and tiny correctness tests are distinct
+        from mixing-efficiency evidence. Bounded development comparisons do not
+        establish general qualification rates or improved forecasting.
+
+  - id: P3
+    title: Effective tuning, qualified finalists, and task-aligned validation
+    acceptance_ids: [R07, R08, R09, R10]
+    implemented:
+      status: implemented
+      files:
+        - src/bayes_stesn/benchmark/protocol.py
+        - src/bayes_stesn/benchmark/registry.py
+        - src/bayes_stesn/benchmark/runner.py
+        - src/bayes_stesn/benchmark/neural.py
+        - src/bayes_stesn/benchmark/basis_gru.py
+        - configs/benchmark/v03/
+        - docs/benchmark_tuning_v03.md
+      behavior:
+        - Recursively merge overrides, resolve actual-subset constraints, and deduplicate effective candidates.
+        - Record stable hashes, proposal counts, invalid proposals, and finite-space/cap exhaustion.
+        - Include basis_gru in the new roster and align neural stopping to actual H-step tails.
+        - Require all finalist seed/fold rechecks to qualify, with bounded ranked replacements.
+        - Use edge/interior spatial validation and independent final refit seeds.
+        - Preserve schema-3 profile identity and legacy selection semantics.
+        - Treat retuned_pipeline and development_frozen_configuration as distinct frozen estimands.
+    tests:
+      - tests/test_v03_tuning.py
+      - tests/test_runner_selection_v03.py
+      - tests/test_registry_identity_v03.py
+      - tests/test_benchmark_neural.py
+      - tests/test_benchmark_basis_gru.py
+    executed:
+      status: integration_snapshot_recorded_development_campaign_pending
+      evidence:
+        - docs/evidence/v03/integrated_tests.xml
+        - docs/evidence/v03/pilot_resource_plan.json
+      pending:
+        - Completed matched-dimension retuned development results and per-method measured costs.
+    scientific_conclusion:
+      status: not_established
+      statement: More distinct candidates and stricter selection do not by themselves prove better forecasts.
+
+  - id: P4
+    title: Fixed-endpoint history curves and nested sensor comparisons
+    acceptance_ids: [R11, R12]
+    implemented:
+      status: implemented_study_interfaces
+      files:
+        - src/bayes_stesn/benchmark/studies.py
+        - src/bayes_stesn/benchmark/protocol.py
+        - src/bayes_stesn/benchmark/runner.py
+        - src/bayes_stesn/benchmark/cli.py
+        - docs/study_design_v03.md
+        - configs/benchmark/v03/studies/remaining_studies.yaml
+        - configs/benchmark/v03/studies/prepare.py
+        - configs/benchmark/v03/studies/README.md
+        - tools/summarize_v03_learning_curves.py
+      behavior:
+        - Resolve the full history curve at a common endpoint before executing any subset.
+        - Keep final times, target sites, generated fields, and common training-only normalization fixed.
+        - Reserve the largest observed-site master set and preserve nested sensor identities and C/U roles.
+        - Preserve fixed-specification and retuned-pipeline curves as different experiments.
+        - Declare 330 initial history fits over five fields per G1/G3/G4 and 33 descriptive sensor fits on one G4 field; retain full unexecuted 500/4000 conditions.
+        - Freeze the exploratory ESN-centered history promotion rule before outcomes, report paired effects for every compatible model, and preserve insufficient-evidence reasons.
+        - Audit saved spatial and temporal rank/conditioning and fixed-reference geometry-only normalized-ridge noise amplification without changing actual fitted bases or priors.
+      limitations:
+        - Sensor geometry must support the largest requested panel and reserved evaluation roles.
+        - Encoder/representation or capacity ablations require explicit separately frozen configurations.
+    tests:
+      - tests/test_benchmark_studies_v03.py
+      - tests/test_benchmark_pipeline.py
+      - tests/test_v03_study_tools.py
+    executed:
+      status: interface_invariants_recorded_scientific_curves_pending
+      evidence:
+        - docs/evidence/v03/integrated_tests.xml
+        - docs/evidence/v03/study_tool_tests.xml
+        - docs/evidence/v03/generator_validation_long_history_grid64.json
+        - docs/evidence/v03/scientific_review.json
+      scope: >-
+        The long independent G3 numerical pilot passes the declared finite-grid
+        time and nontrivial-activity checks over the full planned history span;
+        mesh refinement fails and no continuum or all-initial-condition
+        guarantee is inferred. Study-tool unit tests establish only the
+        selection-rule arithmetic, algebra and integrity checks.
+      pending:
+        - Same-source paired learning-curve outcomes, diagnostic qualification and uncertainty summaries.
+        - Source-bound history_choice.json and sensor_representation.json from complete saved studies; no such outcomes are assumed by the planning files.
+    scientific_conclusion:
+      status: not_established
+      statement: The new curves can estimate the value of more data; no such value is assumed from code alone.
+
+  - id: P5
+    title: Evidence-gated model and uncertainty extensions
+    acceptance_ids: [R13]
+    implemented:
+      status: core_routes_retained_conditional_benchmark_extensions_gated
+      files:
+        - src/bayes_stesn/benchmark/registry.py
+        - src/bayes_stesn/benchmark/esn.py
+        - docs/models.md
+        - docs/implementation_registry.yaml
+        - docs/benchmark_registry.yaml
+        - docs/optimization_and_scope.md
+      behavior:
+        - Preserve documented core prior, covariance, residual and robust innovation routes.
+        - Reject nonridge/non-iid substitutions under the named bayes_esn_ridge comparator.
+        - Require a separate model identity and compatible validated ablation before extension promotion.
+      limitations:
+        - Richer benchmark ablations and external integrations are not registered merely because a core API exists.
+        - External-data and complete-grid methods require distinct information-budget comparison tracks.
+    tests:
+      - tests/test_registry_identity_v03.py
+      - tests/test_benchmark_pipeline.py
+    executed:
+      status: scope_guards_checked_conditional_experiments_pending
+      evidence:
+        - docs/evidence/v03/integrated_tests.xml
+      pending:
+        - Evidence supporting a specific richer model beyond simpler qualified baselines.
+    scientific_conclusion:
+      status: deferred_without_promotional_claim
+      statement: No universal prior, covariance or dynamics upgrade is inferred; promotion requires compatible evidence.
+
+  - id: P6
+    title: Fair populations, paired macro precision, and confirmation freeze
+    acceptance_ids: [R14, R15]
+    implemented:
+      status: implemented_study_gates
+      files:
+        - src/bayes_stesn/benchmark/metrics.py
+        - src/bayes_stesn/benchmark/studies.py
+        - src/bayes_stesn/benchmark/runner.py
+        - src/bayes_stesn/benchmark/cli.py
+        - docs/study_design_v03.md
+        - configs/benchmark/v03/studies/remaining_studies.yaml
+        - configs/benchmark/v03/studies/README.md
+      behavior:
+        - Separate operational outcomes, common-qualified native scores, and incomplete infrastructure work.
+        - Freeze reference/comparator/task/metric/scenario weights and selection mode.
+        - Use paired dataset-level variances and joint qualification attrition for attempted-R MCSE planning.
+        - Reject unsupported independent-stratum aggregation of coupled stress/control arms.
+        - Require revised matched-design development evidence and at least five usable pairs per primary cell.
+        - Freeze attempted R, source/runtime and final seeds before confirmation; preserve cap shortfalls.
+        - Declare one 220-fit revised pilot at the history chosen prospectively from paired development curves, with geometry and scientific settings matched to its confirmation draft.
+        - Reuse preselected qualified uncropped revised fits for a separate 25-block calibration exercise with no extra parameter fits; mark unavailable cases without favorable substitutions.
+      limitations:
+        - Pointwise intervals are not simultaneous superiority claims.
+        - Wilson/variance sensitivity calculations are approximate precision planning, not test power.
+        - The R=20–60 cap cannot guarantee the requested precision.
+    tests:
+      - tests/test_benchmark_studies_v03.py
+      - tests/test_benchmark_pipeline.py
+    executed:
+      status: formula_and_integrity_checks_recorded_confirmation_pending
+      evidence:
+        - docs/evidence/v03/integrated_tests.xml
+      pending:
+        - Qualified matched-dimension development cells and generator evidence required by the frozen roster.
+        - A valid schema-4 confirmation freeze and completed independent final campaign.
+    scientific_conclusion:
+      status: not_established
+      statement: No completed schema-4 confirmation, achieved MCSE, or simultaneous ranking is claimed.
+
+  - id: P7
+    title: Measured forecast-memory improvement within supported scope
+    acceptance_ids: [R16, R17]
+    implemented:
+      status: implemented_bounded_ownership_optimization
+      files:
+        - src/bayes_stesn/benchmark/contracts.py
+        - src/bayes_stesn/benchmark/esn.py
+        - benchmarks/profile_forecast_ownership.py
+        - docs/study_design_v03.md
+        - docs/optimization_and_scope.md
+      behavior:
+        - Transfer complete privately owned float64 forecast arrays without a redundant full path copy.
+        - Keep public constructors defensive and reject unsafe private transfer layouts.
+        - Preserve joint sample values and original scoring semantics.
+      limitations:
+        - Full benchmark scoring still materializes sample arrays.
+        - Disk-backed scoring and broad sparse/dense architecture changes require measured justification.
+    tests:
+      - tests/test_benchmark_studies_v03.py
+      - tests/test_benchmark_pipeline.py
+    executed:
+      status: bounded_fresh_process_probe_recorded
+      evidence:
+        - docs/evidence/v03/forecast_ownership.json
+        - docs/evidence/v03/integrated_tests.xml
+      scope: >-
+        Two sequential fresh subprocesses with one numerical thread compare
+        public-copy and private-transfer construction of identical 256x100x505
+        float64 path arrays. The receipt records equal complete numerical
+        hashes and process-peak/incremental-memory measurements on that runtime.
+    scientific_conclusion:
+      status: engineering_allocation_result_only
+      statement: One avoided complete forecast copy is measured; total fit memory and predictive accuracy are not inferred.
+
+  - id: P8
+    title: Verification, smooth API, documentation, reports, and publication
+    acceptance_ids: [R18, R19, R20]
+    implemented:
+      status: interfaces_and_documentation_available_release_workflow_retained
+      files:
+        - src/bayes_stesn/benchmark/cli.py
+        - src/bayes_stesn/benchmark/report.py
+        - tools/release_check.py
+        - tools/package_release.py
+        - README.md
+        - docs/benchmark_guide.md
+        - docs/reproduction.md
+        - docs/optimization_and_scope.md
+        - docs/benchmark_tuning_v03.md
+        - docs/study_design_v03.md
+        - docs/derivations/07_sampler_coordinates_recovery.md
+        - configs/benchmark/v03/studies/README.md
+      behavior:
+        - Provide validate/resolve, plan, run/resume, status, curve, freeze and saved-result report commands.
+        - Preserve historical report/source identities and separate local validation from public delivery.
+        - Seal distributions, numeric artifacts, media and provenance through explicit release tooling.
+        - Keep complete curve designs immutable while executing individual conditions through existing bounded run/resume commands.
+    tests:
+      - tests/test_runner_execution_v03.py
+      - tests/test_runner_selection_v03.py
+      - tests/test_release_tools.py
+      - tests/test_benchmark_pipeline.py
+    executed:
+      status: integration_snapshot_recorded_final_release_and_reports_pending
+      evidence:
+        - docs/evidence/v03/baseline_tests.xml
+        - docs/evidence/v03/integrated_tests.xml
+      pending:
+        - Final source and installed-wheel full applicable suites, CLI checks and sealed distribution hashes.
+        - New scientific report/media rendering from completed saved results with visual/provenance QA.
+        - Verified exact public commit, remote CI, release assets, checksums and preserved history.
+    scientific_conclusion:
+      status: no_new_scientific_claim_from_software_release
+      statement: Documentation, passing tests and publication do not substitute for qualified scientific comparisons.

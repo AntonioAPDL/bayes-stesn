@@ -31,6 +31,38 @@ source identity; the patch adds no new simulation results. See
 [publication and validation evidence](docs/publication.md) for exact commits and
 the distinction between software checks and scientific fit qualification.
 
+## v0.3 development workflow
+
+The current implementation adds schema-4 effective candidate tuning, mandatory
+qualified finalist rechecks, explicit H-step neural stopping, bounded optimizer
+allowances, common-endpoint learning curves, and paired precision planning.
+The runner separates scientific and computation identities from mutable
+execution settings, checks resource admission, and resumes verified fit phases
+without granting a new sampling budget. Original schema-3 profiles retain their
+identities and interpretation.
+
+```bash
+bstesn benchmark validate --config configs/benchmark/v03/pilot.yaml
+bstesn benchmark plan --config configs/benchmark/v03/pilot.yaml \
+  --workers 2 --max-memory-mb 5120
+# After installing the full roster's CPU-neural dependencies:
+bstesn benchmark run --config configs/benchmark/v03/smoke.yaml \
+  --output results/v03/smoke --workers 2 --max-jobs 4
+bstesn benchmark status results/v03/smoke
+bstesn benchmark resume --output results/v03/smoke --workers 1 --max-jobs 4
+```
+
+Validation and planning do not fit models. The smoke profile checks execution;
+it cannot establish scientific MCMC convergence. Development measurements,
+software tests and completed confirmation are separate claims. See the
+[current guide](docs/benchmark_guide.md),
+[requirements and evidence status](docs/plans/v03_requirements.yaml),
+[study design](docs/study_design_v03.md), and
+[sampler/recovery derivation](docs/derivations/07_sampler_coordinates_recovery.md).
+The historical release reports below keep their original source identities;
+the new workflow alone does not demonstrate better forecasts or a completed
+confirmatory comparison.
+
 ## Install
 
 ```bash
@@ -118,7 +150,7 @@ forecast constructors retain defensive-copy semantics.
 
 ## Documentation
 
-- [PRO implementation plan and execution prompt](docs/plans/PRO_IMPLEMENTATION_PLAN.md): staged improvements, resource budgets, acceptance gates, experiments, and publication requirements; proposed work, not completed results.
+- [PRO implementation plan and execution prompt](docs/plans/PRO_IMPLEMENTATION_PLAN.md): staged improvements, resource budgets, acceptance gates, experiments, and publication requirements; implementation and evidence status are tracked separately in the [P0–P8 requirements map](docs/plans/v03_requirements.yaml).
 - [Post-release audit](docs/audits/post_release_2026_11_03/README.md): reproducible findings that motivate the next implementation phase.
 - `docs/api.md`: objects, workflows, serialization and supported combinations.
 - `docs/models.md`: hierarchical models and implementation decisions.

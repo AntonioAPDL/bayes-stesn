@@ -242,7 +242,7 @@ def load_run(path, label, inputs, current_source):
         identity(frozen, label="Confirmation freeze")
         if frozen["identity"] != manifest.get("confirmation_freeze"):
             raise ValueError("Confirmation run lacks its matching frozen design")
-    receipts, data_ids, observation_hashes = [], {}, {}
+    receipts, selections, data_ids, observation_hashes = [], [], {}, {}
     for scenario in protocol.scenarios:
         for replication in range(protocol.replications):
             folder = path / scenario / f"rep_{replication:03d}"
@@ -277,13 +277,154 @@ def load_run(path, label, inputs, current_source):
                         raise ValueError("Duplicate scientific artifact inventory entries")
                     for artifact in artifacts:
                         inputs.add(safe_member(job, artifact["file"]), expected=artifact["sha256"], size=artifact["bytes"])
+                        if artifact["file"] == "selection.json":
+                            selected = inputs.json(job / "selection.json")
+                            identity(selected, "selection_identity", "Selection receipt")
+                            if selected.get("job_identity") != receipt.get("job_identity"):
+                                raise ValueError("Selection receipt belongs to a different scientific job")
+                            if selected.get("selected") != receipt.get("fit_config"):
+                                raise ValueError("Final configuration differs from its saved selection")
+                            selections.append({"scenario": scenario, "replication": replication, "track": track,
+                                "model_id": model, "mode": selected.get("selection_mode"), "status": selected.get("status"),
+                                "effective_candidates": len(selected.get("candidate_hashes", [])),
+                                "screen_evaluations": len(selected.get("trials", [])),
+                                "finalist_rechecks": len(selected.get("rechecks", [])),
+                                "eligible_finalists": selected.get("eligible_finalists"),
+                                "selected_candidate_hash": selected.get("selected_candidate_hash"),
+                                "selected": selected.get("selected"), "candidate_design": selected.get("candidate_design"),
+                                "selection_identity": selected["selection_identity"]})
                     receipts.append(receipt)
     if summary.get("jobs") != len(receipts) or summary.get("scheduled_jobs") != len(receipts):
         raise ValueError("Completed study count disagrees with its declared design")
     validate_summary(summary, receipts)
     return {"label": label, "path": str(path), "manifest": manifest, "summary": summary,
-            "receipts": receipts, "data_identities": list(data_ids.values()),
+            "receipts": receipts, "selections": selections, "data_identities": list(data_ids.values()),
             "data_observation_hashes": observation_hashes}
+
+
+def load_audits(specs, runs, inputs, current_source):
+    by_label = {run["label"]: run for run in runs}
+    audits = []
+    for label, path in specs:
+        if label not in by_label:
+            raise ValueError("Audit label must name a supplied run")
+        run, path = by_label[label], Path(path).resolve()
+        audit = inputs.json(path)
+        identity(audit, label="Reference audit")
+        if (audit.get("schema") != "v03-reference-audit-1.0" or audit.get("status") not in {"passed", "passed_with_findings"}
+                or audit.get("manifest_identity") != run["manifest"]["identity"]
+                or audit.get("source_fingerprint") != current_source
+                or audit.get("audit_source_fingerprint") != current_source):
+            raise ValueError("Audit does not match the completed current-source benchmark")
+        inputs.add(Path(run["path"]) / "manifest.json", expected=audit["manifest_sha256"])
+        inputs.add(Path(run["path"]) / "summary.json", expected=audit["summary_sha256"])
+        found = set()
+        protocol = run["manifest"]["protocol"]
+        expected = {(rep, track) for rep in range(protocol["replications"]) for track in protocol["tracks"]} if "g1_gaussian_ar" in protocol["scenarios"] else set()
+        for row in audit.get("oracle", []):
+            key = (row["replication"], row["track"])
+            if row["scenario"] != "g1_gaussian_ar" or key not in expected or key in found:
+                raise ValueError("Known-parameter reference does not match the declared G1 datasets/tasks")
+            found.add(key)
+            inputs.add(safe_member(path.parent, row["moment_artifact"]), expected=row["moment_sha256"])
+            for metric in ("rmse", "mae", "crps"):
+                if not _finite(row["scores"][metric]):
+                    raise ValueError("Known-parameter scores must be finite")
+            for metric in ("rmse", "crps"):
+                _same_number(row["normalized_" + metric], row["scores"][metric] / row["training_scale"], "Oracle normalized score")
+        if found != expected:
+            raise ValueError("Known-parameter audit omits a declared G1 dataset/task")
+        audits.append({"label": label, "path": str(path), "document": audit})
+    return audits
+
+
+def load_calibrations(specs, runs, inputs, current_source):
+    by_label = {run["label"]: run for run in runs}
+    calibrations = []
+    for label, directory in specs:
+        if label not in by_label:
+            raise ValueError("Calibration label must name a supplied base run")
+        directory = Path(directory).resolve()
+        seal = inputs.json(directory / "calibration_evidence.json")
+        identity(seal, label="Calibration evidence seal")
+        run = by_label[label]
+        if (seal.get("schema") != "v03-calibration-evidence-1.0" or seal.get("complete") is not True
+                or seal.get("base_manifest_identity") != run["manifest"]["identity"]
+                or seal.get("source_fingerprint") != current_source):
+            raise ValueError("Calibration seal does not bind a complete current-source base study")
+        required = {"summary.json", "simulation.npz", "raw_forecast.npz", "calibration.npz", "bands.npz"}
+        names = [item["file"] for item in seal["files"]]
+        base_folder = f"{seal['scenario']}/rep_{seal['replication']:03d}"
+        job_folder = f"{base_folder}/{seal['track']}/{seal['model_id']}"
+        base_required = {"manifest.json", "summary.json", f"{job_folder}/model.npz", f"{job_folder}/receipt.json",
+                         f"{base_folder}/simulation.npz", f"{base_folder}/data_receipt.json"}
+        base_names = [item["file"] for item in seal["base_inputs"]]
+        if set(names) != required or len(names) != len(required) or set(base_names) != base_required or len(base_names) != len(base_required):
+            raise ValueError("Calibration seal omits or duplicates required base/scientific artifacts")
+        if not all(seal.get("verification", {}).get(key) is True for key in (
+                "original_prefix_exact", "same_late_evaluation_targets", "disjoint_calibration_blocks",
+                "parameter_cutoff", "O_C_U_roles", "saved_raw_rmse_mae_crps_and_intervals", "saved_map_bands_and_calibrated_scores")):
+            raise ValueError("Calibration seal lacks the required numerical/information checks")
+        for item in seal["base_inputs"]:
+            inputs.add(safe_member(run["path"], item["file"]), expected=item["sha256"], size=item["bytes"])
+        for item in seal["files"]:
+            inputs.add(safe_member(directory, item["file"]), expected=item["sha256"], size=item["bytes"])
+        summary = inputs.json(directory / "summary.json")
+        if summary.get("base_manifest_identity") != seal["base_manifest_identity"]:
+            raise ValueError("Calibration numerical summary belongs to another base study")
+        calibrations.append({"label": label, "path": str(directory), "seal": seal, "summary": summary})
+    return calibrations
+
+
+def load_diagnostics(paths, runs, inputs, current_source):
+    results = []
+    model_hashes = {a["sha256"] for run in runs for receipt in run["receipts"]
+                    for a in receipt["artifacts"] if a["file"] == "model.npz"}
+    for path in paths:
+        path = Path(path).resolve()
+        if not path.exists():
+            results.append({"status": "not available", "path": str(path)})
+            continue
+        value = inputs.json(path)
+        identity(value, label="Saved first-step diagnostic")
+        if value.get("schema") != "saved-G3-first-step-review-1.0" or value.get("source_fingerprint") != current_source:
+            raise ValueError("Unsupported or incompatible saved first-step diagnostic")
+        matched_models, path_manifest, inventory = [], None, None
+        for filename, digest in value["input_hashes"].items():
+            member = Path(filename)
+            if not member.is_absolute():
+                member = ROOT / member
+            inputs.add(member, expected=digest)
+            if member.name == "model.npz":
+                if digest in model_hashes:
+                    matched_models.append(digest)
+            elif member.name == "manifest.json":
+                path_manifest = inputs.json(member)
+                identity(path_manifest, label="Diagnostic path-study manifest")
+            elif member.name == "output_inventory.json":
+                inventory = inputs.json(member)
+                identity(inventory, label="Diagnostic path-study inventory")
+                for item in inventory["entries"]:
+                    inputs.add(safe_member(member.parent, item["file"]), expected=item["sha256"], size=item["bytes"])
+        if (len(matched_models) != 1 or not path_manifest or not inventory or inventory.get("complete") is not True
+                or inventory.get("manifest_identity") != path_manifest["identity"]
+                or inventory.get("mode") != "path_stability" or inventory.get("source_fingerprint") != current_source
+                or path_manifest.get("baseline_sha256") != matched_models[0]
+                or path_manifest.get("input_posterior_identity") != value["posterior_identity"]
+                or path_manifest.get("source_fingerprint") != current_source):
+            raise ValueError("Saved first-step diagnostic does not bind the supplied benchmark and fixed posterior")
+        decoder, one = value["decoder"], value["one_step"]
+        _same_number(decoder["first_lead_unavoidable_outside_span_rmse"] ** 2
+                     + decoder["first_lead_within_span_readout_error_rmse64"] ** 2,
+                     one["conditional_readout_mean64_rmse"] ** 2, "Diagnostic orthogonal MSE decomposition")
+        _same_number(decoder["first_lead_outside_span_fraction_of_conditional_readout_mse64"],
+                     (decoder["first_lead_unavoidable_outside_span_rmse"] / one["conditional_readout_mean64_rmse"]) ** 2,
+                     "Diagnostic outside-span error fraction")
+        for row in value["saved_path_leads"]:
+            _same_number(row["conditional_empirical_mean_mcse_rms"], row["predictive_sd_rms"] / np.sqrt(512),
+                         "Diagnostic conditional predictive mean MCSE")
+        results.append({"status": "complete", "path": str(path), "document": value})
+    return results
 
 
 def _small_numeric_state(path, inputs):
@@ -371,16 +512,170 @@ def load_curve(path, inputs, current_source):
             "design": design, "runs": runs, "unexecuted_values": pending}
 
 
-def load_extensions(path, inputs, current_source):
+def load_curve_audits(paths, curves, inputs, current_source):
+    results = []
+    for path in paths:
+        path = Path(path).resolve()
+        if not path.exists():
+            results.append({"status": "not available", "path": str(path)})
+            continue
+        value = inputs.json(path)
+        identity(value, label="Learning-curve audit")
+        kinds = {"v03-history-choice-1.0": "history", "v03-sensor-representation-audit-1.0": "sensors"}
+        kind = kinds.get(value.get("schema"))
+        matched = [curve for curve in curves if curve.get("design", {}).get("identity") == value.get("curve_identity")]
+        if (kind is None or value.get("source_fingerprint") != current_source or len(matched) != 1
+                or matched[0]["design"]["kind"] != kind):
+            raise ValueError("Curve audit must match exactly one supplied current-source curve")
+        curve = matched[0]
+        inputs.add(curve["path"], expected=value["design_sha256"])
+        supplied = set()
+        for item in value["source_inputs"]:
+            member = Path(item["path"])
+            if not member.is_absolute():
+                member = ROOT / member
+            member = member.resolve()
+            if member in supplied:
+                raise ValueError("Curve audit source inventory contains duplicate files")
+            supplied.add(member)
+            inputs.add(member, expected=item["sha256"], size=item["bytes"])
+        required = {Path(curve["path"]).resolve(), ROOT / "tools/summarize_v03_learning_curves.py",
+                    ROOT / "configs/benchmark/v03/studies/remaining_studies.yaml"}
+        values = (1000, 2000) if kind == "history" else (25, 50, 100)
+        by_value = {run["value"]: run for run in curve["runs"] if run["value"] in values}
+        if set(by_value) != set(values):
+            raise ValueError("Curve audit requires all of its declared consumed conditions")
+        for run in by_value.values():
+            root = Path(run["path"])
+            required.update((root / "manifest.json", root / "summary.json"))
+            for row in run["receipts"]:
+                base = root / row["scenario"] / f"rep_{row['replication']:03d}"
+                required.add(base / "data_receipt.json")
+                if kind == "history" or row["model_id"] == "bayes_esn_ridge":
+                    required.add(base / row["track"] / row["model_id"] / "receipt.json")
+        if not required.issubset(supplied):
+            raise ValueError("Curve audit omits required design, recipe or scientific input receipts")
+        inputs.add(ROOT / "tools/summarize_v03_learning_curves.py", expected=value["tool_sha256"])
+        inputs.add(ROOT / "configs/benchmark/v03/studies/remaining_studies.yaml", expected=value["recipe_sha256"])
+        if kind == "history":
+            _validate_history_choice(value, by_value)
+        else:
+            if value.get("independent_fields") != 1 or value.get("replication_mcse") is not None:
+                raise ValueError("Sensor representation audit overstates its single-field population")
+            seen = set()
+            for row in value["rows"]:
+                key = (row["sensor_count"], row["track"])
+                if key in seen or key[0] not in by_value:
+                    raise ValueError("Sensor representation audit duplicates or invents a condition")
+                seen.add(key)
+                matches = [r for r in by_value[key[0]]["receipts"]
+                           if r["track"] == key[1] and r["model_id"] == "bayes_esn_ridge"]
+                if (len(matches) != 1 or matches[0]["receipt_identity"] != row["receipt_identity"]
+                        or any(row.get(k) != matches[0][k] for k in ("qualified", "fallback"))):
+                    raise ValueError("Sensor representation row differs from its saved fit/qualification")
+                amplification = row.get("fixed_reference_noise_amplification")
+                if amplification:
+                    values_array = np.asarray(amplification["target_unit_iid_noise_variance_amplification"], float)
+                    if (values_array.shape != (len(row["target_ids"]),) or not np.isfinite(values_array).all()
+                            or np.any(values_array < 0)):
+                        raise ValueError("Invalid geometry-only noise-amplification summary")
+                    _same_number(amplification["mean_unit_iid_noise_variance_amplification"], values_array.mean(), "Sensor amplification mean")
+                    _same_number(amplification["maximum_unit_iid_noise_variance_amplification"], values_array.max(), "Sensor amplification maximum")
+            expected = {(n, track) for n, run in by_value.items() for track in run["manifest"]["protocol"]["tracks"]}
+            if seen != expected:
+                raise ValueError("Sensor representation audit omits a declared sensor/track condition")
+        results.append({"status": "complete", "path": str(path), "kind": kind, "document": value})
+    return results
+
+
+def _validate_history_choice(value, runs):
+    if value.get("confirmation_outcomes_inspected") is not False:
+        raise ValueError("History choice crossed the declared development-only boundary")
+    jobs = {n: {(r["scenario"], r["replication"], r["track"], r["model_id"]): r
+                for r in run["receipts"]} for n, run in runs.items()}
+    qualification_cells = {}
+    for contrast in value["contrasts"]:
+        metric = contrast["metric"]
+        for cell in contrast["cells"]:
+            key_tail = (contrast["track"], contrast["model_id"])
+            actual, eligible, qualified_short, qualified_long = [], [], 0, 0
+            for replication in range(runs[1000]["manifest"]["protocol"]["replications"]):
+                key = (cell["scenario"], replication, *key_tail)
+                short, long = jobs[1000][key], jobs[2000][key]
+                qualified_short += bool(short["qualified"])
+                qualified_long += bool(long["qualified"])
+                if metric == "crps" and not (short["qualified"] and long["qualified"]):
+                    continue
+                population = "native_scores" if metric == "crps" else "operational_scores"
+                actual.append((short[population][metric] - long[population][metric]) / short["training_scale"])
+                eligible.append(replication)
+            if (eligible != cell["usable_replications"] or qualified_short != cell["qualified1000"]
+                    or qualified_long != cell["qualified2000"]):
+                raise ValueError("History audit uses a different paired population")
+            if metric == "crps":
+                qualification_cells[(contrast["model_id"], contrast["track"], cell["scenario"])] = qualified_short >= qualified_long
+            if contrast["macro"] is not None:
+                saved = contrast["macro"]["paired_differences"][cell["scenario"]]
+                if len(saved) != len(actual) or not np.allclose(saved, actual, rtol=1e-11, atol=1e-12):
+                    raise ValueError("History audit paired losses differ from the saved scientific receipts")
+        passed = contrast["macro"] is not None and contrast["macro"]["upper_one_sided95"] <= contrast["margin"]
+        if contrast["bound_passed"] != passed:
+            raise ValueError("History audit misstates its declared score-bound decision")
+    for count, run in runs.items():
+        _same_number(value["summed_pipeline_seconds"][str(count)],
+                     sum(r["total_pipeline_seconds"] for r in run["receipts"]), "History summed pipeline time")
+    saving = 1 - value["summed_pipeline_seconds"]["1000"] / value["summed_pipeline_seconds"]["2000"]
+    _same_number(value["short_history_time_saving_fraction"], saving, "History time-saving fraction")
+    complete = all(r["compute_accounting_complete"] for run in runs.values() for r in run["receipts"])
+    cost_pass = complete and saving >= value["decision_rule"]["minimum_measured_pipeline_time_saving_fraction"]
+    score_pass = all(c["bound_passed"] for c in value["contrasts"])
+    saved_qualification = {(c["model_id"], c["track"], c["scenario"]): c["not_worse"] for c in value["qualification_cells"]}
+    if saved_qualification != qualification_cells or len(saved_qualification) != len(value["qualification_cells"]):
+        raise ValueError("History qualification decision differs from saved model outcomes")
+    qualification_pass = all(qualification_cells.values())
+    selected = 1000 if cost_pass and score_pass and qualification_pass else 2000
+    if (value["complete_compute_accounting"] != complete or value["cost_gate_passed"] != cost_pass
+            or value["score_bounds_passed"] != score_pass or value["qualification_not_worse"] != qualification_pass
+            or value["selected_initial_history"] != selected):
+        raise ValueError("History choice does not follow its saved gate components")
+
+
+def load_extensions(path, inputs, current_source, *, runs=()):
     if path is None or not Path(path).exists():
         return {"status": "not supplied" if path is None else "not available", "entries": []}
+    path = Path(path).resolve()
+    if path.is_dir():
+        path = path / "decisions.json"
     value = inputs.json(path)
     if not isinstance(value, dict):
         raise ValueError("Extension dispositions must be a JSON mapping")
     if "identity" in value:
         identity(value, label="Extension disposition")
+    referenced_paths = []
+    for reference in value.get("evidence_inventories", []):
+        inventory_path = Path(reference["path"])
+        if not inventory_path.is_absolute():
+            inventory_path = ROOT / inventory_path
+        inputs.add(inventory_path, expected=reference["sha256"])
+        saved = inputs.json(inventory_path)
+        identity(saved, label="Referenced extension output inventory")
+        if (saved["identity"] != reference["identity"] or saved.get("complete") is not True
+                or saved.get("source_fingerprint") != current_source):
+            raise ValueError("Referenced extension evidence is incompatible or incomplete")
+        names = [entry["file"] for entry in saved["entries"]]
+        if len(names) != len(set(names)):
+            raise ValueError("Referenced extension output inventory contains duplicate files")
+        for entry in saved["entries"]:
+            inputs.add(safe_member(inventory_path.parent, entry["file"]),
+                       expected=entry["sha256"], size=entry["bytes"])
+        if saved.get("mode") == "path_stability":
+            if "path_stability.json" not in names:
+                raise ValueError("Referenced path study lacks its numerical result")
+            referenced_paths.append(inputs.json(inventory_path.with_name("path_stability.json")))
     if value.get("source_fingerprint", current_source) != current_source:
         raise ValueError("Extension dispositions refer to a different current source")
+    if value.get("path_count_assessment"):
+        validate_path_assessment(value["path_count_assessment"], referenced_paths, runs, inputs)
     entries = value.get("extensions", value.get("rows", value.get("decisions")))
     if not isinstance(entries, list) or any(not isinstance(row, dict) for row in entries):
         raise ValueError("Extension JSON requires an extensions/rows/decisions list")
@@ -396,12 +691,163 @@ def load_extensions(path, inputs, current_source):
                 folder = Path(path).resolve().parent / folder
             row["validated_run_identity"] = load_run(folder, row.get("name", row.get("id")), inputs, current_source)["manifest"]["identity"]
     status = "implementation scope; no experiment results" if value.get("scientific_results_in_this_file") is False else "supplied dispositions"
+    scientific = None
     if value.get("manifest_identity"):
         manifest = inputs.json(Path(path).resolve().with_name("manifest.json"))
         identity(manifest, label="Extension study manifest")
         if manifest["identity"] != value["manifest_identity"] or manifest.get("source_fingerprint") != current_source:
             raise ValueError("Extension decisions do not match their source-bound study manifest")
-    return {"status": status, "entries": entries, "path": str(Path(path).resolve()), "document": value}
+        inventory = inputs.json(path.with_name("output_inventory.json"))
+        identity(inventory, label="P5 output inventory")
+        if (inventory.get("schema") != "p5-output-inventory-1.0" or inventory.get("complete") is not True
+                or inventory.get("manifest_identity") != manifest["identity"]
+                or inventory.get("source_fingerprint") != current_source):
+            raise ValueError("P5 results require their matching complete output inventory")
+        names = [item["file"] for item in inventory["entries"]]
+        if len(names) != len(set(names)) or not {"manifest.json", "inspection.json", "decisions.json"}.issubset(names):
+            raise ValueError("P5 terminal inventory is incomplete or duplicated")
+        for item in inventory["entries"]:
+            inputs.add(safe_member(path.parent, item["file"]), expected=item["sha256"], size=item["bytes"])
+        baseline_runs = [run for run in runs if any(a["file"] == "model.npz" and a["sha256"] == manifest["baseline_sha256"]
+                         for receipt in run["receipts"] for a in receipt["artifacts"])]
+        if len(baseline_runs) != 1:
+            raise ValueError("P5 baseline hash must identify exactly one supplied benchmark run")
+        baseline_run = baseline_runs[0]
+        inspection = inputs.json(path.with_name("inspection.json"))
+        if inspection.get("manifest_identity") != manifest["identity"] or inspection.get("future_labels_used") is not False:
+            raise ValueError("P5 inspection has incompatible identity or information policy")
+        scientific = {"mode": inventory["mode"], "inventory_identity": inventory["identity"],
+                      "base_run": baseline_run["label"], "qualified_baseline": inspection["qualified_baseline"],
+                      "inspection": inspection, "ablation": None, "path_stability": None}
+        if inventory["mode"] in {"extensions", "path_stability"}:
+            filename = "paired_ablation.json" if inventory["mode"] == "extensions" else "path_stability.json"
+            if filename not in names:
+                raise ValueError("P5 requested scientific result is absent from its terminal inventory")
+            result = inputs.json(path.with_name(filename))
+            for field_name in ("simulation_sha256", "development_manifest_sha256"):
+                if result["evaluation"].get(field_name) != manifest.get(field_name):
+                    raise ValueError("P5 evaluation inputs differ from the sealed design")
+            if manifest["development_manifest_sha256"] != sha256(Path(baseline_run["path"]) / "manifest.json"):
+                raise ValueError("P5 evaluation is attached to another supplied study")
+            if inventory["mode"] == "extensions":
+                if result.get("complete") is not True or not result.get("rows") or result["rows"][0]["variant"] != "scalar_reference":
+                    raise ValueError("P5 ablation needs a complete contemporaneous scalar reference")
+                by_variant = {row["variant"]: row for row in result["rows"]}
+                if len(by_variant) != len(result["rows"]):
+                    raise ValueError("P5 ablation variant receipts are duplicated")
+                for row in result["rows"]:
+                    if inputs.json(path.parent / row["variant"] / "receipt.json") != row:
+                        raise ValueError("P5 ablation summary differs from its variant receipt")
+                    if "scores" in row and not row["qualified"]:
+                        raise ValueError("Unqualified P5 variant entered a native score comparison")
+                reference = by_variant["scalar_reference"]
+                for pair in result.get("comparisons", []):
+                    row = by_variant[pair["variant"]]
+                    usable = "scores" in reference and "scores" in row
+                    if pair["common_qualified_datasets"] != int(usable) or pair["mcse_across_datasets"] is not None:
+                        raise ValueError("P5 comparison misstates its single-dataset population")
+                    if usable:
+                        for metric in ("rmse", "mae", "crps"):
+                            _same_number(pair["loss_difference_extension_minus_scalar"][metric],
+                                row["scores"][metric] - reference["scores"][metric], "P5 paired saved loss")
+                    elif pair.get("loss_difference_extension_minus_scalar") is not None:
+                        raise ValueError("P5 comparison invented a loss for an unqualified pair")
+                scientific["ablation"] = result
+            else:
+                from bayes_stesn.benchmark.contracts import Forecast
+                if (result.get("posterior_identity") != manifest["input_posterior_identity"]
+                        or [row["paths"] for row in result["rows"]] != [128, 256, 512]
+                        or result.get("global_path_indexing") is not True):
+                    raise ValueError("P5 path study does not preserve the fixed posterior/nested path design")
+                forecast_path = safe_member(path.parent, "path_stability_forecast.npz")
+                with zipfile.ZipFile(forecast_path) as archive:
+                    if sum(item.file_size for item in archive.infolist()) > 128 * 1024**2:
+                        raise MemoryError("P5 saved path validation exceeds the 128 MiB archive allowance")
+                forecast = Forecast.load(forecast_path)
+                for row in result["rows"]:
+                    if content_hash(forecast.samples[:row["paths"]]) != row["path_hash"]:
+                        raise ValueError("P5 nested path prefix hash disagrees with saved joint paths")
+                    for metric in ("rmse", "mae", "crps"):
+                        _same_number(row["difference_from_512"][metric],
+                                     row["scores"][metric] - result["rows"][-1]["scores"][metric], "P5 path-count sensitivity")
+                scientific["path_stability"] = result
+            status = "completed bounded P5 evidence; no automatic promotion"
+    return {"status": status, "entries": entries, "path": str(path), "document": value,
+            "scientific_evidence": scientific}
+
+
+def validate_path_assessment(assessment, path_results, runs, inputs):
+    """Check the recorded v0.3 budget decision against its saved rule and losses."""
+    rule_path = Path(assessment["predeclared_rule_path"])
+    if not rule_path.is_absolute():
+        rule_path = ROOT / rule_path
+    inputs.add(rule_path, expected=assessment["predeclared_rule_document_sha256"])
+    rule = inputs.json(rule_path)["predictive_path_count_rule"]
+    if (assessment["predeclared_rule"] != rule or rule["candidate_counts"] != [128, 256, 512]
+            or rule["reference"] != 512):
+        raise ValueError("Path-count decision does not match its supported predeclared rule")
+    receipt_ids = {row["receipt_identity"] for run in runs for row in run["receipts"]}
+    passing = {n: True for n in rule["candidate_counts"]}
+    cases = assessment["cases"]
+    if len(cases) != len(rule["cases"]) or len({c["posterior_identity"] for c in cases}) != len(cases):
+        raise ValueError("Path-count decision misstates its prespecified cases")
+    for case in cases:
+        reference = Path(case["reference_receipt_path"])
+        if not reference.is_absolute():
+            reference = ROOT / reference
+        inputs.add(reference, expected=case["reference_receipt_sha256"])
+        receipt = inputs.json(reference)
+        identity(receipt, "receipt_identity", "Path decision reference")
+        if receipt["receipt_identity"] not in receipt_ids or not receipt["qualified"]:
+            raise ValueError("Path-count decision must bind a supplied qualified benchmark receipt")
+        _same_number(case["training_scale"], receipt["training_scale"], "Path decision training scale")
+        saved = [p for p in path_results if p["posterior_identity"] == case["posterior_identity"]]
+        if len(saved) != 1 or saved[0]["evaluation"]["scenario"] != case["scenario"]:
+            raise ValueError("Path-count decision lacks exactly one matching saved sensitivity study")
+        rows = case["rows"]
+        if [r["paths"] for r in rows] != rule["candidate_counts"]:
+            raise ValueError("Path-count decision changed its candidate prefixes")
+        by_count = {r["paths"]: r for r in saved[0]["rows"]}
+        for row in rows:
+            original = by_count[row["paths"]]
+            for key in ("rmse", "crps", "coverage90"):
+                number = original["scores"][key] if key != "coverage90" else original["scores"]["intervals"]["0.9"]["coverage"]
+                _same_number(row[key], number, "Path decision saved score")
+            _same_number(row["normalized_absolute_crps_difference_from_512"],
+                         abs(row["crps"] - rows[-1]["crps"]) / case["training_scale"], "Path decision normalized CRPS")
+            _same_number(row["absolute_coverage90_difference_from_512"],
+                         abs(row["coverage90"] - rows[-1]["coverage90"]), "Path decision coverage difference")
+            for statistic in ("rms", "max"):
+                key = "conditional_predictive_mean_mcse_" + statistic
+                _same_number(row[key], original["predictive_mean_mcse_" + statistic], "Path decision conditional mean MCSE")
+                _same_number(row[key + "_over_training_scale"], row[key] / case["training_scale"],
+                             "Path decision normalized mean MCSE")
+            passed = (row["normalized_absolute_crps_difference_from_512"] <= .005
+                      and row["absolute_coverage90_difference_from_512"] <= .02)
+            if row["passes_both_rules"] != passed:
+                raise ValueError("Path-count decision changed its fixed CRPS/coverage rule")
+            passing[row["paths"]] &= passed
+    if (assessment["passes_on_both_cases"] != {str(n): p for n, p in passing.items()}
+            or assessment["selected_for_subsequent_studies"] != next(n for n, passed in passing.items() if passed)):
+        raise ValueError("Path-count decision does not follow its saved case results")
+
+
+def current_extension_entries(studies):
+    """Final findings supersede scope; ambiguous same-priority claims fail."""
+    chosen = {}
+    for study in studies:
+        if study.get("scientific_evidence"):
+            continue
+        document = study.get("document", {})
+        rank = 2 if document.get("schema") == "p5-extension-findings-1.0" else int(document.get("scientific_results_in_this_file") is not False)
+        for row in study["entries"]:
+            key = row.get("id", row.get("name"))
+            current = chosen.get(key)
+            if current and current[0] == rank and (current[1]["status"], current[1]["rationale"]) != (row["status"], row["rationale"]):
+                raise ValueError("Conflicting extension dispositions at the same evidence priority")
+            if current is None or rank > current[0]:
+                chosen[key] = (rank, row)
+    return [row for _, row in chosen.values()]
 
 
 def load_media(specs, runs, inputs):
@@ -483,14 +929,24 @@ def collect(args):
     runs = [load_run(path, label, inputs, source) for label, path in specs]
     if not coordinate and not runs:
         raise ValueError("Supply at least one --coordinate or --run")
-    curve = load_curve(args.curve, inputs, source)
-    extensions = load_extensions(args.extensions, inputs, source)
+    curves = [load_curve(path, inputs, source) for path in args.curve] if args.curve else [load_curve(None, inputs, source)]
+    curve_audits = load_curve_audits(args.curve_audit, curves, inputs, source)
+    extension_studies = [load_extensions(path, inputs, source, runs=runs) for path in args.extensions]
+    extensions = ({"status": "; ".join(dict.fromkeys(x["status"] for x in extension_studies)),
+                   "entries": [entry for x in extension_studies for entry in x["entries"]], "studies": extension_studies}
+                  if extension_studies else {"status": "not supplied", "entries": [], "studies": []})
+    extensions["current_entries"] = current_extension_entries(extension_studies)
     media = load_media(args.media or [], runs, inputs)
+    audits = load_audits(args.audit or [], runs, inputs, source)
+    calibrations = load_calibrations(args.calibration or [], runs, inputs, source)
+    diagnostics = load_diagnostics(args.diagnostic, runs, inputs, source)
     engineering = load_engineering(inputs)
     for name in ("docs/models.md", "docs/derivations/07_sampler_coordinates_recovery.md", "docs/study_design_v03.md"):
         inputs.add(ROOT / name)
-    return {"source_fingerprint": source, "coordinate": coordinate, "runs": runs, "curve": curve,
-            "extensions": extensions, "media": media, "engineering": engineering}, inputs
+    return {"source_fingerprint": source, "coordinate": coordinate, "runs": runs, "curves": curves,
+            "curve_audits": curve_audits,
+            "extensions": extensions, "media": media, "audits": audits,
+            "calibrations": calibrations, "diagnostics": diagnostics, "engineering": engineering}, inputs
 
 
 def fmt(value, digits=3):
@@ -698,7 +1154,54 @@ def cost_figure(run, output):
     return save_figure(fig, output, run["label"] + "_cost_qualification", f"Recorded costs averaged over the run's declared scenario/task mix; this is not machine-independent throughput. {incomplete} jobs have incomplete compute accounting after infrastructure interruption; their recorded times are lower bounds. Failed scientific attempts remain in cost and operational populations. Process peak RSS is kept in raw receipts with its measurement scope.")
 
 
-def curve_figures(curve, output):
+def accuracy_time_figure(run, output):
+    plt = plotting()
+    rows = run["summary"]["table"]
+    cells = sorted({(r["scenario"], r["track"]) for r in rows})
+    figures = []
+    for offset in range(0, len(cells), 4):
+        chunk = cells[offset:offset + 4]
+        fig, axes = plt.subplots((len(chunk) + 1) // 2, 2, figsize=(10.5, 3.3 * ((len(chunk) + 1) // 2)), squeeze=False, layout="constrained")
+        for ax, (scenario, track) in zip(axes.flat, chunk):
+            for row in rows:
+                if (row["scenario"], row["track"]) != (scenario, track):
+                    continue
+                members = [r for r in run["receipts"] if (r["scenario"], r["track"], r["model_id"]) == (scenario, track, row["model_id"])]
+                elapsed = np.mean([r.get("total_pipeline_seconds", r["total_seconds"] + r.get("tuning_seconds", 0)) for r in members])
+                ax.scatter(elapsed, row["rmse"], color=COLORS.get(row["model_id"], GRAY), s=40,
+                           label=LABELS.get(row["model_id"], row["model_id"]))
+            ax.set_xscale("log")
+            ax.set_title(f"{short_scenario(scenario)} / track {track}", loc="left")
+            ax.set_xlabel("Mean recorded pipeline seconds / job (log)")
+            ax.set_ylabel("Mean operational RMSE")
+            ax.grid(alpha=.4)
+            ax.legend(fontsize=6, ncol=2)
+        for ax in list(axes.flat)[len(chunk):]:
+            ax.set_axis_off()
+        figures.append(save_figure(fig, output, f"{run['label']}_accuracy_time_{offset}", "Accuracy and recorded computational cost for the same declared jobs. Lower and left is preferable, but points have different qualification/fallback behavior; this plot is descriptive, not a Pareto-superiority test. Costs include tuning, final fitting, forecasting and saved-artifact serialization; lost work remains labeled incomplete."))
+    return figures
+
+
+def oracle_figure(audit, output):
+    plt = plotting()
+    rows = audit["document"].get("oracle", [])
+    if not rows:
+        return []
+    tracks = sorted({r["track"] for r in rows})
+    fig, axes = plt.subplots(1, 2, figsize=(10.6, 3.5), layout="constrained")
+    for track in tracks:
+        eligible = [r for r in rows if r["track"] == track]
+        for ax, field, label in zip(axes, ("rmse_by_lead", "crps_by_lead"), ("Realized RMSE", "Analytic marginal Gaussian CRPS")):
+            array = np.asarray([r["scores"][field] for r in eligible])
+            ax.plot(np.arange(1, array.shape[1] + 1), array.mean(axis=0), label=f"Track {track}; n={len(eligible)}", lw=1.8)
+            ax.set_xlabel("Forecast lead")
+            ax.set_ylabel(label)
+            ax.grid(alpha=.4)
+            ax.legend()
+    return [save_figure(fig, output, audit["label"] + "_known_parameter_g1", "Privileged-parameter G1 reference, conditional on the same noisy observed-site history. It knows generating parameters; it does not observe the latent state or future labels. These are saved analytic reference scores, not a newly fitted competitor. There is no finite-realization dominance guarantee.")]
+
+
+def curve_figures(curve, output, *, curve_index=0):
     plt = plotting()
     if not curve["runs"]:
         return []
@@ -712,15 +1215,18 @@ def curve_figures(curve, output):
             for model in FOCUS:
                 for j, metric in enumerate(("rmse", "crps")):
                     points = [(run["value"], row) for run in runs for row in run["summary"]["table"]
-                              if (row["scenario"], row["track"], row["model_id"]) == (scenario, track, model) and row.get(metric) is not None]
+                              if (row["scenario"], row["track"], row["model_id"]) == (scenario, track, model)]
                     if points:
-                        axes[k, j].plot([p[0] for p in points], [p[1][metric] for p in points], "o-", color=COLORS[model], label=LABELS[model])
+                        population = "operational_population" if metric == "rmse" else "probability_population"
+                        counts = "/".join(str(p[1][population]) for p in points)
+                        axes[k, j].plot([p[0] for p in points], [p[1][metric] if p[1][metric] is not None else np.nan for p in points],
+                                       "o-", color=COLORS[model], label=f"{LABELS[model]} (n={counts})")
             for j, metric in enumerate(("RMSE (operational)", "CRPS (qualified native)")):
                 axes[k, j].set_title(f"{short_scenario(scenario)}/{track} / {metric}", loc="left")
                 axes[k, j].set_xlabel("Initial training rows" if curve["design"]["kind"] == "history" else "Observed sensors")
                 axes[k, j].grid(alpha=.4)
                 axes[k, j].legend(fontsize=7)
-        figures.append(save_figure(fig, output, f"learning_curve_{offset}", "Resolved matched design; only completed conditions are shown. Final forecast period and scored target domain are held fixed. Native CRPS is conditional on qualification and must be read with per-condition counts. Connecting points illustrates the response to the declared intervention, not monotonicity or a proven improvement."))
+        figures.append(save_figure(fig, output, f"learning_curve_{curve_index}_{offset}", "Resolved matched design; only completed conditions are shown. Legend populations follow conditions in ascending x order. Final forecast period and scored target domain are held fixed. Native CRPS is conditional on qualification; a zero population produces a gap. Connecting points illustrates the declared information intervention, not monotonicity or a proven improvement."))
     return figures
 
 
@@ -778,6 +1284,7 @@ def sections_for(data, output):
                    f"{r['qualified']}/{r['attempted']}", str(r["probability_population"])] for r in summary["table"]]
         text = [f"Stage: {run['manifest']['stage']}. Protocol: {protocol['name']}. Selection mode: {protocol.get('selection_mode', 'legacy')}. The complete resolved protocol is included in the machine-readable evidence.",
             f"Independent datasets per scenario: {protocol['replications']}; observed sensors: {protocol['n_observed']}; evaluation grid: {protocol['n_side']} by {protocol['n_side']}; forecast horizon: {protocol['horizon']}. Initial training starts at row {protocol.get('training_start', 0)} and ends before row {protocol['initial_fit']}. Model parameters are refitted at the common final forecast origin.",
+            f"Predictive path budget: {protocol['paths']}. Protocol MCMC allowance: {protocol['mcmc_chains']} chains, {protocol['mcmc_warmup']} warmup iterations and {protocol['mcmc_draws']} initially retained draws per chain, with at most {protocol['mcmc_continuation']} additional draws under the declared continuation policy. Resolved per-model configurations and tuning budgets remain authoritative.",
             str(summary.get("comparison_status", "Completed development study; no confirmatory ranking.")),
             "Qualification is assessed under each method's declared gate. Neural early stopping is a model-selection rule, not proof of a global optimizer optimum. Separable GP and basis GRU are custom matched controls, not certified reproductions of every similarly named published method."]
         if protocol["replications"] < 5:
@@ -792,12 +1299,35 @@ def sections_for(data, output):
         sections.append(section(f"{run['label']}: design and qualification", text,
             table=(["DGP", "Task", "Model", "Qualified / attempted", "Native n"], counts),
             links=[("Resolved manifest", f"evidence/{run['label']}_manifest.json"), ("Complete numerical summary", f"evidence/{run['label']}_summary.json")]))
+        if run.get("selections"):
+            selected_rows = []
+            for model in dict.fromkeys(s["model_id"] for s in run["selections"]):
+                items = [s for s in run["selections"] if s["model_id"] == model]
+                candidates = [s["effective_candidates"] for s in items]
+                rechecks = [s["finalist_rechecks"] for s in items]
+                distinct = {s["selected_candidate_hash"] for s in items if s["selected"] is not None}
+                selected_rows.append([LABELS.get(model, model), f"{min(candidates)}-{max(candidates)}",
+                    f"{min(rechecks)}-{max(rechecks)}", str(len(distinct)),
+                    f"{sum(s['selected'] is not None for s in items)}/{len(items)}"])
+            sections.append(section(f"{run['label']}: selection and information budget", [
+                "Counts below come from hash-verified selection receipts. Candidate counts refer to distinct effective configurations after overrides and dimension constraints. Rechecks count actual saved finalist evaluation records; each record can include the declared spatial folds and chronological origins.",
+                "Frozen-configuration experiments may have one declared configuration and zero screening/rechecks. A failed selection remains a terminal procedure outcome with its declared fallback. Exact selected parameters, selection identities and candidate-resolution metadata are included in the linked JSON."],
+                table=(["Model", "Candidates / job", "Rechecks / job", "Distinct selected", "Selected / jobs"], selected_rows),
+                links=[("Selected configurations and candidate accounting", f"evidence/{run['label']}_selected_configurations.json")]))
         sections.append(section(f"{run['label']}: predictive performance", [
             "Scenarios retain their original response units in these marginal score panels. Do not rank methods by comparing unpaired native CRPS means with different qualification populations. Every paired contrast below uses the common eligible datasets and its saved training-only scale."], figures=score_figures(run, output)))
         calibration = calibration_figure(run, output)
         if calibration:
             sections.append(section(f"{run['label']}: predictive uncertainty", [
                 "A good forecast distribution must represent uncertainty as well as its mean. These saved interval summaries show whether narrow predictions miss observations and whether wider intervals buy useful coverage. Qualification and calibration are separate questions."], figures=calibration))
+        dependence = [r for r in summary["table"] if r["model_id"] in FOCUS and r.get("field_energy") is not None]
+        if dependence:
+            sections.append(section(f"{run['label']}: joint predictive structure", [
+                "Marginal CRPS alone cannot verify spatial or temporal dependence. These saved whole-field energy and spatial variogram scores retain coherent predictive paths. Their empirical populations are the qualified native distributions; a good marginal score does not imply a good joint score.",
+                "Scores use the declared geometric pair policy and original response scale. Temporal variogram, functional path scores, field coverage and whole-path coverage remain available in the copied per-job score evidence. Smaller energy/variogram scores are preferable within the same task and population."],
+                table=(["DGP / task", "Model", "Native n", "Field energy", "Spatial variogram"],
+                    [[f"{short_scenario(r['scenario'])}/{r['track']}", LABELS[r['model_id']], str(r["probability_population"]),
+                      fmt(r["field_energy"]), fmt(r["spatial_variogram"])] for r in dependence])))
         macros = summary.get("macro_comparisons", [])
         macro_table = None
         if macros:
@@ -808,21 +1338,178 @@ def sections_for(data, output):
             "Negative differences favor the reference ESN. Macro estimates, when present, use the prespecified scenario weights; a missing scenario cell remains missing and weights are not renormalized. Their MCSE combines independent within-scenario paired variances. Intervals are pointwise and do not support simultaneous superiority claims.",
             "Qualification attrition is part of the result. A complete campaign can still have no usable native comparison in a cell. Confirmation planning needs at least five usable pairs in every primary cell, accounts for joint qualification, and fixes attempted replications before final seeds."], table=macro_table, figures=paired_figure(run, output)))
         sections.append(section(f"{run['label']}: error evolution", figures=lead_figures(run, output)))
-        sections.append(section(f"{run['label']}: cost and reliability", figures=[cost_figure(run, output)]))
-    curve = data["curve"]
-    text = [f"Learning-curve evidence status: {curve['status']}.",
-        "A valid history curve holds the final forecast interval and target sites fixed, varies the supplied historical window, and uses a common training-only normalization reference. A valid sensor curve nests observed sensors while preserving the unobserved target set. Fixed specifications and repeated tuning are distinct experiments."]
-    if curve.get("unexecuted_values"):
-        text.append("Unexecuted planned values: " + ", ".join(map(str, curve["unexecuted_values"])) + ". They are absent from the plots, not treated as failed or zero-valued results.")
-    if not curve["runs"]:
-        text.append("No completed curve conditions are included. This report cannot establish whether more history or more sensors improve prediction.")
-    sections.append(section("More data and expressiveness", text, figures=curve_figures(curve, output),
-        links=[("Matched information interventions and populations", "evidence/study_design_v03.md")]))
+        cpu = [r.get("total_pipeline_cpu_seconds") for r in run["receipts"]]
+        total_cpu = sum(cpu) if all(_finite(value) for value in cpu) else None
+        sections.append(section(f"{run['label']}: cost and reliability", [
+            f"Recorded pipeline CPU summed over terminal jobs: {fmt(total_cpu, 5)} seconds. This sum includes tuning, final computation and final artifact serialization where the new accounting fields are present; it is not elapsed parallel campaign time.",
+            "Fit wall time includes diagnostics. The diagnostic subcomponent is cumulative saved diagnostic-phase time and can include earlier invocations after resume; adding it again would double-count. Pipeline costs with interrupted unknown work are explicitly incomplete.",
+            "Worker RSS is a process-lifetime high-water mark, including final artifact serialization. Reused-worker records are not isolated per-model memory increments, so this report does not infer a model-level accuracy-versus-memory ranking from them. The separately isolated forecast-ownership probe supports its narrower allocation comparison."],
+            figures=[cost_figure(run, output), *accuracy_time_figure(run, output)]))
+    if not data.get("audits"):
+        sections.append(section("G1 known-parameter reference", ["No saved known-parameter audit was supplied. The renderer does not compute an oracle on demand. This required comparison remains unavailable until a source-bound audit is supplied with --audit."]))
+    for audit in data.get("audits", []):
+        run = next(r for r in runs if r["label"] == audit["label"])
+        oracle = {(r["replication"], r["track"]): r for r in audit["document"]["oracle"]}
+        comparisons = []
+        for row in run["summary"]["table"]:
+            if row["scenario"] != "g1_gaussian_ar":
+                continue
+            saved = [r for r in run["receipts"] if r["scenario"] == row["scenario"] and r["track"] == row["track"] and r["model_id"] == row["model_id"]]
+            operational = [r["operational_scores"]["rmse"] - oracle[r["replication"], r["track"]]["scores"]["rmse"] for r in saved]
+            native = [r["native_scores"]["crps"] - oracle[r["replication"], r["track"]]["scores"]["crps"] for r in saved
+                      if r["qualified"] and not r["fallback"] and "crps" in r["native_scores"]]
+            comparisons.append([row["track"], LABELS.get(row["model_id"], row["model_id"]),
+                f"{fmt(float(np.mean(operational)))} (n={len(operational)})",
+                f"{fmt(float(np.mean(native)) if native else None)} (n={len(native)})"])
+        sections.append(section(f"{audit['label']}: G1 known-parameter reference", [
+            "This reference knows the generating parameters and conditions on the same noisy observed-site history. It has privileged parameter information, but does not receive the latent state or future observations. It is a diagnostic reference, not another learned competitor.",
+            "Table differences are learned-method loss minus oracle loss in original G1 response units. Operational RMSE uses all declared outcomes. Native CRPS uses each method's qualified datasets, and the oracle is restricted to those same datasets for that comparison. Negative realized differences can occur; optimal conditional information does not guarantee dominance on each finite realization.",
+            f"Independent audit status: {audit['document']['status']}; {len(audit['document'].get('findings', []))} finding(s) retained in the copied audit. No reference or comparator was recomputed by this renderer."],
+            table=(["Task", "Learned method", "Paired operational RMSE difference", "Paired native CRPS difference"], comparisons),
+            figures=oracle_figure(audit, output), links=[("Complete reference audit", f"evidence/{audit['label']}_audit.json")]))
+    if not data.get("calibrations"):
+        sections.append(section("Separate post-fit calibration", [
+            "No sealed raw-versus-calibrated study was supplied. Native interval coverage above describes the original predictive laws; it is not evidence that post-fit calibration has been completed or improved them."]))
+    for index, calibration in enumerate(data.get("calibrations", [])):
+        value = calibration["summary"]
+        table = []
+        for key, adjusted in value["calibrated"].items():
+            target, level = key.rsplit("_", 1)
+            raw = value["raw"].get("intervals", {}).get(level, {})
+            table.append([f"{target} / {level}",
+                f"{fmt(raw.get('coverage'))} -> {fmt(adjusted.get('coverage'))}",
+                f"{fmt(raw.get('width'))} -> {fmt(adjusted.get('width'))}",
+                f"{fmt(raw.get('interval_score'))} -> {fmt(adjusted.get('interval_score'))}"])
+        sections.append(section(f"{calibration['label']}: raw versus calibrated intervals", [
+            f"{short_scenario(value['scenario'])}, track {value['track']}, {LABELS.get(value['model_id'], value['model_id'])}; {value['blocks']} disjoint calibration blocks. Parameters are frozen at row {value['parameter_cutoff']}; both raw and adjusted bands are evaluated at the same later origin {value['origin_index']} on identical targets.",
+            "O observations may update forecast state between calibration blocks. New-site calibration learns from reserved C sites and evaluates transfer to U. This is empirical calibration under serial dependence, not an exchangeability-based coverage guarantee.",
+            f"Calibrated marginal WIS: {fmt(value.get('wis_marginal'))}. Interval adjustment adds no new joint distribution and leaves the raw predictive samples unchanged. Calibrated CRPS is therefore not invented. Saved band and raw-score calculations were independently verified by the read-only seal helper.",
+            "Each table entry is raw -> calibrated. Marginal, horizon and simultaneous maps are distinct targets. Infinite bands, when required by a finite block rank, remain marked unavailable for finite width/score rather than being hidden."],
+            table=(["Target / level", "Coverage", "Width", "Interval score"], table),
+            links=[("Calibration numerical summary and verification seal", f"evidence/calibration_{index}_summary.json")]))
+    for curve_index, curve in enumerate(data["curves"]):
+        text = [f"Learning-curve evidence status: {curve['status']}.",
+            "A valid history curve holds the final forecast interval and target sites fixed, varies the supplied historical window, and uses a common training-only normalization reference. A valid sensor curve nests observed sensors while preserving the unobserved target set. Fixed specifications and repeated tuning are distinct experiments."]
+        if curve.get("unexecuted_values"):
+            text.append("Unexecuted planned values: " + ", ".join(map(str, curve["unexecuted_values"])) + ". They are absent from the plots, not treated as failed or zero-valued results.")
+        if not curve["runs"]:
+            text.append("No completed curve conditions are included. This report cannot establish whether more history or more sensors improve prediction.")
+        sections.append(section("More data and expressiveness: " + curve.get("design", {}).get("kind", "unavailable"), text,
+            figures=curve_figures(curve, output, curve_index=curve_index),
+            links=[("Matched information interventions and populations", "evidence/study_design_v03.md")]))
+    for audit_index, audit in enumerate(data.get("curve_audits", [])):
+        if audit["status"] != "complete":
+            sections.append(section("Learning-curve audit: unavailable", [
+                "The explicitly supplied optional audit is not available. No history choice or representation diagnostic is inferred from its absence."]))
+            continue
+        value = audit["document"]
+        links = [("Source-bound learning-curve audit", f"evidence/curve_audit_{audit_index}.json")]
+        if audit["kind"] == "history":
+            rows = []
+            for contrast in value["contrasts"]:
+                macro = contrast["macro"] or {}
+                pairs = ", ".join(f"{short_scenario(c['scenario'])}:{len(c['usable_replications'])}" for c in contrast["cells"])
+                rows.append([f"{LABELS.get(contrast['model_id'], contrast['model_id'])} / {contrast['track']}",
+                    contrast["metric"].upper(), pairs, fmt(macro.get("difference")), fmt(macro.get("upper_one_sided95")),
+                    f"{fmt(contrast['margin'])} / {contrast['bound_passed']}"])
+            sections.append(section("History length: recorded development choice", [
+                f"Selected initial supplied history: {value['selected_initial_history']} rows. The recorded rule chooses 1000 only if every prespecified score bound passes, native qualification is not worse, cost accounting is complete and the measured time saving meets its margin. Otherwise it retains the declared 2000-row default.",
+                f"Score bounds passed: {value['score_bounds_passed']}; qualification not worse: {value['qualification_not_worse']}; cost gate passed: {value['cost_gate_passed']}. Summed pipeline time was {fmt(value['summed_pipeline_seconds']['1000'], 5)} seconds at 1000 and {fmt(value['summed_pipeline_seconds']['2000'], 5)} at 2000; saving fraction {fmt(value['short_history_time_saving_fraction'])}.",
+                "Differences are short minus long, divided by the same training-only scale; negative favors the shorter history. Native CRPS uses common-qualified paired fields, while RMSE includes operational fallback. The table preserves each prespecified model/task population.",
+                "The upper bounds are saved, stratified, one-sided 95% percentile-bootstrap development summaries. They are not simultaneous confidence bounds, and the small number of independent datasets limits their precision. Retaining the longer default does not establish its superiority. No confirmation outcomes entered this choice."],
+                table=(["Model / task", "Metric", "Usable pairs", "Short - long", "Upper 95%", "Margin / pass"], rows), links=links))
+        else:
+            rows = []
+            for row in value["rows"]:
+                spatial, temporal = row.get("spatial", {}), row.get("temporal", {})
+                amplification = row.get("fixed_reference_noise_amplification", {})
+                rank = lambda item: f"{item['rank']}/{item['shape'][1]}" if item else "unavailable"
+                rows.append([str(row["sensor_count"]), row["track"], str(row["qualified"]), rank(spatial), rank(temporal),
+                    f"{fmt(amplification.get('mean_unit_iid_noise_variance_amplification'))} / {fmt(amplification.get('maximum_unit_iid_noise_variance_amplification'))}"])
+            sections.append(section("Sensor geometry and representation", [
+                "This audit uses one prespecified field and its saved ESN states. Spatial and temporal ranks use the recorded singular-value tolerance. Qualification is displayed even when a saved representation can be inspected after an unqualified fit.",
+                value["basis_policy"],
+                "The last column is mean / maximum unit-iid-noise variance amplification for the geometry-only normalized-ridge operator A = Phi_U (Phi_O' Phi_O / n + eta I)^(-1) Phi_O' / n. It is a fixed diagnostic of interpolation geometry; it is neither correlated-residual forecast variance nor a predictive score.",
+                "Additional sensors can change fitted basis scaling, conditioning and identifiability as well as sample count. The fixed-reference diagnostic makes its basis choice explicit; it does not retroactively change any fitted model or prior. One field supports descriptive sensitivity, with no independent-replication MCSE or general sensor-benefit claim."],
+                table=(["O sensors", "Task", "Qualified", "Phi rank / cols", "Z rank / cols", "IID noise mean / max"], rows), links=links))
     extensions = data["extensions"]
-    extension_rows = [[r.get("name", r.get("id")), r["status"], r.get("rationale", r.get("reason"))] for r in extensions["entries"]]
+    policy_entries = extensions.get("current_entries", current_extension_entries(extensions.get("studies", [])))
+    extension_rows = [[r.get("name", r.get("id")).replace("_", " "), r["status"].replace("_", " "),
+                       r.get("rationale", r.get("reason"))] for r in policy_entries]
+    scope_links = [("Predeclared extension scope", f"evidence/p5_{index}.json")
+                   for index, study in enumerate(extensions.get("studies", []))
+                   if study.get("document", {}).get("scientific_results_in_this_file") is False]
     sections.append(section("Extension dispositions", [f"Status: {extensions['status']}. These are supplied research decisions with their stated evidence, not automatic claims of improvement.",
+        "The table shows one current disposition per extension. A supplied final findings document supersedes its earlier implementation scope; that predeclared scope remains separately linked. Individual study receipts remain below as evidence for the current decision.",
         "Grouped ridge, finite-slab regularized horseshoe, residual dynamics, anisotropy, calibration and larger feature maps should advance only when a diagnosed deficiency, compatible inference route and bounded development comparison justify them. Implemented optional routes may remain unvalidated at the benchmark scale."],
-        table=(["Extension", "Disposition", "Reason / evidence"], extension_rows) if extension_rows else None))
+        table=(["Extension", "Disposition", "Reason / evidence"], extension_rows) if extension_rows else None,
+        links=scope_links))
+    for study_index, study in enumerate(extensions.get("studies", [])):
+        assessment = study.get("document", {}).get("path_count_assessment")
+        if assessment:
+            selected = assessment["selected_for_subsequent_studies"]
+            table = []
+            for case in assessment["cases"]:
+                for row in case["rows"]:
+                    table.append([short_scenario(case["scenario"]), str(row["paths"]),
+                        fmt(row["normalized_absolute_crps_difference_from_512"]),
+                        fmt(row["absolute_coverage90_difference_from_512"]),
+                        fmt(row["conditional_predictive_mean_mcse_rms_over_training_scale"]),
+                        str(row["passes_both_rules"])])
+            sections.append(section("Predictive path budget: recorded development decision", [
+                f"The separately predeclared decision selects {selected} paths for subsequent studies. The rule chooses the smallest of 128, 256 and 512 whose absolute CRPS difference from 512, divided by the common training scale, is at most 0.005 and whose absolute 90% coverage difference is at most 0.02 in both prespecified cases. Neither smaller count passes both cases.",
+                "The sampling tool itself makes no automatic selection. This later policy decision is bound to the saved predeclared rule, reference receipts and sensitivity output inventories. It does not alter earlier ablation forecasts, which retain their original path budget.",
+                assessment["limitations"],
+                "A zero difference at 512 is equality to a finite reference, not proof of negligible predictive Monte Carlo error. Conditional mean MCSE is descriptive and excludes posterior MCMC error; it was not an extra adaptive selection criterion."],
+                table=(["DGP", "Paths", "|CRPS diff| / train SD", "|Coverage diff|", "Mean MCSE RMS / train SD", "Rule passes"], table),
+                links=[("Decision, predeclared rule and bound output inventories", f"evidence/p5_{study_index}.json")]))
+        scientific = study.get("scientific_evidence")
+        if not scientific:
+            continue
+        title = Path(study["path"]).parent.name
+        paragraphs = [f"Terminal P5 mode: {scientific['mode']}; base benchmark: {scientific['base_run']}; qualified saved baseline: {scientific['qualified_baseline']}. The completed output inventory and original source-bound design were verified. A completed negative result remains in the report."]
+        table = None
+        if scientific["ablation"]:
+            ablation = scientific["ablation"]
+            table = (["Variant", "Qualified", "RMSE", "Native CRPS", "Fit invocation sec"], [[
+                r["variant"], str(r["qualified"]), fmt(r.get("scores", {}).get("rmse")),
+                fmt(r.get("scores", {}).get("crps")), fmt(r.get("fit_invocation_seconds"), 4)] for r in ablation["rows"]])
+            paragraphs.append("This is one prespecified development dataset with a contemporaneously refitted scalar reference, fixed observations and fixed feature design. Differences below are extension minus scalar; negative favors the extension. No across-dataset MCSE or general superiority claim is available from one case.")
+            for pair in ablation["comparisons"]:
+                difference = pair["loss_difference_extension_minus_scalar"]
+                if difference is None:
+                    paragraphs.append(f"{pair['variant']}: zero common-qualified pairs. Its native predictive comparison is unavailable because at least one fit did not qualify. Successful completion of the execution does not repair that scientific failure.")
+                else:
+                    paragraphs.append(f"{pair['variant']}: paired differences RMSE {fmt(difference['rmse'])}, MAE {fmt(difference['mae'])}, CRPS {fmt(difference['crps'])}; usable datasets = 1.")
+                    if difference["rmse"] > 0 and difference["crps"] > 0:
+                        paragraphs.append("Both RMSE and CRPS are worse than the scalar reference on this saved case. Passing the inference gate is useful engineering evidence, but this result does not support predictive promotion of the extension.")
+            paragraphs.append("Fit invocation seconds can omit work before a recovered interruption. They are not an isolated end-to-end speed benchmark, and qualification never implies improved accuracy.")
+        if scientific["path_stability"]:
+            sensitivity = scientific["path_stability"]
+            table = (["Paths", "RMSE", "CRPS", "CRPS - 512", "Mean MCSE RMS"], [[
+                str(r["paths"]), fmt(r["scores"]["rmse"]), fmt(r["scores"]["crps"]),
+                fmt(r["difference_from_512"]["crps"]), fmt(r["predictive_mean_mcse_rms"])] for r in sensitivity["rows"]])
+            paragraphs.extend(["The 128/256/512 comparisons are nested prefixes of one saved 512-path forecast under one fixed posterior. Prefix hashes were independently checked against the saved joint paths. They are correlated Monte Carlo sensitivity conditions, not independent generated datasets.",
+                "Predictive-mean MCSE is conditional on the stored posterior mixture and excludes posterior MCMC error. More predictive paths cannot rescue an unqualified chain. Exact empirical CRPS is reported for each prefix; no iid finite-ensemble correction is applied. The sampling tool does not select a path count; any separately supplied policy decision is reported explicitly above."])
+        sections.append(section(f"Bounded extension evidence: {title}", paragraphs, table=table,
+            links=[("P5 decisions, qualification and numerical results", f"evidence/p5_{study_index}.json")]))
+    for diagnostic_index, diagnostic in enumerate(data.get("diagnostics", [])):
+        if diagnostic["status"] != "complete":
+            sections.append(section("Saved first-step diagnostic: unavailable", [
+                "The explicitly supplied optional diagnostic is absent. No error decomposition is inferred from that absence."]))
+            continue
+        value = diagnostic["document"]
+        decoder, one, alignment = value["decoder"], value["one_step"], value["alignment"]
+        rows = [[str(row["lead"]), fmt(row["empirical_mean_rmse"]), fmt(row["decoder_projection_rmse"]),
+                 fmt(row["predictive_sd_rms"]), fmt(row["conditional_empirical_mean_mcse_rms"])]
+                for row in value["saved_path_leads"]]
+        sections.append(section("G3 diagnosis: decoder restriction and rollout dispersion", [
+            f"This saved track-A review checks the fixed reference fit and its 512-path sensitivity artifact. The causal feature/state replay, site ordering and response scale agree; reconstruction of the original first 64 saved observation paths differs by at most {fmt(alignment['first64_saved_observation_reconstruction_max_abs'])}. The report reads this diagnostic and does not repeat the replay.",
+            f"The first-lead 64-draw conditional readout has RMSE {fmt(one['conditional_readout_mean64_rmse'])}. The evaluator-only projection of the noisy observed target onto the rank-{decoder['rank']} decoder span on {decoder['sites']} sites has residual RMSE {fmt(decoder['first_lead_unavoidable_outside_span_rmse'])}; {100 * decoder['first_lead_outside_span_fraction_of_conditional_readout_mse64']:.2f}% of this readout's realized squared error lies outside that fixed span. This is a bound for this target and decoder, not a universal irreducible-error or latent-field claim.",
+            "The saved path dispersion grows at later leads. Additional predictive paths improve Monte Carlo precision of this existing predictive law; they do not expand the decoder or establish adequate stochastic rollout behavior. The result motivates a separately declared spatial-representation/dynamics investigation, with fresh validation before any promotion.",
+            "The 64 conditional draws are a descriptive moment reference, not an exact posterior mean. This truth-based projection is an evaluator diagnostic only and never enters a forecast or model selection. Track B uses a different fit and target set; this replay does not verify its first step."],
+            table=(["Lead", "Saved mean RMSE", "Projection residual RMSE", "Predictive SD RMS", "Mean MCSE RMS"], rows),
+            links=[("Saved first-step review and input hashes", f"evidence/diagnostic_{diagnostic_index}.json")]))
     engineering = data["engineering"]
     memory = engineering["memory"]
     text = ["Scientific identity binds design, source, data, numerical runtime and transition policy. Worker count, memory ceiling and execution chunk limits belong to attempt receipts. Safe resume preserves scientific seeds and checkpoint trajectories; incompatible evidence is invalidated rather than reused.",
@@ -916,6 +1603,14 @@ def render_pdf(sections, output, source):
             fractions = {2: [.26, .74], 3: [.24, .19, .57], 4: [.52, .16, .18, .14], 5: [.12, .09, .38, .23, .18]}.get(len(headers), [1 / len(headers)] * len(headers))
             if headers[0] == "Contrast / task":
                 fractions = [.36, .1, .15, .13, .26]
+            elif headers[0] == "Model" and len(headers) == 5:
+                fractions = [.3, .16, .18, .18, .18]
+            elif headers[0] == "DGP / task":
+                fractions = [.14, .34, .12, .2, .2]
+            elif headers[0] == "Task" and len(headers) == 4:
+                fractions = [.08, .34, .29, .29]
+            elif headers[0] == "Target / level":
+                fractions = [.28, .24, .24, .24]
             table = Table([[Paragraph(html.escape(str(x)), styles["head" if i == 0 else "cell"]) for x in row]
                            for i, row in enumerate([headers, *rows])], colWidths=[width * f for f in fractions], repeatRows=1, hAlign="LEFT")
             table.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(PALE)),
@@ -950,15 +1645,33 @@ def export_evidence(data, output):
     for run in data["runs"]:
         write_json(folder / f"{run['label']}_manifest.json", run["manifest"])
         write_json(folder / f"{run['label']}_summary.json", run["summary"])
+        write_json(folder / f"{run['label']}_selected_configurations.json", run.get("selections", []))
+        write_json(folder / f"{run['label']}_job_scores.json", [{key: row.get(key) for key in
+            ("scenario", "track", "model_id", "replication", "qualified", "fallback", "operational_scores", "native_scores",
+             "training_scale", "normalization_reference", "total_pipeline_seconds", "total_pipeline_cpu_seconds",
+             "process_peak_rss_bytes", "memory_measurement", "timing_scope", "compute_accounting_complete")}
+            for row in run["receipts"]])
     if data["coordinate"]:
         write_json(folder / "coordinate_manifest.json", data["coordinate"]["manifest"])
         write_json(folder / "coordinate_summary.json", data["coordinate"]["summary"])
-    if data["curve"].get("design"):
-        write_json(folder / "curve_design.json", data["curve"]["design"])
-        for run in data["curve"]["runs"]:
-            write_json(folder / f"curve_{run['value']}_summary.json", run["summary"])
+    for index, curve in enumerate(data["curves"]):
+        if curve.get("design"):
+            write_json(folder / f"curve_{index}_design.json", curve["design"])
+            for run in curve["runs"]:
+                write_json(folder / f"curve_{index}_{run['value']}_summary.json", run["summary"])
+    for index, audit in enumerate(data.get("curve_audits", [])):
+        write_json(folder / f"curve_audit_{index}.json", audit)
     write_json(folder / "engineering_evidence.json", data["engineering"])
     write_json(folder / "extension_dispositions.json", data["extensions"])
+    for index, study in enumerate(data["extensions"].get("studies", [])):
+        write_json(folder / f"p5_{index}.json", study)
+    for audit in data.get("audits", []):
+        write_json(folder / f"{audit['label']}_audit.json", audit["document"])
+    for index, calibration in enumerate(data.get("calibrations", [])):
+        write_json(folder / f"calibration_{index}_summary.json", calibration["summary"])
+        write_json(folder / f"calibration_{index}_seal.json", calibration["seal"])
+    for index, diagnostic in enumerate(data.get("diagnostics", [])):
+        write_json(folder / f"diagnostic_{index}.json", diagnostic)
     for name in ("docs/models.md", "docs/derivations/07_sampler_coordinates_recovery.md", "docs/study_design_v03.md"):
         shutil.copyfile(ROOT / name, folder / Path(name).name)
     for group in data["media"]:
@@ -999,8 +1712,14 @@ def render(data, inputs, output):
         "coordinate": None if not data["coordinate"] else {"identity": data["coordinate"]["manifest"]["identity"],
             "source_fingerprint": data["coordinate"]["manifest"]["source_fingerprint"],
             "ancillary_source_exception": data["coordinate"]["ancillary_source_exception"]},
-        "curve": {k: v for k, v in data["curve"].items() if k not in {"runs", "design"}},
+        "curves": [{k: v for k, v in curve.items() if k not in {"runs", "design"}} for curve in data["curves"]],
         "extension_status": data["extensions"]["status"], "render_only": True}
+    evidence["audits"] = [{"label": audit["label"], "identity": audit["document"]["identity"]} for audit in data.get("audits", [])]
+    evidence["calibrations"] = [{"label": value["label"], "identity": value["seal"]["identity"]} for value in data.get("calibrations", [])]
+    evidence["curve_audits"] = [{"status": value["status"], "identity": value.get("document", {}).get("identity")}
+                               for value in data.get("curve_audits", [])]
+    evidence["diagnostics"] = [{"status": value["status"], "identity": value.get("document", {}).get("identity")}
+                               for value in data.get("diagnostics", [])]
     write_json(output / "evidence_summary.json", evidence)
     inputs.verify_unchanged()
     files = [{"path": str(p.relative_to(output)), "bytes": p.stat().st_size, "sha256": sha256(p)}
@@ -1025,8 +1744,15 @@ def parser():
     command = argparse.ArgumentParser(description=__doc__)
     command.add_argument("--coordinate", type=Path, help="Completed sampler-coordinate development directory")
     command.add_argument("--run", action="append", type=named_path, default=[], metavar="LABEL=DIRECTORY")
-    command.add_argument("--curve", type=Path, help="Optional resolved curve directory or curve_design.json")
-    command.add_argument("--extensions", type=Path, help="Optional JSON extension dispositions")
+    command.add_argument("--curve", action="append", default=[], type=Path,
+                         help="Optional resolved curve directory or curve_design.json; repeat for separate history/sensor designs")
+    command.add_argument("--curve-audit", action="append", default=[], type=Path,
+                         help="Optional source-bound history-choice or sensor-representation JSON; requires its matching --curve")
+    command.add_argument("--extensions", action="append", default=[], type=Path,
+                         help="Optional scope JSON or completed P5 directory/decisions.json; repeat for multiple studies")
+    command.add_argument("--audit", action="append", type=named_path, default=[], metavar="RUN_LABEL=JSON", help="Saved source-bound reference audit and G1 known-parameter scores")
+    command.add_argument("--calibration", action="append", type=named_path, default=[], metavar="RUN_LABEL=DIRECTORY", help="Saved raw/calibrated study with calibration_evidence.json seal")
+    command.add_argument("--diagnostic", action="append", type=Path, default=[], help="Optional saved source-bound G3 first-step diagnostic JSON; no replay")
     command.add_argument("--media", action="append", type=named_path, default=[], metavar="RUN_LABEL=DIRECTORY", help="Existing core report/comparison assets; no new animation is generated")
     command.add_argument("--allow-coordinate-source", help="Explicit exact SHA for historical ancillary coordinate evidence only")
     command.add_argument("--output", required=True, type=Path)
@@ -1040,7 +1766,7 @@ def main(argv=None):
     if args.check_inputs:
         inputs.verify_unchanged()
         print(json.dumps({"valid": True, "input_files": len(inputs.files), "runs": [r["label"] for r in data["runs"]],
-            "coordinate": data["coordinate"] is not None, "curve_status": data["curve"]["status"],
+            "coordinate": data["coordinate"] is not None, "curve_status": [curve["status"] for curve in data["curves"]],
             "extension_status": data["extensions"]["status"], "source_fingerprint": data["source_fingerprint"]}, sort_keys=True))
     else:
         receipt = render(data, inputs, args.output)

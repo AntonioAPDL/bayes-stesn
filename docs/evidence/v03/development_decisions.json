@@ -1,0 +1,43 @@
+{
+  "confirmation_mode": "development_frozen_configuration if retuned campaign cost is prohibitive; exact intended geometry chosen after fixed-specification learning curves and before confirmation generation",
+  "fit_caps": {
+    "rule": "max(30 seconds,ceil(20 * maximum observed reference fit time +10 seconds))",
+    "scope": "each parameter fit; algorithm caps unchanged; applies to screens/finalists/final refits; forecasts and serialization excluded",
+    "seconds": {
+      "basis_gru": 83,
+      "basis_krr": 30,
+      "basis_lgssm": 94,
+      "bayes_esn_ridge": 368,
+      "dcrnn": 658,
+      "eqesn_rollout": 30,
+      "persistence": 30,
+      "seasonal_naive": 30,
+      "separable_stgp": 40,
+      "spatial_persistence": 30
+    }
+  },
+  "fixed_specification_rule": "For subsequent fixed-specification curves and revised development, use qualified settings selected by validation on the prespecified G4 development dataset, separately by track. Apply globally across mechanisms; if G4 selection fails retain the declared conservative reference for that method and record it. Do not use final test losses to choose settings.",
+  "history_geometry": "7x7 O25/C4/U20; E4000 H100; resolve500,1000,2000,4000 before executing1000,2000",
+  "predictive_path_count_rule": {
+    "candidate_counts": [
+      128,
+      256,
+      512
+    ],
+    "cases": [
+      "reference_release/g3_excitable_field/rep_000/A/bayes_esn_ridge",
+      "reference_release/g4_existing_fronts/rep_000/A/bayes_esn_ridge"
+    ],
+    "conditional_mean_mcse": "report descriptively; not an additional adaptive selection criterion",
+    "declared_at": "2026-11-03T07:03:56.252181+00:00",
+    "limitations": "512paths is a finite Monte Carlo sensitivity reference, not the exact predictive distribution; nested prefixes and two development cases do not establish universal stability. Preserve E-QESN finite-ensemble interpretation.",
+    "reference": 512,
+    "rule": "Choose smallest count whose exact empirical CRPS difference versus512 divided by the saved common training scale is <=0.005 and whose absolute90percent marginal coverage difference is <=0.02 in both cases. If neither128nor256passes,use512. Use the same chosen count in subsequent history/sensor/revised studies.",
+    "status": "declared before fixed-fit path-stability outputs are inspected"
+  },
+  "reason": "G4 is the original nonlinear moving-front application and supplies a reproducible development specification; a revised multi-DGP pilot will assess transport and reliability. This is not best achievable per-dataset tuning.",
+  "sampler": "Use opt-in exact ridge_total_scale for the new study; retain legacy public default for old configurations",
+  "sampler_evidence": "coordinate-development-final: G1/G3/G4 gates 3/3 versus legacy 2/3 with identical targets; one dataset per mechanism does not estimate general reliability",
+  "stage": "development; no confirmation data generated",
+  "tuning": "8 effective settings where finite space permits,2 finalists,3 fresh stochastic seeds,2 replacement cap,2 B spatial folds;1 independent development field each G1-G4"
+}

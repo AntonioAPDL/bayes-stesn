@@ -1,14 +1,19 @@
 # Reproducible model comparisons
 
-Version 0.2 adds an executable comparison framework to the existing Bayesian
-spatial ESN package. The scientific objective is to learn which models predict
-future **noisy observations** well, how uncertainty behaves, and what that costs.
-It does not assume the ESN will win every scenario.
+The benchmark compares forecasts of future **noisy observations**, their
+uncertainty, and their computational cost. The v0.3 workflow adds effective
+candidate resolution, strict finalist qualification, matched study designs,
+and recoverable resource-aware execution. These are implemented methods;
+their presence does not establish a forecasting improvement or a completed
+confirmatory study.
 
 The complete model equations are in [benchmark_models.md](benchmark_models.md).
 The original ESN hierarchies and MCMC derivations remain in `docs/derivations/`.
 The implementation registry distinguishes implemented core comparators from
 optional external integrations that are deliberately gated.
+See [tuning details](benchmark_tuning_v03.md),
+[study estimands and learning curves](study_design_v03.md), and the
+[P0–P8 requirements/evidence map](plans/v03_requirements.yaml) for the new work.
 
 ## 1. Install and verify
 
@@ -19,17 +24,19 @@ models use an optional CPU PyTorch installation; GPU hardware is not required.
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements-dev.lock -r requirements-report.lock
-python -m pip install --index-url https://download.pytorch.org/whl/cpu -r requirements-neural-cpu.lock
 python -m pip install --no-deps -e .
-OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m pytest -q
 bstesn benchmark registry
 ```
 
 The locks record the tested Linux CPython 3.12 versions. They are version locks,
-not claims of byte-identical wheels across operating systems. The ordinary
-`.[neural,report,dev]` extras provide a more portable, less tightly pinned install.
-The module does not import PyTorch until a neural model is fitted or loaded.
-All model serialization uses numeric arrays and JSON; no pickle is loaded.
+not claims of byte-identical wheels across operating systems. Before executing
+the full roster or optional neural tests, follow the CPU-Torch installation in
+[reproduction.md](reproduction.md): install its support packages from PyPI, then
+the pinned Torch wheel from the CPU index with `--no-deps`. The CPU index alone
+does not supply the complete dependency closure. The ordinary
+`.[neural,report,dev]` extras provide a less tightly pinned installation.
+Candidate resolution requires no neural fitting. Model serialization uses
+numeric arrays and JSON; no pickle is loaded.
 
 ## 2. The common API
 
@@ -86,10 +93,15 @@ actual time coordinates while shortening the prefix supplied to the model.
 | `dcrnn` | Yes | No | Point; declared autoregressive diffusion-GRU variant |
 | `basis_gru` | Yes | Yes | Plug-in ancestral paths with Gaussian innovations |
 
-The eight-model core track A roster excludes the optional `basis_gru` control
-and the spatial interpolation baseline. Track B adds `spatial_persistence`
-automatically and filters unsupported models. A failed native new-site request
-is not silently replaced by an invented interpolation of learned node loadings.
+The legacy schema-3 track A roster has eight models and excludes `basis_gru`
+and the spatial interpolation baseline. The schema-4 `v03_*` profiles include
+`basis_gru`, so their full execution needs CPU Torch. Track B adds
+`spatial_persistence` automatically and filters unsupported models. Validation,
+resource plans, and execution use this same effective roster. A failed native
+new-site request is not silently replaced by an invented interpolation of
+learned node loadings. The named `bayes_esn_ridge` comparator enforces scalar
+ridge and iid innovations; other core ESN variants require separately declared
+benchmark models.
 
 The recursive E-QESN adaptation is different from the cited paper's particular
 experiments. It holds one random reservoir member fixed through each complete
@@ -130,46 +142,102 @@ scientific question and requires a separately declared profile.
 
 ## 5. Profiles, tuning and final evaluation
 
+Profiles are versioned scientific procedures. The original `smoke`, `pilot`,
+and `main` names retain schema 3.0, their dictionaries and identities, and their
+legacy selection rules. `v03_smoke`, `v03_pilot`, and `v03_main` use schema 4.0.
+The default of `benchmark run` remains legacy `smoke`; explicitly choose the
+new profile or a checked-in YAML to use the new policy.
+
+| Profile/configuration | Purpose | Initial rows / H | Replications | Selection |
+|---|---|---:|---:|---|
+| `v03_smoke` | Execution only | 120 / 8 | 1 | 1 candidate, 1 finalist seed |
+| `v03_pilot` | Small development | 400 / 40 | 5 | Up to 8 distinct candidates, 2 finalists × 3 fresh seeds |
+| `configs/benchmark/v03/development.yaml` | Development at intended main dimensions | 2,000 / 100 | 5 | Same substantive schema-4 policy |
+| `v03_main` / `confirmation_draft.yaml` | Unfrozen confirmation draft | 2,000 / 100 | Draft only | Requires revised development evidence and a freeze |
+
+The smoke configuration has deliberately short fitting budgets and cannot
+establish the four-chain ESN scientific gate. A smaller development profile
+does not supply matched-dimension confirmation evidence for the main design.
+
+### Resolve and budget before running
+
 ```bash
-bstesn benchmark profile smoke --output configs/benchmark/smoke.yaml
-bstesn benchmark run --config configs/benchmark/smoke.yaml --output results/smoke
-bstesn benchmark profile pilot --output configs/benchmark/pilot.yaml
-bstesn benchmark run --config configs/benchmark/pilot.yaml --output results/pilot --workers 4
+bstesn benchmark validate --config configs/benchmark/v03/pilot.yaml \
+  --output results/v03/planning/resolved.json
+bstesn benchmark plan --config configs/benchmark/v03/pilot.yaml \
+  --workers 2 --max-memory-mb 5120 --output results/v03/planning/costs.json
 ```
 
-`smoke` is an execution test. Its two short MCMC chains intentionally cannot
-establish the four-chain scientific gate. `pilot` supplies development evidence
-with five independent datasets, a 7-by-7 evaluation grid, 25 O sites, 4 C sites,
-400 initial historical rows, three 40-step validation blocks, and a final
-40-step forecast at row 520. Its candidate/epoch/path budgets are smaller than
-the proposed confirmatory study. Neither is mislabeled a completed large study.
+`validate` (alias `resolve`) checks configuration and writes effective candidate
+receipts without generating a dataset or fitting a model. `plan` reports fit
+counts, memory/storage estimates and admission status. Candidate proposals vary
+with each dataset's prespecified seed; a plan uses a representative search seed
+and labels it. The runner also checks the actual job's resolved dimensions.
+Supply `--measurements fit_seconds.json`, a JSON mapping from model IDs to
+representative per-fit wall seconds, to obtain time projections; otherwise
+those values are null. This is planning evidence, not a measured benchmark.
 
-The main design uses a 25-by-25 grid, O=100, C=20, U=505, training `[0:2000)`,
+The main geometry is a 25-by-25 grid, O=100, C=20, U=505, training `[0:2000)`,
 validation origins 2000, 2100, 2200, final refit `[0:2300)`, and test
 `[2300:2400)`. All three validation forecasts keep candidate parameters fixed
-but condition on O between origins. Track B tuning hides a contiguous fifth of
-O, refits all response-dependent transforms on the remaining sites, and scores
-the hidden O block. U responses are not used for any tuning.
+but condition on O between origins. Schema-4 track B uses prespecified edge
+and interior pseudoheld O blocks, refits all response-dependent transforms on
+each remaining subset, and averages folds equally. U histories never enter
+tuning. A third geometric fold is optional and changes the frozen design.
 
-The search contains at most 12 declared candidate configurations per model and
-track. Native probabilistic models select average validation CRPS; point models
-select average validation RMSE. The same trial cap does not imply equal compute.
-The best stochastic candidates are rechecked on fresh fit seeds; a candidate
-with a failed recheck is not rewarded by dropping that failure. Final fit seeds
-are predetermined, independent, and never chosen by favorable test performance.
+### Distinct candidates and qualified finalists
+
+The schema-4 resolver applies recursive overrides, adapter defaults and actual
+fitting-subset constraints before deduplicating canonical effective options.
+It records hashes, constrained dimensions, invalid proposals, and whether it
+reached the requested count, exhausted the finite space, or hit its proposal
+cap. A simple baseline may have fewer than eight distinct configurations.
+
+Native probabilistic candidates use average validation CRPS; point models use
+average validation RMSE. Screening ranks candidates. A finalist must qualify
+in **every** planned fresh-seed and spatial-fold recheck. Its selection score
+averages those rechecks; failed rechecks cannot be dropped to improve its rank.
+Deterministic models receive one recheck. If neither initial finalist qualifies,
+up to two further ranked candidates receive the same rechecks. If none qualifies,
+the recorded outcome is the declared fallback. Final refit seeds are independent
+and fixed in advance. Final fitting must qualify again.
+
+Eight screening configurations plus two finalists at three seeds require 14
+selection fits on A or 28 with two B folds for one stochastic model/dataset,
+before replacements. Across G1–G4 and 20 replications that is 3,360 selection
+fit calls for that model, plus 160 final fits. Equal trial counts do not imply
+equal computation. Internal neural epoch-selection/refitting, bounded MCMC or
+optimizer continuation, forecasting and serialization add work; some are inside
+one counted fit call. Use the executable plan for declared roster, fold and
+allowance accounting; actual attempted calls remain in execution receipts.
+
+`selection_mode: development_frozen_configuration` is a separate estimand: it
+fits prespecified effective configurations on each new dataset and performs no
+validation fits. Declare configurations by model or `model/A`, `model/B` in
+`frozen_configurations`; model/track entries take precedence. The auto-added
+spatial-persistence B control has an explicit fixed reference
+`{spatial_length: 0.2, ridge: 0.01}` if omitted, recorded as
+`fixed_spatial_control`. Other missing declarations fail. Select and freeze the
+mode before final outcomes; switching modes is not a transparent cost reduction.
 
 Neural models select epochs using a chronological tail within the supplied
-training data, with free-running validation. They then refit all supplied
-training rows for the selected epoch count. State-space likelihood optimization
-and Gaussian GP optimization report convergence and boundary behavior. ESN
-mixing is assessed again after the final refit, independently of screening.
+training data, with H-step free-running validation in new profiles. A prefix
+may shorten to leave H leads; infeasible context/history combinations fail.
+The selected epoch count is refitted on all supplied rows. This does not change
+the training objective into an H-step loss. Bounded EM and GP/GRU optimizer
+allowances preserve their convergence criteria and report cap exhaustion,
+objective progress and boundary behavior; see [the tuning specification](benchmark_tuning_v03.md).
 
 Confirmation requires a frozen design/power receipt bound to its exact resolved
-profile; use `bstesn benchmark --help` for the freeze/finalization command. R is
-planned from paired development variances at target normalized MCSE 0.02 and
-bounded to 20-60 independent DGP datasets. If the 60-dataset cap binds, the
-unmet precision target remains explicit. The final seed namespace differs from
-development. Do not look at final results and then change R or the search space.
+profile. Schema 4 uses prespecified paired macro contrasts and at least five
+usable development pairs in each constituent primary cell, at matched geometry,
+horizon, source, runtime and tuning policy. Attempted R accounts for joint
+qualification attrition and is bounded to 20–60 independent datasets per
+mechanism at target normalized MCSE 0.02. A cap shortfall remains explicit.
+These are approximate precision calculations, not hypothesis-test power.
+Pointwise intervals do not establish simultaneous superiority. The
+[study-design document](study_design_v03.md) defines the formulas, populations,
+freeze fields and limits. No final results may choose R or the search space.
 
 ## 6. Qualifications, scores and uncertainty
 
@@ -180,12 +248,19 @@ It resumes the exact saved state. Thresholds do not relax after a failed fit.
 Benchmark fits default to checkpointing at each completed chain. An explicit
 `sampler.checkpoint_every` restores a chosen intermediate cadence. This avoids
 repeatedly rewriting thousands of tiny NPZ entries during tuning while retaining
-exact chain-end continuation; an interrupted incomplete chain must be rerun.
+exact chain-end continuation. After interruption, only work since the last
+committed chain checkpoint needs replay. A fit-phase sidecar records initial
+sampling/diagnostics and the one permitted continuation so restarting the
+process neither repeats a completed phase nor grants a fresh draw allowance.
 The original standalone `SamplerConfig` default remains 100 iterations.
+The opt-in exact `ridge_total_scale` sampler coordinates and recovery contract
+are derived in [chapter 07](derivations/07_sampler_coordinates_recovery.md).
 
-All final attempts enter the operational RMSE/MAE tables. Failed fits use
-persistence for A and fixed spatial persistence for B, and fallback costs are
-recorded. Native CRPS, coverage, interval width, interval score, energy, spatial
+Completed scientific outcomes enter the operational RMSE/MAE tables. Methods
+that exhaust their declared numerical or diagnostic allowance use persistence
+for A and fixed spatial persistence for B, with fallback costs recorded.
+Unstarted or interrupted infrastructure work is incomplete, not a scientific
+fallback. Native CRPS, coverage, interval width, interval score, energy, spatial
 variogram, temporal-lag variogram, and fixed path-functional scores use qualified
 native distributions. Their populations and failure counts appear alongside
 the scores. Pairwise probability comparisons use the common qualified subset;
@@ -205,10 +280,12 @@ simulation precision, not a universal population guarantee.
 ## 7. Calibration and learning curves
 
 ```bash
-bstesn benchmark calibrate results/pilot --scenario g1_gaussian_ar \
+bstesn benchmark calibrate results/v03/pilot --scenario g1_gaussian_ar \
   --model separable_stgp --track B --blocks 25 --output results/calibration_gp
-bstesn benchmark curve history --config configs/benchmark/pilot.yaml \
-  --values 500,1000,2000,4000 --output results/history_curve
+bstesn benchmark curve history --config configs/benchmark/v03/development.yaml \
+  --values 500,1000,2000,4000 --common-endpoint 4000 \
+  --execute-values 1000,2000 --workers 2 --max-memory-mb 5120 \
+  --output results/v03/history_curve
 ```
 
 Calibration extends the same seeded dataset and verifies its original prefix.
@@ -225,14 +302,86 @@ guarantee for the larger U domain. Calibration changes intervals, never native
 joint samples. Finite interval sets receive interval scores/WIS, not an invented
 exact distributional CRPS.
 
-History curves use a common initial validation endpoint and final test period.
+Resolve the full history curve even when executing only a subset. With endpoint
+4,000 and H=100, every condition validates at 4,000/4,100/4,200 and tests at
+4,300. The schema-4 default score normalization uses the common final 500
+initial-fitting rows and common O sites, with `ddof=1`; its data hash and scale
+are saved. A later subset uses the same immutable `curve_design.json`.
 Sensor curves reserve the largest O master set, keep C/U fixed, and score A on
-the common smallest sensor subset. Increase the grid before requesting 200
-sensors. Grid-scale experiments should use the resource-appropriate operator
+the common smallest sensor subset and scale. Increase the grid before requesting
+more sensors than it can support. Grid-scale experiments use a resource-appropriate operator
 route and remain separate from these history/density experiments; no giant
 unjustified full factorial is run by default.
 
-## 8. Efficiency, reproducibility and reports
+## 8. Run, pause, inspect and resume
+
+After installing the full roster's optional dependencies, start with an explicit
+small execution profile in a new output directory:
+
+```bash
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
+bstesn benchmark run --config configs/benchmark/v03/smoke.yaml \
+  --output results/v03/smoke --workers 2 --max-memory-mb 5120 --max-jobs 4
+bstesn benchmark status results/v03/smoke
+bstesn benchmark resume --output results/v03/smoke \
+  --workers 1 --max-memory-mb 4096 --max-jobs 4 --max-wall-seconds 60
+```
+
+Repeat `resume` until `status` reports completion. Without `--config`, resume
+loads the saved `resolved_protocol.yaml`. A confirmation resume must also supply
+its original `--power-freeze` receipt. `--max-jobs` limits submitted attempts;
+`--max-wall-seconds` pauses scheduling between atomic jobs and can overrun while
+active work finishes. Neither changes a fit's iteration budget. Worker count,
+memory admission and chunk limits may change on resume.
+
+The run records three identities: scientific design; computation (design plus
+source and numerical runtime); and mutable execution attempts. Checkpoint,
+tuning, dataset and terminal-job receipts bind the relevant inputs and content
+hashes. Changed scientific settings, source, runtime or corrupted artifacts
+invalidate reuse; preserve the old run and use a new directory. Preserving
+schema-3 profile identity does not migrate an old run directory to the new
+execution manifest automatically.
+
+One coordinator holds a local filesystem lock. Infrastructure failures receive
+the same seeds/checkpoints and at most the declared retries (default two after
+the initial attempt). Exhaustion remains unresolved infrastructure work and
+keeps the campaign incomplete. Both qualified and unqualified completed method
+outcomes are terminal. A killed process may have unmeasured work; receipts flag
+incomplete compute accounting rather than assigning zero cost.
+
+`fit_time_limits_seconds` optionally declares per-model elapsed-time allowances
+in the protocol. A timer covers each fitting call, not forecasting/scoring.
+The default is no elapsed-time fit cap; algorithmic caps still apply. Choose
+timer values from representative fits and freeze them before the study. The
+implementation uses POSIX `setitimer` in a worker's main thread, rejects an
+existing active alarm, and restores the signal handler. Native calls can delay
+Python signal delivery, so this is not a hard process deadline. The coordinator
+uses POSIX `flock`; this execution workflow is currently Linux/POSIX oriented.
+
+Memory admission respects the enforced host/cgroup limit, current headroom,
+an explicit reserve, and the requested budget. The runner can reduce worker
+count, or pause an oversized job, without shrinking scientific dimensions.
+These are conservative model-based estimates, not an OS memory sandbox or a
+guaranteed peak. See [optimization and measurement scope](optimization_and_scope.md).
+
+`memory_current_bytes` always records the raw cgroup charge. On cgroup v2,
+complete valid `memory.stat` fields permit a separate admission estimate:
+eligible cache is `max(0, file - shmem - file_dirty - file_writeback -
+file_mapped - unevictable)`, capped by raw usage; the credit is at most half
+that eligible cache. The exclusions can overlap, so subtracting all of them
+deliberately understates eligible cache. Anonymous and kernel memory receive
+no credit. Missing, malformed or inconsistent statistics use raw usage.
+The 50% fraction is a documented scheduling heuristic, **not** a kernel
+reclaim guarantee or a measurement of available RAM; active clean file pages
+can still be in use by another workload. Raw statistics, eligible bytes,
+credit and policy are retained in execution receipts. The enforced limit,
+65% budget cap, up-to-2-GiB reserve, requested budget and active-job
+reservations are unchanged. The runner writes neither cgroup limits nor
+reclaim controls. The kernel's [cgroup v2 memory documentation](https://docs.kernel.org/admin-guide/cgroup-v2.html#memory)
+defines the underlying counters; shared workloads can still change resource
+pressure between admission checks.
+
+## 9. Efficiency, reproducibility and reports
 
 For the presentation export, use `python tools/render_benchmark_layout.py
 RUN_DIR --output REPORT_DIR`. It applies shared-axis label spacing and categorical
@@ -246,6 +395,10 @@ output-byte budget, `path_start`, and `iter_predictive(..., batch_size=...)`.
 Global path IDs make batch concatenation reproduce a monolithic call in the
 same numerical environment. Internally generated arrays are frozen without
 redundant complete copies; public constructors still protect callers' arrays.
+The benchmark scorer still materializes its sample arrays: this is not an
+end-to-end streaming implementation. The fresh-process ownership probe in
+[the study-design document](study_design_v03.md) measures one avoided copy,
+not total model-fitting memory or universal speed.
 The new ensemble path scheme and pair-selection scheme are versioned because
 their exact seeded realizations intentionally changed.
 
@@ -266,7 +419,8 @@ fit diagnostics, the selected settings, every tuning attempt and its cost,
 failure traces, stage, data/fit/forecast seeds, and source identity.
 
 ```bash
-python tools/render_benchmark_layout.py results/pilot --output report/benchmark_pilot
+bstesn benchmark report results/v03/pilot --output report/benchmark_pilot --no-animations
+python tools/render_benchmark_layout.py results/v03/pilot --output report/benchmark_pilot
 python tools/embed_report_fonts.py report/benchmark_pilot
 ```
 

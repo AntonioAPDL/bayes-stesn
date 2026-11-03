@@ -206,6 +206,87 @@ def test_memory_allowance_clamps_user_budget_to_current_hard_headroom():
             execution.memory_allowance(value, resources=_resources())
 
 
+def _cache_stat(file=6*GIB, **changes):
+    result = {"file": file, "shmem": 0, "file_dirty": 0, "file_writeback": 0,
+              "file_mapped": 0, "unevictable": 0}
+    result.update(changes)
+    return result
+
+
+def test_cache_admission_keeps_raw_charge_ceiling_and_requested_budget_clamps():
+    resources = {**_resources(7*GIB), **execution._cache_admission(7*GIB, _cache_stat())}
+    assert resources["memory_current_bytes"] == 7*GIB
+    assert resources["memory_cache_eligible_bytes"] == 6*GIB
+    assert resources["memory_cache_credit_bytes"] == 3*GIB
+    assert resources["memory_admission_estimate_bytes"] == 4*GIB
+    large = execution.memory_allowance(16384, resources=resources)
+    assert large["effective_job_budget_bytes"] == 2*GIB and large["clamped"]
+    assert large["reserved_headroom_bytes"] == 2*GIB
+    assert large["host"]["memory_limit_bytes"] == 8*GIB
+    assert execution.memory_allowance(1024, resources=resources)["effective_job_budget_bytes"] == GIB
+    anonymous = {**_resources(7*GIB), **execution._cache_admission(7*GIB, _cache_stat(file=0))}
+    assert execution.memory_allowance(16384, resources=anonymous)["effective_job_budget_bytes"] == 0
+
+
+@pytest.mark.parametrize("exclusion", ["shmem", "file_dirty", "file_writeback", "file_mapped", "unevictable"])
+def test_excluded_file_memory_cannot_earn_admission_credit(exclusion):
+    result = execution._cache_admission(7*GIB, _cache_stat(**{exclusion: 6*GIB}))
+    assert result["memory_cache_credit_bytes"] == 0
+    assert result["memory_admission_estimate_bytes"] == 7*GIB
+    overlap = execution._cache_admission(7*GIB, _cache_stat(shmem=4*GIB, file_mapped=4*GIB))
+    assert overlap["memory_cache_eligible_bytes"] == 0
+
+
+@pytest.mark.parametrize("stat", [None, {}, {"file": 6*GIB}, _cache_stat(shmem=-1),
+                                 _cache_stat(file_dirty=True), _cache_stat(file=9*GIB)])
+def test_missing_or_invalid_cache_statistics_fall_back_to_raw_usage(stat):
+    result = execution._cache_admission(7*GIB, stat)
+    assert result["memory_admission_estimate_bytes"] == 7*GIB
+    assert result["memory_cache_credit_bytes"] == 0
+    assert result["memory_admission_policy"] == "raw_usage_missing_or_invalid_cache_stats"
+
+
+def test_host_resource_receipt_separates_raw_cgroup_usage_from_cache_estimate(monkeypatch):
+    values = {"/sys/fs/cgroup/memory.max": str(8*GIB), "/sys/fs/cgroup/memory.current": str(7*GIB),
+              "/sys/fs/cgroup/memory.stat": "\n".join(f"{k} {v}" for k, v in _cache_stat().items()),
+              "/sys/fs/cgroup/cpu.max": "200000 100000"}
+    def read(path, *args, **kwargs):
+        if str(path) not in values:
+            raise OSError("unavailable fixture")
+        return values[str(path)]
+    monkeypatch.setattr(execution.Path, "read_text", read)
+    monkeypatch.setattr(execution.os, "sysconf", lambda name: {"SC_PAGE_SIZE": 4096, "SC_PHYS_PAGES": 2**21}[name])
+    result = execution.host_resources()
+    assert result["memory_limit_bytes"] == 8*GIB
+    assert result["memory_current_bytes"] == 7*GIB
+    assert result["memory_admission_estimate_bytes"] == 4*GIB
+    assert result["cgroup_memory_stat"] == _cache_stat()
+
+
+def test_all_job_admission_checks_use_cache_estimate_and_pause_for_anonymous_pressure(tmp_path, monkeypatch):
+    pressure = {"anonymous": False}
+    def resources():
+        stat = _cache_stat(file=0 if pressure["anonymous"] else 6*GIB)
+        return {**_resources(7*GIB), **execution._cache_admission(7*GIB, stat)}
+    monkeypatch.setattr(execution, "host_resources", resources)
+    original = runner._execute_job
+    def first_then_anonymous_pressure(job, progress=None):
+        result = original(job, progress)
+        pressure["anonymous"] = True
+        return result
+    monkeypatch.setattr(runner, "_execute_job", first_then_anonymous_pressure)
+    p = _tiny(replications=1)
+    first = runner.run_benchmark(p, tmp_path)
+    assert first["jobs"] == 1 and first["pending_jobs"] == 1 and not first["complete"]
+    retained = next(tmp_path.rglob("receipt.json"))
+    original_bytes = retained.read_bytes()
+    pressure["anonymous"] = False
+    monkeypatch.setattr(runner, "_execute_job", original)
+    final = runner.run_benchmark(p, tmp_path)
+    assert final["complete"] and final["jobs"] == 2
+    assert retained.read_bytes() == original_bytes
+
+
 def test_dimension_planning_responds_to_resolved_capacity_and_path_count():
     p = _tiny(models=("bayes_esn_ridge",))
     small = execution._candidate_dimensions("bayes_esn_ridge", {

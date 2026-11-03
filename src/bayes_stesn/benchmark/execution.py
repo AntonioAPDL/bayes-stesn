@@ -15,13 +15,36 @@ import time
 import numpy as np
 
 
+def _cache_admission(current, stat):
+    """Discount at most half eligible clean file cache for admission only.
+
+    The subsets can overlap, so subtracting all exclusions is deliberately
+    conservative. This is a scheduling heuristic, not a reclaim guarantee.
+    The raw cgroup charge and its enforced limit are never changed.
+    """
+    fields = ("file", "shmem", "file_dirty", "file_writeback", "file_mapped", "unevictable")
+    result = {"memory_admission_estimate_bytes": current,
+              "memory_cache_eligible_bytes": 0, "memory_cache_credit_bytes": 0,
+              "memory_admission_policy": "raw_usage_missing_or_invalid_cache_stats"}
+    if (current is None or not isinstance(stat, dict)
+            or any(not isinstance(stat.get(key), int) or isinstance(stat.get(key), bool)
+                   or stat[key] < 0 for key in fields) or stat["file"] > current):
+        return result
+    eligible = min(current, max(0, stat["file"] - sum(stat[key] for key in fields[1:])))
+    credit = eligible // 2
+    result.update(memory_admission_estimate_bytes=current-credit,
+                  memory_cache_eligible_bytes=eligible, memory_cache_credit_bytes=credit,
+                  memory_admission_policy="half_eligible_clean_file_cache_v1")
+    return result
+
+
 def host_resources():
     limits = []
     try:
         limits.append(int(os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")))
     except (OSError, ValueError, AttributeError):
         pass
-    current = None
+    current, current_path = None, None
     for filename in ("/sys/fs/cgroup/memory.max",
                      "/sys/fs/cgroup/memory/memory.limit_in_bytes"):
         try:
@@ -33,10 +56,23 @@ def host_resources():
     for filename in ("/sys/fs/cgroup/memory.current",
                      "/sys/fs/cgroup/memory/memory.usage_in_bytes"):
         try:
-            current = int(Path(filename).read_text().strip())
-            break
+            value = int(Path(filename).read_text().strip())
+            if value >= 0:
+                current, current_path = value, Path(filename)
+                break
         except (OSError, ValueError):
             pass
+    stat = None
+    if current_path is not None and current_path.name == "memory.current":
+        try:
+            stat = {}
+            for line in current_path.with_name("memory.stat").read_text().splitlines():
+                key, value = line.split()
+                if key in stat:
+                    raise ValueError("Duplicate memory.stat key")
+                stat[key] = int(value)
+        except (OSError, ValueError):
+            stat = None
     cpus = os.cpu_count() or 1
     if hasattr(os, "sched_getaffinity"):
         cpus = min(cpus, len(os.sched_getaffinity(0)))
@@ -49,7 +85,8 @@ def host_resources():
     return {"memory_limit_bytes": min(limits) if limits else None,
             "memory_current_bytes": current, "effective_cpus": int(cpus),
             "worker_cap": max(1, min(int(cpus), 4)),
-            "memory_measurement": "aggregate cgroup usage when available"}
+            "memory_measurement": "raw aggregate cgroup usage when available; admission cache credit is a heuristic, not guaranteed reclaim",
+            "cgroup_memory_stat": stat, **_cache_admission(current, stat)}
 
 
 def memory_allowance(max_memory_mb=None, *, resources=None):
@@ -60,7 +97,7 @@ def memory_allowance(max_memory_mb=None, *, resources=None):
             raise ValueError("max_memory_mb must be positive and finite")
         requested = int(max_memory_mb * 1024**2)
     ceiling = resources.get("memory_limit_bytes")
-    current = resources.get("memory_current_bytes")
+    current = resources.get("memory_admission_estimate_bytes", resources.get("memory_current_bytes"))
     reserve = None if ceiling is None else min(2 * 1024**3, int(.25 * ceiling))
     bounds = []
     if requested is not None:

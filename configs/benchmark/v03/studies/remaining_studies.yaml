@@ -1,0 +1,219 @@
+# A recipe, not a directly runnable BenchmarkProtocol. Bind G4 validation
+# selections and timing allowances with prepare.py before scientific execution.
+schema: v03-remaining-studies-1.0
+status: planned_no_scientific_outcomes_generated
+configuration_source:
+  scenario: g4_existing_fronts
+  replication: 0
+  policy: >-
+    Use each model/track's qualified validation selection from the prespecified
+    G4 tuning field. If its completed selection has no qualified finalist, use
+    the declared conservative reference and record that disposition. A missing
+    or interrupted selection is not a completed failed selection. Never inspect
+    final test losses to choose specifications.
+  deterministic_transfer:
+    basis_gru.validation_horizon: 100
+    basis_gru.require_full_validation_horizon: true
+  preserve: >-
+    Architecture, rank, regularization, encoder/conditioning policy, full epoch
+    allowance, optimizer tolerances and restarts, MCMC chains/warmup/draws and
+    diagnostic thresholds. Neural stopping-horizon transfer is explicit.
+common_protocol:
+  schema_version: '4.0'
+  stage: development
+  horizon: 100
+  validation_blocks: 3
+  n_side: 7
+  n_observed: 25
+  n_calibration: 4
+  paths: 512
+  trials: 8
+  finalist_count: 2
+  finalist_seeds: 3
+  models: [persistence, basis_krr, separable_stgp, bayes_esn_ridge, basis_gru, eqesn_rollout]
+  tracks: [A, B]
+  mcmc_warmup: 1000
+  mcmc_draws: 2000
+  mcmc_continuation: 2000
+  mcmc_functional_draws: 512
+  mcmc_chains: 4
+  neural_epochs: 80
+  ensemble_members: 20
+  score_pairs: 512
+  retain_paths_replications: [0]
+  generator_options:
+    g3_excitable_field: {grid_size: 64, dt: 0.05, delta: 2.0}
+  model_options: null
+  fhn_target_policy: finite_semidiscrete
+  fhn_time_tolerance: 0.02
+  selection_policy: qualified_finalists
+  spatial_validation_blocks: 2
+  replacement_finalists: 2
+  selection_mode: development_frozen_configuration
+  candidate_proposal_cap: 4096
+  # Frozen configurations and finite fit-time limits are bound after preflight.
+history:
+  name: v03_fixed_history
+  master_seed: 2026110301
+  initial_fit: 4000
+  training_start: 0
+  replications: 5
+  scenarios: [g1_gaussian_ar, g3_excitable_field, g4_existing_fronts]
+  values: [500, 1000, 2000, 4000]
+  execute_values: [1000, 2000]
+  normalization_reference: {start: 3500, stop: 4000, observed_count: 25, floor: 1.0e-12, ddof: 1}
+  final_origin: 4300
+  test_stop: 4400
+  required_initial_fit_calls: 330
+  deferred_fit_calls_if_both_extra_lengths_execute: 330
+  deferred4000_gate: A new timing review with all 4300 supplied rows is required before executing the deferred 4000 condition.
+  generator_gate: >-
+    Validate G3 on an independent 4401-observation trajectory, including the
+    declared minimum 200-unit burn-in, grid 64, dt 0.05 and delta 2.0. Require the declared
+    finite-grid time-discretization and morphology gates before the long-history
+    outcomes. Report mesh refinement separately; do not relabel a failed time
+    gate as a validated long-history generator.
+sensors:
+  name: v03_sensor_sensitivity
+  master_seed: 2026110302
+  initial_fit: 4000
+  training_start: 2000
+  n_side: 15
+  n_observed: 25
+  n_calibration: 10
+  replications: 1
+  scenarios: [g4_existing_fronts]
+  values: [25, 50, 100]
+  execute_values: [25, 50, 100]
+  normalization_reference: {start: 3500, stop: 4000, observed_count: 25, floor: 1.0e-12, ddof: 1}
+  master_observed: 100
+  fixed_unobserved_targets: 115
+  observed_score_sites: 25
+  required_fit_calls: 33
+  interpretation: >-
+    One prespecified G4 field: descriptive sensitivity only. No independent
+    replication MCSE or general sensor-benefit claim. Inactive potential O
+    sensors stay outside C/U. Its geometry differs from the history curve.
+revised_development:
+  name: v03_revised_development
+  master_seed: 2026110303
+  training_start: 0
+  replications: 5
+  scenarios: [g1_gaussian_ar, g2_spectral_transport, g3_excitable_field, g4_existing_fronts]
+  candidate_initial_histories: [1000, 2000]
+  normalization_window: 500
+  normalization_ddof: 1
+  required_fit_calls_for_one_chosen_history: 220
+  execute_rule: >-
+    Execute exactly one history chosen by the declared paired-development curve
+    gate, with all scientific settings identical to its confirmation draft.
+    No confirmation labels or final seed datasets enter this decision.
+confirmation:
+  name: v03_compact_fixed_confirmation
+  stage: confirmation
+  draft_replications: 20
+  planning_mode: paired_macro
+  minimum_common_qualified_pairs_per_primary_cell: 5
+  target_normalized_mcse: 0.02
+  attempted_replications_min: 20
+  attempted_replications_max: 60
+  primary_reference: bayes_esn_ridge
+  primary_comparators: [separable_stgp, basis_gru]
+  primary_tracks: [A, B]
+  primary_metric: crps
+  core_scenario_weights: [0.25, 0.25, 0.25, 0.25]
+  scope: >-
+    Explicit compact 7x7 O25/C4/U20 H100 development-frozen specification
+    estimand. This is not the historical 25x25 O100 proposal or a claim of best
+    per-dataset retuning. No confirmation execution before a valid freeze.
+preflight:
+  master_seed: 2026110304
+  scenario: g4_existing_fronts
+  cases: [sensors_100]
+  models: [basis_krr, separable_stgp, bayes_esn_ridge, basis_gru, spatial_persistence, eqesn_rollout]
+  track_choice: largest_resolved_dimension_based_memory_estimate_tie_break_by_track_name
+  elapsed_allowance_seconds_per_fresh_process: 1800
+  paths: none_no_forecasting
+  generated_rows: only_through_final_fitting_origin_no_future_rows
+  fit_calls_upper_bound: 6
+  timing_receipt_policy: >-
+    Fresh isolated process for each model/track/condition; one numerical thread;
+    full declared fitting budgets; no comparator forecasts or test scores.
+    A killed, capped or incomplete measurement cannot set a final fit allowance.
+  final_fit_cap_rule: >-
+    max(30,ceil(20*max(measured_large_geometry_fit_seconds,
+    existing_reference_maximum_fit_seconds)+10)) per model. Use the same
+    resulting model cap at every history/sensor condition and revised/final
+    study. Ordinary persistence retains the 30-second floor. These are empirical
+    prospective allowances, not complexity bounds: T2300/O100 does not literally
+    bound the 4300-row fixed-rank temporal workload; that deferred case needs a
+    new timing review before execution.
+path_count_gate:
+  selected_for_later_studies: 512
+  compared_values: [128, 256, 512]
+  policy: >-
+    The prespecified P5 stability rule selected 512 after 128 and 256 failed its
+    thresholds. Bind the completed evidence receipt before materialization and
+    before any curve/revised outcome is inspected. The E-QESN control retains
+    its original 20 finite ensemble members; requesting 512 does not inflate them
+    or add measurement innovations. This finite reference ceiling does not
+    establish negligible predictive Monte Carlo error.
+calibration:
+  source: the_chosen_uncropped_revised_development_run
+  scenario: g4_existing_fronts
+  replication: 0
+  models: [bayes_esn_ridge, separable_stgp, basis_gru]
+  tracks: [A, B]
+  blocks: 25
+  horizon: 100
+  levels: [0.5, 0.8, 0.9, 0.95]
+  additional_fit_calls: 0
+  calibration_forecast_calls: 150
+  later_raw_forecast_calls: 6
+  source_qualification_rule: >-
+    Only run a preselected case whose base fit qualified. Record an unavailable
+    case if it did not; do not substitute a favorable replication or refit.
+  parameter_policy: frozen_after_uncropped_revised_fit
+  late_origin_formula: initial_history_plus_300_plus_2500
+  restrictions: >-
+    The current API rejects cropped training_start>0, so do not use the 1000/2000
+    history-curve fits. C labels only calibrate B; U remains sealed. Serial
+    blocks are not independent replications; C-to-U coverage is empirical.
+    Calibration changes intervals, not native joint draws.
+history_choice_gate:
+  declared_at: '2026-11-03T07:26:33+00:00'
+  declared_before: Any history-curve outcome generation or inspection.
+  default_if_evidence_is_insufficient: 1000
+  shorter_history: 1000
+  longer_history: 2000
+  score_sign: short_minus_long_positive_favors2000
+  decision_model: bayes_esn_ridge
+  decision_metric: native_crps
+  tracks: [A, B]
+  scenario_weights: {g1_gaussian_ar: 0.3333333333333333, g3_excitable_field: 0.3333333333333333, g4_existing_fronts: 0.3333333333333333}
+  minimum_normalized_crps_improvement: 0.02
+  confidence_rule: one_sided95_percent_stratified_complete_dataset_bootstrap_lower_bound
+  bootstrap_resamples: 5000
+  bootstrap_seed: 2026110305
+  minimum_common_qualified_pairs_per_native_cell: 3
+  maximum_measured_long_to_short_pipeline_time_ratio: 2.5
+  report_populations:
+    - Native CRPS for every compatible probabilistic model, conditional on each short/long qualified intersection.
+    - Native RMSE for every compatible model, conditional on each short/long qualified intersection.
+    - Operational RMSE for every compatible model, using all five completed paired fields per mechanism including declared fallbacks.
+  conditions_to_select2000:
+    - Both curves complete and source-stable; identical realized fields/times/roles and training-only normalization verified.
+    - Both ESN tracks have an equal-G1/G3/G4 macro normalized native-CRPS improvement lower bound of at least 0.02.
+    - Every ESN scenario/track cell has at least three common-qualified short/long pairs.
+    - In every ESN scenario/track cell, long-history qualification count is not lower than short-history count.
+    - Long-history summed recorded all-roster pipeline time divided by short-history time is at most 2.5, with complete cost accounting in both conditions.
+  interpretation: >-
+    Exploratory development resource/specification selection. The 0.02 margin
+    and 2.5 cost ratio are explicit practical preferences, not universal
+    thresholds. Small-sample percentile bounds do not establish formal coverage
+    or simultaneous scientific superiority. Native cells condition on pairwise
+    qualification, so the all-field operational results and qualification
+    counts must accompany them. Insufficient pairs or any other failed gate
+    retain 1000 with a recorded reason; that is not evidence of no data benefit.
+    Report every model's paired effects regardless of this ESN-centered choice.
+    Do not use confirmation observations to revisit the rule.

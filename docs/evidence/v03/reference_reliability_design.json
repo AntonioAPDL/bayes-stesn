@@ -1,0 +1,9 @@
+{
+  "numeric_changes": "None within a job; no candidate-time ceiling until representative costs measured",
+  "planned_final_fit_calls": 60,
+  "protocol_identity": "a366cb68718cb6d41668c8f0b55d95dbcc9ebc2340b910c90f4a2b760d0be96b",
+  "purpose": "Predeclared conservative references: fitting reliability and cost calibration before tuned development; not a best-model or confirmatory study",
+  "selection_scores_used": false,
+  "source_fingerprint": "bea878c8f4ea47db3568131b33661bdeb9b37341ad41c72a8424630bb49169af",
+  "specification_source": "First conservative configuration in each resolved schema4 search space; full MCMC/optimizer budgets; opt-in exact sampler coordinates"
+}

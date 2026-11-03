@@ -42,6 +42,69 @@ def _hash_file(path):
     return digest.hexdigest()
 
 
+def _verify_terminal_inventory(output, design, mode):
+    """A completed output can be reused only when every inventoried byte agrees."""
+    path = output/"output_inventory.json"
+    if not path.exists():
+        return False
+    inventory = json.loads(path.read_text())
+    if (inventory.get("identity") != content_hash({k:v for k,v in inventory.items() if k!="identity"})
+            or inventory.get("manifest_identity") != design["identity"]
+            or inventory.get("source_fingerprint") != design["source_fingerprint"]
+            or inventory.get("mode") != mode or inventory.get("complete") is not True):
+        raise ValueError("Completed P5 output inventory identity differs")
+    entries = inventory.get("entries", [])
+    names = [entry["file"] for entry in entries]
+    required = {"manifest.json", "inspection.json", "decisions.json"}
+    if mode == "extensions":
+        required.add("paired_ablation.json")
+    elif mode == "path_stability":
+        required.update(("path_stability.json", "path_stability_forecast.npz"))
+    if (len(set(names)) != len(names)
+            or not required.issubset(names)):
+        raise ValueError("Completed P5 output inventory has missing or duplicated entries")
+    for entry in entries:
+        relative = Path(entry["file"])
+        target = output/relative
+        if (relative.is_absolute() or ".." in relative.parts
+                or not target.resolve().is_relative_to(output.resolve())
+                or not target.is_file() or target.stat().st_size != entry["bytes"]
+                or _hash_file(target) != entry["sha256"]):
+            raise ValueError(f"Completed P5 output inventory file differs: {relative}")
+    return True
+
+
+def _write_terminal_inventory(output, design, mode, result):
+    files = {"manifest.json", "inspection.json", "decisions.json"}
+    if mode == "extensions":
+        files.add("paired_ablation.json")
+        for row in result["ablation"]["rows"]:
+            label = row["variant"]
+            files.add(f"{label}/receipt.json")
+            if "posterior_identity" in row:
+                files.add(f"{label}/fitted.npz")
+            if "scores" in row:
+                files.add(f"{label}/forecast.npz")
+            for checkpoint in ("chain.npz", "chain.npz.fit-state.npz"):
+                if (output/label/checkpoint).exists():
+                    files.add(f"{label}/{checkpoint}")
+    elif mode == "path_stability":
+        files.update(("path_stability.json", "path_stability_forecast.npz"))
+    entries = [{"file":name, "bytes":(output/name).stat().st_size,
+                "sha256":_hash_file(output/name)} for name in sorted(files)]
+    if (source_fingerprint() != design["source_fingerprint"]
+            or _hash_file(__file__) != design["tool_sha256"]
+            or _hash_file(SCOPE_PATH) != design["scope_sha256"]
+            or jsonable(benchmark_environment()) != design["environment"]):
+        raise ValueError("Source, tool, scope or numerical runtime changed before P5 output completion")
+    inventory = {"schema":"p5-output-inventory-1.0", "manifest_identity":design["identity"],
+        "source_fingerprint":design["source_fingerprint"], "mode":mode, "complete":True,
+        "completion_meaning":"All requested attempts completed; failed scientific qualification remains a negative result",
+        "entries":entries}
+    inventory["identity"] = content_hash(inventory)
+    write_json(output/"output_inventory.json", inventory)
+
+
 def _admit_archive(path, memory_mb):
     with ZipFile(path) as archive:
         expanded = sum(member.file_size for member in archive.infolist())
@@ -380,6 +443,7 @@ def main(argv=None):
         raise ValueError("Invalid bounded inspection, inference, or forecast budget")
     if (extensions or args.path_stability) and not (args.simulation and args.study_manifest):
         raise ValueError("Predictive modes require --simulation and --study-manifest from development")
+    mode = "extensions" if extensions else "path_stability" if args.path_stability else "inspect_only"
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
     scope = json.loads(SCOPE_PATH.read_text())
@@ -403,6 +467,9 @@ def main(argv=None):
         design_path = output/"manifest.json"
         if design_path.exists() and json.loads(design_path.read_text()) != design:
             raise ValueError("P5 output belongs to a different source/runtime/input/design; use a new directory")
+        if _verify_terminal_inventory(output, design, mode):
+            print(json.dumps({"output":str(output.resolve()), "mode":mode, "reused_verified_complete":True}))
+            return 0
         write_json(design_path, design)
         diagnostic_seed = (stored_gate or {}).get("functional_policy", {}).get("seed",
                              seed_for(args.seed, "p5_baseline_diagnostics"))
@@ -439,8 +506,14 @@ def main(argv=None):
                 result["path_stability"] = _path_stability(fitted, evaluation, output, args.seed, args.batch_size)
         if source_fingerprint() != source:
             raise RuntimeError("Source changed during P5 evaluation")
+        for key, path in (("baseline_sha256", args.baseline),
+                          ("simulation_sha256", args.simulation),
+                          ("development_manifest_sha256", args.study_manifest)):
+            if design[key] is not None and _hash_file(path) != design[key]:
+                raise ValueError("P5 input bytes changed during evaluation; outputs are not complete")
+        _write_terminal_inventory(output, design, mode, result)
     print(json.dumps({"output":str(output.resolve()), "qualified_baseline":qualified,
-                      "mode":"extensions" if extensions else "path_stability" if args.path_stability else "inspect_only"}))
+                      "mode":mode}))
     return 0
 
 

@@ -838,7 +838,8 @@ def _run_benchmark(protocol, output, resume, progress, workers, power_freeze, ma
             pause_reason = "between-job wall-time limit"
             return False
         host = host_resources()
-        ceiling, current = host["memory_limit_bytes"], host["memory_current_bytes"]
+        ceiling = host["memory_limit_bytes"]
+        current = host.get("memory_admission_estimate_bytes", host["memory_current_bytes"])
         if ceiling is not None and current is not None and current > ceiling-min(2*1024**3, int(.25*ceiling)):
             pause_reason = "current aggregate memory headroom"
             return False
@@ -861,7 +862,8 @@ def _run_benchmark(protocol, output, resume, progress, workers, power_freeze, ma
         total = reserved+estimate["estimated_bytes"]+execution["memory"]["estimated_parent_bytes"]
         allowance = execution["allowance"]["effective_job_budget_bytes"]
         host = host_resources()
-        ceiling,current = host["memory_limit_bytes"],host["memory_current_bytes"]
+        ceiling = host["memory_limit_bytes"]
+        current = host.get("memory_admission_estimate_bytes", host["memory_current_bytes"])
         reserve = execution["allowance"]["reserved_headroom_bytes"] or 0
         fits_budget = allowance is None or total <= allowance
         fits_headroom = ceiling is None or current is None or current+estimate["estimated_bytes"] <= ceiling-reserve

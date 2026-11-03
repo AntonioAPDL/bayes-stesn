@@ -1,0 +1,12 @@
+{
+  "reason": "Pause early development for corrected diagnostic timing subcomponent; statistical equations and total compute unaffected",
+  "parent_pid": 58942,
+  "child_pids": [
+    58947,
+    58948,
+    58951
+  ],
+  "timestamp": 1793687917.0748641,
+  "old_source_commit": "f44e953bd145b66d39990dec1ec1d4375ebdae22",
+  "disposition": "Retain incomplete attempt artifacts; fresh source gets a new experiment directory and no cached outcome reuse"
+}

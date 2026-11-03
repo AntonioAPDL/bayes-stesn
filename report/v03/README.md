@@ -6,9 +6,12 @@ inventory. It reads completed saved experiments. It does not generate data,
 fit models, tune candidates, forecast, or select a favorable illustration.
 
 The PDF and HTML explain the model hierarchy, exact unit-Jacobian sampler
-change, study designs, qualification, operational and conditional-native
-populations, paired comparisons, error evolution, measured cost, learning
-curves when available, memory ownership evidence, tests, and research limits.
+change, study designs, selected configurations and candidate/recheck counts,
+qualification, operational and conditional-native populations, paired and
+joint scores, error evolution, measured wall/CPU cost, accuracy versus time,
+learning curves, the saved G1 privileged-parameter reference, separate
+raw-versus-calibrated intervals, bounded extension/path results, memory
+ownership evidence, tests, and research limits.
 Numerical conclusions come from the supplied artifacts; missing optional
 studies remain visibly unexecuted.
 
@@ -87,7 +90,8 @@ environment.
 
 ### Matched learning curves
 
-Pass `--curve DIRECTORY` or `--curve DIRECTORY/curve_design.json`. The renderer
+Pass `--curve DIRECTORY` or `--curve DIRECTORY/curve_design.json`. Repeat the
+option for separate history and sensor experiments. The renderer
 reads the resolved `benchmark-curve-2.0` design and its completed condition
 directories. It verifies matching generated fields, target site IDs, forecast
 origin and normalization-reference metadata across conditions. Missing
@@ -100,9 +104,75 @@ are descriptive comparisons at the declared intervention values, not a
 monotonicity claim. A fixed architecture and a newly tuned architecture are
 different procedures and retain their selection mode in the evidence.
 
-### Extension decisions
+Add the sealed post-study decision/representation outputs with repeatable
+`--curve-audit JSON` options, alongside their matching `--curve` inputs:
 
-Pass `--extensions decisions.json`. The simple supported shape is:
+```text
+--curve-audit docs/evidence/v03/history_choice.json
+--curve-audit docs/evidence/v03/sensor_representation.json
+```
+
+The renderer verifies the audit's content identity, source fingerprint,
+curve identity, design/tool/recipe hashes and complete source-receipt
+inventory. It checks history paired differences and qualification against
+the supplied condition receipts, and checks the recorded time sums and
+decision gates. The sensor audit displays saved spatial/temporal ranks and
+geometry-only unit-iid-noise amplification, with fit qualification visible.
+Its fixed 100-sensor reference basis is a diagnostic choice; it does not
+change a fitted basis, prior or forecast, and it is not actual correlated
+forecast variance. The one-field sensor study has no replication MCSE.
+
+### G1 known-parameter reference
+
+First run the separate reference-audit tool on the completed current-source
+benchmark. The audit is read-only for comparator results; it computes and
+saves the analytic G1 reference using known parameters and noisy O history.
+The report itself never computes this reference:
+
+```bash
+PYTHONPATH=src python tools/audit_v03_references.py \
+  /path/to/completed/run --output /path/to/reference_audit.json
+```
+
+Pass `--audit RUN_LABEL=/path/to/reference_audit.json` to the report command.
+The label must match a supplied `--run`. The audit's content identity, base
+manifest/summary hashes, scientific source and all saved oracle-moment
+artifact hashes must validate. The report shows paired learned-minus-oracle
+losses on identical eligible datasets. The known parameters are privileged
+information; realized finite-sample dominance is not guaranteed.
+
+### Separate post-fit calibration
+
+After the existing calibration workflow has saved its results, seal them:
+
+```bash
+PYTHONPATH=src python tools/seal_v03_calibration.py \
+  --run /path/to/completed/base/run \
+  --calibration /path/to/saved/calibration-study --replication 0
+```
+
+This writes only `calibration_evidence.json`. It never loads a fitted model
+object, refits parameters, regenerates observations, or calls a forecast
+method. It binds the actual base manifest, model, receipt and simulation
+hashes; validates the exact shared simulation prefix, O/C/U roles, disjoint
+calibration windows and fixed parameter cutoff; and checks saved raw
+RMSE/median-MAE/empirical-CRPS, interval bands and calibrated scores/WIS.
+The default aggregate uncompressed-array allowance is 512 MiB; a larger
+explicit allowance is capped at 1 GiB. Temporary numerical working arrays
+also consume memory, so run this verifier outside heavy fitting waves.
+
+Pass `--calibration RUN_LABEL=/path/to/saved/calibration-study` to the report.
+Both the raw and adjusted intervals are evaluated at the same later origin.
+The original predictive samples remain unchanged, and no calibrated joint
+law or calibrated CRPS is invented. Empirical transfer to U is not an
+exchangeability-based coverage guarantee. Infinite finite-block bands remain
+visible instead of being discarded.
+
+### Extension decisions and actual bounded studies
+
+Pass `--extensions decisions.json`. This option is repeatable: provide the
+policy/disposition document and every completed P5 run directory you want
+to include. The simple supported disposition shape is:
 
 ```json
 {
@@ -120,15 +190,57 @@ Pass `--extensions decisions.json`. The simple supported shape is:
 The `rows` and `decisions` list aliases are accepted. The P5 scope document
 with `scientific_results_in_this_file: false`, `id`, `default_disposition`,
 and `trigger` is labeled **implementation scope; no experiment results**.
-Saved P5 decisions may use `disposition`; when they declare
-`manifest_identity`, the matching sibling manifest must validate against the
-current source. An entry can supply `run_directory` to bind its disposition
-to an independently validated complete benchmark run. The renderer does not
-turn a narrative recommendation into a measured ablation result.
+Saved P5 decisions may use `disposition`. A completed P5 directory must have
+the matching current-source manifest, `decisions.json`, `inspection.json`,
+and terminal `output_inventory.json`. Every inventoried output is checked.
+Its baseline-model and evaluation-run hashes must bind a supplied main run.
+Actual ablations display qualification, exact paired score differences and
+negative findings; an unqualified variant has no invented native predictive
+comparison. Path-sensitivity studies validate the 128/256/512 sample-prefix
+hashes against the saved joint paths. Their MCSE excludes posterior MCMC
+error and is not across-dataset precision.
+
+For example, add each available actual study explicitly:
+
+```text
+--extensions docs/evidence/v03/extension_scope.json
+--extensions docs/evidence/v03/extension_findings.json
+--extensions results/v03/extensions/release_ar_g4_existing_fronts
+--extensions results/v03/extensions/release_ar_g3_excitable_field
+--extensions results/v03/extensions/release_paths_g4_existing_fronts
+--extensions results/v03/extensions/release_paths_g3_excitable_field
+```
+
+Disposition documents can bind terminal inventories using
+`evidence_inventories: [{path, identity, sha256}]`; repository-relative paths
+are accepted. Every referenced inventory's output hashes are checked as well
+as its own identity. When both original scope and final findings are supplied,
+the current disposition table uses the final findings once per extension;
+the original scope is separately linked, not presented as a second current
+decision. The path-count policy is shown separately from the path sampler:
+its predeclared rule, saved normalized differences, baseline training scales
+and final choice must agree. Selecting 512 as the finite reference ceiling
+does not establish negligible Monte Carlo error or adequate model dynamics.
+An entry can also supply `run_directory` to bind its decision
+to a complete benchmark run. A narrative recommendation never becomes a
+measured ablation result merely by being included in the report.
 
 If an explicitly optional curve or extension path is absent, the report says
 `not available`. If it is omitted, the report says `not supplied`. Existing
 malformed or incompatible evidence is an error.
+
+### Saved first-step diagnostic
+
+Add `--diagnostic docs/evidence/v03/g3_saved_first_step_review.json` to include
+the separate G3 alignment, decoder and saved-path review. The input hashes
+must bind a supplied benchmark model and the matching complete fixed-posterior
+path-study inventory. The report checks the scalar orthogonal MSE decomposition
+and conditional mean-MCSE relationship; it never replays the decoder or calls
+prediction. The projection uses the realized **noisy observed target** and
+the saved fixed decoder span. It is an evaluator-only lower bound for that
+target/span, not a latent-field result, a permitted forecast, or a universal
+irreducible-error estimate. A larger path budget does not repair a restricted
+decoder or poor long-horizon dynamics.
 
 ### Historical coordinate evidence
 

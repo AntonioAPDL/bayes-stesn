@@ -1,0 +1,198 @@
+{
+  "additional_training_only_preflight_fit_calls": 6,
+  "calibration_additional_fit_calls": 0,
+  "condition_execution_status": {
+    "confirmation": "requires_independent_valid_freeze_before_final_seed_generation",
+    "history_1000": "initial_required",
+    "history_2000": "initial_required",
+    "history_4000": "deferred_needs_new4300_row_timing_review",
+    "history_500": "deferred_evidence_trigger",
+    "revised": "execute_only_the_history_chosen_by_the_completed_development_curve_gate"
+  },
+  "execution_ready": false,
+  "existing_reference_timing_sha256": null,
+  "fit_time_limits_seconds": null,
+  "identity": "db93a00ca1bf53839044fdeec6a5f1825f9735019c621db2d332eabb2968289a",
+  "long_history_generator_evidence": {
+    "continuum_claim": false,
+    "identity": "01b6b6ddc260f951eaa45fbe387f04139012fe31ecf880cf91e31daaa0edc359",
+    "mesh_gate_passed": false,
+    "original_overall_status": "refinement_gate_not_met",
+    "path": "docs/evidence/v03/generator_validation_long_history_grid64.json",
+    "required_full_record_duration": 8798.0,
+    "scope": "Independent finite-grid time-step pilot covers this complete record duration; not a guarantee for every field or a continuum claim",
+    "sha256": "742cbb01c96f8d099e6cebb55744fa13f96f1d1f605dd8a138c3892a3f95b3b1",
+    "time_gate_passed": true,
+    "time_rmse": 0.0019800022197224965,
+    "validated_post_burnin_duration": 8800.0
+  },
+  "path_decision": {
+    "identity": "e39ce11b40c1063a75a03270d3867d90c1e6f04fa18f26ac871dba82dd8e478b",
+    "limitations": "512 is the finite reference ceiling, not evidence that predictive Monte Carlo error is negligible. G3 RMS conditional predictive-mean MCSE at512 is about0.207 training standard deviations, with a maximum about0.586. No unplanned larger path run was performed; these MCSE estimates exclude posterior MCMC error.",
+    "path": "docs/evidence/v03/extension_findings.json",
+    "selected_for_subsequent_studies": 512,
+    "sha256": "7ce3a425e0706f37c78ade84c01699d9fb11a9dfe6108088a8aee498ca97f1ab"
+  },
+  "path_decision_sha256": "7ce3a425e0706f37c78ade84c01699d9fb11a9dfe6108088a8aee498ca97f1ab",
+  "paths": 512,
+  "preparer_sha256": "8b74ccb446268ffb9c0a4f731a6b2c4185d35066f0fd1006ec3e70b0424b12ea",
+  "primary_comparisons": [
+    {
+      "id": "bayes_esn_ridge_vs_separable_stgp_A_crps",
+      "metric": "crps",
+      "other_model": "separable_stgp",
+      "reference": "bayes_esn_ridge",
+      "scenario_weights": {
+        "g1_gaussian_ar": 0.25,
+        "g2_spectral_transport": 0.25,
+        "g3_excitable_field": 0.25,
+        "g4_existing_fronts": 0.25
+      },
+      "track": "A"
+    },
+    {
+      "id": "bayes_esn_ridge_vs_separable_stgp_B_crps",
+      "metric": "crps",
+      "other_model": "separable_stgp",
+      "reference": "bayes_esn_ridge",
+      "scenario_weights": {
+        "g1_gaussian_ar": 0.25,
+        "g2_spectral_transport": 0.25,
+        "g3_excitable_field": 0.25,
+        "g4_existing_fronts": 0.25
+      },
+      "track": "B"
+    },
+    {
+      "id": "bayes_esn_ridge_vs_basis_gru_A_crps",
+      "metric": "crps",
+      "other_model": "basis_gru",
+      "reference": "bayes_esn_ridge",
+      "scenario_weights": {
+        "g1_gaussian_ar": 0.25,
+        "g2_spectral_transport": 0.25,
+        "g3_excitable_field": 0.25,
+        "g4_existing_fronts": 0.25
+      },
+      "track": "A"
+    },
+    {
+      "id": "bayes_esn_ridge_vs_basis_gru_B_crps",
+      "metric": "crps",
+      "other_model": "basis_gru",
+      "reference": "bayes_esn_ridge",
+      "scenario_weights": {
+        "g1_gaussian_ar": 0.25,
+        "g2_spectral_transport": 0.25,
+        "g3_excitable_field": 0.25,
+        "g4_existing_fronts": 0.25
+      },
+      "track": "B"
+    }
+  ],
+  "profile_identities": {
+    "confirmation_L1000": "6b9aa17a82588da384230f70984c4670537aab89013a7d3eb3af1e2f6cde3aac",
+    "confirmation_L2000": "c56e35d03a4c45d21c378dd64bade772da0012acbf451cb2774ca847d0057773",
+    "history_1000": "71f44301d7f291957e6e84c591442495fbb7058a8e66c9f8f53cb8579b1cc781",
+    "history_2000": "bcc2cbb72d92790cdb5ca47fb12f45e61c368c31a672af5039b7c549726ab00f",
+    "history_4000": "08bcdf192eff69ca1f548595c23b78a82d310d613cc1c45e5c3ef0d2892a5171",
+    "history_500": "edafa3a05fb45076918fe0211647262d3b339683e1a49a22bc67f8817e63b795",
+    "history_base": "0e7429d8c72a5400414e9df5bdd1642e2bd0241354c758c7332fde3771c945cd",
+    "revised_L1000": "c3ee0dfc3ed629d265eaaed7f4fb030afc732cc069a3b60ec5ce82307aa79a01",
+    "revised_L2000": "a24e0251352142f56dca0e6d3848b2a25689c976d40cdba2759dab252c8f22f0",
+    "sensors_100": "8e520573aba4fc3d1a87df0816c2c90e2f60ba8ce73c8bfb8250e6f1ec690cf4",
+    "sensors_25": "28a803412eee25764b185d43e5fb76dae53e85e3d687653104b04cc7502f89e5",
+    "sensors_50": "3e251294f81415a853f23bc40d3345f6b54bcaa54511fdef527fb0ae585d8a90",
+    "sensors_base": "51c5d3078573fd6c71ee8a1d202a96abb848449782101600f84efa4ea99fb54d"
+  },
+  "recipe_sha256": "c0875c7f22ec96e4ad7b8732eccf40f53f8d46a40f52d850b30fa729ea8f04e0",
+  "reference_config_sha256": "395189495691ecc1fe356bbabe9a4eb92eeda9993a3cccc095e9928c135049f7",
+  "required_scientific_fit_calls": {
+    "history_initial": 330,
+    "revised_one_chosen_length": 220,
+    "sensors_illustrative": 33,
+    "total": 583
+  },
+  "schema": "v03-remaining-study-resolution-1.0",
+  "scientific_outcomes_generated": false,
+  "selection_manifest_identity": null,
+  "selections": [
+    {
+      "disposition": "planning_reference_proxy",
+      "model": "persistence",
+      "track": "A",
+      "transferred_effective_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "disposition": "planning_reference_proxy",
+      "model": "basis_krr",
+      "track": "A",
+      "transferred_effective_hash": "728de11be6b613694e85369061b2eaa5e900a4eb093da8b843a4c28cfe31c3cd"
+    },
+    {
+      "disposition": "planning_reference_proxy",
+      "model": "separable_stgp",
+      "track": "A",
+      "transferred_effective_hash": "e9976c655348cab5a74a3c9bcf74abe190cad1c3034a4b20d2cc99825260565c"
+    },
+    {
+      "disposition": "planning_reference_proxy",
+      "model": "bayes_esn_ridge",
+      "track": "A",
+      "transferred_effective_hash": "f7fe10d33b60d174a5e0f43b7a4d1cc03de4c0a523ab43dc3de5e9226277201f"
+    },
+    {
+      "declared_horizon_transfer": {
+        "from": 40,
+        "to": 100
+      },
+      "disposition": "planning_reference_proxy",
+      "model": "basis_gru",
+      "track": "A",
+      "transferred_effective_hash": "1180918a0b6f955f2ca7e7e76836d9c61b89112f6357dd37dc93709282ab0caa"
+    },
+    {
+      "disposition": "planning_reference_proxy",
+      "model": "eqesn_rollout",
+      "track": "A",
+      "transferred_effective_hash": "50f2c06f7f9afe55d252ef6c3cbab3fa8ec4eefa7aa0108af2d0f99b74d05b99"
+    },
+    {
+      "disposition": "planning_reference_proxy",
+      "model": "spatial_persistence",
+      "track": "B",
+      "transferred_effective_hash": "259ce1983336a8dff9883e34cff7213decc4fe3b0f4790e14036056e38ab9096"
+    },
+    {
+      "disposition": "planning_reference_proxy",
+      "model": "basis_krr",
+      "track": "B",
+      "transferred_effective_hash": "728de11be6b613694e85369061b2eaa5e900a4eb093da8b843a4c28cfe31c3cd"
+    },
+    {
+      "disposition": "planning_reference_proxy",
+      "model": "separable_stgp",
+      "track": "B",
+      "transferred_effective_hash": "e9976c655348cab5a74a3c9bcf74abe190cad1c3034a4b20d2cc99825260565c"
+    },
+    {
+      "disposition": "planning_reference_proxy",
+      "model": "bayes_esn_ridge",
+      "track": "B",
+      "transferred_effective_hash": "f7fe10d33b60d174a5e0f43b7a4d1cc03de4c0a523ab43dc3de5e9226277201f"
+    },
+    {
+      "declared_horizon_transfer": {
+        "from": 40,
+        "to": 100
+      },
+      "disposition": "planning_reference_proxy",
+      "model": "basis_gru",
+      "track": "B",
+      "transferred_effective_hash": "1180918a0b6f955f2ca7e7e76836d9c61b89112f6357dd37dc93709282ab0caa"
+    }
+  ],
+  "source_fingerprint": "e5180c486ecaa849bf5efeb0a67fe8ec30e963407f3eabe8c78009f88c40dc68",
+  "status": "reference_proxy_planning_only",
+  "timing_evidence": []
+}

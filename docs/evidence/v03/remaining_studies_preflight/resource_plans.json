@@ -1,0 +1,2690 @@
+{
+  "plans": {
+    "confirmation_L1000": {
+      "allowance": {
+        "clamped": true,
+        "effective_job_budget_bytes": 0,
+        "host": {
+          "effective_cpus": 8,
+          "memory_current_bytes": 8543195136,
+          "memory_limit_bytes": 8589934592,
+          "memory_measurement": "aggregate cgroup usage when available",
+          "worker_cap": 4
+        },
+        "requested_job_budget_bytes": 5368709120,
+        "reserved_headroom_bytes": 2147483648
+      },
+      "fit_time_limits_seconds": null,
+      "ideal_parallel_fit_seconds_lower_bound": null,
+      "jobs": 880,
+      "memory": {
+        "assumption": "conservative resolved-dimension admission estimate; representative candidate seed 0, not a measured peak or guarantee; sparse fill and allocator behavior need isolated profiles",
+        "estimated_parent_bytes": 69304064,
+        "estimated_per_worker_bytes": 629387040,
+        "estimated_total_bytes": 1328078144,
+        "per_model": {
+          "basis_gru": {
+            "dimensions": {
+              "basis_rank": 8,
+              "context": 8,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 629387040,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "basis_krr": {
+            "dimensions": {
+              "basis_rank": 12,
+              "context": 4,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 303761184,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "bayes_esn_ridge": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "readout_coefficients_upper_bound": 780,
+              "spatial_basis": 12,
+              "supplied_history": 1300,
+              "temporal_features_upper_bound": 65
+            },
+            "estimated_bytes": 355845568,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "eqesn_rollout": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 287061792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 287061792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "separable_stgp": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 287061792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "spatial_persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 287061792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          }
+        }
+      },
+      "memory_admissible": false,
+      "models": [
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "eqesn_rollout",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "spatial_persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        }
+      ],
+      "projected_summed_fit_wall_seconds": null,
+      "protocol_identity": "6b9aa17a82588da384230f70984c4670537aab89013a7d3eb3af1e2f6cde3aac",
+      "schema": "benchmark-execution-plan-1.0",
+      "selection_fit_calls": 0,
+      "selection_fit_calls_with_replacements": 0,
+      "storage": {
+        "free_bytes_at_planning": 27970293760,
+        "scope": "array estimates before compression; fitted models, checkpoints, figures and dependency environment add storage",
+        "temporary_atomic_write_allowance_bytes": 102400000,
+        "uncompressed_data_bytes": 175616000,
+        "uncompressed_retained_paths_bytes": 409600000
+      },
+      "threads_per_worker": 1,
+      "time_estimate_policy": "null until representative per-model timings are supplied; fit calls exclude internal neural epoch-selection refits, MCMC continuation, forecasts and serialization",
+      "workers": 2
+    },
+    "confirmation_L2000": {
+      "allowance": {
+        "clamped": true,
+        "effective_job_budget_bytes": 0,
+        "host": {
+          "effective_cpus": 8,
+          "memory_current_bytes": 8545005568,
+          "memory_limit_bytes": 8589934592,
+          "memory_measurement": "aggregate cgroup usage when available",
+          "worker_cap": 4
+        },
+        "requested_job_budget_bytes": 5368709120,
+        "reserved_headroom_bytes": 2147483648
+      },
+      "fit_time_limits_seconds": null,
+      "ideal_parallel_fit_seconds_lower_bound": null,
+      "jobs": 880,
+      "memory": {
+        "assumption": "conservative resolved-dimension admission estimate; representative candidate seed 0, not a measured peak or guarantee; sparse fill and allocator behavior need isolated profiles",
+        "estimated_parent_bytes": 70872064,
+        "estimated_per_worker_bytes": 636763040,
+        "estimated_total_bytes": 1344398144,
+        "per_model": {
+          "basis_gru": {
+            "dimensions": {
+              "basis_rank": 8,
+              "context": 8,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 636763040,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "basis_krr": {
+            "dimensions": {
+              "basis_rank": 12,
+              "context": 4,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 318561184,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "bayes_esn_ridge": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "readout_coefficients_upper_bound": 780,
+              "spatial_basis": 12,
+              "supplied_history": 2300,
+              "temporal_features_upper_bound": 65
+            },
+            "estimated_bytes": 360693568,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "eqesn_rollout": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 289829792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 289829792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "separable_stgp": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 289829792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "spatial_persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 289829792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          }
+        }
+      },
+      "memory_admissible": false,
+      "models": [
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "eqesn_rollout",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "spatial_persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 80,
+          "final_fit_calls": 80,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        }
+      ],
+      "projected_summed_fit_wall_seconds": null,
+      "protocol_identity": "c56e35d03a4c45d21c378dd64bade772da0012acbf451cb2774ca847d0057773",
+      "schema": "benchmark-execution-plan-1.0",
+      "selection_fit_calls": 0,
+      "selection_fit_calls_with_replacements": 0,
+      "storage": {
+        "free_bytes_at_planning": 27970289664,
+        "scope": "array estimates before compression; fitted models, checkpoints, figures and dependency environment add storage",
+        "temporary_atomic_write_allowance_bytes": 102400000,
+        "uncompressed_data_bytes": 301056000,
+        "uncompressed_retained_paths_bytes": 409600000
+      },
+      "threads_per_worker": 1,
+      "time_estimate_policy": "null until representative per-model timings are supplied; fit calls exclude internal neural epoch-selection refits, MCMC continuation, forecasts and serialization",
+      "workers": 2
+    },
+    "history_1000": {
+      "allowance": {
+        "clamped": true,
+        "effective_job_budget_bytes": 0,
+        "host": {
+          "effective_cpus": 8,
+          "memory_current_bytes": 8540848128,
+          "memory_limit_bytes": 8589934592,
+          "memory_measurement": "aggregate cgroup usage when available",
+          "worker_cap": 4
+        },
+        "requested_job_budget_bytes": 5368709120,
+        "reserved_headroom_bytes": 2147483648
+      },
+      "fit_time_limits_seconds": null,
+      "ideal_parallel_fit_seconds_lower_bound": null,
+      "jobs": 165,
+      "memory": {
+        "assumption": "conservative resolved-dimension admission estimate; representative candidate seed 0, not a measured peak or guarantee; sparse fill and allocator behavior need isolated profiles",
+        "estimated_parent_bytes": 74008064,
+        "estimated_per_worker_bytes": 634091040,
+        "estimated_total_bytes": 1342190144,
+        "per_model": {
+          "basis_gru": {
+            "dimensions": {
+              "basis_rank": 8,
+              "context": 8,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 634091040,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "basis_krr": {
+            "dimensions": {
+              "basis_rank": 12,
+              "context": 4,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 308465184,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "bayes_esn_ridge": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "readout_coefficients_upper_bound": 780,
+              "spatial_basis": 12,
+              "supplied_history": 1300,
+              "temporal_features_upper_bound": 65
+            },
+            "estimated_bytes": 360549568,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "eqesn_rollout": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 291765792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 291765792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "separable_stgp": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 291765792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "spatial_persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 291765792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          }
+        }
+      },
+      "memory_admissible": false,
+      "models": [
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "eqesn_rollout",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "spatial_persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        }
+      ],
+      "projected_summed_fit_wall_seconds": null,
+      "protocol_identity": "71f44301d7f291957e6e84c591442495fbb7058a8e66c9f8f53cb8579b1cc781",
+      "schema": "benchmark-execution-plan-1.0",
+      "selection_fit_calls": 0,
+      "selection_fit_calls_with_replacements": 0,
+      "storage": {
+        "free_bytes_at_planning": 27974225920,
+        "scope": "array estimates before compression; fitted models, checkpoints, figures and dependency environment add storage",
+        "temporary_atomic_write_allowance_bytes": 102400000,
+        "uncompressed_data_bytes": 103488000,
+        "uncompressed_retained_paths_bytes": 307200000
+      },
+      "threads_per_worker": 1,
+      "time_estimate_policy": "null until representative per-model timings are supplied; fit calls exclude internal neural epoch-selection refits, MCMC continuation, forecasts and serialization",
+      "workers": 2
+    },
+    "history_2000": {
+      "allowance": {
+        "clamped": true,
+        "effective_job_budget_bytes": 0,
+        "host": {
+          "effective_cpus": 8,
+          "memory_current_bytes": 8541159424,
+          "memory_limit_bytes": 8589934592,
+          "memory_measurement": "aggregate cgroup usage when available",
+          "worker_cap": 4
+        },
+        "requested_job_budget_bytes": 5368709120,
+        "reserved_headroom_bytes": 2147483648
+      },
+      "fit_time_limits_seconds": null,
+      "ideal_parallel_fit_seconds_lower_bound": null,
+      "jobs": 165,
+      "memory": {
+        "assumption": "conservative resolved-dimension admission estimate; representative candidate seed 0, not a measured peak or guarantee; sparse fill and allocator behavior need isolated profiles",
+        "estimated_parent_bytes": 74008064,
+        "estimated_per_worker_bytes": 639899040,
+        "estimated_total_bytes": 1353806144,
+        "per_model": {
+          "basis_gru": {
+            "dimensions": {
+              "basis_rank": 8,
+              "context": 8,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 639899040,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "basis_krr": {
+            "dimensions": {
+              "basis_rank": 12,
+              "context": 4,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 321697184,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "bayes_esn_ridge": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "readout_coefficients_upper_bound": 780,
+              "spatial_basis": 12,
+              "supplied_history": 2300,
+              "temporal_features_upper_bound": 65
+            },
+            "estimated_bytes": 363829568,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "eqesn_rollout": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 292965792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 292965792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "separable_stgp": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 292965792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "spatial_persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 292965792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          }
+        }
+      },
+      "memory_admissible": false,
+      "models": [
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "eqesn_rollout",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "spatial_persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        }
+      ],
+      "projected_summed_fit_wall_seconds": null,
+      "protocol_identity": "bcc2cbb72d92790cdb5ca47fb12f45e61c368c31a672af5039b7c549726ab00f",
+      "schema": "benchmark-execution-plan-1.0",
+      "selection_fit_calls": 0,
+      "selection_fit_calls_with_replacements": 0,
+      "storage": {
+        "free_bytes_at_planning": 27974225920,
+        "scope": "array estimates before compression; fitted models, checkpoints, figures and dependency environment add storage",
+        "temporary_atomic_write_allowance_bytes": 102400000,
+        "uncompressed_data_bytes": 103488000,
+        "uncompressed_retained_paths_bytes": 307200000
+      },
+      "threads_per_worker": 1,
+      "time_estimate_policy": "null until representative per-model timings are supplied; fit calls exclude internal neural epoch-selection refits, MCMC continuation, forecasts and serialization",
+      "workers": 2
+    },
+    "history_4000": {
+      "allowance": {
+        "clamped": true,
+        "effective_job_budget_bytes": 0,
+        "host": {
+          "effective_cpus": 8,
+          "memory_current_bytes": 8541040640,
+          "memory_limit_bytes": 8589934592,
+          "memory_measurement": "aggregate cgroup usage when available",
+          "worker_cap": 4
+        },
+        "requested_job_budget_bytes": 5368709120,
+        "reserved_headroom_bytes": 2147483648
+      },
+      "fit_time_limits_seconds": null,
+      "ideal_parallel_fit_seconds_lower_bound": null,
+      "jobs": 165,
+      "memory": {
+        "assumption": "conservative resolved-dimension admission estimate; representative candidate seed 0, not a measured peak or guarantee; sparse fill and allocator behavior need isolated profiles",
+        "estimated_parent_bytes": 74008064,
+        "estimated_per_worker_bytes": 651515040,
+        "estimated_total_bytes": 1377038144,
+        "per_model": {
+          "basis_gru": {
+            "dimensions": {
+              "basis_rank": 8,
+              "context": 8,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 4300
+            },
+            "estimated_bytes": 651515040,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "basis_krr": {
+            "dimensions": {
+              "basis_rank": 12,
+              "context": 4,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 4300
+            },
+            "estimated_bytes": 348161184,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "bayes_esn_ridge": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "readout_coefficients_upper_bound": 780,
+              "spatial_basis": 12,
+              "supplied_history": 4300,
+              "temporal_features_upper_bound": 65
+            },
+            "estimated_bytes": 370389568,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "eqesn_rollout": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 4300
+            },
+            "estimated_bytes": 295365792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 4300
+            },
+            "estimated_bytes": 295365792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "separable_stgp": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 4300
+            },
+            "estimated_bytes": 295365792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "spatial_persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 4300
+            },
+            "estimated_bytes": 295365792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          }
+        }
+      },
+      "memory_admissible": false,
+      "models": [
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "eqesn_rollout",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "spatial_persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        }
+      ],
+      "projected_summed_fit_wall_seconds": null,
+      "protocol_identity": "08bcdf192eff69ca1f548595c23b78a82d310d613cc1c45e5c3ef0d2892a5171",
+      "schema": "benchmark-execution-plan-1.0",
+      "selection_fit_calls": 0,
+      "selection_fit_calls_with_replacements": 0,
+      "storage": {
+        "free_bytes_at_planning": 27974225920,
+        "scope": "array estimates before compression; fitted models, checkpoints, figures and dependency environment add storage",
+        "temporary_atomic_write_allowance_bytes": 102400000,
+        "uncompressed_data_bytes": 103488000,
+        "uncompressed_retained_paths_bytes": 307200000
+      },
+      "threads_per_worker": 1,
+      "time_estimate_policy": "null until representative per-model timings are supplied; fit calls exclude internal neural epoch-selection refits, MCMC continuation, forecasts and serialization",
+      "workers": 2
+    },
+    "history_500": {
+      "allowance": {
+        "clamped": true,
+        "effective_job_budget_bytes": 0,
+        "host": {
+          "effective_cpus": 8,
+          "memory_current_bytes": 8540930048,
+          "memory_limit_bytes": 8589934592,
+          "memory_measurement": "aggregate cgroup usage when available",
+          "worker_cap": 4
+        },
+        "requested_job_budget_bytes": 5368709120,
+        "reserved_headroom_bytes": 2147483648
+      },
+      "fit_time_limits_seconds": null,
+      "ideal_parallel_fit_seconds_lower_bound": null,
+      "jobs": 165,
+      "memory": {
+        "assumption": "conservative resolved-dimension admission estimate; representative candidate seed 0, not a measured peak or guarantee; sparse fill and allocator behavior need isolated profiles",
+        "estimated_parent_bytes": 74008064,
+        "estimated_per_worker_bytes": 631187040,
+        "estimated_total_bytes": 1336382144,
+        "per_model": {
+          "basis_gru": {
+            "dimensions": {
+              "basis_rank": 8,
+              "context": 8,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 800
+            },
+            "estimated_bytes": 631187040,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "basis_krr": {
+            "dimensions": {
+              "basis_rank": 12,
+              "context": 4,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 800
+            },
+            "estimated_bytes": 301849184,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "bayes_esn_ridge": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "readout_coefficients_upper_bound": 780,
+              "spatial_basis": 12,
+              "supplied_history": 800,
+              "temporal_features_upper_bound": 65
+            },
+            "estimated_bytes": 358909568,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "eqesn_rollout": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 800
+            },
+            "estimated_bytes": 291165792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 800
+            },
+            "estimated_bytes": 291165792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "separable_stgp": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 800
+            },
+            "estimated_bytes": 291165792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "spatial_persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 800
+            },
+            "estimated_bytes": 291165792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          }
+        }
+      },
+      "memory_admissible": false,
+      "models": [
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "eqesn_rollout",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "spatial_persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 15,
+          "final_fit_calls": 15,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        }
+      ],
+      "projected_summed_fit_wall_seconds": null,
+      "protocol_identity": "edafa3a05fb45076918fe0211647262d3b339683e1a49a22bc67f8817e63b795",
+      "schema": "benchmark-execution-plan-1.0",
+      "selection_fit_calls": 0,
+      "selection_fit_calls_with_replacements": 0,
+      "storage": {
+        "free_bytes_at_planning": 27974225920,
+        "scope": "array estimates before compression; fitted models, checkpoints, figures and dependency environment add storage",
+        "temporary_atomic_write_allowance_bytes": 102400000,
+        "uncompressed_data_bytes": 103488000,
+        "uncompressed_retained_paths_bytes": 307200000
+      },
+      "threads_per_worker": 1,
+      "time_estimate_policy": "null until representative per-model timings are supplied; fit calls exclude internal neural epoch-selection refits, MCMC continuation, forecasts and serialization",
+      "workers": 2
+    },
+    "revised_L1000": {
+      "allowance": {
+        "clamped": true,
+        "effective_job_budget_bytes": 0,
+        "host": {
+          "effective_cpus": 8,
+          "memory_current_bytes": 8543313920,
+          "memory_limit_bytes": 8589934592,
+          "memory_measurement": "aggregate cgroup usage when available",
+          "worker_cap": 4
+        },
+        "requested_job_budget_bytes": 5368709120,
+        "reserved_headroom_bytes": 2147483648
+      },
+      "fit_time_limits_seconds": null,
+      "ideal_parallel_fit_seconds_lower_bound": null,
+      "jobs": 220,
+      "memory": {
+        "assumption": "conservative resolved-dimension admission estimate; representative candidate seed 0, not a measured peak or guarantee; sparse fill and allocator behavior need isolated profiles",
+        "estimated_parent_bytes": 69304064,
+        "estimated_per_worker_bytes": 629387040,
+        "estimated_total_bytes": 1328078144,
+        "per_model": {
+          "basis_gru": {
+            "dimensions": {
+              "basis_rank": 8,
+              "context": 8,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 629387040,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "basis_krr": {
+            "dimensions": {
+              "basis_rank": 12,
+              "context": 4,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 303761184,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "bayes_esn_ridge": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "readout_coefficients_upper_bound": 780,
+              "spatial_basis": 12,
+              "supplied_history": 1300,
+              "temporal_features_upper_bound": 65
+            },
+            "estimated_bytes": 355845568,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "eqesn_rollout": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 287061792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 287061792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "separable_stgp": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 287061792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "spatial_persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 1300
+            },
+            "estimated_bytes": 287061792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          }
+        }
+      },
+      "memory_admissible": false,
+      "models": [
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "eqesn_rollout",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "spatial_persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        }
+      ],
+      "projected_summed_fit_wall_seconds": null,
+      "protocol_identity": "c3ee0dfc3ed629d265eaaed7f4fb030afc732cc069a3b60ec5ce82307aa79a01",
+      "schema": "benchmark-execution-plan-1.0",
+      "selection_fit_calls": 0,
+      "selection_fit_calls_with_replacements": 0,
+      "storage": {
+        "free_bytes_at_planning": 27971948544,
+        "scope": "array estimates before compression; fitted models, checkpoints, figures and dependency environment add storage",
+        "temporary_atomic_write_allowance_bytes": 102400000,
+        "uncompressed_data_bytes": 43904000,
+        "uncompressed_retained_paths_bytes": 409600000
+      },
+      "threads_per_worker": 1,
+      "time_estimate_policy": "null until representative per-model timings are supplied; fit calls exclude internal neural epoch-selection refits, MCMC continuation, forecasts and serialization",
+      "workers": 2
+    },
+    "revised_L2000": {
+      "allowance": {
+        "clamped": true,
+        "effective_job_budget_bytes": 0,
+        "host": {
+          "effective_cpus": 8,
+          "memory_current_bytes": 8544686080,
+          "memory_limit_bytes": 8589934592,
+          "memory_measurement": "aggregate cgroup usage when available",
+          "worker_cap": 4
+        },
+        "requested_job_budget_bytes": 5368709120,
+        "reserved_headroom_bytes": 2147483648
+      },
+      "fit_time_limits_seconds": null,
+      "ideal_parallel_fit_seconds_lower_bound": null,
+      "jobs": 220,
+      "memory": {
+        "assumption": "conservative resolved-dimension admission estimate; representative candidate seed 0, not a measured peak or guarantee; sparse fill and allocator behavior need isolated profiles",
+        "estimated_parent_bytes": 70872064,
+        "estimated_per_worker_bytes": 636763040,
+        "estimated_total_bytes": 1344398144,
+        "per_model": {
+          "basis_gru": {
+            "dimensions": {
+              "basis_rank": 8,
+              "context": 8,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 636763040,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "basis_krr": {
+            "dimensions": {
+              "basis_rank": 12,
+              "context": 4,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 318561184,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "bayes_esn_ridge": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "readout_coefficients_upper_bound": 780,
+              "spatial_basis": 12,
+              "supplied_history": 2300,
+              "temporal_features_upper_bound": 65
+            },
+            "estimated_bytes": 360693568,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "eqesn_rollout": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 289829792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 289829792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "separable_stgp": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 289829792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          },
+          "spatial_persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 50,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 289829792,
+            "predictive_tensor_bytes_upper_bound": 20480000
+          }
+        }
+      },
+      "memory_admissible": false,
+      "models": [
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "eqesn_rollout",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "spatial_persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 20,
+          "final_fit_calls": 20,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        }
+      ],
+      "projected_summed_fit_wall_seconds": null,
+      "protocol_identity": "a24e0251352142f56dca0e6d3848b2a25689c976d40cdba2759dab252c8f22f0",
+      "schema": "benchmark-execution-plan-1.0",
+      "selection_fit_calls": 0,
+      "selection_fit_calls_with_replacements": 0,
+      "storage": {
+        "free_bytes_at_planning": 27970289664,
+        "scope": "array estimates before compression; fitted models, checkpoints, figures and dependency environment add storage",
+        "temporary_atomic_write_allowance_bytes": 102400000,
+        "uncompressed_data_bytes": 75264000,
+        "uncompressed_retained_paths_bytes": 409600000
+      },
+      "threads_per_worker": 1,
+      "time_estimate_policy": "null until representative per-model timings are supplied; fit calls exclude internal neural epoch-selection refits, MCMC continuation, forecasts and serialization",
+      "workers": 2
+    },
+    "sensors_100": {
+      "allowance": {
+        "clamped": true,
+        "effective_job_budget_bytes": 0,
+        "host": {
+          "effective_cpus": 8,
+          "memory_current_bytes": 8543019008,
+          "memory_limit_bytes": 8589934592,
+          "memory_measurement": "aggregate cgroup usage when available",
+          "worker_cap": 4
+        },
+        "requested_job_budget_bytes": 5368709120,
+        "reserved_headroom_bytes": 2147483648
+      },
+      "fit_time_limits_seconds": null,
+      "ideal_parallel_fit_seconds_lower_bound": null,
+      "jobs": 11,
+      "memory": {
+        "assumption": "conservative resolved-dimension admission estimate; representative candidate seed 0, not a measured peak or guarantee; sparse fill and allocator behavior need isolated profiles",
+        "estimated_parent_bytes": 98788864,
+        "estimated_per_worker_bytes": 944195840,
+        "estimated_total_bytes": 1987180544,
+        "per_model": {
+          "basis_gru": {
+            "dimensions": {
+              "basis_rank": 8,
+              "context": 8,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 100,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 944195840,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "basis_krr": {
+            "dimensions": {
+              "basis_rank": 12,
+              "context": 4,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 100,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 625993984,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "bayes_esn_ridge": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 100,
+              "paths_upper_bound": 512,
+              "readout_coefficients_upper_bound": 780,
+              "spatial_basis": 12,
+              "supplied_history": 2300,
+              "temporal_features_upper_bound": 65
+            },
+            "estimated_bytes": 668438368,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "eqesn_rollout": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 100,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 597262592,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 100,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 597262592,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "separable_stgp": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 100,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 597262592,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "spatial_persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 100,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 597262592,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          }
+        }
+      },
+      "memory_admissible": false,
+      "models": [
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "eqesn_rollout",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "spatial_persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        }
+      ],
+      "projected_summed_fit_wall_seconds": null,
+      "protocol_identity": "8e520573aba4fc3d1a87df0816c2c90e2f60ba8ce73c8bfb8250e6f1ec690cf4",
+      "schema": "benchmark-execution-plan-1.0",
+      "selection_fit_calls": 0,
+      "selection_fit_calls_with_replacements": 0,
+      "storage": {
+        "free_bytes_at_planning": 27971952640,
+        "scope": "array estimates before compression; fitted models, checkpoints, figures and dependency environment add storage",
+        "temporary_atomic_write_allowance_bytes": 481280000,
+        "uncompressed_data_bytes": 31680000,
+        "uncompressed_retained_paths_bytes": 481280000
+      },
+      "threads_per_worker": 1,
+      "time_estimate_policy": "null until representative per-model timings are supplied; fit calls exclude internal neural epoch-selection refits, MCMC continuation, forecasts and serialization",
+      "workers": 2
+    },
+    "sensors_25": {
+      "allowance": {
+        "clamped": true,
+        "effective_job_budget_bytes": 0,
+        "host": {
+          "effective_cpus": 8,
+          "memory_current_bytes": 8541159424,
+          "memory_limit_bytes": 8589934592,
+          "memory_measurement": "aggregate cgroup usage when available",
+          "worker_cap": 4
+        },
+        "requested_job_budget_bytes": 5368709120,
+        "reserved_headroom_bytes": 2147483648
+      },
+      "fit_time_limits_seconds": null,
+      "ideal_parallel_fit_seconds_lower_bound": null,
+      "jobs": 11,
+      "memory": {
+        "assumption": "conservative resolved-dimension admission estimate; representative candidate seed 0, not a measured peak or guarantee; sparse fill and allocator behavior need isolated profiles",
+        "estimated_parent_bytes": 98788864,
+        "estimated_per_worker_bytes": 935015840,
+        "estimated_total_bytes": 1968820544,
+        "per_model": {
+          "basis_gru": {
+            "dimensions": {
+              "basis_rank": 8,
+              "context": 8,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 935015840,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "basis_krr": {
+            "dimensions": {
+              "basis_rank": 12,
+              "context": 4,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 616813984,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "bayes_esn_ridge": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "readout_coefficients_upper_bound": 780,
+              "spatial_basis": 12,
+              "supplied_history": 2300,
+              "temporal_features_upper_bound": 65
+            },
+            "estimated_bytes": 658946368,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "eqesn_rollout": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 588082592,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 588082592,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "separable_stgp": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 588082592,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "spatial_persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 25,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 588082592,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          }
+        }
+      },
+      "memory_admissible": false,
+      "models": [
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "eqesn_rollout",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "spatial_persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        }
+      ],
+      "projected_summed_fit_wall_seconds": null,
+      "protocol_identity": "28a803412eee25764b185d43e5fb76dae53e85e3d687653104b04cc7502f89e5",
+      "schema": "benchmark-execution-plan-1.0",
+      "selection_fit_calls": 0,
+      "selection_fit_calls_with_replacements": 0,
+      "storage": {
+        "free_bytes_at_planning": 27972558848,
+        "scope": "array estimates before compression; fitted models, checkpoints, figures and dependency environment add storage",
+        "temporary_atomic_write_allowance_bytes": 450560000,
+        "uncompressed_data_bytes": 31680000,
+        "uncompressed_retained_paths_bytes": 450560000
+      },
+      "threads_per_worker": 1,
+      "time_estimate_policy": "null until representative per-model timings are supplied; fit calls exclude internal neural epoch-selection refits, MCMC continuation, forecasts and serialization",
+      "workers": 2
+    },
+    "sensors_50": {
+      "allowance": {
+        "clamped": true,
+        "effective_job_budget_bytes": 0,
+        "host": {
+          "effective_cpus": 8,
+          "memory_current_bytes": 8542646272,
+          "memory_limit_bytes": 8589934592,
+          "memory_measurement": "aggregate cgroup usage when available",
+          "worker_cap": 4
+        },
+        "requested_job_budget_bytes": 5368709120,
+        "reserved_headroom_bytes": 2147483648
+      },
+      "fit_time_limits_seconds": null,
+      "ideal_parallel_fit_seconds_lower_bound": null,
+      "jobs": 11,
+      "memory": {
+        "assumption": "conservative resolved-dimension admission estimate; representative candidate seed 0, not a measured peak or guarantee; sparse fill and allocator behavior need isolated profiles",
+        "estimated_parent_bytes": 98788864,
+        "estimated_per_worker_bytes": 937955840,
+        "estimated_total_bytes": 1974700544,
+        "per_model": {
+          "basis_gru": {
+            "dimensions": {
+              "basis_rank": 8,
+              "context": 8,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 50,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 937955840,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "basis_krr": {
+            "dimensions": {
+              "basis_rank": 12,
+              "context": 4,
+              "hidden_width": 32,
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 50,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 619753984,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "bayes_esn_ridge": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 50,
+              "paths_upper_bound": 512,
+              "readout_coefficients_upper_bound": 780,
+              "spatial_basis": 12,
+              "supplied_history": 2300,
+              "temporal_features_upper_bound": 65
+            },
+            "estimated_bytes": 661990368,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "eqesn_rollout": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 50,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 591022592,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 50,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 591022592,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "separable_stgp": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 50,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 591022592,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          },
+          "spatial_persistence": {
+            "dimensions": {
+              "joint_forecast_sites_upper_bound": 215,
+              "observed_sites": 50,
+              "paths_upper_bound": 512,
+              "supplied_history": 2300
+            },
+            "estimated_bytes": 591022592,
+            "predictive_tensor_bytes_upper_bound": 88064000
+          }
+        }
+      },
+      "memory_admissible": false,
+      "models": [
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "eqesn_rollout",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 1,
+          "track": "A"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "spatial_persistence",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "basis_krr",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "separable_stgp",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "bayes_esn_ridge",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        },
+        {
+          "datasets": 1,
+          "final_fit_calls": 1,
+          "model_id": "basis_gru",
+          "projected_fit_wall_seconds": null,
+          "representative_distinct_candidates": 1,
+          "selection_fit_calls": 0,
+          "selection_fit_calls_with_replacements": 0,
+          "spatial_folds": 2,
+          "track": "B"
+        }
+      ],
+      "projected_summed_fit_wall_seconds": null,
+      "protocol_identity": "3e251294f81415a853f23bc40d3345f6b54bcaa54511fdef527fb0ae585d8a90",
+      "schema": "benchmark-execution-plan-1.0",
+      "selection_fit_calls": 0,
+      "selection_fit_calls_with_replacements": 0,
+      "storage": {
+        "free_bytes_at_planning": 27972558848,
+        "scope": "array estimates before compression; fitted models, checkpoints, figures and dependency environment add storage",
+        "temporary_atomic_write_allowance_bytes": 460800000,
+        "uncompressed_data_bytes": 31680000,
+        "uncompressed_retained_paths_bytes": 460800000
+      },
+      "threads_per_worker": 1,
+      "time_estimate_policy": "null until representative per-model timings are supplied; fit calls exclude internal neural epoch-selection refits, MCMC continuation, forecasts and serialization",
+      "workers": 2
+    }
+  },
+  "provenance_identity": "db93a00ca1bf53839044fdeec6a5f1825f9735019c621db2d332eabb2968289a",
+  "status": "reference_proxy_planning_only"
+}

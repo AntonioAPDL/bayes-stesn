@@ -1,0 +1,375 @@
+{
+  "schema": "p5-extension-scope-1.0",
+  "artifact_type": "implementation_scope_and_decision_rules_not_experiment_results",
+  "plan": "docs/plans/PRO_IMPLEMENTATION_PLAN.md#9-stage-p5--evidence-gated-model-and-uncertainty-extensions",
+  "tool": "tools/evaluate_extensions_v03.py",
+  "default_mode": "inspect_only_no_model_refitting_or_future_scores",
+  "commands": {
+    "inspect": "PYTHONPATH=src python tools/evaluate_extensions_v03.py --baseline MODEL.npz --output results/v03/p5-inspection",
+    "ablations": "PYTHONPATH=src python tools/evaluate_extensions_v03.py --baseline MODEL.npz --simulation SIMULATION.npz --study-manifest DEVELOPMENT/manifest.json --extensions grouped_ridge,full_residual_ar --track A --output results/v03/p5-ablations",
+    "paths": "PYTHONPATH=src python tools/evaluate_extensions_v03.py --baseline MODEL.npz --simulation SIMULATION.npz --study-manifest DEVELOPMENT/manifest.json --path-stability --track A --output results/v03/p5-paths",
+    "runtime": "Use the locked project environment and OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1. One numeric thread is also enforced by the tool.",
+    "input_contract": "MODEL is a core FittedModel or registered bayes_esn_ridge NPZ. Predictive modes require a checksummed development manifest and matching saved Simulation, an exactly matching observed history at the protocol's final refit origin, and a track present in that protocol. Every scientific input is frozen before future scores are computed; never supply confirmation data. Reuse the identical command/output for compatible checkpoint recovery."
+  },
+  "implemented_bounded_ablation_modes": [
+    "grouped_ridge",
+    "full_residual_ar"
+  ],
+  "qualification": {
+    "chains": 4,
+    "rhat_strictly_below": 1.01,
+    "bulk_ess_at_least": 400,
+    "tail_ess_at_least": 400
+  },
+  "ablation_defaults": {
+    "warmup": 1000,
+    "initial_retained_per_chain": 2000,
+    "one_continuation_draws": 2000,
+    "forecast_paths": 128
+  },
+  "ablation_scope": {
+    "reference": "Contemporaneously refit scalar ridge on exactly the saved feature design, with the same warmup/retained/continuation budget as each requested extension.",
+    "sampler": "Exact collapsed inference; scalar reference preserves its saved coordinate policy, extensions use their supported legacy coordinates. Fixed named seeds identify each variant.",
+    "group_hyperprior": "Independent group log-precision priors copy the scalar normal hyperprior as a reference choice; this is not evidence of equal field regularization.",
+    "promotion_limitations": "One development dataset cannot establish general improvement or an across-dataset MCSE. Prior-predictive rollout adequacy and replicated evidence remain prerequisites for promotion; this helper does not automatically produce them."
+  },
+  "resource_scope": {
+    "maximum_observed_sites": 100,
+    "maximum_likelihood_rows": 2000,
+    "maximum_target_sites": 128,
+    "maximum_forecast_horizon": 100,
+    "maximum_forecast_paths": 512,
+    "default_incremental_memory_mb": 2048,
+    "workers": 1,
+    "numerical_threads": 1
+  },
+  "inspection_rules": {
+    "residual_definition": "Fitting-panel observation minus posterior mean of Phi C z_t; z_t is the frozen causal one-step feature. Training residuals, not held-out forecast errors.",
+    "residual_standardization": "Divide by square root of posterior mean sigma2 times the diagonal of the fitted iid covariance, in original response units.",
+    "group_summary": "Posterior coefficient RMS and posterior-mean field contribution on the fitting panel; posterior summaries of conditional-prior field SD on the original frozen conditioning reference. Scalar ridge has one common coefficient prior scale, not learned group scales.",
+    "grouped_ridge_signal": "Descriptive group coefficient-RMS ratio at least 3 among non-intercept feature groups. This is an engineering triage rule, not a significance or sparsity test.",
+    "full_residual_ar_signal": "Absolute mean sitewise lag-1 residual autocorrelation at least 0.15, with at least 75 percent of sites sharing its sign. Descriptive triage only; sites are not independent replications.",
+    "no_automatic_promotion": true,
+    "future_labels_used_for_inspection": false
+  },
+  "extensions": [
+    {
+      "id": "grouped_ridge",
+      "core_api": "PriorSpec.grouped",
+      "path": "bounded_opt_in_paired_ablation",
+      "default_disposition": "optional_pending_qualified_baseline_and_descriptive_group_signal",
+      "trigger": "grouped_ridge_signal",
+      "references": [
+        "docs/derivations/02_gaussian_priors_mcmc.md",
+        "src/bayes_stesn/priors.py",
+        "tests/test_gaussian_priors.py",
+        "tests/test_extensions_api.py"
+      ],
+      "disposition": "optional_not_triggered_by_inspected_training_residuals",
+      "rationale": "Neither historical G3 nor G4 non-intercept group coefficient-RMS ratio crosses the prespecified threshold. Keep scalar ridge for this bounded next comparison; a false descriptive trigger does not prove grouped ridge cannot help.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "group_column_rhs",
+      "core_api": "PriorSpec.group_rhs / PriorSpec.column_rhs",
+      "path": "existing_core_implementation_and_tests",
+      "default_disposition": "deferred_pending_declared_sparsity_prior_and_grouped_ridge_evidence",
+      "trigger": "Requires explicit sparsity/global-scale/slab calibration; training group amplitudes alone are insufficient.",
+      "references": [
+        "docs/derivations/02_gaussian_priors_mcmc.md",
+        "tests/test_gaussian_priors.py"
+      ],
+      "disposition": "deferred_without_sparsity_evidence_or_elicited_prior",
+      "rationale": "The group inspection supplies neither a sparsity assumption nor global/slab calibration, and grouped ridge is not triggered. Do not add RHS on the strength of these residual diagnostics.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "full_residual_ar",
+      "core_api": "ModelSpec(innovations='full_residual_ar')",
+      "path": "bounded_opt_in_paired_ablation",
+      "default_disposition": "optional_pending_qualified_baseline_and_residual_temporal_signal",
+      "trigger": "full_residual_ar_signal",
+      "references": [
+        "docs/derivations/03_covariance_latent_mcmc.md",
+        "src/bayes_stesn/sampling.py",
+        "tests/test_gaussian_priors.py"
+      ],
+      "disposition": "candidate_for_G4_first_and_G3_stress_ablation_not_promoted",
+      "rationale": "Both qualified historical baselines cross the residual lag-1/sign-agreement trigger. G4 has persistent positive autocorrelation through lag 10; G3 turns strongly negative at lag 5, which a positive AR(1) population covariance cannot reproduce. Test G4 first and retain G3 as a declared limitation/stress case, with unchanged qualification and paired native scores.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "latent_spatial_ar",
+      "core_api": "ModelSpec(innovations='latent_ar')",
+      "path": "existing_core_implementation_and_tests",
+      "default_disposition": "deferred_pending_process_vs_measurement_noise_rationale",
+      "trigger": "A common residual ACF does not identify separate latent-state and measurement dynamics.",
+      "references": [
+        "src/bayes_stesn/dynamics.py",
+        "tests/test_spatial_dynamics.py",
+        "tests/test_extensions_api.py"
+      ],
+      "disposition": "deferred_until_process_and_measurement_dynamics_are_identified",
+      "rationale": "Positive residual dependence does not identify fresh measurement noise separately from a latent process. First assess the simpler full-residual-AR comparison; retain this as a separately motivated alternative rather than combining both hierarchies.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "field_t",
+      "core_api": "ModelSpec(innovations='field_t')",
+      "path": "existing_core_implementation_and_tests",
+      "default_disposition": "deferred_to_prespecified_G5_field_shock_arm",
+      "trigger": "Needs whole-field contamination evidence and its own compatible study; residual tails are descriptive only.",
+      "references": [
+        "src/bayes_stesn/dynamics.py",
+        "tests/test_spatial_dynamics.py"
+      ],
+      "disposition": "deferred_to_separate_G5_field_shock_study_after_temporal_repair",
+      "rationale": "G4 has more large standardized training residuals than G3, but these inspections do not distinguish coherent field shocks from temporal misspecification or local outliers. Resolve the temporal comparison, then use the declared whole-field G5 arm.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "local_measurement_t",
+      "core_api": "ModelSpec(innovations='local_t')",
+      "path": "existing_core_implementation_and_tests",
+      "default_disposition": "deferred_to_prespecified_G5_local_outlier_arm",
+      "trigger": "Needs local contamination evidence; do not combine with latent AR without a supported derivation.",
+      "references": [
+        "src/bayes_stesn/dynamics.py",
+        "tests/test_spatial_dynamics.py"
+      ],
+      "disposition": "deferred_to_separate_G5_local_outlier_study_after_temporal_repair",
+      "rationale": "The inspected tail fraction alone does not establish independent local measurement contamination, particularly with strong temporal and spatial dependence. Use the separate local-outlier G5 arm and its existing variance convention.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "anisotropy",
+      "core_api": "CovarianceSpec(anisotropy=True)",
+      "path": "existing_core_implementation_and_tests",
+      "default_disposition": "optional_pending_directional_residual_variogram_analysis",
+      "trigger": "Directional residual structure was not established by this tool's temporal/group inspection.",
+      "references": [
+        "src/bayes_stesn/spatial.py",
+        "tests/test_spatial_dynamics.py"
+      ],
+      "disposition": "optional_pending_directional_spatial_residual_evidence",
+      "rationale": "The completed inspections measure temporal ACF and feature groups; no directional residual variogram was computed. A spatial anisotropy claim is therefore unsupported by these signals.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "range_prior_alternatives",
+      "core_api": "CovarianceSpec(range_prior='pc')",
+      "path": "existing_core_implementation_and_tests",
+      "default_disposition": "optional_pending_spatial_units_and_prior_elicitation",
+      "trigger": "A prior change needs a declared reference scale; it is not selected from final forecast errors.",
+      "references": [
+        "docs/derivations/03_covariance_latent_mcmc.md",
+        "tests/test_spatial_dynamics.py"
+      ],
+      "disposition": "optional_prior_sensitivity_with_declared_spatial_elicitation",
+      "rationale": "The current coordinates are normalized, but no new elicited range information or prior-sensitivity benefit is supplied by the inspections. Preserve the current prior during the AR ablation and declare any PC prior study separately.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "nonstationarity",
+      "core_api": "CovarianceSpec(nonstationary=True)",
+      "path": "existing_core_implementation_and_tests",
+      "default_disposition": "deferred_pending_persistent_spatial_inadequacy_after_simpler_models",
+      "trigger": "Training residual ACF and group RMS do not establish spatial nonstationarity.",
+      "references": [
+        "src/bayes_stesn/spatial.py",
+        "tests/test_spatial_dynamics.py"
+      ],
+      "disposition": "deferred_until_spatial_inadequacy_persists_after_simpler_repairs",
+      "rationale": "Strong temporal ACF and different residual RMS between two DGPs do not establish spatial nonstationarity. Reassess location-dependent residual inadequacy only after the simpler temporal/capacity repairs.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "heteroskedasticity",
+      "core_api": "ModelSpec(innovations='heteroskedastic')",
+      "path": "existing_core_implementation_and_tests",
+      "default_disposition": "deferred_without_declared_origin_available_variance_covariates",
+      "trigger": "Requires variance predictors known at forecast origin and the existing dense-size gates.",
+      "references": [
+        "src/bayes_stesn/dynamics.py",
+        "tests/test_extensions_api.py"
+      ],
+      "disposition": "deferred_without_origin_available_variance_predictors",
+      "rationale": "The inspection does not supply a variance-covariate design known at forecast origin. Standardized residual scale and a few tail exceedances are insufficient to define this extension.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "eqesn_residual_innovations",
+      "core_api": null,
+      "path": "separate_new_named_variant_required",
+      "default_disposition": "deferred_pending_residual_law_and_validation_design",
+      "trigger": "The audited undercoverage motivates research but does not specify a coherent innovation distribution.",
+      "references": [
+        "src/bayes_stesn/benchmark/reservoir.py",
+        "docs/audits/post_release_2026_11_03/README.md"
+      ],
+      "disposition": "deferred_pending_EQESN_specific_residual_law_and_validation",
+      "rationale": "These are scalar Bayesian ESN residuals, not E-QESN residuals. The audited E-QESN undercoverage still motivates a separately named innovation model, but its law must be estimated from its own allowed training/validation data.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "interval_calibration",
+      "core_api": "benchmark.studies.run_calibration_study",
+      "path": "existing_separate_calibration_workflow",
+      "default_disposition": "optional_via_existing_command_with_its_own_calibration_blocks",
+      "trigger": "Use a fixed coverage target and separate calibration/evaluation; finite 90/95 percent block ranks need at least 9/19 scores, without claiming exchangeability.",
+      "references": [
+        "src/bayes_stesn/benchmark/calibration.py",
+        "src/bayes_stesn/benchmark/studies.py",
+        "tests/test_benchmark_pipeline.py"
+      ],
+      "disposition": "optional_separate_calibration_study_not_available_in_current_saved_horizon",
+      "rationale": "Training residual RMS is not forecast coverage. The saved development field has one 40-lead post-fit evaluation block, not the 25 calibration blocks plus independent later block prescribed by the plan. Use the existing separate calibration workflow, preserving raw native forecasts.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "periodic_gp",
+      "core_api": null,
+      "path": "new_declared_kernel_variant_required",
+      "default_disposition": "deferred_pending_temporal_kernel_inadequacy",
+      "trigger": "The core scenario/validation analysis must support a periodic component before adding its implementation.",
+      "references": [
+        "src/bayes_stesn/benchmark/gaussian_gp.py"
+      ],
+      "disposition": "deferred_until_GP_specific_temporal_validation_supports_a_kernel_change",
+      "rationale": "G3 oscillatory ESN residuals suggest a limitation of scalar AR(1), but do not establish that a periodic GP kernel improves the registered GP. Require GP-specific temporal validation before introducing a named kernel variant.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "structured_lgssm",
+      "core_api": null,
+      "path": "new_declared_structure_variant_required",
+      "default_disposition": "deferred_pending_adequacy_of_reliably_converged_LGSSM",
+      "trigger": "First establish the limitations of the stable unconstrained-coefficient transition within its norm constraint.",
+      "references": [
+        "src/bayes_stesn/benchmark/linear_state.py"
+      ],
+      "disposition": "deferred_until_converged_LGSSM_adequacy_analysis",
+      "rationale": "The inspections concern Bayesian ESN fits and do not identify a missing LGSSM transition structure. Establish residual and validation limitations of the reliably converged baseline first.",
+      "scientific_ablation_executed": false
+    },
+    {
+      "id": "multistep_neural_training",
+      "core_api": "Existing diffusion-GRU rollout option; a basis-GRU multistep variant needs separate work",
+      "path": "existing_diffusion_option_and_optional_new_basis_GRU_variant",
+      "default_disposition": "optional_after_matched_horizon_stopping_and_real_tuning",
+      "trigger": "Compare a declared curriculum after the implemented stopping-horizon repairs, charging all training costs.",
+      "references": [
+        "src/bayes_stesn/benchmark/neural.py",
+        "src/bayes_stesn/benchmark/basis_gru.py",
+        "tests/test_benchmark_neural.py"
+      ],
+      "disposition": "optional_after_neural_specific_horizon_matched_validation",
+      "rationale": "The repaired stopping horizon and existing diffusion-GRU rollout option can be evaluated with matched budgets. No neural-specific evidence is supplied by the ESN residual inspection; a basis-GRU curriculum remains a separate declared variant.",
+      "scientific_ablation_executed": false
+    }
+  ],
+  "path_stability": {
+    "path_counts": [
+      128,
+      256,
+      512
+    ],
+    "construction": "One fixed posterior, one global-index 512-path sample, nested prefixes; score the exact empirical distributions.",
+    "not_claimed": [
+      "Independent DGP replication",
+      "MCMC convergence from more predictive paths",
+      "iid finite-ensemble correction for E-QESN"
+    ],
+    "existing_primitives": [
+      "src/bayes_stesn/prediction.py:iter_predictive",
+      "src/bayes_stesn/benchmark/metrics.py:score_forecast",
+      "tests/test_hardening.py:test_global_path_batches_and_offsets_are_identical"
+    ]
+  },
+  "scientific_results_in_this_file": false,
+  "disposition_assessment": {
+    "basis": "Historical qualified fitting-only inspections; numerical residual results remain in the referenced immutable artifacts. These are research dispositions, not completed ablation/forecast findings.",
+    "inputs": [
+      {
+        "scenario": "g3_excitable_field",
+        "replication": 0,
+        "track": "A",
+        "inspection_path": "results/v03/extensions/inspect_g3_excitable_field/inspection.json",
+        "inspection_sha256": "d54ff24338ec047e08bc47f236ff6c2438e7d8878a262d56977f273ff2f73354",
+        "manifest_path": "results/v03/extensions/inspect_g3_excitable_field/manifest.json",
+        "manifest_identity": "5489be9a3a354218cee978198506014b63f3cb14ce68b2f82e8e96945b8a7833",
+        "inspection_source_fingerprint": "fb67b90f0f2c5810676617b77bca6e4f75b32d0ba06f8058d3760dee4511125e",
+        "baseline_sha256": "060291362cbfea865bcf62d4743012be9f9f2a118b03e63441286e68207a1012",
+        "posterior_identity": "b95696145314739f4914ffc01688bb408430469a1c81050ccec3924b5e70e2b4",
+        "qualified_baseline": true,
+        "future_labels_used": false
+      },
+      {
+        "scenario": "g4_existing_fronts",
+        "replication": 0,
+        "track": "A",
+        "inspection_path": "results/v03/extensions/inspect_g4_existing_fronts/inspection.json",
+        "inspection_sha256": "d678c1261e0250e6b418b4c3c2b5a661df66d7aeba53e71aad83aa6668811f73",
+        "manifest_path": "results/v03/extensions/inspect_g4_existing_fronts/manifest.json",
+        "manifest_identity": "96b945c9c6b96bed265da57830506fb1257af1fb7511ffb2b85bf8ff7fbaa186",
+        "inspection_source_fingerprint": "fb67b90f0f2c5810676617b77bca6e4f75b32d0ba06f8058d3760dee4511125e",
+        "baseline_sha256": "c4dce20751ed6e409b70777784ef3ec5fae255e74c7776ddee710e561e4417ef",
+        "posterior_identity": "b13bb6b28db8fa957e801f875d023835d7597fd98cb46dd3451fe84e670016e6",
+        "qualified_baseline": true,
+        "future_labels_used": false
+      }
+    ],
+    "provenance_scope": "Historical model and inspection identities are preserved. They are not relabeled as current-source fits. Current-source predictive studies must use newly completed qualified reference_release model artifacts and new output directories.",
+    "do_not_resume_old_inspection_directory_after_scope_change": true,
+    "next_reference_directory": "results/v03/development/reference_release",
+    "execution_status": "commands prepared; no scientific ablation or path-stability run executed by this assessment",
+    "order": [
+      "wait for source freeze and root compute slot",
+      "confirm current-source G4/G3 baselines qualify and inspect their training residuals",
+      "G4 fixed-fit path stability and full_residual_ar paired ablation",
+      "G3 path stability and prespecified full_residual_ar stress ablation"
+    ],
+    "track": "A",
+    "budget": {
+      "workers": 1,
+      "numerical_threads": 1,
+      "chains_per_fit": 4,
+      "warmup_per_chain": 1000,
+      "initial_retained_per_chain": 2000,
+      "one_continuation_retained_per_chain": 2000,
+      "predictive_paths_per_qualified_ablation_fit": 128,
+      "ablation_fits_per_scenario": 2,
+      "initial_iterations_per_scenario_all_chains": 24000,
+      "maximum_iterations_per_scenario_all_chains": 40000,
+      "default_incremental_memory_mb": 2048
+    },
+    "profile_dimensions": {
+      "observed_sites": 25,
+      "conditioning_rows": 80,
+      "total_fit_history_rows": 520,
+      "likelihood_rows": 440,
+      "temporal_features": 65,
+      "spatial_basis_columns": 12,
+      "forecast_horizon": 40,
+      "track_A_targets": 25
+    },
+    "resource_planning": {
+      "additional_fit_admission_estimate_bytes": 607961888,
+      "one_512_path_observation_tensor_bytes": 4096000,
+      "memory_estimate_scope": "Conservative tool admission estimate and exact float64 tensor arithmetic, not measured peak RSS. AR runtime remains unmeasured; execute serially and retain all continuation/diagnostic costs."
+    },
+    "limitations": [
+      "One input dataset per scenario; no across-dataset MCSE or general superiority claim.",
+      "G3 negative lag 5 residual dependence limits a positive AR(1) explanation even when the lag1 trigger passes.",
+      "Any current-source baseline or ablation that fails its unchanged gate remains unqualified; no extra adaptive continuation.",
+      "No group-RHS escalation without separately elicited sparsity and scale information.",
+      "Future scores are development-only; do not promote a prior or model from one illustrative block."
+    ]
+  },
+  "terminal_integrity": {
+    "artifact": "output_inventory.json",
+    "schema": "p5-output-inventory-1.0",
+    "meaning": "Written only after the requested mode completes, bound to manifest/source/mode and file hashes/sizes. Completed failed scientific qualifications remain negative results. Repeated identical commands verify and reuse complete outputs; modified files are rejected.",
+    "input_recheck": "Baseline and requested Simulation/study-manifest bytes, source, tool, scope and runtime are rechecked before terminal completion."
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "G3_first_step_diagnosis": {
+    "alignment": "Saved history, site order, standardized response, causal state replay and 64 original first-step observations agree to floating-point precision. No first-step alignment bug was found.",
+    "first_step_error_cause": "For the realized first observed target, rank 12 decoder span leaves projection RMSE 0.80010 versus recovered posterior-readout RMSE 0.80441; 98.93 percent of that readout MSE is outside the decoder span.",
+    "later_paths": "Saved posterior predictive SD RMS grows from 0.725 at lead 1 to 8.732 at lead 40, with mean MCSE RMS 0.03205 to 0.38589. This is substantial autonomous predictive dispersion under observation feedback; separate long-lead parameter-versus-innovation contributions were not estimated.",
+    "measurement_noise_disambiguation": {
+      "first_evaluated_row": 520,
+      "latent_target_projection_rmse": 0.7898159225329241,
+      "meaning": "Evaluator-only projection, no latent information passed to fitting or forecasting",
+      "measurement_error_outside_decoder_span_rms": 0.08732143540042822,
+      "observed_minus_latent_rms": 0.10126636687833883,
+      "observed_target_projection_rmse": 0.8001015991858235
+    },
+    "next_model_work": "Prioritize spatial decoder capacity with matched regularization and validation before simply increasing reservoir width. More training rows with an identical spatial span cannot remove its realized projection floor. Assess autonomous forecast adequacy separately; no implementation or promotion is claimed.",
+    "review_identity": "e91b796e1487648487f25e9a49332d0ba0aa425499bf4d9446228b09b2313014",
+    "scope": "A-track fixed posterior and observed-site targets; this does not claim to clear B-track interpolation errors"
+  },
+  "P5_interpretation": {
+    "G3": "AR failed its unchanged gate after its one continuation; no native scores or paired loss exist. This is an inference-budget failure, not a measured predictive ranking.",
+    "G4": "Both fits qualified; recorded AR RMSE and CRPS are slightly higher on one saved 128-path block. This is an observed comparison, not a statistically established adverse effect.",
+    "RHS": "No RHS ablation was run. Existing core implementation/shape tests do not establish scientific qualification at this benchmark scale or justify sparsity without elicitation.",
+    "path_policy": "The separate predeclared rule selects 512 for subsequent studies, preserving 128-path ablation results. G3 mean MCSE at 512 remains material, about 0.207 training standard deviations; more paths do not repair statistical model adequacy.",
+    "same_grid_compatibility": "Current AR comparisons keep the same 25 observed sites, 440 likelihood rows, spatial Phi and frozen feature Z. AR uses supported legacy sampler coordinates; iid-only ridge_total_scale certification is not transferred to AR. No optional prior/dynamics route inherits sparse-operator scalability by implication."
+  },
+  "identity": "658fea912229474bb0368a44f98bb5efc46c24d4ba524ecb5be826170a330291",
+  "inputs": {
+    "docs/evidence/v03/development_decisions.json": "f1f94add8b05f7af4fd6125d20b91d7c359d1a1cc7460a53bbcb8ef4af80ef02",
+    "docs/evidence/v03/extension_findings.json": "7ce3a425e0706f37c78ade84c01699d9fb11a9dfe6108088a8aee498ca97f1ab",
+    "docs/evidence/v03/g3_saved_first_step_review.json": "846f924981cc8698d2df095f70dade5cbe39c33d4135cde154e70808c26748a8",
+    "docs/evidence/v03/generator_validation_long_history_grid64.json": "742cbb01c96f8d099e6cebb55744fa13f96f1d1f605dd8a138c3892a3f95b3b1"
+  },
+  "long_history_G3": {
+    "activity_proxy_mean_temporal_sd": 1.2269060434098273,
+    "activity_proxy_threshold": 0.05,
+    "continuum_claim": false,
+    "declared_target": "finite_semidiscrete",
+    "delta": 2.0,
+    "dt": 0.05,
+    "dt_0_05_admissible_for_this_declared_finite_grid_window": true,
+    "evidence_identity": "01b6b6ddc260f951eaa45fbe387f04139012fe31ecf880cf91e31daaa0edc359",
+    "grid_size": 64,
+    "identity_source_tool_runtime_verified": true,
+    "limitations": [
+      "This independently seeded pilot checks the declared window and physical parameters; it is not a guarantee for every initial condition, burn-in realization or longer horizon.",
+      "The morphology flag is operationally a nontrivial temporal-activity proxy, not a comprehensive spatial-pattern convergence test.",
+      "The generic confirmation helper checks forecast-window duration only; this review additionally checks the entire planned 4,400-row observation span."
+    ],
+    "mesh_gate_passed": false,
+    "mesh_rmse": 0.27237063061240036,
+    "morphology_flag_passed": true,
+    "overall_validation_status_preserved": "refinement_gate_not_met",
+    "planned_4400_row_duration": 8798,
+    "refined_dt": 0.025,
+    "time_gate_passed": true,
+    "time_rmse": 0.0019800022197224965,
+    "time_tolerance": 0.02,
+    "validated_post_burnin_duration": 8800.0
+  },
+  "report_corrections_communicated": [
+    "Separate the tool lack of automatic path selection from the later predeclared 512-path policy and its limitations.",
+    "Use final findings as the sole current 15-extension disposition table, linking earlier scope separately to avoid contradictory duplicate rows.",
+    "Call the first-step projection an evaluator-only projection of the observed target; its lower bound is specific to that target and decoder."
+  ],
+  "schema": "v03-focused-scientific-review-1.0",
+  "scope": "Read-only scientific interpretation and provenance checks; no source/input changes, refits or full new forecasts",
+  "source_fingerprint": "e5180c486ecaa849bf5efeb0a67fe8ec30e963407f3eabe8c78009f88c40dc68"
+}

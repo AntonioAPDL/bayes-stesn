@@ -1,0 +1,550 @@
+{
+  "all_equal": true,
+  "jobs": 60,
+  "new_source": "e5180c486ecaa849bf5efeb0a67fe8ec30e963407f3eabe8c78009f88c40dc68",
+  "old_source": "bea878c8f4ea47db3568131b33661bdeb9b37341ad41c72a8424630bb49169af",
+  "rows": [
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/A/basis_gru",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "38ac434645d00f592f9c74b6b8f9ecc66fb13057734545a236185d9b7f829848",
+      "old_receipt_sha256": "0401dd51290ec892fd98e2b1d444ce5f41374042facca2095dedf72259753f8a",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/A/basis_krr",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "52210838b661ea9fb7bbb309f0a1eab13415e9d5c6e5a2299a1942dffb3af1cc",
+      "old_receipt_sha256": "de4668b977703013b9921cca8257c27c2d8830f58b98a60ae30a75db8c2af23b",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/A/basis_lgssm",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "41a43f21e82a4f85eb5737469df0e9e725466b2af2a21329c3cdc0b69379ef36",
+      "old_receipt_sha256": "f2be94daef1365b324ffebbbd94a40239887c71abb08e0300e4d058650393cf4",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/A/bayes_esn_ridge",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "156400fc651fe877448ece2880a00cfa5985adf67f8f620bba2df970bc167c6d",
+      "old_receipt_sha256": "77148e079cc64c67b30de3b5294b8b308af578d803e1c59a26b250dc01081c0d",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/A/dcrnn",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "ac8a2d7cb2fa944b1f8735e5c9a57878e4172d440dcfaae77affe886ee01c054",
+      "old_receipt_sha256": "d11c4b777193ce61057364c1aecef822ea200b7213212816a119b796dd325d5d",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/A/eqesn_rollout",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "a136941b2a81e5ca375629a20be6b828048bf2bf126c30e1a00d9ccb76cb5363",
+      "old_receipt_sha256": "733a0c97697bc21385446a90a165949f217bdb3468ca0ee07f37e1cda35d03a0",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/A/persistence",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "8e237dcee8f9fc4fc17a3ac1b162024562b0553121c4399f725fad9342cfe344",
+      "old_receipt_sha256": "9c6d6ae043b2ef12397089b4219dd52926e22d94fd186e7396290799107a3be0",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/A/seasonal_naive",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "36759f8010999aaea2555c25458aa85516bf1b6e1d021b284076b3e903a8e873",
+      "old_receipt_sha256": "31f69abf50662066554ee047cb5761990bdf75593cdb3eb90ca1b5639b6f8dfc",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/A/separable_stgp",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "a51144007826eb31603dd6630673039032804f23c87063ee107e64a4ce839495",
+      "old_receipt_sha256": "175646050d5617cd990f8eb0b7cafcad69b2ce43589db085b7062cf9f2055086",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/B/basis_gru",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "10011d21eb7ddb77dbcd1347f8884104405bc70749e77953a76bdef499c1f1b1",
+      "old_receipt_sha256": "efab0ec1b601e3c8385f1796cd40630e9cf0f451006590cdd4cfb7713e171a6b",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/B/basis_krr",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "f94d8f3ffff3e0c7e004b2bffe3b4a245539801fdaea50194cde88eb5dd86876",
+      "old_receipt_sha256": "a709a592e7bd7fdf4d1b7f26d32e2859a550903f4b4f7add2bef7fa2a03d0a50",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/B/basis_lgssm",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "33d0984156ce575bb0348f7be4445a7b5a8479efa02105cd9cfd8a5f716a706d",
+      "old_receipt_sha256": "922ad132f0093c688d99395236fd883fd8648658dcc2924563795854afda3444",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/B/bayes_esn_ridge",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "ca61d4007424736a3d4f8aaaef17f2a64ca2a9af029710c1d1ff3d0a5faab15d",
+      "old_receipt_sha256": "c57322788873805d8390764c3558517caeb6816bd95ff5d1947c24e6489280ce",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/B/separable_stgp",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "63109a4773968dce1569617dc4527695bf87dd5487fd185550122f3df028bfa5",
+      "old_receipt_sha256": "8e98a7db9afcb28ccf218e05cc8ec9b8d7403f6dac441fd0ce85e529f0129b29",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g1_gaussian_ar/rep_000/B/spatial_persistence",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "b8131f244ddf4d56a563ba1cd1ea4c86e442644c1aca33b597585804289b6853",
+      "old_receipt_sha256": "02777b3cdabd0acd78da90a3d7179db1deee1708cd043d86705545921415c0ef",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/A/basis_gru",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "3ab2fc7b2df1ba4bdb2dec001d74c625018211fd21297c175d2fd305dc9a95b0",
+      "old_receipt_sha256": "83407155884e8a1e63bc32246b9600c1aec0853ff32784b31ba8df705eefd9be",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/A/basis_krr",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "ebe8141c13e77f05f388248808cfbb3f8f3c3c8062d0c5b54300f7cb16dd2551",
+      "old_receipt_sha256": "2f3e6c1bda399bee2556800f23b3dd8eeec0e15f836bc849af7abd3fb964d7bb",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/A/basis_lgssm",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "048e6dbeedb5ccdfdb550879d4759d9a92adf1167fab420f57383f88c38de1ce",
+      "old_receipt_sha256": "35f77e06f79ef5c2dd3ea94336a0013ea1a0dda2e5e9093e86ccce3737668d49",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/A/bayes_esn_ridge",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "60a43c7a130b607e523eece7d0eeb87aea16c83f54c44ec930f7b1cffc0822a7",
+      "old_receipt_sha256": "0df48e893dc4f262ee8cd6ecc4e77e8aeafdeac9274337f33f02f6df757c5e5f",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/A/dcrnn",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "4ee9663006fc14e853a680303ec35453f3ef2473ab358361b3d58486a15d454d",
+      "old_receipt_sha256": "adda0169aa5d7b3994ccce03bf79330032e7bbf51762bfc20cd888830aaeda04",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/A/eqesn_rollout",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "37329ab86fe491ea5873c867678dc2c34055b3dac8c5805cc9d2d70e087bcf73",
+      "old_receipt_sha256": "0d761f3e143dd06fad0dd8281057cb47215bc96c50d61baa7b702cd8942c7682",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/A/persistence",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "484f485f7f19c22ed55fb5476495f86c2b95fa5488626d5474a318f475fedee9",
+      "old_receipt_sha256": "93f9b0c7f848993e6aaa673b61372904967f9444707c72ae53e361128bf11dde",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/A/seasonal_naive",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "70d273a739781dca34d3d8982efe34acbfa9c5b97f5bcb8f45343b36971ecc91",
+      "old_receipt_sha256": "46991fed211123f9b2aa6ed261c8b7cfdce6316b8d6a60ac6e86f698ed3e1515",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/A/separable_stgp",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "7dbde1095710edb1aa80d5f9cd6ad0b76157f95349c8f582c73dd119a7d023e9",
+      "old_receipt_sha256": "e06914d7947c2c2a2c3a0730300c37323742322f3e5cd0285e9682c845482b2d",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/B/basis_gru",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "ad53f2cdd6df6b0046c0758fc233c2654b58ea559d277df6cfa315fb35e31f65",
+      "old_receipt_sha256": "0ac9b753816d89d58ce18753c1213fe77586650219e1de070a8c7529562b455a",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/B/basis_krr",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "07fe154c76c4cd732c7df2e5c01e7eee1ecfb0b07b8a940345cee89d15d9f285",
+      "old_receipt_sha256": "ab06533b24036e50ef32d98428f14d0b09f69a897b8288ecf6d4b28f21a188d6",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/B/basis_lgssm",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "a307500772a257527fd7c68e4f92cf1d9a073d95ef3c033b11f1b24fb99b4d41",
+      "old_receipt_sha256": "8e2e9c1ec098acdf64da9f2d88ddcd40130e4b5cece4e6c31955e44ecd44cc05",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/B/bayes_esn_ridge",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "397466dc22fd5180988c837bb7e5742e71ceeab6115de05af67663f19c114c30",
+      "old_receipt_sha256": "75c452c3fcd4d6058b033a7b9dba949d265e7d553de3d5550623874ecdae8ea2",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/B/separable_stgp",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "1c755188b5c634f43304fc8b2388f079313ff82cc028c3267c9ab75d675fc4b4",
+      "old_receipt_sha256": "57b9e8100271fc6e0100da49e6eb79811b5e22a49f5180d4f2f0f918fa9fed54",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g2_spectral_transport/rep_000/B/spatial_persistence",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "e14b88669b9d677824bf2a17debe457b34cd30f9387cf41c4472ab2deb662e67",
+      "old_receipt_sha256": "055882efd616039b89b5998e40ef3d78bc6a326e688dc8802bf6103be3654a0c",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/A/basis_gru",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "dae3adaaaf2a6e3838c7be60e7e6c87ef4225c6a7e9b7a4fdd43f3a7b3ac256c",
+      "old_receipt_sha256": "2cc7884223de318d57b4df61c9caeef60cd1c6b3f1dabfce2852ce8938f38f63",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/A/basis_krr",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "0e0b35f440071d23613146382384847541508651ae62a6a7f9bfbaa55e06a678",
+      "old_receipt_sha256": "e5e2fdfe09551664564499386739320e46010f14ccc2b82e673c182d193c2024",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/A/basis_lgssm",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "d54cfd88f2a3ccaa117bcf927915e2c671faed3b109e3dc412c7fa3a04aa67bf",
+      "old_receipt_sha256": "796a4d628df0182cafa89749fec6a58ea6e5ce2bc77d4e6e6633794a66b22fa3",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/A/bayes_esn_ridge",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "46c9a2e23c0d9105cdcc2dfaa6b14b6bf79a14d9ed85cb76d73bf8e72b5ce0af",
+      "old_receipt_sha256": "a2947d7071b59077bb8cda166777d7c9c67141c8e30191281397be21fb1e3b50",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/A/dcrnn",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "33fa5d6b30465779bd42fc212a44a6427048d17231859a7af417e6ca640cb355",
+      "old_receipt_sha256": "a385113c4a557ef8b5488f2472ed49a4b6e1557dd36b055a96fe46e211da5570",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/A/eqesn_rollout",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "c6c301d77eba5a2199744298af1fc6a1c32bf3161464ac44e86142c382a25900",
+      "old_receipt_sha256": "2ec7e2279dc1417b05b12869b03b7780c9f41bff6e63f9a36285ff00221a70ee",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/A/persistence",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "acc112a8b23834d0621c73c7869a13f96332084d694cd381b049fda6515acca9",
+      "old_receipt_sha256": "acd50d48e04fe3ae742e716f66e747ccc5afbde4cf08e18972d6ea22c52f8316",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/A/seasonal_naive",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "658233d1603b5ce8e605aae00cd23d30557cbf2644215b40fb14db4d2a70e6e9",
+      "old_receipt_sha256": "74f9ceb6f9b389b1f301bd6fa8d0ee81f5b5295ea9a6901ef8902e800e8de2d2",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/A/separable_stgp",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "f1f571f87088afa9484497b9d18f9e966d387630630018e303c0430d8843ea89",
+      "old_receipt_sha256": "5a7188b9dfd9d2c8ad4f673594c30d0496c450fd21b480179ea23f5bc135c622",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/B/basis_gru",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "a498b4797376cb2f4419fe461cbe69ee06ed2c736abc5e4e728e385461cb7221",
+      "old_receipt_sha256": "a85cfab18870785f9c733fbfcad8954ccf558f8e43f47b57176e38321752033d",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/B/basis_krr",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "d28d1fbac312ed7de4b2e6835a24c4e0749b9714d0a2706ab6cb043fd0a033a5",
+      "old_receipt_sha256": "b584a9062d477551cf12dec5f7c71f2ac709b80a96638fe12a475f348063c731",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/B/basis_lgssm",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "4513d144c0db610fd2413fe1bdeafadce0b3308840ff9c0dfa6491b254bdd7f2",
+      "old_receipt_sha256": "208da49a4dc5544cbd4c6288bcd1588a3fe39a6f4771f9ad6c52cf7b77bfe04e",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/B/bayes_esn_ridge",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "f7f8c4af7f57a1d12c94500d68d99e61bcdf05a3278648d597c840abebc7ae85",
+      "old_receipt_sha256": "aba23119440c7bd01aa146f433adf2b76888f8b8f5c6f96aed0c04cc906a94f2",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/B/separable_stgp",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "2378798be43f76493510bf3b609bbcafadb074c4f6faedf829c7e82c5b040fb3",
+      "old_receipt_sha256": "b56a0cf9507cb560125ede28bc32d4efab2d73bdf1ea37f7ab40db3c6cbf778a",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g3_excitable_field/rep_000/B/spatial_persistence",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "f3a3c76cf89101352a943e68231fdce92bd21d9b88ecbf92af8d858c2c9a369f",
+      "old_receipt_sha256": "edb4f634151446f041789b47898306e4a78ae5ae87e73cad2da0ebdd46b99496",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/A/basis_gru",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "4304216e15bb33cb3c989514d9386f0e8923ee031fc00372aa681dfcf657a053",
+      "old_receipt_sha256": "f90a3a1a87be3071651b2f81c66e12a51f336b514315603924cabc3c549797c5",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/A/basis_krr",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "dc0ed2438ec0fbe8bb48d76ee643e1d96d31c3ed2549a86ae1b9e4100a413206",
+      "old_receipt_sha256": "f3012421a8228fb63776a9e65b5f6acef8ab5168e200dade3587e445e3d9aa28",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/A/basis_lgssm",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "c7d25d4568c61a90235bf7d315081ac40c29ccf59565a0da353def2c188058ea",
+      "old_receipt_sha256": "097c37a3966111d761995cd83d416519d3d76aef78812aaf3932155e883f7137",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/A/bayes_esn_ridge",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "f4b31fb6b952de29f9f60e66ab2d7be44381dea8d65d49a451b53b83bf47c848",
+      "old_receipt_sha256": "0d7e165cd45c2326ef9b320624515ca58b347c96a758e57889521f1cff43355d",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/A/dcrnn",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "7587338a9b99e0733e348e66585335ac75ad20fc614566f5faa1450a3196dba5",
+      "old_receipt_sha256": "96415ac7f46f800876e35f9a163f26ee8531f8c4ceda878230ef1cdb76b1c0ff",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/A/eqesn_rollout",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "61f6529aef02a303fc60b32a037ae4761c67f487e4fb8965b8e5f181bdd36b9e",
+      "old_receipt_sha256": "95d5514ff9df20e2068b06e168eeb5bb1b92d2a74a4277a72e65690693ffabf5",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/A/persistence",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "864dd3b395a0bee31e5a31db4b43656316fe6a7f0c78822e45844e12ff895630",
+      "old_receipt_sha256": "ade5770683f05ab218c48dbe374f4343eab75b7ce045c8e2832f7695f6647788",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/A/seasonal_naive",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "1a5d4c782fec02391e75c2f1c2579b986a204af56b0be9ba2bce7007cc5eecd8",
+      "old_receipt_sha256": "ed0b070712c2d698599bdf076ae2e08aa2ef3d806818028da2e8670bb398e6e2",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/A/separable_stgp",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "85c358ea7d20aa0aa602371b73b30770c5ce464860cd1b9a5bd1c825099c79ab",
+      "old_receipt_sha256": "198ababf6172e83ce5f86f5c340d774e23fc50eecce76195c99d79548c34a932",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/B/basis_gru",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "5e3925a71beb6f76890090179dc6c46948e86b9574b36a6cc8a188ec5316f790",
+      "old_receipt_sha256": "d0d7c5e0d0b4cb6ddfa96026daa781316fb65d56c134935a906398fdb8835661",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/B/basis_krr",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "09b358f0399c02c182766b18652693f277c591923a56732a5f263bdd83298ccb",
+      "old_receipt_sha256": "737a5ae981039b2847e953d9e3beefa50c298e589d43ad8d0c781fa0a1b0f475",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/B/basis_lgssm",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "056b7bec6f5fe54b9f2a1866f5176e72ca70e040400fa32bf7708924c34cdf74",
+      "old_receipt_sha256": "9fe81d2464fac76fa23cc69e0b62898ea009facdfe6862afcb56824ccb011ce6",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/B/bayes_esn_ridge",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "403b516cfbff573af4f661e796e2ec7e61c1a9849588051e2b8f88e70f266bd2",
+      "old_receipt_sha256": "9407436609d3cc7743abdb022de9a1ad4a507a24dc65d336ab432a0e03ce0b29",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/B/separable_stgp",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "d250fe97867ac689994926b1f3226c1f4b5382e79c4d3d8f5bf34b59c6e922ef",
+      "old_receipt_sha256": "325892a3f39e7fffcfe85f7011b14e9e87e9725369f51655be7bb4add3bbfac5",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    },
+    {
+      "fallback_equal": true,
+      "job": "g4_existing_fronts/rep_000/B/spatial_persistence",
+      "native_scores_equal": true,
+      "new_receipt_sha256": "19ce62f853c78f4170f60ed14531451f423cd19f924ed634b69e8f068a550fa7",
+      "old_receipt_sha256": "9b9f1a77499774bf812b2e01529c2e2e96c7beca5cfc1c342277d02b54f6c86e",
+      "operational_scores_equal": true,
+      "qualified_equal": true
+    }
+  ],
+  "schema": "development-metadata-correction-equivalence-1.0",
+  "scope": "Same declared reference fits, seeds, data and numerical runtime; changed cost metadata and BLAS enumeration canonicalization; no assertion of equal timing or cross-platform trajectories"
+}
