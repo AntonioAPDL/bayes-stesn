@@ -118,6 +118,8 @@ forecast constructors retain defensive-copy semantics.
 
 ## Documentation
 
+- [PRO implementation plan and execution prompt](docs/plans/PRO_IMPLEMENTATION_PLAN.md): staged improvements, resource budgets, acceptance gates, experiments, and publication requirements; proposed work, not completed results.
+- [Post-release audit](docs/audits/post_release_2026_11_03/README.md): reproducible findings that motivate the next implementation phase.
 - `docs/api.md`: objects, workflows, serialization and supported combinations.
 - `docs/models.md`: hierarchical models and implementation decisions.
 - `docs/validation.md`: mathematical, statistical and integration verification.
