@@ -78,7 +78,8 @@ class ToolChecks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp)
             wanted=('CONTRIBUTING.md','MANIFEST.in','.gitignore','examples/quickstart.py',
-                    'report/render_report.py','docs/evidence/receipt.json')
+                    'report/render_report.py','report/v03/README.md',
+                    'configs/benchmark/v03/studies/prepare.py','docs/evidence/receipt.json')
             for name in (*wanted,'report/benchmark_pilot/summary.json','docs/assets/example.png'):
                 path=root/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text('fixture')
             hashes=release.source_hashes(root)

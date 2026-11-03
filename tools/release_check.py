@@ -59,8 +59,8 @@ def source_hashes(root):
             paths.extend(p for p in (root/directory).rglob("*") if p.is_file()
                          and p.suffix in {".py",".json",".npz",".yaml",".yml",".md"}
                          and "__pycache__" not in p.parts)
-    paths.extend(p for p in (root/"report").rglob("*.py") if p.is_file()
-                 and "__pycache__" not in p.parts)
+    paths.extend(p for p in (root/"report").rglob("*") if p.is_file()
+                 and p.suffix in {".py", ".md"} and "__pycache__" not in p.parts)
     paths.extend(p for p in root.glob("requirements-*.lock"))
     paths.extend(root/name for name in ("pyproject.toml","MANIFEST.in","README.md","CONTRIBUTING.md",".gitignore","LICENSE")
                  if (root/name).exists())
@@ -358,7 +358,12 @@ def main(argv=None):
                     "docs/benchmark_validation.md","docs/benchmark_models.md",
                     "docs/benchmark_registry.yaml","configs/benchmark/smoke.yaml",
                     "docs/evidence/v02/generator_validation.json",
-                    "docs/assets/v01_forecast_montage.png","tools/render_model_comparison.py"]
+                    "docs/assets/v01_forecast_montage.png","tools/render_model_comparison.py",
+                    "configs/benchmark/v03/studies/prepare.py",
+                    "configs/benchmark/v03/studies/remaining_studies.yaml",
+                    "tools/summarize_v03_learning_curves.py","tools/render_v03_study.py",
+                    "tools/seal_v03_calibration.py","report/v03/README.md",
+                    "tests/test_v03_study_tools.py"]
         missing = [name for name in required if not (extracted/name).is_file()]
         if missing:
             raise RuntimeError(f"Source distribution is missing required reproducibility files: {missing}")
