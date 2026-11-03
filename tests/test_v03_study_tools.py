@@ -108,3 +108,23 @@ def test_resolved_complete_curve_receipt_matches_the_public_api_without_fits(tmp
                       execute_values=execute_values, common_endpoint=4000 if kind == "history" else None)
     assert json.loads((tmp_path/"curve_design.json").read_text()) == module.curve_design(profiles, recipe, kind)
     assert calls == [profiles[f"{kind}_{value}"].identity for value in execute_values]
+
+
+def test_complete_summary_cannot_bypass_core_resume_integrity_checks(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    module = tool("configs/benchmark/v03/studies/run_chunks.py")
+    output = tmp_path/"campaign"
+    output.mkdir()
+    (output/"summary.json").write_text(json.dumps({"complete": True, "jobs": 55}))
+    monkeypatch.setattr(module, "source_fingerprint", lambda: "current-source")
+    monkeypatch.setattr(module.shutil, "disk_usage", lambda path: SimpleNamespace(free=20*1024**3))
+    calls = []
+
+    def rejected_core_resume(command, **kwargs):
+        calls.append(command)
+        return SimpleNamespace(returncode=7)
+
+    monkeypatch.setattr(module.subprocess, "run", rejected_core_resume)
+    assert module.main(["--output", str(output), "--max-invocations", "1"]) == 7
+    assert len(calls) == 1
+    assert calls[0][2:5] == ["bayes_stesn", "benchmark", "resume"]

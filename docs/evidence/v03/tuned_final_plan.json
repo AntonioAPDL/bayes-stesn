@@ -1,0 +1,401 @@
+{
+  "allowance": {
+    "clamped": false,
+    "effective_job_budget_bytes": 1805832192,
+    "host": {
+      "cgroup_memory_stat": {
+        "active_anon": 118784,
+        "active_file": 5309734912,
+        "anon": 198901760,
+        "anon_thp": 0,
+        "file": 8062763008,
+        "file_dirty": 118009856,
+        "file_mapped": 38326272,
+        "file_thp": 2812280832,
+        "file_writeback": 0,
+        "inactive_anon": 198610944,
+        "inactive_file": 2753024000,
+        "kernel": 324534272,
+        "kernel_stack": 851968,
+        "pagetables": 4440064,
+        "percpu": 11880,
+        "pgactivate": 19199492,
+        "pgdeactivate": 16843786,
+        "pgdemote_direct": 0,
+        "pgdemote_khugepaged": 0,
+        "pgdemote_kswapd": 0,
+        "pgdemote_proactive": 0,
+        "pgfault": 139685165,
+        "pglazyfree": 94659,
+        "pglazyfreed": 0,
+        "pgmajfault": 4474,
+        "pgrefill": 17011340,
+        "pgscan": 69427908,
+        "pgscan_direct": 67948504,
+        "pgscan_khugepaged": 68242,
+        "pgscan_kswapd": 1411162,
+        "pgscan_proactive": 0,
+        "pgsteal": 68847059,
+        "pgsteal_direct": 67399662,
+        "pgsteal_khugepaged": 68234,
+        "pgsteal_kswapd": 1379163,
+        "pgsteal_proactive": 0,
+        "pswpin": 0,
+        "pswpout": 0,
+        "sec_pagetables": 0,
+        "shmem": 0,
+        "shmem_thp": 0,
+        "slab": 319190160,
+        "slab_reclaimable": 317708864,
+        "slab_unreclaimable": 1481296,
+        "sock": 2834432,
+        "swapcached": 0,
+        "swpin_zero": 0,
+        "swpout_zero": 0,
+        "thp_collapse_alloc": 895,
+        "thp_fault_alloc": 78228,
+        "thp_swpout": 0,
+        "thp_swpout_fallback": 0,
+        "unevictable": 0,
+        "vmalloc": 8192,
+        "workingset_activate_anon": 0,
+        "workingset_activate_file": 9423918,
+        "workingset_nodereclaim": 0,
+        "workingset_refault_anon": 0,
+        "workingset_refault_file": 52571083,
+        "workingset_restore_anon": 0,
+        "workingset_restore_file": 3996206
+      },
+      "effective_cpus": 8,
+      "memory_admission_estimate_bytes": 4636618752,
+      "memory_admission_policy": "half_eligible_clean_file_cache_v1",
+      "memory_cache_credit_bytes": 3953213440,
+      "memory_cache_eligible_bytes": 7906426880,
+      "memory_current_bytes": 8589832192,
+      "memory_limit_bytes": 8589934592,
+      "memory_measurement": "raw aggregate cgroup usage when available; admission cache credit is a heuristic, not guaranteed reclaim",
+      "worker_cap": 4
+    },
+    "requested_job_budget_bytes": null,
+    "reserved_headroom_bytes": 2147483648
+  },
+  "fit_time_limits_seconds": {
+    "basis_gru": 83,
+    "basis_krr": 30,
+    "basis_lgssm": 94,
+    "bayes_esn_ridge": 368,
+    "dcrnn": 658,
+    "eqesn_rollout": 30,
+    "persistence": 30,
+    "seasonal_naive": 30,
+    "separable_stgp": 40,
+    "spatial_persistence": 30
+  },
+  "ideal_parallel_fit_seconds_lower_bound": 8926.373185397766,
+  "jobs": 60,
+  "memory": {
+    "assumption": "conservative resolved-dimension admission estimate; representative candidate seed 0, not a measured peak or guarantee; sparse fill and allocator behavior need isolated profiles",
+    "estimated_parent_bytes": 67986944,
+    "estimated_per_worker_bytes": 732621792,
+    "estimated_total_bytes": 800608736,
+    "per_model": {
+      "basis_gru": {
+        "dimensions": {
+          "basis_rank": 24,
+          "context": 16,
+          "hidden_width": 32,
+          "joint_forecast_sites_upper_bound": 50,
+          "observed_sites": 25,
+          "paths_upper_bound": 128,
+          "supplied_history": 520
+        },
+        "estimated_bytes": 561812960,
+        "predictive_tensor_bytes_upper_bound": 2048000
+      },
+      "basis_krr": {
+        "dimensions": {
+          "basis_rank": 16,
+          "context": 16,
+          "hidden_width": 32,
+          "joint_forecast_sites_upper_bound": 50,
+          "observed_sites": 25,
+          "paths_upper_bound": 128,
+          "supplied_history": 520
+        },
+        "estimated_bytes": 242365920,
+        "predictive_tensor_bytes_upper_bound": 2048000
+      },
+      "basis_lgssm": {
+        "dimensions": {
+          "basis_rank": 25,
+          "context": 8,
+          "hidden_width": 32,
+          "joint_forecast_sites_upper_bound": 50,
+          "observed_sites": 25,
+          "paths_upper_bound": 128,
+          "supplied_history": 520
+        },
+        "estimated_bytes": 218608672,
+        "predictive_tensor_bytes_upper_bound": 2048000
+      },
+      "bayes_esn_ridge": {
+        "dimensions": {
+          "joint_forecast_sites_upper_bound": 50,
+          "observed_sites": 25,
+          "paths_upper_bound": 128,
+          "readout_coefficients_upper_bound": 3743,
+          "spatial_basis": 19,
+          "supplied_history": 520,
+          "temporal_features_upper_bound": 197
+        },
+        "estimated_bytes": 284078496,
+        "predictive_tensor_bytes_upper_bound": 2048000
+      },
+      "dcrnn": {
+        "dimensions": {
+          "context": 48,
+          "hidden_width": 32,
+          "joint_forecast_sites_upper_bound": 50,
+          "observed_sites": 25,
+          "paths_upper_bound": 128,
+          "supplied_history": 520
+        },
+        "estimated_bytes": 732621792,
+        "predictive_tensor_bytes_upper_bound": 2048000
+      },
+      "eqesn_rollout": {
+        "dimensions": {
+          "joint_forecast_sites_upper_bound": 50,
+          "observed_sites": 25,
+          "paths_upper_bound": 128,
+          "supplied_history": 520
+        },
+        "estimated_bytes": 211080672,
+        "predictive_tensor_bytes_upper_bound": 2048000
+      },
+      "persistence": {
+        "dimensions": {
+          "joint_forecast_sites_upper_bound": 50,
+          "observed_sites": 25,
+          "paths_upper_bound": 128,
+          "supplied_history": 520
+        },
+        "estimated_bytes": 211080672,
+        "predictive_tensor_bytes_upper_bound": 2048000
+      },
+      "seasonal_naive": {
+        "dimensions": {
+          "joint_forecast_sites_upper_bound": 50,
+          "observed_sites": 25,
+          "paths_upper_bound": 128,
+          "supplied_history": 520
+        },
+        "estimated_bytes": 211080672,
+        "predictive_tensor_bytes_upper_bound": 2048000
+      },
+      "separable_stgp": {
+        "dimensions": {
+          "joint_forecast_sites_upper_bound": 50,
+          "observed_sites": 25,
+          "paths_upper_bound": 128,
+          "supplied_history": 520
+        },
+        "estimated_bytes": 211080672,
+        "predictive_tensor_bytes_upper_bound": 2048000
+      },
+      "spatial_persistence": {
+        "dimensions": {
+          "joint_forecast_sites_upper_bound": 50,
+          "observed_sites": 25,
+          "paths_upper_bound": 128,
+          "supplied_history": 520
+        },
+        "estimated_bytes": 211080672,
+        "predictive_tensor_bytes_upper_bound": 2048000
+      }
+    }
+  },
+  "memory_admissible": true,
+  "models": [
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "spatial_persistence",
+      "projected_fit_wall_seconds": 0.02597720013000071,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 80,
+      "selection_fit_calls_with_replacements": 96,
+      "spatial_folds": 2,
+      "track": "B"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "basis_lgssm",
+      "projected_fit_wall_seconds": 417.28977789971395,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 80,
+      "selection_fit_calls_with_replacements": 96,
+      "spatial_folds": 2,
+      "track": "B"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "separable_stgp",
+      "projected_fit_wall_seconds": 148.63921529977233,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 80,
+      "selection_fit_calls_with_replacements": 96,
+      "spatial_folds": 2,
+      "track": "B"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "basis_krr",
+      "projected_fit_wall_seconds": 1.2050801999284886,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 112,
+      "selection_fit_calls_with_replacements": 160,
+      "spatial_folds": 2,
+      "track": "B"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "bayes_esn_ridge",
+      "projected_fit_wall_seconds": 2928.282668499218,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 112,
+      "selection_fit_calls_with_replacements": 160,
+      "spatial_folds": 2,
+      "track": "B"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "basis_gru",
+      "projected_fit_wall_seconds": 596.6746368831664,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 112,
+      "selection_fit_calls_with_replacements": 160,
+      "spatial_folds": 2,
+      "track": "B"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "persistence",
+      "projected_fit_wall_seconds": 0.00044875199091620743,
+      "representative_distinct_candidates": 1,
+      "selection_fit_calls": 8,
+      "selection_fit_calls_with_replacements": 8,
+      "spatial_folds": 1,
+      "track": "A"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "seasonal_naive",
+      "projected_fit_wall_seconds": 0.0014962682034820318,
+      "representative_distinct_candidates": 4,
+      "selection_fit_calls": 24,
+      "selection_fit_calls_with_replacements": 32,
+      "spatial_folds": 1,
+      "track": "A"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "basis_lgssm",
+      "projected_fit_wall_seconds": 216.99068450785126,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 40,
+      "selection_fit_calls_with_replacements": 48,
+      "spatial_folds": 1,
+      "track": "A"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "separable_stgp",
+      "projected_fit_wall_seconds": 77.29239195588161,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 40,
+      "selection_fit_calls_with_replacements": 48,
+      "spatial_folds": 1,
+      "track": "A"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "basis_krr",
+      "projected_fit_wall_seconds": 0.6172361999633722,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 56,
+      "selection_fit_calls_with_replacements": 80,
+      "spatial_folds": 1,
+      "track": "A"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "bayes_esn_ridge",
+      "projected_fit_wall_seconds": 1499.8520984995994,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 56,
+      "selection_fit_calls_with_replacements": 80,
+      "spatial_folds": 1,
+      "track": "A"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "eqesn_rollout",
+      "projected_fit_wall_seconds": 15.644299104285892,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 56,
+      "selection_fit_calls_with_replacements": 80,
+      "spatial_folds": 1,
+      "track": "A"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "basis_gru",
+      "projected_fit_wall_seconds": 305.613838403573,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 56,
+      "selection_fit_calls_with_replacements": 80,
+      "spatial_folds": 1,
+      "track": "A"
+    },
+    {
+      "datasets": 4,
+      "final_fit_calls": 4,
+      "model_id": "dcrnn",
+      "projected_fit_wall_seconds": 2718.243335724488,
+      "representative_distinct_candidates": 8,
+      "selection_fit_calls": 56,
+      "selection_fit_calls_with_replacements": 80,
+      "spatial_folds": 1,
+      "track": "A"
+    }
+  ],
+  "projected_summed_fit_wall_seconds": 8926.373185397766,
+  "protocol_identity": "e1caf62a1ab78aee2f0cd6f6e8ad346d978c1e50003921b9766ed920b712a6a7",
+  "schema": "benchmark-execution-plan-1.0",
+  "selection_fit_calls": 968,
+  "selection_fit_calls_with_replacements": 1304,
+  "storage": {
+    "free_bytes_at_planning": 14932070400,
+    "scope": "array estimates before compression; fitted models, checkpoints, figures and dependency environment add storage",
+    "temporary_atomic_write_allowance_bytes": 14131200,
+    "uncompressed_data_bytes": 3512320,
+    "uncompressed_retained_paths_bytes": 56524800
+  },
+  "threads_per_worker": 1,
+  "time_estimate_policy": "null until representative per-model timings are supplied; fit calls exclude internal neural epoch-selection refits, MCMC continuation, forecasts and serialization",
+  "workers": 1
+}

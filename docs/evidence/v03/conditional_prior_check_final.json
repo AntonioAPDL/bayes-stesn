@@ -1,0 +1,407 @@
+{
+  "autonomous_prior_rollouts_assessed": false,
+  "cases": [
+    {
+      "ablation_directory": "results/v03/extensions/final_ar_g4_existing_fronts",
+      "identical_frozen_design_and_shared_priors_verified": true,
+      "manifest_identity": "c72ba16c70a52467b3d9495efd4b077456c60fac5ab30909889ed394b747ffb1",
+      "results": {
+        "ar_absolute_rho_median": 0.4926789123765065,
+        "ar_absolute_rho_tail_probabilities": {
+          "0.9": 0.06572796740759036,
+          "0.95": 0.022037203554479936,
+          "0.99": 0.0009385900091387537
+        },
+        "ar_residual_prior_marginal_autocorrelation": {
+          "0": 1.0000000000000004,
+          "1": 0.0,
+          "10": 0.06580957279753277,
+          "2": 0.3149849207234663,
+          "20": 0.026542897603447226,
+          "40": 0.009280273655936297,
+          "5": 0.0
+        },
+        "coefficient_scope": "Every scalar-ridge coefficient, including intercept columns; other-prior unshrunk_groups settings do not override scalar ridge",
+        "designs": [
+          {
+            "explicit_diagonal_variance_max_error": 1.4210854715202004e-14,
+            "explicit_tensor_covariance_max_error": 1.5987211554602254e-14,
+            "frozen_design_hash": "07b2be536d3413147373a4c41772338c1e5602da847b9c57b6b6af9f9f5bd032",
+            "name": "conditioning_reference",
+            "observation_pointwise_prior_sd": {
+              "conditioning_standard_deviation_units": {
+                "maximum": 4.0479726013046955,
+                "median": 2.42748165710925,
+                "minimum": 1.9202352908443554,
+                "rms": 2.512485214103818
+              },
+              "original_response_units": {
+                "maximum": 1.8742034097635147,
+                "median": 1.1239192669995275,
+                "minimum": 0.889065189939469,
+                "rms": 1.1632757478981133
+              }
+            },
+            "readout_pointwise_prior_sd": {
+              "conditioning_standard_deviation_units": {
+                "maximum": 4.028259194785351,
+                "median": 2.39446385434887,
+                "minimum": 1.8783219989297164,
+                "rms": 2.48059910315019
+              },
+              "original_response_units": {
+                "maximum": 1.8650761410402281,
+                "median": 1.1086320887966763,
+                "minimum": 0.8696594176287791,
+                "rms": 1.1485125407918877
+              }
+            },
+            "sites": 25,
+            "spatial_columns": 12,
+            "temporal_columns": 65,
+            "times": 54
+          },
+          {
+            "explicit_diagonal_variance_max_error": 2.1316282072803006e-14,
+            "explicit_tensor_covariance_max_error": 2.842170943040401e-14,
+            "frozen_design_hash": "85fd003158c2bfc221f744b080b9703b17bc5e3c27df7619f408b62b3424aa8e",
+            "name": "observed_history_fitting_design",
+            "observation_pointwise_prior_sd": {
+              "conditioning_standard_deviation_units": {
+                "maximum": 7.027007085057531,
+                "median": 3.091115427186779,
+                "minimum": 1.9681172261779587,
+                "rms": 3.359864133292563
+              },
+              "original_response_units": {
+                "maximum": 3.253490558459409,
+                "median": 1.4311804066407985,
+                "minimum": 0.9112344324979269,
+                "rms": 1.5556105327712595
+              }
+            },
+            "readout_pointwise_prior_sd": {
+              "conditioning_standard_deviation_units": {
+                "maximum": 7.015669499977031,
+                "median": 3.0652544010630587,
+                "minimum": 1.9272455410345724,
+                "rms": 3.3360870722517126
+              },
+              "original_response_units": {
+                "maximum": 3.248241278706501,
+                "median": 1.4192068020453923,
+                "minimum": 0.8923109220883391,
+                "rms": 1.5446017999397788
+              }
+            },
+            "sites": 25,
+            "spatial_columns": 12,
+            "temporal_columns": 65,
+            "times": 440
+          }
+        ],
+        "expected_inverse_lambda": 30.802168489180307,
+        "expected_q": 2.184200810815618,
+        "expected_sigma2_standardized": 0.05,
+        "fourth_moment_scope": "A scalar observation about its frozen prior center with positive residual variance has an infinite fourth moment when IG shape a0<=2; a0>1 here ensures finite variance",
+        "iid_residual_prior_marginal_autocorrelation": {
+          "0": 1.0,
+          "1": 0.0,
+          "10": 0.0,
+          "2": 0.0,
+          "20": 0.0,
+          "40": 0.0,
+          "5": 0.0
+        },
+        "interpretation": "iid and stationary full-residual AR have exactly the same pointwise prior amplitude under their shared priors. AR changes temporal dependence. A symmetric rho prior has zero odd-lag marginal covariance while individual draws retain temporal dependence.",
+        "marginal_coefficient_variance_original_units": 0.3301487179664252,
+        "marginal_coefficient_variance_standardized": 1.5401084244590155,
+        "predictive_fourth_moment_finite": false,
+        "predictive_variance_finite": true,
+        "prior_parameters": {
+          "a0": 2.0,
+          "b0": 0.05,
+          "log_ell_mean": -1.7147984280919266,
+          "log_ell_sd": 0.65,
+          "log_precision_mean": -2.3025850929940455,
+          "log_precision_sd": 1.5,
+          "log_q_mean": 0.0,
+          "log_q_sd": 1.25,
+          "nu": 1.5,
+          "rho_eta_mean": 0.0,
+          "rho_eta_sd": 0.8
+        },
+        "quadrature": {
+          "absolute_agreement_tolerance": 1e-08,
+          "expected_kernel_max_absolute_difference": 8.049116928532385e-16,
+          "orders": [
+            128,
+            256
+          ],
+          "passed": true,
+          "rho_moment_max_absolute_difference": 2.289970921220963e-10
+        },
+        "response_center": -0.011324205089092786,
+        "response_scale": 0.4629980472593721,
+        "spatial_residual_marginal_correlation_off_diagonal": {
+          "maximum": 0.3447944678346662,
+          "median": 0.04880192662723988,
+          "minimum": 0.006746557762301433
+        },
+        "stationary_residual_prior_sd": {
+          "conditioning_standard_deviation_units": {
+            "maximum": 0.39901132883764207,
+            "median": 0.39901132883764207,
+            "minimum": 0.39901132883764207,
+            "rms": 0.39901132883764207
+          },
+          "original_response_units": {
+            "maximum": 0.18474146608619546,
+            "median": 0.18474146608619546,
+            "minimum": 0.18474146608619546,
+            "rms": 0.18474146608619546
+          }
+        }
+      },
+      "saved_ar_sampler_temporal": "full_residual_ar",
+      "saved_scalar_sampler_temporal": "iid"
+    },
+    {
+      "ablation_directory": "results/v03/extensions/final_ar_g3_excitable_field",
+      "identical_frozen_design_and_shared_priors_verified": true,
+      "manifest_identity": "a413194530cca1229b6e5504344deead75ae347da594f4731005445637867fb0",
+      "results": {
+        "ar_absolute_rho_median": 0.4926789123765065,
+        "ar_absolute_rho_tail_probabilities": {
+          "0.9": 0.06572796740759036,
+          "0.95": 0.022037203554479936,
+          "0.99": 0.0009385900091387537
+        },
+        "ar_residual_prior_marginal_autocorrelation": {
+          "0": 1.0000000000000004,
+          "1": 0.0,
+          "10": 0.06580957279753277,
+          "2": 0.3149849207234663,
+          "20": 0.026542897603447226,
+          "40": 0.009280273655936297,
+          "5": 0.0
+        },
+        "coefficient_scope": "Every scalar-ridge coefficient, including intercept columns; other-prior unshrunk_groups settings do not override scalar ridge",
+        "designs": [
+          {
+            "explicit_diagonal_variance_max_error": 7.105427357601002e-15,
+            "explicit_tensor_covariance_max_error": 6.217248937900877e-15,
+            "frozen_design_hash": "e176a813f7c9aa10d5c2e2cb848148921717f619ce98d3e857ec90ed5cdac1aa",
+            "name": "conditioning_reference",
+            "observation_pointwise_prior_sd": {
+              "conditioning_standard_deviation_units": {
+                "maximum": 3.510920098663711,
+                "median": 2.4141722458142496,
+                "minimum": 2.0447766562510274,
+                "rms": 2.501801553126223
+              },
+              "original_response_units": {
+                "maximum": 4.308420550316323,
+                "median": 2.9625479998329336,
+                "minimum": 2.509244733297149,
+                "rms": 3.0700821782884864
+              }
+            },
+            "readout_pointwise_prior_sd": {
+              "conditioning_standard_deviation_units": {
+                "maximum": 3.488172859630099,
+                "median": 2.3809698847143874,
+                "minimum": 2.005467908845303,
+                "rms": 2.4697775144097496
+              },
+              "original_response_units": {
+                "maximum": 4.280506308647118,
+                "median": 2.92180377015476,
+                "minimum": 2.461007060444817,
+                "rms": 3.030783925228642
+              }
+            },
+            "sites": 25,
+            "spatial_columns": 12,
+            "temporal_columns": 65,
+            "times": 54
+          },
+          {
+            "explicit_diagonal_variance_max_error": 1.2434497875801753e-14,
+            "explicit_tensor_covariance_max_error": 1.4210854715202004e-14,
+            "frozen_design_hash": "06605a3f208377f401f789fd8d6d3924413985746682e3ad9e3e91541248faff",
+            "name": "observed_history_fitting_design",
+            "observation_pointwise_prior_sd": {
+              "conditioning_standard_deviation_units": {
+                "maximum": 3.6098331789326954,
+                "median": 2.430681799501206,
+                "minimum": 2.0029299289002,
+                "rms": 2.518785868324911
+              },
+              "original_response_units": {
+                "maximum": 4.4298015945298275,
+                "median": 2.982807674898882,
+                "minimum": 2.457892582004839,
+                "rms": 3.0909244562608413
+              }
+            },
+            "readout_pointwise_prior_sd": {
+              "conditioning_standard_deviation_units": {
+                "maximum": 3.5877131350182596,
+                "median": 2.3977080660198036,
+                "minimum": 1.9627832940860737,
+                "rms": 2.4869805407225227
+              },
+              "original_response_units": {
+                "maximum": 4.402657014449202,
+                "median": 2.9423440052739314,
+                "minimum": 2.4086266968241827,
+                "rms": 3.051894594230137
+              }
+            },
+            "sites": 25,
+            "spatial_columns": 12,
+            "temporal_columns": 65,
+            "times": 440
+          }
+        ],
+        "expected_inverse_lambda": 30.802168489180307,
+        "expected_q": 2.184200810815618,
+        "expected_sigma2_standardized": 0.05,
+        "fourth_moment_scope": "A scalar observation about its frozen prior center with positive residual variance has an infinite fourth moment when IG shape a0<=2; a0>1 here ensures finite variance",
+        "iid_residual_prior_marginal_autocorrelation": {
+          "0": 1.0,
+          "1": 0.0,
+          "10": 0.0,
+          "2": 0.0,
+          "20": 0.0,
+          "40": 0.0,
+          "5": 0.0
+        },
+        "interpretation": "iid and stationary full-residual AR have exactly the same pointwise prior amplitude under their shared priors. AR changes temporal dependence. A symmetric rho prior has zero odd-lag marginal covariance while individual draws retain temporal dependence.",
+        "marginal_coefficient_variance_original_units": 2.3192394091949096,
+        "marginal_coefficient_variance_standardized": 1.5401084244590155,
+        "predictive_fourth_moment_finite": false,
+        "predictive_variance_finite": true,
+        "prior_parameters": {
+          "a0": 2.0,
+          "b0": 0.05,
+          "log_ell_mean": -1.7147984280919266,
+          "log_ell_sd": 0.65,
+          "log_precision_mean": -2.3025850929940455,
+          "log_precision_sd": 1.5,
+          "log_q_mean": 0.0,
+          "log_q_sd": 1.25,
+          "nu": 1.5,
+          "rho_eta_mean": 0.0,
+          "rho_eta_sd": 0.8
+        },
+        "quadrature": {
+          "absolute_agreement_tolerance": 1e-08,
+          "expected_kernel_max_absolute_difference": 8.049116928532385e-16,
+          "orders": [
+            128,
+            256
+          ],
+          "passed": true,
+          "rho_moment_max_absolute_difference": 2.289970921220963e-10
+        },
+        "response_center": -0.660499760269267,
+        "response_scale": 1.2271485619841216,
+        "spatial_residual_marginal_correlation_off_diagonal": {
+          "maximum": 0.3447944678346662,
+          "median": 0.04880192662723988,
+          "minimum": 0.006746557762301433
+        },
+        "stationary_residual_prior_sd": {
+          "conditioning_standard_deviation_units": {
+            "maximum": 0.39901132883764207,
+            "median": 0.39901132883764207,
+            "minimum": 0.39901132883764207,
+            "rms": 0.39901132883764207
+          },
+          "original_response_units": {
+            "maximum": 0.4896461783984859,
+            "median": 0.4896461783984859,
+            "minimum": 0.4896461783984859,
+            "rms": 0.4896461783984859
+          }
+        }
+      },
+      "saved_ar_sampler_temporal": "full_residual_ar",
+      "saved_scalar_sampler_temporal": "iid"
+    }
+  ],
+  "environment": {
+    "blas_threads": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "numeric_thread_policy": "one thread per process",
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "scipy": "1.17.0",
+    "threadpools": [
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "user_api": "blas",
+        "version": "0.3.30"
+      },
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "user_api": "blas",
+        "version": "0.3.30"
+      }
+    ],
+    "torch": "2.15.0+cpu"
+  },
+  "extension_promotion": false,
+  "future_labels_used": false,
+  "identity": "9083918796c6c884d769d269fdcdfbf43bb8651ee54f518b37a4c4c0e411f64a",
+  "input_hashes": {
+    "results/v03/extensions/final_ar_g3_excitable_field/full_residual_ar/fitted.npz": "e72bab7b439e909bf8eb5a3da712c7c92ac76f5e782babb0e09b4a4bb54eadb1",
+    "results/v03/extensions/final_ar_g3_excitable_field/manifest.json": "2fea569386201ba2578591594f490a99d31c911483e8a793fcc3ad69abe53fca",
+    "results/v03/extensions/final_ar_g3_excitable_field/output_inventory.json": "2646b7705bebf84d0c6d4ef52348242c0c903a8fb87056f0af4035f69d9f17dd",
+    "results/v03/extensions/final_ar_g3_excitable_field/scalar_reference/fitted.npz": "4d935de49b1ff2dc8c174a3a2da0222ba1d594f8f17938cd7f68ece39f45797a",
+    "results/v03/extensions/final_ar_g4_existing_fronts/full_residual_ar/fitted.npz": "7630f0fcbe0108fa3ac17120a51050817b48d840910e3f25f960403b92d4876e",
+    "results/v03/extensions/final_ar_g4_existing_fronts/manifest.json": "a6fb946b3e6fd15c08dd7cc08adda2de1c26878451fd18adf0f61bd444d776d3",
+    "results/v03/extensions/final_ar_g4_existing_fronts/output_inventory.json": "5351276361261a688eb49e6cd330aee4ad93a5ee82578b7c6f9074050ed5b14a",
+    "results/v03/extensions/final_ar_g4_existing_fronts/scalar_reference/fitted.npz": "fca580648fd42c994cff1a78a1dfab1885573d6d319bdadb6f327064dc54cef0"
+  },
+  "limitations": [
+    "Conditional historical feature paths are held fixed; autonomous ESN feedback, stability and prior trajectory plausibility are unassessed.",
+    "Pointwise amplitude checks and finite prior variance do not establish a well-calibrated prior or forecast coverage.",
+    "Zero odd-lag covariance after averaging over a symmetric rho prior is not absence of dependence in individual draws.",
+    "The check is retrospective documentation of unchanged priors; it is not a prospective acceptance gate or evidence of additional predictive replications.",
+    "The G3 AR fit's qualification failure does not prevent checking its mathematical prior, and these moments do not remedy that failure."
+  ],
+  "mathematical_identities": {
+    "coefficient_variance": "E[sigma2]*E[1/lambda]",
+    "mean": "E[Y_it|fixed design]=response_center",
+    "original_units": "Multiply every standardized covariance by response_scale^2; add the frozen response_center to the prior mean",
+    "readout_covariance_standardized": "E[sigma2]*E[1/lambda]*(Phi Phi^T)_ij*(Z Z^T)_tu",
+    "residual_covariance_standardized": "E[sigma2]*(I+E[q]*E[K_ell])_ij*E[rho^|t-u|] for AR; replace the last factor by 1(t=u) for iid"
+  },
+  "models_refitted": false,
+  "posterior_samples_used": false,
+  "prior_law": {
+    "C": "vec(C)|sigma2,lambda ~ N(0,(sigma2/lambda) I)",
+    "lambda_q_ell": "Independent lognormal hyperpriors with the actual per-case means and standard deviations recorded below; sigma2 and rho are independent of them",
+    "residual": "iid: e_t|sigma2,q,ell~N(0,sigma2*R), independent in time. AR: e_1~N(0,sigma2*R), e_t=rho*e_(t-1)+sqrt(1-rho^2)*xi_t, xi_t~N(0,sigma2*R). R=I+q*K_ell.",
+    "rho": "eta~N(0,rho_prior_sd^2), rho=tanh(eta); p(rho)=phi(atanh(rho)/sd)/(sd*(1-rho^2)), -1<rho<1",
+    "sigma2": "p(s)=b0^a0/Gamma(a0) * s^(-a0-1) * exp(-b0/s), s>0"
+  },
+  "prior_retuning_performed": false,
+  "schema": "conditional-fixed-design-prior-check-1.0",
+  "scope": "Analytical prior-predictive first/second moments conditional on the saved encoder, basis, historical features and response standardization; does not certify a self-generated trajectory prior or model adequacy",
+  "source_fingerprint": "9f73b28a6ee6b8eec4bd21c3366b0c260c9433f798610be16697b2e44166d5ac",
+  "tool_sha256": "9d1efd25b885ad0a6e01b0cadd42ca8a1606a5b4528099fbfdd4a866d745f5b3"
+}

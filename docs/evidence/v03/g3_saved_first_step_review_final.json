@@ -1,0 +1,249 @@
+{
+  "alignment": {
+    "causal_next_feature_replay_exact": true,
+    "first64_saved_observation_reconstruction_max_abs": 0.0,
+    "first_evaluated_row": 520,
+    "first_evaluated_time": 1040.0,
+    "history_site_order_coordinates_scale_exact": true,
+    "last_fitted_row": 519,
+    "last_fitted_time": 1038.0,
+    "observation_spacing": 2.0,
+    "response_center": -0.660499760269267,
+    "response_scale": 1.2271485619841216,
+    "saved_feature_replay_max_abs": 0.0,
+    "saved_state_replay_max_abs": 0.0,
+    "stored_rows": 520
+  },
+  "decoder": {
+    "final40_observed_target_projection_rmse": 0.6813757825129968,
+    "final40_true_field_projection_rmse": 0.6813757825129968,
+    "first_lead_outside_span_fraction_of_conditional_readout_mse64": 0.989320511773576,
+    "first_lead_unavoidable_outside_span_rmse": 0.8001015991858232,
+    "first_lead_within_span_readout_error_rmse64": 0.08312886527739272,
+    "fitting_panel_projection_rmse": 0.6855572059105898,
+    "orthogonal_mse_decomposition_error": 8.847089727481716e-17,
+    "projection_target": "Noisy observed field at the fitted O sites; the legacy true_field key is an observed-target alias, not latent truth",
+    "rank": 12,
+    "sites": 25
+  },
+  "elapsed_diagnostic_seconds": 0.9490293839990045,
+  "environment": {
+    "blas_threads": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "numeric_thread_policy": "one thread per process",
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "scipy": "1.17.0",
+    "threadpools": [
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "user_api": "blas",
+        "version": "0.3.30"
+      },
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "user_api": "blas",
+        "version": "0.3.30"
+      }
+    ],
+    "torch": "2.15.0+cpu"
+  },
+  "identity": "f1b362b1ef3df2a9fbb1ea66c831f36e2c863dd8916d7a2d939282b81e862822",
+  "input_hashes": {
+    "docs/evidence/v03/g3_saved_first_step_review.json": "846f924981cc8698d2df095f70dade5cbe39c33d4135cde154e70808c26748a8",
+    "results/v03/development/reference_final/g3_excitable_field/rep_000/A/bayes_esn_ridge/model.npz": "10faeb8bd72d786b48c02d5e55cdc740d22783c05281fbb68e5df59a754ac244",
+    "results/v03/development/reference_final/g3_excitable_field/rep_000/simulation.npz": "9a87379125a1aabc8671c56750740782500b4300e7fd36632f08271ba172dddc",
+    "results/v03/extensions/final_paths_g3_excitable_field/manifest.json": "439407d7d7d47d4c4cc7171d059fcf8024518e530b18ec60e242e211ced1e77e",
+    "results/v03/extensions/final_paths_g3_excitable_field/output_inventory.json": "fc55eff6c3d562e47a4b83b04b4a640045ad402405845af30e010df7f837299f",
+    "results/v03/extensions/final_paths_g3_excitable_field/path_stability.json": "06daf285c6b1db3af378f7fee7deeaacb4b3735d1f8707c0dcd98466dd9820c7",
+    "results/v03/extensions/final_paths_g3_excitable_field/path_stability_forecast.npz": "5f807bb872f72ea5747890c2a954b8587bc36a0f8a979c3af7355b4ad0f58af2",
+    "tools/audit_decoder_v03.py": "9fdb3c45ecba48d124488cf3dfce51e044853ced58160ef90641d6fdf5e1b22c"
+  },
+  "interpretation_limits": [
+    "64 conditional draws give a descriptive first-step moment reference, not an exact posterior mean.",
+    "Decoder projection uses evaluator observations only as a diagnostic; it is not a permitted forecast or model selection result.",
+    "Growing saved-path variance demonstrates forecast dispersion under stochastic observation feedback; it does not identify separate parameter-versus-innovation contributions at long leads.",
+    "No off-by-one, site-order or response-scale discrepancy was found by these exact checks.",
+    "This A-track replay reuses the same posterior, field and saved paths; it adds no independent dataset or capacity-improvement evidence and does not clear B-track interpolation errors."
+  ],
+  "one_step": {
+    "conditional_readout64_mcse_rms": 0.021726155044832482,
+    "conditional_readout_mean64_rmse": 0.8044084641909349,
+    "conditional_readout_variance_mean64": 0.030209652034054398,
+    "empirical_total_variance_mean_saved512": 0.5258324342114468,
+    "last_fitted_readout64_rmse": 0.7119593764529624,
+    "mean_conditional_innovation_variance64": 0.5015022234941476,
+    "mean_conditional_readout64_vs_saved512_rms": 0.02990374171598902,
+    "persistence_rmse": 0.6431121435821494,
+    "saved512_mean_rmse": 0.804625790824541,
+    "total_variance_reference64": 0.531711875528202
+  },
+  "posterior_identity": "b95696145314739f4914ffc01688bb408430469a1c81050ccec3924b5e70e2b4",
+  "recovered_global_path_indices": [
+    0,
+    64
+  ],
+  "recovered_parameter_ids_hash": "2cc8913189f6027122cd7145d162f6ca7097bd8cfc6c0ccf93b3635bde7981d8",
+  "replay_comparison": {
+    "absolute_and_relative_tolerance": 1e-12,
+    "historical_identity": "e91b796e1487648487f25e9a49332d0ba0aa425499bf4d9446228b09b2313014",
+    "historical_review": "docs/evidence/v03/g3_saved_first_step_review.json",
+    "meaning": "Same saved-field/posterior diagnostic reproduced under final source; numerical roundoff within fixed tolerance is allowed",
+    "new_independent_datasets": 0,
+    "scientific_fields_agree": true
+  },
+  "resource_admission": {
+    "allowance": {
+      "clamped": false,
+      "effective_job_budget_bytes": 536870912,
+      "host": {
+        "cgroup_memory_stat": {
+          "active_anon": 282624,
+          "active_file": 6711046144,
+          "anon": 783282176,
+          "anon_thp": 18874368,
+          "file": 7466303488,
+          "file_dirty": 1748992,
+          "file_mapped": 82751488,
+          "file_thp": 3189768192,
+          "file_writeback": 0,
+          "inactive_anon": 782872576,
+          "inactive_file": 755257344,
+          "kernel": 326434816,
+          "kernel_stack": 1212416,
+          "pagetables": 9199616,
+          "percpu": 26796,
+          "pgactivate": 19399428,
+          "pgdeactivate": 17562603,
+          "pgdemote_direct": 0,
+          "pgdemote_khugepaged": 0,
+          "pgdemote_kswapd": 0,
+          "pgdemote_proactive": 0,
+          "pgfault": 147390624,
+          "pglazyfree": 94659,
+          "pglazyfreed": 0,
+          "pgmajfault": 4741,
+          "pgrefill": 17731375,
+          "pgscan": 71683337,
+          "pgscan_direct": 70199205,
+          "pgscan_khugepaged": 68754,
+          "pgscan_kswapd": 1415378,
+          "pgscan_proactive": 0,
+          "pgsteal": 71038516,
+          "pgsteal_direct": 69586391,
+          "pgsteal_khugepaged": 68746,
+          "pgsteal_kswapd": 1383379,
+          "pgsteal_proactive": 0,
+          "pswpin": 0,
+          "pswpout": 0,
+          "sec_pagetables": 0,
+          "shmem": 0,
+          "shmem_thp": 0,
+          "slab": 315902632,
+          "slab_reclaimable": 312320736,
+          "slab_unreclaimable": 3581896,
+          "sock": 0,
+          "swapcached": 0,
+          "swpin_zero": 0,
+          "swpout_zero": 0,
+          "thp_collapse_alloc": 917,
+          "thp_fault_alloc": 79323,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0,
+          "unevictable": 0,
+          "vmalloc": 20480,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 10442876,
+          "workingset_nodereclaim": 0,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 54167162,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 4000493
+        },
+        "effective_cpus": 8,
+        "memory_admission_estimate_bytes": 4886523904,
+        "memory_admission_policy": "half_eligible_clean_file_cache_v1",
+        "memory_cache_credit_bytes": 3690901504,
+        "memory_cache_eligible_bytes": 7381803008,
+        "memory_current_bytes": 8577425408,
+        "memory_limit_bytes": 8589934592,
+        "memory_measurement": "raw aggregate cgroup usage when available; admission cache credit is a heuristic, not guaranteed reclaim",
+        "worker_cap": 4
+      },
+      "requested_job_budget_bytes": 536870912,
+      "reserved_headroom_bytes": 2147483648
+    },
+    "estimated_additional_bytes": 119238432,
+    "uncompressed_input_bytes": 13032392
+  },
+  "saved_path_leads": [
+    {
+      "conditional_empirical_mean_mcse_max": 0.03388820261042708,
+      "conditional_empirical_mean_mcse_rms": 0.032047097732388063,
+      "decoder_projection_rmse": 0.8001015991858232,
+      "empirical_mean_rmse": 0.804625790824541,
+      "lead": 1,
+      "predictive_sd_rms": 0.7251430439654281,
+      "sample_abs_max": 4.528833963203643
+    },
+    {
+      "conditional_empirical_mean_mcse_max": 0.059885486725686075,
+      "conditional_empirical_mean_mcse_rms": 0.043914201047123964,
+      "decoder_projection_rmse": 0.8215709769757685,
+      "empirical_mean_rmse": 0.8783321870214964,
+      "lead": 2,
+      "predictive_sd_rms": 0.9936649392259437,
+      "sample_abs_max": 4.937685454559348
+    },
+    {
+      "conditional_empirical_mean_mcse_max": 0.0922529664404812,
+      "conditional_empirical_mean_mcse_rms": 0.06439057122952707,
+      "decoder_projection_rmse": 0.7112093381457423,
+      "empirical_mean_rmse": 0.8996859071896189,
+      "lead": 5,
+      "predictive_sd_rms": 1.4569923059479681,
+      "sample_abs_max": 10.856098158396431
+    },
+    {
+      "conditional_empirical_mean_mcse_max": 0.20308765326654743,
+      "conditional_empirical_mean_mcse_rms": 0.11572638995305268,
+      "decoder_projection_rmse": 0.6356417365084135,
+      "empirical_mean_rmse": 1.21141193154354,
+      "lead": 10,
+      "predictive_sd_rms": 2.618589283137353,
+      "sample_abs_max": 37.50631068411693
+    },
+    {
+      "conditional_empirical_mean_mcse_max": 0.48249722393128264,
+      "conditional_empirical_mean_mcse_rms": 0.24257765919833804,
+      "decoder_projection_rmse": 0.7028578170722876,
+      "empirical_mean_rmse": 1.7193815344145933,
+      "lead": 20,
+      "predictive_sd_rms": 5.488905849072132,
+      "sample_abs_max": 71.2522025591838
+    },
+    {
+      "conditional_empirical_mean_mcse_max": 0.7240832946954981,
+      "conditional_empirical_mean_mcse_rms": 0.3858892390977423,
+      "decoder_projection_rmse": 0.7779197144187762,
+      "empirical_mean_rmse": 2.5848604247603815,
+      "lead": 40,
+      "predictive_sd_rms": 8.73167672809378,
+      "sample_abs_max": 79.80874568376407
+    }
+  ],
+  "schema": "saved-G3-first-step-review-1.0",
+  "scope": "Read-only saved fit and saved512-path artifact;64 original path parameter draws recovered; no refit and no new full forecast",
+  "source_fingerprint": "9f73b28a6ee6b8eec4bd21c3366b0c260c9433f798610be16697b2e44166d5ac",
+  "tool_sha256": "9fdb3c45ecba48d124488cf3dfce51e044853ced58160ef90641d6fdf5e1b22c"
+}

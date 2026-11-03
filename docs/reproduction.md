@@ -2,6 +2,11 @@
 
 The release checks separate four questions: whether the mathematical and API tests pass, whether the distributable package installs correctly, whether a small complete fit and forecast executes, and whether a scientific experiment meets its convergence and prediction gates. A successful smoke run answers the execution question only.
 
+For the ordered v0.3 reference, tuning, sampler, extension, learning-curve,
+stress, calibration and confirmation workflow, start with
+[the v0.3 campaign reproduction guide](reproduction_v03.md). This document
+provides the shared installation, verification and public API instructions.
+
 ## Verified environment and dependency groups
 
 The version locks target **CPython 3.12 on Linux x86_64**. The package declares its broader supported Python range in `pyproject.toml`; identical floating-point results across operating systems, BLAS builds, or Python versions are not promised.

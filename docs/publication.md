@@ -5,6 +5,10 @@ history are public at
 [AntonioAPDL/bayes-stesn](https://github.com/AntonioAPDL/bayes-stesn).
 The default branch is `main`.
 
+Subsequent development uses the [GitHub execution workflow](github_workflow.md):
+verified-parent source updates, exact-commit CI, and separately checked release
+assets. The one-time history import below does not need to be repeated.
+
 ## Published source and preserved history
 
 The public [v0.2.1 release](https://github.com/AntonioAPDL/bayes-stesn/releases/tag/v0.2.1)

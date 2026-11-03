@@ -1,0 +1,151 @@
+{
+  "archive_check": {
+    "required_files_checked": 34,
+    "required_files_present": true,
+    "sdist_path": "/workspace/scratch/158260e8300f/v03_work/report_tooling_sdist/bayes_stesn-0.3.0.tar.gz",
+    "sdist_sha256": "9badc1b7c563628fe877f96368ac08bbc28b8133cb29e1d1529f49b27c2c35b9",
+    "selected_reproducibility_files": [
+      {
+        "bytes": 8520,
+        "file": "configs/benchmark/v03/studies/stress_README.md",
+        "sha256": "7a57616b3f2bf35b2191c4c1c0947d22f5b01319355603f62180d4df0888c9ec"
+      },
+      {
+        "bytes": 1089,
+        "file": "configs/benchmark/v03/studies/stress_prepare.py",
+        "sha256": "f1cc3e1cfd92cc5c520d4f498e14f18ade78a6c2d74bb8d797b3c7c85d2b4a3b"
+      },
+      {
+        "bytes": 3588,
+        "file": "configs/benchmark/v03/studies/stress_recipe.yaml",
+        "sha256": "2688a62bfd3c9460f3d460108b8e4eff7dac6dd54b404f52ebc03bfa14e9501a"
+      },
+      {
+        "bytes": 49502,
+        "file": "tools/summarize_v03_stress.py",
+        "sha256": "8b4cdd923798bb72a825e22f6bf6fd906d73dd8942bd8631f3c37a0afba45a6b"
+      },
+      {
+        "bytes": 200856,
+        "file": "tools/render_v03_study.py",
+        "sha256": "6aebc058214c6af32b3c9ad4f9a6c386cb9bf7691280cf89402a7ba75b32932e"
+      },
+      {
+        "bytes": 16441,
+        "file": "tools/check_conditional_prior_v03.py",
+        "sha256": "9d1efd25b885ad0a6e01b0cadd42ca8a1606a5b4528099fbfdd4a866d745f5b3"
+      },
+      {
+        "bytes": 17415,
+        "file": "tools/audit_decoder_v03.py",
+        "sha256": "9fdb3c45ecba48d124488cf3dfce51e044853ced58160ef90641d6fdf5e1b22c"
+      },
+      {
+        "bytes": 27301,
+        "file": "tools/summarize_extensions_v03.py",
+        "sha256": "bf7326a62728fecfb54c13dcaaad62736fca2c61a306d09bca7f5f5392b5f4b7"
+      },
+      {
+        "bytes": 21964,
+        "file": "report/v03/README.md",
+        "sha256": "b635a93d31092a23c5a35d420a1b3ff29005776abe54bee5c9ab4b34422a7004"
+      },
+      {
+        "bytes": 10136,
+        "file": "docs/reproduction_v03.md",
+        "sha256": "b0585b9a157b8378dd81955d06856f49b891adf865bcee4be0b50103879c0d80"
+      }
+    ]
+  },
+  "file_hashes": {
+    "MANIFEST.in": "03b4ca04fed4d53fa89bc95d377874cbeefb532f623f30bcb9fba6ee9b3b9df7",
+    "report/v03/README.md": "b635a93d31092a23c5a35d420a1b3ff29005776abe54bee5c9ab4b34422a7004",
+    "tests/test_render_v03_study.py": "409048d9132ec285f4df6903eee6ae9f959d344c98cdadb9a9f00b3202349c0a",
+    "tools/release_check.py": "638719de978af8a38f9a2e4558b22c54f2604f56f67e8ecceaa856774ad6a596",
+    "tools/render_v03_study.py": "6aebc058214c6af32b3c9ad4f9a6c386cb9bf7691280cf89402a7ba75b32932e"
+  },
+  "focused_tests": {
+    "command": "pytest tests/test_render_v03_study.py tests/test_v03_stress_tools.py tests/test_release_tools.py -q",
+    "errors": 0,
+    "failures": 0,
+    "junit_cases": 65,
+    "junit_path": "docs/evidence/v03/report_stress_prior_tests.xml",
+    "junit_sha256": "962d59210e1eda41d7ec471391b82092623ac6b23363199b1025acbdeafb4581",
+    "pytest_passed": 61,
+    "seconds": 7.45,
+    "skipped": 0,
+    "subtests_passed": 4
+  },
+  "identity": "9ba48dabc9a0d62d910405976a9bd32690be9149c754aaf7c1f5d9d78c8f5638",
+  "limits": [
+    "No actual stress outcomes were supplied at this tooling checkpoint; paired-effect/population/scale/bootstrap validation uses synthetic reference cases",
+    "The installed-package/public-CI and final complete report gates remain separate",
+    "No browser visual QA is claimed"
+  ],
+  "model_fits_or_forecast_replays_performed": false,
+  "saved_input_validation": {
+    "inputs_checked": 405,
+    "scope": "Current reference, coordinate, P5, conditional prior, G3 decoder diagnostic and G1 oracle; no PDF or new scientific calculation"
+  },
+  "schema": "v03-report-tooling-check-1.0",
+  "scientific_source_changed": false,
+  "source_fingerprint": "9f73b28a6ee6b8eec4bd21c3366b0c260c9433f798610be16697b2e44166d5ac",
+  "typography_probe": {
+    "figures": [
+      {
+        "caption": "Same target and prespecified datasets. Crosses mark failed diagnostic gates; gate also checks rank-normalized R-hat. Minimum is across bulk/tail ESS of original hyperparameters and recovered functionals. ESS/second is omitted for resumed timings. These are development fits, not forecast accuracy results.",
+        "kind": "figure",
+        "minimum_pdf_font_pt": 8.033186150039736,
+        "path": "figures/sampler_coordinates.png"
+      },
+      {
+        "caption": "Dots are means of independent dataset losses; whiskers are +/-2 MCSE where at least two datasets contribute. Operational RMSE includes declared fallbacks. CRPS uses each method's qualified native distributions; marginal CRPS dots can involve different datasets. Use paired contrasts for direct comparisons.",
+        "kind": "figure",
+        "minimum_pdf_font_pt": 7.888231510964368,
+        "path": "figures/typography_probe_scores_A_0.png"
+      },
+      {
+        "caption": "Saved marginal interval coverage and proper interval scores averaged over eligible datasets, using a fixed model subset for legibility. Coverage is not simultaneous whole-field coverage, and small conditional populations do not establish calibration. The interval score jointly penalizes excessive width and missed observations.",
+        "kind": "figure",
+        "minimum_pdf_font_pt": 7.888162428188088,
+        "path": "figures/typography_probe_intervals_A.png"
+      },
+      {
+        "caption": "Mean of saved dataset-level lead scores, without future-data assimilation. Bias is forecast mean minus observed response. Model subset is fixed for legibility; complete scores remain in the machine summaries. Exact operational/native dataset counts are in the preceding design and qualification table; native CRPS populations vary by model. No fit or forecast was recomputed.",
+        "kind": "figure",
+        "minimum_pdf_font_pt": 8.033186150039736,
+        "path": "figures/typography_probe_leads_A_0.png"
+      },
+      {
+        "caption": "Recorded costs averaged over the run's declared scenario/task mix; this is not machine-independent throughput. 0 jobs have incomplete compute accounting after infrastructure interruption; their recorded times are lower bounds. Failed scientific attempts remain in cost and operational populations. Process peak RSS is kept in raw receipts with its measurement scope.",
+        "kind": "figure",
+        "minimum_pdf_font_pt": 7.9,
+        "path": "figures/typography_probe_cost_qualification.png"
+      },
+      {
+        "caption": "Accuracy and recorded computational cost for the same declared jobs. Lower and left is preferable, but points have different qualification/fallback behavior; this plot is descriptive, not a Pareto-superiority test. Costs include tuning, final fitting, forecasting and saved-artifact serialization; lost work remains labeled incomplete.",
+        "kind": "figure",
+        "minimum_pdf_font_pt": 8.107728597792933,
+        "path": "figures/typography_probe_accuracy_time_0.png"
+      }
+    ],
+    "minimum_effective_pdf_font_pt": 7.888162428188088,
+    "renderer_sha256": "6aebc058214c6af32b3c9ad4f9a6c386cb9bf7691280cf89402a7ba75b32932e",
+    "scope": "Saved-reference typography probe only; no PDF, refit, forecast, or new scientific comparison",
+    "source_fingerprint": "9f73b28a6ee6b8eec4bd21c3366b0c260c9433f798610be16697b2e44166d5ac"
+  },
+  "visual_spot_check": {
+    "files": [
+      {
+        "path": "/workspace/scratch/158260e8300f/v03_work/report_typography_probe/figures/typography_probe_intervals_A.png",
+        "sha256": "80184dccf6ef8dbd38dec907d382d2387c9c5fa4408cf5974a388d6225499219"
+      },
+      {
+        "path": "/workspace/scratch/158260e8300f/v03_work/report_typography_probe/figures/typography_probe_leads_A_0.png",
+        "sha256": "e813623837e94d1566e56c4181e6f4eaa5e7bcfc020c5c14e9367b320e24b7f3"
+      }
+    ],
+    "finding": "Readable shared labels and full plot widths; shared lead legend outside the trajectories; no overlap observed in these two PNG probes",
+    "scope": "Two saved-data PNG layouts only; final complete PDF visual QA and HTML checks remain root tasks"
+  }
+}

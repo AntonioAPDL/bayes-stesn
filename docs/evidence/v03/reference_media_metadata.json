@@ -106,10 +106,17 @@
       "nb_frames": "40"
     }
   ],
-  "frame_inspection": "first/middle/last extracted forG3B,G4B,and fixedthree-modelG4B comparison; visual QA pending",
+  "frame_inspection": "First/middle/last frames visually inspected for G3 B, G4 B, fixed three-model G4 B comparison, and G3 noisy-data evolution. Titles, target masks, signed-error legends, common time indices, fixed scales and advancing lead cursors are readable and aligned. These are the historical e518-source media, not final-current-source media.",
   "pdf_pages_inspected": [
     1,
     14,
     27
-  ]
+  ],
+  "data_frames_inspected": [
+    0,
+    49,
+    99
+  ],
+  "data_frames_source": "report/v03/reference/media/g3_excitable_field_data.mp4",
+  "pdf_visual_scope": "Selected pages 1,14,27 inspected; full-page QA remains required for the eventual final report."
 }

@@ -1,0 +1,53 @@
+{
+  "schema": "v03-illustration-plan-1.0",
+  "declared_utc": "2026-11-03T08:47:55.267091+00:00",
+  "source_fingerprint": "9f73b28a6ee6b8eec4bd21c3366b0c260c9433f798610be16697b2e44166d5ac",
+  "status": "declared_before_revised_and_sensor_outcomes",
+  "selection_rule": "Use replication0 in the prespecified studies and all saved forecast leads; do not search for a favorable field, model, origin, or horizon.",
+  "primary_media": {
+    "run": "The uncropped revised_L1000 or revised_L2000 chosen by the sealed history rule",
+    "scenarios": [
+      "g1_gaussian_ar",
+      "g2_spectral_transport",
+      "g3_excitable_field",
+      "g4_existing_fronts"
+    ],
+    "replication": 0,
+    "tracks": [
+      "A",
+      "B"
+    ],
+    "assets": [
+      "observed data evolution",
+      "Bayesian ESN mean versus observed truth with signed forecast error",
+      "saved lead error curves"
+    ]
+  },
+  "synchronized_model_comparison": {
+    "scenario": "g4_existing_fronts",
+    "replication": 0,
+    "track": "B",
+    "models": [
+      "bayes_esn_ridge",
+      "separable_stgp",
+      "basis_gru"
+    ],
+    "runs": [
+      "chosen revised pilot",
+      "separate100-sensor condition"
+    ],
+    "still_lead_rule": "Middle forecast lead by array position; no score-based frame choice.",
+    "forecast_leads": "Every saved forecast lead, with identical physical times and scored sites across models.",
+    "scale_rule": "Fixed common truth/mean scale and symmetric signed-error scale over all compared models and leads; no hidden per-frame rescaling."
+  },
+  "qualification_policy": "Preserve original qualification. A saved unqualified raw forecast is diagnostic and visibly labeled; if a requested native artifact is absent, record that unavailable case instead of selecting a replacement replication or quietly substituting a fallback.",
+  "interpretation": "Illustrations are not independent replications, confirmatory evidence, or a model-ranking procedure. The separate15x15 sensor field cannot be treated as a nested version of a7x7 revised field.",
+  "qa_required": [
+    "Verify simulation/forecast/receipt source and identities.",
+    "Reproduce saved RMSE and lead alignment for synchronized comparisons.",
+    "Check first, middle and last frames, labels, units, role masks, fixed color limits and codec metadata.",
+    "Record PDF page and HTML/media inspection scope actually completed."
+  ],
+  "scientific_results_in_this_file": false,
+  "identity": "8d25485b9afbf713442183e4a013ae5e8599cf093367aecef7791379e5f2eeb2"
+}

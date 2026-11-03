@@ -13,16 +13,18 @@ from datetime import datetime, timezone
 import hashlib
 import html
 import json
+import math
 from pathlib import Path
 import re
 import shutil
+from statistics import NormalDist
 import sys
 from xml.etree import ElementTree
 import zipfile
 
 import numpy as np
 
-from bayes_stesn.io import content_hash, load_state
+from bayes_stesn.io import content_hash, load_state, seed_for
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,6 +39,7 @@ LABELS = {"persistence": "Persistence", "seasonal_naive": "Seasonal naive",
           "separable_stgp": "Separable GP", "basis_krr": "Basis KRR",
           "bayes_esn_ridge": "Bayesian ESN", "eqesn_rollout": "Quadratic ESN ensemble",
           "dcrnn": "Diffusion GRU", "basis_gru": "Basis GRU"}
+PLOT_LABELS = {**LABELS, "eqesn_rollout": "Quadratic ESN", "spatial_persistence": "Spatial persist."}
 SCENARIOS = {"g1_gaussian_ar": "G1 / Gaussian spatial AR",
              "g2_spectral_transport": "G2 / Spectral transport",
              "g3_excitable_field": "G3 / Excitable field",
@@ -45,6 +48,8 @@ SCENARIOS = {"g1_gaussian_ar": "G1 / Gaussian spatial AR",
              "g6_velocity_shift": "G6 / Hidden velocity shift"}
 FOCUS = ("bayes_esn_ridge", "separable_stgp", "basis_gru", "eqesn_rollout",
          "persistence", "spatial_persistence")
+STRESS_ARMS = {"whole_field_t": "G5 / Whole-field Student-t noise",
+               "local_t": "G5 / Local Student-t noise", "velocity_shift": "G6 / Hidden velocity shift"}
 
 
 def sha256(path):
@@ -123,6 +128,18 @@ class Inputs:
         for item in self.files.values():
             if sha256(item["path"]) != item["sha256"]:
                 raise ValueError(f"Input changed during rendering: {item['path']}")
+
+
+def bound_inputs(rows, inputs):
+    paths = set()
+    for row in rows:
+        path = Path(row["path"])
+        path = (path if path.is_absolute() else ROOT / path).resolve()
+        if path in paths:
+            raise ValueError("Bound source inventory contains duplicate files")
+        paths.add(path)
+        inputs.add(path, expected=row["sha256"], size=row["bytes"])
+    return paths
 
 
 def _finite(value):
@@ -427,6 +444,158 @@ def load_diagnostics(paths, runs, inputs, current_source):
     return results
 
 
+def _prior_model_metadata(path):
+    """Read only frozen design/specification members, never posterior arrays."""
+    with zipfile.ZipFile(path) as archive:
+        if archive.getinfo("__manifest__.npy").file_size > 32 * 1024**2:
+            raise ValueError("Prior-check model metadata exceeds the 32 MiB allowance")
+        with np.load(path, allow_pickle=False) as arrays:
+            manifest = json.loads(str(arrays["__manifest__"]), parse_constant=_reject_constant,
+                                  object_pairs_hook=_unique_keys)
+            if manifest.get("schema_version") != "1.0" or manifest.get("kind") != "fitted_model":
+                raise ValueError("Prior check requires the bound portable fitted-model archive")
+            state = manifest["state"]
+            prepared = state["prepared"]
+            names = ("Phi", "Z", "reference_Z")
+            members = {key: prepared[key]["__array__"] for key in names}
+            if sum(archive.getinfo(key + ".npy").file_size for key in members.values()) > 32 * 1024**2:
+                raise ValueError("Prior-check frozen design exceeds the 32 MiB allowance")
+            result = {key: arrays[member] for key, member in members.items()}
+            result.update({key: prepared[key] for key in ("spec", "response_center", "response_scale", "split")})
+            result["sampler"] = state["sampler"]
+    return result
+
+
+def load_prior_checks(paths, extension_studies, inputs, current_source):
+    """Bind the saved conditional prior assessment; do not repeat quadrature or rollouts."""
+    results = []
+    for path in paths:
+        path = Path(path).resolve()
+        if not path.exists():
+            results.append({"status": "not available", "path": str(path)})
+            continue
+        value = inputs.json(path)
+        identity(value, label="Conditional prior check")
+        if (value.get("schema") != "conditional-fixed-design-prior-check-1.0"
+                or value.get("source_fingerprint") != current_source
+                or any(value.get(key) is not False for key in ("posterior_samples_used", "future_labels_used",
+                    "models_refitted", "prior_retuning_performed", "extension_promotion", "autonomous_prior_rollouts_assessed"))):
+            raise ValueError("Prior check has an incompatible source or information scope")
+        inputs.add(ROOT / "tools/check_conditional_prior_v03.py", expected=value["tool_sha256"])
+        bound = set()
+        for filename, digest in value["input_hashes"].items():
+            member = Path(filename)
+            member = (member if member.is_absolute() else ROOT / member).resolve()
+            if member in bound:
+                raise ValueError("Prior check duplicates a bound input")
+            bound.add(member)
+            inputs.add(member, expected=digest)
+        required, seen = set(), set()
+        if not 1 <= len(value["cases"]) <= 4:
+            raise ValueError("Prior check requires one to four distinct bounded cases")
+        for case in value["cases"]:
+            directory = Path(case["ablation_directory"])
+            directory = (directory if directory.is_absolute() else ROOT / directory).resolve()
+            matched = [study for study in extension_studies
+                       if (study.get("scientific_evidence") or {}).get("mode") == "extensions"
+                       and Path(study["path"]).resolve().parent == directory
+                       and study["document"].get("manifest_identity") == case["manifest_identity"]]
+            if directory in seen or len(matched) != 1 or case.get("identical_frozen_design_and_shared_priors_verified") is not True:
+                raise ValueError("Prior check must bind distinct supplied complete P5 ablations")
+            seen.add(directory)
+            manifest = inputs.json(directory / "manifest.json")
+            identity(manifest, label="Prior-check P5 manifest")
+            if (manifest["identity"] != case["manifest_identity"] or manifest.get("source_fingerprint") != current_source
+                    or manifest.get("environment") != value["environment"]):
+                raise ValueError("Prior check and saved P5 pair use different numerical environments")
+            required.update(directory / name for name in ("manifest.json", "output_inventory.json",
+                            "scalar_reference/fitted.npz", "full_residual_ar/fitted.npz"))
+            if not required.issubset(bound):
+                raise ValueError("Prior check inventory omits a required P5 pair input")
+            states = [_prior_model_metadata(directory / variant / "fitted.npz")
+                      for variant in ("scalar_reference", "full_residual_ar")]
+            base, ar = states
+            if (case["saved_scalar_sampler_temporal"] != "iid" or base["sampler"]["temporal"] != "iid"
+                    or ar["sampler"]["temporal"] != "full_residual_ar"
+                    or case["saved_ar_sampler_temporal"] != "full_residual_ar"):
+                raise ValueError("Prior check mislabels the iid/full-residual-AR pair")
+            for key in ("Phi", "Z", "reference_Z"):
+                if not np.array_equal(base[key], ar[key]):
+                    raise ValueError("Prior pair does not preserve the frozen feature design")
+            for key in ("response_center", "response_scale", "split"):
+                if base[key] != ar[key]:
+                    raise ValueError("Prior pair changes its response units or fitting window")
+            if any(base["spec"][key] != ar["spec"][key] for key in ("prior", "covariance", "features", "spatial_mean")):
+                raise ValueError("Prior pair changes a shared specification")
+            for key in ("a0", "b0"):
+                if base["sampler"][key] != ar["sampler"][key]:
+                    raise ValueError("Prior pair changes its inverse-gamma prior")
+            saved, prior, covariance, sampler = case["results"], base["spec"]["prior"], base["spec"]["covariance"], ar["sampler"]
+            if (prior["kind"] != "ridge" or covariance["kind"] != "matern"
+                    or covariance["range_prior"] != "lognormal" or covariance["scale_mode"] != "relative"
+                    or any(covariance[key] for key in ("anisotropy", "nonstationary", "static_variance", "infer_nu"))):
+                raise ValueError("Prior assessment is outside its declared scalar-ridge covariance scope")
+            parameters = {"a0": sampler["a0"], "b0": sampler["b0"],
+                "log_precision_mean": prior["mean_log_precision"], "log_precision_sd": prior["sd_log_precision"],
+                **{key: covariance[key] for key in ("log_q_mean", "log_q_sd", "log_ell_mean", "log_ell_sd", "nu")},
+                "rho_eta_mean": 0., "rho_eta_sd": sampler["rho_prior_sd"]}
+            for key, expected in parameters.items():
+                _same_number(saved["prior_parameters"][key], expected, "Actual saved prior parameter " + key)
+            if sampler["a0"] <= 1 or sampler["b0"] <= 0 or base["response_scale"] <= 0:
+                raise ValueError("Prior assessment requires positive scale and finite variance")
+            sigma = sampler["b0"] / (sampler["a0"] - 1)
+            inverse_lambda = math.exp(-parameters["log_precision_mean"] + parameters["log_precision_sd"]**2 / 2)
+            q = math.exp(parameters["log_q_mean"] + parameters["log_q_sd"]**2 / 2)
+            for key, expected in (("response_center", base["response_center"]), ("response_scale", base["response_scale"]),
+                    ("expected_sigma2_standardized", sigma), ("expected_inverse_lambda", inverse_lambda), ("expected_q", q),
+                    ("marginal_coefficient_variance_standardized", sigma * inverse_lambda),
+                    ("marginal_coefficient_variance_original_units", sigma * inverse_lambda * base["response_scale"]**2)):
+                _same_number(saved[key], expected, "Prior moment / units " + key)
+            if saved["predictive_variance_finite"] is not True or saved["predictive_fourth_moment_finite"] != (sampler["a0"] > 2):
+                raise ValueError("Prior moment-existence claim disagrees with the inverse-gamma shape")
+            expected_designs = {"conditioning_reference": base["reference_Z"],
+                "observed_history_fitting_design": base["Z"][base["split"]["fitting_start"]:base["split"]["fitting_stop"]]}
+            if {row["name"] for row in saved["designs"]} != set(expected_designs) or len(saved["designs"]) != 2:
+                raise ValueError("Prior check omits or duplicates a declared frozen design")
+            for row in saved["designs"]:
+                z = expected_designs[row["name"]]
+                if row["frozen_design_hash"] != content_hash({"Phi": base["Phi"], "Z": z}):
+                    raise ValueError("Prior check frozen design hash differs from the fitted archive")
+                if [row[key] for key in ("sites", "times", "spatial_columns", "temporal_columns")] != [
+                        len(base["Phi"]), len(z), base["Phi"].shape[1], z.shape[1]]:
+                    raise ValueError("Prior check misstates its frozen design dimensions")
+                diagonal = sigma * inverse_lambda * np.outer(np.square(base["Phi"]).sum(axis=1), np.square(z).sum(axis=1))
+                for key, variance in (("readout_pointwise_prior_sd", diagonal),
+                                      ("observation_pointwise_prior_sd", diagonal + sigma * (1 + q))):
+                    sd = np.sqrt(variance)
+                    expected = {"minimum": sd.min(), "median": np.median(sd), "maximum": sd.max(), "rms": np.sqrt(variance.mean())}
+                    for statistic, number in expected.items():
+                        _same_number(row[key]["conditioning_standard_deviation_units"][statistic], number,
+                                     "Prior fixed-design amplitude")
+            sd_summaries = [saved["stationary_residual_prior_sd"]] + [row[key] for row in saved["designs"]
+                            for key in ("readout_pointwise_prior_sd", "observation_pointwise_prior_sd")]
+            for summary in sd_summaries:
+                for key in ("minimum", "median", "maximum", "rms"):
+                    _same_number(summary["original_response_units"][key],
+                        summary["conditioning_standard_deviation_units"][key] * base["response_scale"], "Prior SD unit conversion")
+            _same_number(saved["stationary_residual_prior_sd"]["conditioning_standard_deviation_units"]["rms"],
+                         math.sqrt(sigma * (1 + q)), "Stationary residual prior amplitude")
+            for threshold, probability in saved["ar_absolute_rho_tail_probabilities"].items():
+                _same_number(probability, math.erfc(math.atanh(float(threshold)) / (sampler["rho_prior_sd"] * math.sqrt(2))),
+                             "Signed-rho prior tail probability")
+            _same_number(saved["ar_absolute_rho_median"], math.tanh(sampler["rho_prior_sd"] * NormalDist().inv_cdf(.75)),
+                         "Signed-rho prior median absolute dependence")
+            quadrature = saved["quadrature"]
+            if (quadrature["passed"] is not True or quadrature["orders"] != [128, 256]
+                    or any(not _finite(quadrature[key]) or not 0 <= quadrature[key] <= quadrature["absolute_agreement_tolerance"]
+                           for key in ("expected_kernel_max_absolute_difference", "rho_moment_max_absolute_difference"))):
+                raise ValueError("Saved prior quadrature lacks its declared agreement check")
+        if bound != required:
+            raise ValueError("Prior check inventory does not exactly cover its P5 pairs and fitted archives")
+        results.append({"status": "complete", "path": str(path), "document": value})
+    return results
+
+
 def _small_numeric_state(path, inputs):
     inputs.add(path)
     with zipfile.ZipFile(path) as archive:
@@ -588,6 +757,277 @@ def load_curve_audits(paths, curves, inputs, current_source):
     return results
 
 
+def _stress_metric_powers():
+    metrics = {name: 1 for name in ("rmse", "mae", "crps", "field_energy", "spatial_variogram")}
+    for level in ("0.5", "0.8", "0.9", "0.95"):
+        for name in ("coverage", "width", "interval_score", "field_coverage", "whole_path_covered"):
+            metrics[f"intervals/{level}/{name}"] = int(name in {"width", "interval_score"})
+    metrics.update({f"temporal_variogram/{lag}": 1 for lag in (1, 5, 20)})
+    metrics.update({f"functional_crps/{name}": 1 for name in
+                    ("path_spatial_mean", "final_spatial_mean", "path_maximum", "path_minimum")})
+    return metrics
+
+
+def _score_leaf(score, metric):
+    for key in metric.split("/"):
+        if not isinstance(score, dict) or key not in score:
+            return None
+        score = score[key]
+    return float(score) if isinstance(score, (int, float, bool)) and np.isfinite(score) else None
+
+
+def validate_stress_effects(arm, recipe):
+    """Independently reduce declared paired losses, units and whole-dataset uncertainty."""
+    effects = {(row["model_id"], row["track"], row["population"], row["metric"]): row for row in arm["effects"]}
+    if len(effects) != len(arm["effects"]):
+        raise ValueError("Stress audit duplicates a paired effect")
+    expected_keys = set()
+    for model, track in sorted({(row["model_id"], row["track"]) for row in arm["paired_jobs"]}):
+        rows = [row for row in arm["paired_jobs"] if row["model_id"] == model and row["track"] == track]
+        if len(rows) != 5 or [row["replication"] for row in rows] != list(range(5)):
+            raise ValueError("Stress effect requires its five ordered independent paired fields")
+        for population in ("native_scores", "operational_scores"):
+            eligible = rows if population == "operational_scores" else [row for row in rows if
+                row["control_qualified"] and row["stress_qualified"] and not row["control_fallback"] and not row["stress_fallback"]]
+            for metric, power in _stress_metric_powers().items():
+                if population == "operational_scores" and metric not in {"rmse", "mae"}:
+                    continue
+                if all(_score_leaf(row["control_scores"][population], metric) is None for row in rows):
+                    continue
+                key = (model, track, population, metric)
+                expected_keys.add(key)
+                if key not in effects:
+                    raise ValueError("Stress audit omits a declared primary or companion effect")
+                effect = effects[key]
+                pairs, raw, normalized, scales = [], [], [], []
+                for row in eligible:
+                    a, b = (_score_leaf(row[name][population], metric) for name in ("control_scores", "stress_scores"))
+                    if a is None or b is None:
+                        continue
+                    scale = row["control_training_scale"]
+                    if not _finite(scale) or scale <= 0:
+                        raise ValueError("Stress normalization requires a positive control training-only SD")
+                    pairs.append(row["pair_id"])
+                    raw.append(b - a)
+                    normalized.append((b - a) / scale**power)
+                    scales.append(scale)
+                if (effect["pair_ids"] != pairs or effect["N_pair"] != len(pairs) or effect["attempted_pairs"] != 5
+                        or effect["normalization_power"] != power
+                        or effect["control_qualified_count"] != sum(row["control_qualified"] and not row["control_fallback"] for row in rows)
+                        or effect["stress_qualified_count"] != sum(row["stress_qualified"] and not row["stress_fallback"] for row in rows)):
+                    raise ValueError("Stress effect misstates its exact qualified population or normalization units")
+                for field, expected in (("raw_differences", raw), ("normalized_differences", normalized), ("control_scales", scales)):
+                    if len(effect[field]) != len(expected) or not np.allclose(effect[field], expected, rtol=1e-11, atol=1e-12):
+                        raise ValueError("Stress effect differs from saved paired losses or the common control scale")
+                bootstrap_seed = seed_for(recipe["inference"]["bootstrap_seed"], arm["id"], model, track, population, metric)
+                resamples = recipe["inference"]["bootstrap_resamples"]
+                if (effect["bootstrap_seed"] != bootstrap_seed or effect["bootstrap_resamples"] != resamples
+                        or not isinstance(resamples, int) or not 1 <= resamples <= 10000):
+                    raise ValueError("Stress paired bootstrap differs from its bounded declared rule")
+                indices = np.random.default_rng(bootstrap_seed).integers(0, len(pairs), size=(resamples, len(pairs))) if len(pairs) > 1 else None
+                for field, differences in (("raw", raw), ("common_normalized", normalized)):
+                    array = np.asarray(differences, float)
+                    stats = effect[field]
+                    _same_number(stats["mean"], float(array.mean()) if len(array) else None, "Stress paired mean")
+                    _same_number(stats["mcse"], float(array.std(ddof=1) / np.sqrt(len(array))) if len(array) > 1 else None, "Stress paired MCSE")
+                    interval = np.quantile(array[indices].mean(axis=1), (.025, .975)) if indices is not None else None
+                    if interval is None:
+                        if stats["pointwise95"] is not None:
+                            raise ValueError("Stress interval requires at least two paired datasets")
+                    elif (not isinstance(stats["pointwise95"], list) or len(stats["pointwise95"]) != 2
+                          or not np.allclose(stats["pointwise95"], interval, rtol=1e-11, atol=1e-12)):
+                        raise ValueError("Stress pointwise interval disagrees with paired-dataset resampling")
+    if set(effects) != expected_keys:
+        raise ValueError("Stress audit invents undeclared effect populations or metrics")
+
+
+def _sum_known(values):
+    values = list(values)
+    return sum(values) if all(_finite(value) and value >= 0 for value in values) else None
+
+
+def _same_score_tree(actual, expected, *, rtol, atol):
+    if isinstance(expected, dict):
+        if not isinstance(actual, dict) or set(actual) != set(expected):
+            raise ValueError("G6 original-score replay changes a score object")
+        for key in expected:
+            _same_score_tree(actual[key], expected[key], rtol=rtol, atol=atol)
+    elif isinstance(expected, list):
+        if not isinstance(actual, list) or len(actual) != len(expected):
+            raise ValueError("G6 original-score replay changes a score vector")
+        for a, b in zip(actual, expected):
+            _same_score_tree(a, b, rtol=rtol, atol=atol)
+    elif isinstance(expected, (str, bool)) or expected is None:
+        if actual != expected:
+            raise ValueError("G6 original-score replay changes score metadata")
+    elif not _finite(actual) or not np.isclose(actual, expected, rtol=rtol, atol=atol):
+        raise ValueError("G6 original-score replay differs from a saved control score")
+
+
+def _validate_stress_pair(pair, control, stress, arm):
+    key = (control["replication"], control["track"], control["model_id"])
+    if (tuple(pair[name] for name in ("replication", "track", "model_id")) != key
+            or tuple(stress[name] for name in ("replication", "track", "model_id")) != key
+            or pair["pair_id"] != f"rep_{key[0]:03d}/{key[1]}/{key[2]}" or pair["arm"] != arm
+            or pair["control_receipt_identity"] != control["receipt_identity"]
+            or pair["stress_receipt_identity"] != stress["receipt_identity"]
+            or pair["control_normalization_reference"] != control["normalization_reference"]):
+        raise ValueError("Stress pair changes its original receipt, role or training-normalization reference")
+    _same_number(pair["control_training_scale"], control["training_scale"], "Stress common control scale")
+    _same_number(pair["standalone_stress_training_scale"], stress.get("training_scale"), "Standalone stress scale provenance")
+    for label, receipt in (("control", control), ("stress", stress)):
+        if (any(pair[label + "_" + name] != receipt[name] for name in ("qualified", "fallback"))
+                or pair[label + "_scores"] != {name: receipt[name] for name in ("native_scores", "operational_scores")}):
+            raise ValueError("Stress pair changes its saved qualification or complete score objects")
+
+
+def load_stress_audits(paths, runs, inputs, current_source):
+    results = []
+    for path in paths:
+        path = Path(path).resolve()
+        if not path.exists():
+            results.append({"status": "not available", "path": str(path)})
+            continue
+        value = inputs.json(path)
+        identity(value, label="Paired stress audit")
+        if (value.get("schema") != "v03-paired-stress-summary-1.0" or value.get("complete") is not True
+                or value.get("source_fingerprint") != current_source
+                or value.get("standalone_g5_normalization_is_cross_arm_comparable") is not False):
+            raise ValueError("Stress audit requires complete current-source paired results with a common control scale")
+        matched = [run for run in runs if run["manifest"]["identity"] == value["control_manifest_identity"]]
+        if len(matched) != 1:
+            raise ValueError("Stress audit must bind exactly one supplied completed control run")
+        control = matched[0]
+        bound = bound_inputs(value["source_inputs"], inputs)
+        design_path = Path(value["design_path"])
+        design_path = (design_path if design_path.is_absolute() else ROOT / design_path).resolve()
+        if design_path not in bound:
+            raise ValueError("Stress audit omits its immutable design input")
+        inputs.add(design_path, expected=value["design_sha256"])
+        design = inputs.json(design_path)
+        identity(design, label="Paired stress design")
+        if (design.get("schema") != "v03-stress-design-1.0" or design["identity"] != value["design_identity"]
+                or design.get("source_fingerprint") != current_source
+                or design["control_manifest_identity"] != control["manifest"]["identity"]
+                or design["control_protocol"] != control["manifest"]["protocol"]
+                or design["environment"] != control["manifest"]["environment"]):
+            raise ValueError("Stress audit differs from its bound control/source/design")
+        design_bound = bound_inputs(design["source_inputs"], inputs)
+        required_design = {ROOT / "tools/summarize_v03_stress.py", ROOT / "configs/benchmark/v03/studies/stress_recipe.yaml",
+                           ROOT / "configs/benchmark/v03/studies/stress_prepare.py"}
+        if not required_design.issubset(design_bound):
+            raise ValueError("Stress design omits its immutable recipe and preparation tools")
+        inputs.add(ROOT / "tools/summarize_v03_stress.py", expected=design["tool_sha256"])
+        if design["recipe"]["replications"] != 5 or design["control_protocol"]["replications"] != 5:
+            raise ValueError("This stress design requires five independent paired fields")
+        documents = {member: inputs.json(member) for member in bound if member.suffix == ".json"}
+        control_jobs = {(row["scenario"], row["replication"], row["track"], row["model_id"]): row for row in control["receipts"]}
+        historical, seen_arms = {}, set()
+        for arm in value["arms"]:
+            name = arm["id"]
+            if name not in STRESS_ARMS or name in seen_arms:
+                raise ValueError("Stress audit duplicates or invents an intervention arm")
+            seen_arms.add(name)
+            control_scenario, stress_scenario = (("g2_spectral_transport", "g6_velocity_shift") if name == "velocity_shift"
+                                                else ("g4_existing_fronts", "g5_noise_stress"))
+            if (arm["control_scenario"], arm["stress_scenario"]) != (control_scenario, stress_scenario):
+                raise ValueError("Stress arm is paired with the wrong control mechanism")
+            expected = {key[1:]: row for key, row in control_jobs.items() if key[0] == control_scenario}
+            pair_keys = [(pair["replication"], pair["track"], pair["model_id"]) for pair in arm["paired_jobs"]]
+            if len(expected) != 55 or len(pair_keys) != 55 or set(pair_keys) != set(expected):
+                raise ValueError("Stress audit omits or duplicates a declared model/task/dataset pair")
+            costs, generation = arm["costs"], []
+            if name != "velocity_shift":
+                manifests = [member for member, document in documents.items() if member.name == "manifest.json"
+                             and document.get("identity") == arm["run_manifest_identity"]]
+                if len(manifests) != 1:
+                    raise ValueError("Stress arm does not bind one complete benchmark manifest")
+                stress_run = load_run(manifests[0].parent, "stress_" + name, inputs, current_source)
+                if stress_run["manifest"]["protocol"] != design["g5_profiles"][name]:
+                    raise ValueError("Stress arm differs from its prespecified frozen profile")
+                stress_jobs = {(row["replication"], row["track"], row["model_id"]): row for row in stress_run["receipts"]}
+            else:
+                progress = [(member, document) for member, document in documents.items()
+                            if document.get("schema") == "v03-g6-replay-progress-1.0"]
+                if (len(progress) != 1 or progress[0][1].get("complete") is not True
+                        or progress[0][1].get("jobs") != 55 or progress[0][1].get("new_parameter_fits") != 0
+                        or progress[0][1].get("design_identity") != design["identity"]
+                        or progress[0][1].get("source_fingerprint") != current_source
+                        or arm["replay_design_identity"] != design["identity"] or arm.get("adaptation") is not False
+                        or arm["break_lead"] != design["recipe"]["g6"]["break_lead"]):
+                    raise ValueError("G6 requires its complete fixed-design replay with zero parameter fits or adaptation")
+                identity(progress[0][1], label="G6 replay completion")
+                stress_jobs = {}
+                for member, receipt in documents.items():
+                    if receipt.get("schema") == "v03-g6-data-1.0":
+                        identity(receipt, label="G6 generated-data receipt")
+                        if receipt["design_identity"] != design["identity"] or receipt["break_lead"] != arm["break_lead"]:
+                            raise ValueError("G6 data changed the frozen hidden-transition design")
+                        inputs.add(safe_member(member.parent, "simulation.npz"), expected=receipt["sha256"], size=receipt["bytes"])
+                        generation.append(receipt)
+                    elif receipt.get("schema") == "v03-g6-replay-job-1.0":
+                        identity(receipt, "receipt_identity", "G6 replay job")
+                        key = (receipt["replication"], receipt["track"], receipt["model_id"])
+                        if (key in stress_jobs or key not in expected or receipt["design_identity"] != design["identity"]
+                                or receipt["source_fingerprint"] != current_source or receipt["new_parameter_fits"] != 0
+                                or receipt["control_score_replay_verified"] is not True
+                                or receipt["control_receipt_identity"] != expected[key]["receipt_identity"]
+                                or receipt["control_manifest_identity"] != control["manifest"]["identity"]
+                                or receipt["score_tolerance"] != design["recipe"]["g6"]["score_replay_tolerance"]):
+                            raise ValueError("G6 replay changes its original control fit or information policy")
+                        bound_inputs(receipt["source_inputs"], inputs)
+                        for item in receipt["artifacts"]:
+                            inputs.add(safe_member(member.parent, item["file"]), expected=item["sha256"], size=item["bytes"])
+                        for population in ("native_scores", "operational_scores"):
+                            _same_score_tree(receipt["replayed_control_" + population], expected[key][population], **receipt["score_tolerance"])
+                        stress_jobs[key] = receipt
+                generation.sort(key=lambda row: row["replication"])
+                if set(stress_jobs) != set(expected) or [row["replication"] for row in generation] != list(range(5)):
+                    raise ValueError("G6 audit lacks its exact five fields and complete fixed-roster replay")
+            source_jobs = []
+            for pair in arm["paired_jobs"]:
+                key = (pair["replication"], pair["track"], pair["model_id"])
+                a, b = expected[key], stress_jobs[key]
+                _validate_stress_pair(pair, a, b, name)
+                if name != "velocity_shift" and (a["fit_config"] != b["fit_config"]
+                        or a["origin_index"] != b["origin_index"] or a["target_ids"] != b["target_ids"]):
+                    raise ValueError("G5 changes the control specification, forecast origin or target roles")
+                historical[a["receipt_identity"]] = a["total_pipeline_seconds"]
+                source_jobs.append(b)
+            if costs["source_job_receipt_identities"] != [row["receipt_identity"] for row in source_jobs]:
+                raise ValueError("Stress cost population differs from its actual job receipts")
+            time_key = "new_pipeline_seconds" if name == "velocity_shift" else "total_pipeline_seconds"
+            cpu_key = "new_pipeline_cpu_seconds" if name == "velocity_shift" else "total_pipeline_cpu_seconds"
+            total = sum(row[time_key] for row in source_jobs) + sum(row["generation_and_serialization_seconds"] for row in generation)
+            cpu = _sum_known([row.get(cpu_key) for row in source_jobs] + [row["generation_and_serialization_cpu_seconds"] for row in generation])
+            _same_number(costs["incremental_pipeline_seconds"], total, "Stress incremental pipeline time")
+            _same_number(costs["incremental_pipeline_cpu_seconds"], cpu, "Stress incremental CPU time")
+            if (costs["new_parameter_fits"] != (0 if name == "velocity_shift" else 55)
+                    or costs["compute_accounting_complete"] != all(row.get("compute_accounting_complete", False) for row in source_jobs)):
+                raise ValueError("Stress audit misstates fitting work or accounting completeness")
+            if name == "velocity_shift":
+                if (costs["forecast_jobs"] != len(source_jobs)
+                        or costs["source_generation_receipt_identities"] != [row["identity"] for row in generation]
+                        or costs["replayed_model_forecasts"] != sum(row["forecast_method"] == "replayed_frozen_model_original_seed" for row in source_jobs)
+                        or costs["reused_saved_forecasts"] != sum(row["forecast_method"] == "reused_saved_forecast" for row in source_jobs)):
+                    raise ValueError("G6 misstates its reused versus replayed forecast work")
+                for field, expected_value in (("generation_and_serialization_seconds", sum(row["generation_and_serialization_seconds"] for row in generation)),
+                        ("replay_verification_scoring_serialization_seconds", sum(row[time_key] for row in source_jobs))):
+                    _same_number(costs[field], expected_value, "G6 component time")
+            validate_stress_effects(arm, design["recipe"])
+        if seen_arms != set(STRESS_ARMS) or value["new_parameter_fits"] != 110:
+            raise ValueError("Stress audit is missing a declared intervention or changes its fitting budget")
+        if value["historical_shared_control_costs_by_receipt"] != historical:
+            raise ValueError("Stress audit duplicates or changes a reused control cost")
+        _same_number(value["historical_shared_control_pipeline_seconds"], sum(historical.values()), "Shared historical control cost")
+        _same_number(value["incremental_pipeline_seconds"], sum(arm["costs"]["incremental_pipeline_seconds"] for arm in value["arms"]), "Total incremental stress time")
+        _same_number(value["incremental_pipeline_cpu_seconds"], _sum_known(arm["costs"]["incremental_pipeline_cpu_seconds"] for arm in value["arms"]), "Total incremental stress CPU time")
+        if value["compute_accounting_complete"] != all(arm["costs"]["compute_accounting_complete"] for arm in value["arms"]):
+            raise ValueError("Stress total accounting completeness differs from its arms")
+        results.append({"status": "complete", "path": str(path), "control_label": control["label"], "document": value})
+    return results
+
+
 def _validate_history_choice(value, runs):
     if value.get("confirmation_outcomes_inspected") is not False:
         raise ValueError("History choice crossed the declared development-only boundary")
@@ -596,6 +1036,16 @@ def _validate_history_choice(value, runs):
     qualification_cells = {}
     for contrast in value["contrasts"]:
         metric = contrast["metric"]
+        population = contrast["score_family"]
+        if population not in {"native_scores", "operational_scores"}:
+            raise ValueError("Unknown history comparison population")
+        is_decision = (contrast["model_id"] == value["decision_rule"]["decision_model"]
+                       and metric == "crps" and population == "native_scores")
+        if contrast["is_decision_contrast"] != is_decision:
+            raise ValueError("History audit changed its prespecified decision model/score")
+        expected_margin = value["decision_rule"]["minimum_normalized_crps_improvement"] if is_decision else None
+        if contrast["margin"] != expected_margin:
+            raise ValueError("History audit changed its prespecified improvement margin")
         for cell in contrast["cells"]:
             key_tail = (contrast["track"], contrast["model_id"])
             actual, eligible, qualified_short, qualified_long = [], [], 0, 0
@@ -604,21 +1054,29 @@ def _validate_history_choice(value, runs):
                 short, long = jobs[1000][key], jobs[2000][key]
                 qualified_short += bool(short["qualified"])
                 qualified_long += bool(long["qualified"])
-                if metric == "crps" and not (short["qualified"] and long["qualified"]):
+                if population == "native_scores" and not (short["qualified"] and long["qualified"]
+                        and metric in short[population] and metric in long[population]):
                     continue
-                population = "native_scores" if metric == "crps" else "operational_scores"
                 actual.append((short[population][metric] - long[population][metric]) / short["training_scale"])
                 eligible.append(replication)
             if (eligible != cell["usable_replications"] or qualified_short != cell["qualified1000"]
                     or qualified_long != cell["qualified2000"]):
                 raise ValueError("History audit uses a different paired population")
-            if metric == "crps":
-                qualification_cells[(contrast["model_id"], contrast["track"], cell["scenario"])] = qualified_short >= qualified_long
+            if contrast["is_decision_contrast"]:
+                qualification_cells[(contrast["model_id"], contrast["track"], cell["scenario"])] = qualified_long >= qualified_short
+            saved = cell["paired_differences"]
+            if len(saved) != len(actual) or not np.allclose(saved, actual, rtol=1e-11, atol=1e-12):
+                raise ValueError("History audit paired losses differ from the saved scientific receipts")
             if contrast["macro"] is not None:
                 saved = contrast["macro"]["paired_differences"][cell["scenario"]]
                 if len(saved) != len(actual) or not np.allclose(saved, actual, rtol=1e-11, atol=1e-12):
                     raise ValueError("History audit paired losses differ from the saved scientific receipts")
-        passed = contrast["macro"] is not None and contrast["macro"]["upper_one_sided95"] <= contrast["margin"]
+        minimum = value["decision_rule"]["minimum_common_qualified_pairs_per_native_cell"] if population == "native_scores" else runs[1000]["manifest"]["protocol"]["replications"]
+        sufficient = all(len(cell["usable_replications"]) >= minimum for cell in contrast["cells"])
+        if contrast["sufficient_pairs"] != sufficient:
+            raise ValueError("History audit misstates its minimum paired population")
+        passed = (contrast["macro"] is not None and sufficient
+                  and contrast["macro"]["lower_one_sided95"] >= contrast["margin"]) if contrast["is_decision_contrast"] else None
         if contrast["bound_passed"] != passed:
             raise ValueError("History audit misstates its declared score-bound decision")
     for count, run in runs.items():
@@ -626,17 +1084,23 @@ def _validate_history_choice(value, runs):
                      sum(r["total_pipeline_seconds"] for r in run["receipts"]), "History summed pipeline time")
     saving = 1 - value["summed_pipeline_seconds"]["1000"] / value["summed_pipeline_seconds"]["2000"]
     _same_number(value["short_history_time_saving_fraction"], saving, "History time-saving fraction")
+    ratio = value["summed_pipeline_seconds"]["2000"] / value["summed_pipeline_seconds"]["1000"]
+    _same_number(value["long_to_short_pipeline_time_ratio"], ratio, "History long-to-short time ratio")
     complete = all(r["compute_accounting_complete"] for run in runs.values() for r in run["receipts"])
-    cost_pass = complete and saving >= value["decision_rule"]["minimum_measured_pipeline_time_saving_fraction"]
-    score_pass = all(c["bound_passed"] for c in value["contrasts"])
+    cost_pass = complete and ratio <= value["decision_rule"]["maximum_measured_long_to_short_pipeline_time_ratio"]
+    primary = [c for c in value["contrasts"] if c["is_decision_contrast"]]
+    if {c["track"] for c in primary} != set(value["decision_rule"]["tracks"]) or len(primary) != len(value["decision_rule"]["tracks"]):
+        raise ValueError("History audit omits a prespecified decision track")
+    score_pass = all(c["sufficient_pairs"] and c["bound_passed"] for c in primary)
     saved_qualification = {(c["model_id"], c["track"], c["scenario"]): c["not_worse"] for c in value["qualification_cells"]}
     if saved_qualification != qualification_cells or len(saved_qualification) != len(value["qualification_cells"]):
         raise ValueError("History qualification decision differs from saved model outcomes")
     qualification_pass = all(qualification_cells.values())
-    selected = 1000 if cost_pass and score_pass and qualification_pass else 2000
+    promoted = bool(cost_pass and score_pass and qualification_pass)
+    selected = 2000 if promoted else 1000
     if (value["complete_compute_accounting"] != complete or value["cost_gate_passed"] != cost_pass
             or value["score_bounds_passed"] != score_pass or value["qualification_not_worse"] != qualification_pass
-            or value["selected_initial_history"] != selected):
+            or value["promotion_gate_passed"] != promoted or value["selected_initial_history"] != selected):
         raise ValueError("History choice does not follow its saved gate components")
 
 
@@ -674,6 +1138,36 @@ def load_extensions(path, inputs, current_source, *, runs=()):
             referenced_paths.append(inputs.json(inventory_path.with_name("path_stability.json")))
     if value.get("source_fingerprint", current_source) != current_source:
         raise ValueError("Extension dispositions refer to a different current source")
+    if value.get("schema") == "v03-release-extension-dispositions-1.0":
+        identity(value, label="Release extension-disposition overlay")
+        if value.get("source_fingerprint") != current_source:
+            raise ValueError("Release disposition overlay needs its current source identity")
+        bound = bound_inputs(value["source_inputs"], inputs)
+        reference = value["base_findings"]
+        previous_path = Path(reference["path"])
+        previous_path = (previous_path if previous_path.is_absolute() else ROOT / previous_path).resolve()
+        if previous_path not in bound:
+            raise ValueError("Release disposition overlay omits its immutable P5 base input")
+        inputs.add(previous_path, expected=reference["sha256"])
+        previous = inputs.json(previous_path)
+        identity(previous, label="Immutable P5 disposition base")
+        if (previous.get("schema") != "p5-extension-findings-1.0" or previous["identity"] != reference["identity"]
+                or previous.get("source_fingerprint") != current_source):
+            raise ValueError("Release disposition overlay binds an incompatible P5 base")
+    replay = value.get("replay_provenance")
+    if replay:
+        if (replay.get("new_independent_datasets") != 0 or replay.get("same_datasets_and_seeds") is not True
+                or replay.get("new_model_selection_rules") is not False or replay.get("historical_artifacts_modified") is not False):
+            raise ValueError("A P5 source replay must preserve its original evidence and replication population")
+        previous_path = Path(replay["historical_findings_path"])
+        if not previous_path.is_absolute():
+            previous_path = ROOT / previous_path
+        inputs.add(previous_path, expected=replay["historical_findings_sha256"])
+        previous = inputs.json(previous_path)
+        identity(previous, label="Historical P5 disposition bound by replay")
+        if (previous["identity"] != replay["historical_findings_identity"]
+                or previous.get("source_fingerprint") != replay["historical_source_fingerprint"]):
+            raise ValueError("P5 replay does not bind its declared historical disposition")
     if value.get("path_count_assessment"):
         validate_path_assessment(value["path_count_assessment"], referenced_paths, runs, inputs)
     entries = value.get("extensions", value.get("rows", value.get("decisions")))
@@ -833,13 +1327,15 @@ def validate_path_assessment(assessment, path_results, runs, inputs):
 
 
 def current_extension_entries(studies):
-    """Final findings supersede scope; ambiguous same-priority claims fail."""
+    """A sealed release overlay supersedes P5 findings and scope; conflicts fail."""
     chosen = {}
     for study in studies:
         if study.get("scientific_evidence"):
             continue
         document = study.get("document", {})
-        rank = 2 if document.get("schema") == "p5-extension-findings-1.0" else int(document.get("scientific_results_in_this_file") is not False)
+        rank = {"v03-release-extension-dispositions-1.0": 3,
+                "p5-extension-findings-1.0": 2}.get(document.get("schema"),
+                    int(document.get("scientific_results_in_this_file") is not False))
         for row in study["entries"]:
             key = row.get("id", row.get("name"))
             current = chosen.get(key)
@@ -907,9 +1403,20 @@ def load_engineering(inputs):
                      for key in ("tests", "failures", "errors", "skipped")},
                       "recorded_at": suites[0].get("timestamp", "unrecorded")})
     release = []
-    for path in sorted(folder.glob("*release*.json")):
-        release.append({"file": path.name, "receipt": inputs.json(path)})
-    return {"memory": memory, "tests": tests, "release": release}
+    for path in sorted(set(folder.glob("*release*.json")) | set(folder.glob("*ci*.json"))):
+        receipt = inputs.json(path)
+        if receipt.get("schema") == "github-actions-verification-1.0":
+            release.append({"file": path.name, "kind": "saved remote CI", "receipt": receipt})
+        elif (receipt.get("schema_version") == 2
+              and {"passed", "steps", "source_hashes", "repository_published"}.issubset(receipt)):
+            release.append({"file": path.name, "kind": "isolated local release gate", "receipt": receipt})
+    admission_path = folder / "cache_admission_review.json"
+    admission = inputs.json(admission_path) if admission_path.exists() else None
+    if admission:
+        identity(admission, label="Cache-admission engineering evidence")
+        if admission.get("schema") != "cache-admission-review-1.0":
+            raise ValueError("Unknown cache-admission evidence schema")
+    return {"memory": memory, "tests": tests, "release": release, "memory_admission": admission}
 
 
 def named_path(value):
@@ -931,6 +1438,7 @@ def collect(args):
         raise ValueError("Supply at least one --coordinate or --run")
     curves = [load_curve(path, inputs, source) for path in args.curve] if args.curve else [load_curve(None, inputs, source)]
     curve_audits = load_curve_audits(args.curve_audit, curves, inputs, source)
+    stress_audits = load_stress_audits(args.stress_audit, runs, inputs, source)
     extension_studies = [load_extensions(path, inputs, source, runs=runs) for path in args.extensions]
     extensions = ({"status": "; ".join(dict.fromkeys(x["status"] for x in extension_studies)),
                    "entries": [entry for x in extension_studies for entry in x["entries"]], "studies": extension_studies}
@@ -940,13 +1448,15 @@ def collect(args):
     audits = load_audits(args.audit or [], runs, inputs, source)
     calibrations = load_calibrations(args.calibration or [], runs, inputs, source)
     diagnostics = load_diagnostics(args.diagnostic, runs, inputs, source)
+    prior_checks = load_prior_checks(args.prior_check, extension_studies, inputs, source)
     engineering = load_engineering(inputs)
     for name in ("docs/models.md", "docs/derivations/07_sampler_coordinates_recovery.md", "docs/study_design_v03.md"):
         inputs.add(ROOT / name)
     return {"source_fingerprint": source, "coordinate": coordinate, "runs": runs, "curves": curves,
-            "curve_audits": curve_audits,
+            "curve_audits": curve_audits, "stress_audits": stress_audits,
             "extensions": extensions, "media": media, "audits": audits,
-            "calibrations": calibrations, "diagnostics": diagnostics, "engineering": engineering}, inputs
+            "calibrations": calibrations, "diagnostics": diagnostics, "prior_checks": prior_checks,
+            "engineering": engineering}, inputs
 
 
 def fmt(value, digits=3):
@@ -961,8 +1471,8 @@ def plotting():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 9, "axes.titlesize": 11,
-        "axes.labelsize": 9, "axes.titleweight": "bold", "axes.spines.top": False,
+    plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 13, "axes.titlesize": 14,
+        "axes.labelsize": 13, "axes.titleweight": "bold", "axes.spines.top": False,
         "axes.spines.right": False, "axes.edgecolor": "#CDD9E1", "text.color": NAVY,
         "axes.labelcolor": GRAY, "xtick.color": GRAY, "ytick.color": GRAY,
         "figure.facecolor": "white", "axes.facecolor": "white", "grid.color": "#E3EBEF",
@@ -971,19 +1481,39 @@ def plotting():
 
 
 def save_figure(figure, output, name, caption):
+    from matplotlib.text import Text
+    # Match render_pdf's available A4 width and maximum placed plot height.
+    # Tight bounding boxes and explicit small legend fonts otherwise shrink
+    # nominally readable labels to 4-6 pt in the exported PDF.
+    minimum_pdf_font = None
+    for attempt in range(4):
+        figure.canvas.draw()
+        texts = [text for text in figure.findobj(Text) if text.get_visible() and text.get_text()]
+        bounds = figure.get_tightbbox(figure.canvas.get_renderer())
+        scale = min((210 / 25.4 * 72 - 92) / (72 * (bounds.width + .36)),
+                    525 / (72 * (bounds.height + .36)))
+        minimum_pdf_font = min((text.get_fontsize() * scale for text in texts), default=8.)
+        if minimum_pdf_font >= 7.7 or attempt == 3:
+            break
+        for text in texts:
+            if text.get_fontsize() * scale < 7.9:
+                text.set_fontsize(7.9 / scale)
+    if minimum_pdf_font < 7.5:
+        raise ValueError(f"Plot {name} requires a larger layout to retain 7.5 pt PDF labels")
     path = output / "figures" / (name + ".png")
     path.parent.mkdir(parents=True, exist_ok=True)
     figure.savefig(path, bbox_inches="tight", pad_inches=.18)
     figure.savefig(path.with_suffix(".svg"), bbox_inches="tight", pad_inches=.18)
     plotting().close(figure)
-    return {"kind": "figure", "path": str(path.relative_to(output)), "caption": caption}
+    return {"kind": "figure", "path": str(path.relative_to(output)), "caption": caption,
+            "minimum_pdf_font_pt": float(minimum_pdf_font)}
 
 
 def coordinate_figure(data, output):
     plt = plotting()
     rows = data["summary"]["rows"]
     cases = list(dict.fromkeys((r["scenario"], r["replication"]) for r in rows))
-    fig, axes = plt.subplots(1, 2, figsize=(10.6, max(3.1, .63 * len(cases) + 1.4)), layout="constrained")
+    fig, axes = plt.subplots(1, 2, figsize=(10.6, max(4.2, .8 * len(cases) + 1.8)), layout="constrained")
     for ax, key, label in zip(axes, ("minimum_scientific_ess", "minimum_ess_per_second"),
                               ("Minimum scientific ESS", "Minimum ESS per elapsed second")):
         for algorithm, offset, color in (("legacy", -.13, GRAY), ("ridge_total_scale", .13, TEAL)):
@@ -999,7 +1529,9 @@ def coordinate_figure(data, output):
         ax.set_axisbelow(True)
         ax.invert_yaxis()
     axes[0].axvline(400, color="#C47933", ls="--", lw=1, label="ESS screening threshold")
-    axes[0].legend(loc="lower right", fontsize=7)
+    axes[1].tick_params(axis="y", labelleft=False)
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="outside lower center", ncol=3, fontsize=12.5, frameon=False)
     return save_figure(fig, output, "sampler_coordinates", "Same target and prespecified datasets. Crosses mark failed diagnostic gates; gate also checks rank-normalized R-hat. Minimum is across bulk/tail ESS of original hyperparameters and recovered functionals. ESS/second is omitted for resumed timings. These are development fits, not forecast accuracy results.")
 
 
@@ -1019,7 +1551,7 @@ def score_figures(run, output):
         scenarios = list(dict.fromkeys(r["scenario"] for r in rows if r["track"] == track))
         for offset in range(0, len(scenarios), 2):
             subset = scenarios[offset:offset + 2]
-            fig, axes = plt.subplots(len(subset), 2, figsize=(10.8, 3.7 * len(subset)), squeeze=False, layout="constrained")
+            fig, axes = plt.subplots(len(subset), 2, figsize=(10.8, 5.2 * len(subset)), squeeze=False, layout="constrained")
             for k, scenario in enumerate(subset):
                 selected = [r for r in rows if r["track"] == track and r["scenario"] == scenario]
                 for ax, metric in zip(axes[k], ("rmse", "crps")):
@@ -1029,11 +1561,14 @@ def score_figures(run, output):
                             ax.errorbar(value, i, xerr=None if error is None else 2 * error, fmt="o", capsize=3,
                                         color=COLORS.get(row["model_id"], GRAY), markersize=5)
                     population = "operational_population" if metric == "rmse" else "probability_population"
-                    ax.set_yticks(range(len(selected)), [f"{LABELS.get(r['model_id'], r['model_id'])}  n={r[population]}" for r in selected], fontsize=7)
-                    ax.invert_yaxis()
+                    ax.set_yticks(range(len(selected)), [PLOT_LABELS.get(r['model_id'], r['model_id']) for r in selected], fontsize=12.5)
+                    for i, row in enumerate(selected):
+                        ax.text(1.02, i, f"n={row[population]}", transform=ax.get_yaxis_transform(), va="center", fontsize=12.5)
+                    ax.set_ylim(len(selected) - .5, -.5)
                     ax.grid(axis="x", alpha=.6)
                     ax.set_title(f"{short_scenario(scenario)} / {metric.upper()} / track {track}", loc="left")
-                    ax.set_xlabel("Original response units; smaller is better")
+                    ax.set_xlabel("Original response units\n(smaller is better)")
+                axes[k, 1].tick_params(axis="y", labelleft=False)
             figures.append(save_figure(fig, output, f"{run['label']}_scores_{track}_{offset}",
                 "Dots are means of independent dataset losses; whiskers are +/-2 MCSE where at least two datasets contribute. Operational RMSE includes declared fallbacks. CRPS uses each method's qualified native distributions; marginal CRPS dots can involve different datasets. Use paired contrasts for direct comparisons."))
     return figures
@@ -1045,7 +1580,7 @@ def paired_figure(run, output):
             if r.get("reference", "bayes_esn_ridge") == "bayes_esn_ridge" and r["other_model"] in ("separable_stgp", "basis_gru")]
     if not rows:
         return []
-    fig, axes = plt.subplots(1, 2, figsize=(10.8, max(3.5, .3 * len(rows) + 1.8)), layout="constrained")
+    fig, axes = plt.subplots(1, 2, figsize=(10.8, max(4.8, .43 * len(rows) + 2.2)), layout="constrained")
     for ax, metric in zip(axes, ("rmse", "crps")):
         for i, row in enumerate(rows):
             estimate = row.get(metric, {})
@@ -1056,12 +1591,15 @@ def paired_figure(run, output):
                 if interval is not None:
                     ax.plot(interval, [i, i], color=color, lw=1.7)
                 ax.scatter([mean], [i], color=color, s=26, zorder=3)
-        ax.set_yticks(range(len(rows)), [f"{short_scenario(r['scenario'])}/{r['track']} vs {LABELS[r['other_model']]}  n={r.get(metric + '_population', 0)}" for r in rows], fontsize=7)
-        ax.invert_yaxis()
+        ax.set_yticks(range(len(rows)), [f"{short_scenario(r['scenario'])}/{r['track']} vs {PLOT_LABELS[r['other_model']]}" for r in rows], fontsize=12.5)
+        for i, row in enumerate(rows):
+            ax.text(1.02, i, f"n={row.get(metric + '_population', 0)}", transform=ax.get_yaxis_transform(), va="center", fontsize=12.5)
+        ax.set_ylim(len(rows) - .5, -.5)
         ax.axvline(0, color=GRAY, ls="--", lw=.8)
         ax.grid(axis="x", alpha=.5)
         ax.set_title(f"Paired normalized {metric.upper()}", loc="left")
-        ax.set_xlabel("ESN minus comparator; negative favors ESN")
+        ax.set_xlabel("ESN minus comparator\n(negative favors ESN)")
+    axes[1].tick_params(axis="y", labelleft=False)
     return [save_figure(fig, output, run["label"] + "_paired", "Saved paired dataset contrasts and pointwise bootstrap intervals. Native CRPS uses the intersection of the two methods' qualified datasets. A missing dot means zero usable pairs; one usable pair has no estimated sampling uncertainty. Training-only normalization is identical within each pair. These are not simultaneous superiority intervals.")]
 
 
@@ -1075,20 +1613,21 @@ def calibration_figure(run, output):
         selected = [r for r in rows if r["track"] == track]
         if not selected:
             continue
-        fig, axes = plt.subplots(1, 2, figsize=(10.8, max(3.3, .3 * len(selected) + 1.4)), layout="constrained")
+        fig, axes = plt.subplots(1, 2, figsize=(10.8, max(5., .44 * len(selected) + 2.4)), layout="constrained")
         for ax, field_name, title in zip(axes, ("coverage_90", "interval_score_90"),
-                                       ("Marginal 90% interval coverage", "90% interval score")):
+                                       ("Marginal 90% coverage", "90% interval score")):
             for i, row in enumerate(selected):
                 if row.get(field_name) is not None:
                     ax.scatter(row[field_name], i, color=COLORS[row["model_id"]], s=28)
-            ax.set_yticks(range(len(selected)), [f"{short_scenario(r['scenario'])} / {LABELS[r['model_id']]}  n={r['probability_population']}" for r in selected], fontsize=7)
+            ax.set_yticks(range(len(selected)), [f"{short_scenario(r['scenario'])} / {PLOT_LABELS[r['model_id']]}  n={r['probability_population']}" for r in selected], fontsize=12.5)
             ax.set_title(f"Track {track} / {title}", loc="left")
             ax.invert_yaxis()
             ax.grid(axis="x", alpha=.4)
         axes[0].axvline(.9, color=GRAY, ls="--", lw=.8)
+        axes[1].tick_params(axis="y", labelleft=False)
         axes[0].set_xlim(0, 1.03)
-        axes[0].set_xlabel("Qualified native population; target = 0.90")
-        axes[1].set_xlabel("Original response units; smaller is better")
+        axes[0].set_xlabel("Qualified native coverage\n(target = 0.90)")
+        axes[1].set_xlabel("Original response units\n(smaller is better)")
         figures.append(save_figure(fig, output, f"{run['label']}_intervals_{track}", "Saved marginal interval coverage and proper interval scores averaged over eligible datasets, using a fixed model subset for legibility. Coverage is not simultaneous whole-field coverage, and small conditional populations do not establish calibration. The interval score jointly penalizes excessive width and missed observations."))
     return figures
 
@@ -1101,7 +1640,7 @@ def lead_figures(run, output):
         scenarios = list(dict.fromkeys(r["scenario"] for r in rows))
         for offset in range(0, len(scenarios), 2):
             subset = scenarios[offset:offset + 2]
-            fig, axes = plt.subplots(3, len(subset), figsize=(10.6 if len(subset) == 2 else 7, 7.5), squeeze=False, layout="constrained")
+            fig, axes = plt.subplots(3, len(subset), figsize=(10.6 if len(subset) == 2 else 7, 10.4), squeeze=False, layout="constrained")
             for column, scenario in enumerate(subset):
                 for model in FOCUS:
                     selected = [r for r in rows if r["scenario"] == scenario and r["model_id"] == model]
@@ -1115,23 +1654,27 @@ def lead_figures(run, output):
                                 raise ValueError("Invalid saved leadwise score array")
                             axes[index, column].plot(np.arange(1, values.shape[1] + 1), values.mean(axis=0),
                                 color=COLORS[model], lw=1.8 if model == "bayes_esn_ridge" else 1.2,
-                                label=f"{LABELS[model]} (n={len(values)})")
+                                label=PLOT_LABELS[model])
                 axes[0, column].set_title(f"{short_scenario(scenario)} / track {track}", loc="left")
                 for index, title in enumerate(("Operational RMSE", "Operational signed bias", "Qualified-native CRPS")):
                     axes[index, column].set_ylabel(title)
                     axes[index, column].grid(alpha=.5)
-                    axes[index, column].legend(fontsize=6, ncol=2, loc="upper right")
                 axes[1, column].axhline(0, color=GRAY, lw=.6)
                 axes[2, column].set_xlabel("Forecast lead from the fixed origin")
+            legend = {}
+            for ax in axes.flat:
+                handles, labels = ax.get_legend_handles_labels()
+                legend.update(zip(labels, handles))
+            fig.legend(list(legend.values()), list(legend), loc="outside lower center", ncol=3, fontsize=12.5, frameon=False)
             output_figures.append(save_figure(fig, output, f"{run['label']}_leads_{track}_{offset}",
-                "Mean of saved dataset-level lead scores, without future-data assimilation. Bias is forecast mean minus observed response. Model subset is fixed for legibility; complete scores remain in the machine summaries. Native CRPS populations vary by model. No fit or forecast was recomputed."))
+                "Mean of saved dataset-level lead scores, without future-data assimilation. Bias is forecast mean minus observed response. Model subset is fixed for legibility; complete scores remain in the machine summaries. Exact operational/native dataset counts are in the preceding design and qualification table; native CRPS populations vary by model. No fit or forecast was recomputed."))
     return output_figures
 
 
 def cost_figure(run, output):
     plt = plotting()
     models = list(dict.fromkeys(r["model_id"] for r in run["receipts"]))
-    fig, axes = plt.subplots(1, 2, figsize=(10.6, max(3.5, len(models) * .34 + 1)), layout="constrained")
+    fig, axes = plt.subplots(1, 2, figsize=(10.6, max(4.7, len(models) * .44 + 1.8)), layout="constrained")
     for i, model in enumerate(models):
         rows = [r for r in run["receipts"] if r["model_id"] == model]
         total = np.mean([r.get("total_pipeline_seconds", r["total_seconds"] + r.get("tuning_seconds", 0)) for r in rows])
@@ -1141,9 +1684,10 @@ def cost_figure(run, output):
         axes[1].barh(i, 1 - qualified / len(rows), left=qualified / len(rows), color="#E7B38B", height=.6)
         axes[1].text(1.03, i, f"{qualified}/{len(rows)}", va="center", fontsize=8)
     for ax in axes:
-        ax.set_yticks(range(len(models)), [LABELS.get(m, m) for m in models], fontsize=8)
+        ax.set_yticks(range(len(models)), [PLOT_LABELS.get(m, m) for m in models], fontsize=12.5)
         ax.invert_yaxis()
     axes[0].set_xlabel("Mean recorded pipeline seconds / job")
+    axes[1].tick_params(axis="y", labelleft=False)
     axes[0].set_title("Tuning + final fit + forecast + scoring", loc="left")
     axes[0].grid(axis="x", alpha=.4)
     axes[1].set_xlim(0, 1.24)
@@ -1161,7 +1705,7 @@ def accuracy_time_figure(run, output):
     figures = []
     for offset in range(0, len(cells), 4):
         chunk = cells[offset:offset + 4]
-        fig, axes = plt.subplots((len(chunk) + 1) // 2, 2, figsize=(10.5, 3.3 * ((len(chunk) + 1) // 2)), squeeze=False, layout="constrained")
+        fig, axes = plt.subplots((len(chunk) + 1) // 2, 2, figsize=(10.5, 4.7 * ((len(chunk) + 1) // 2)), squeeze=False, layout="constrained")
         for ax, (scenario, track) in zip(axes.flat, chunk):
             for row in rows:
                 if (row["scenario"], row["track"]) != (scenario, track):
@@ -1169,15 +1713,19 @@ def accuracy_time_figure(run, output):
                 members = [r for r in run["receipts"] if (r["scenario"], r["track"], r["model_id"]) == (scenario, track, row["model_id"])]
                 elapsed = np.mean([r.get("total_pipeline_seconds", r["total_seconds"] + r.get("tuning_seconds", 0)) for r in members])
                 ax.scatter(elapsed, row["rmse"], color=COLORS.get(row["model_id"], GRAY), s=40,
-                           label=LABELS.get(row["model_id"], row["model_id"]))
+                           label=PLOT_LABELS.get(row["model_id"], row["model_id"]))
             ax.set_xscale("log")
             ax.set_title(f"{short_scenario(scenario)} / track {track}", loc="left")
             ax.set_xlabel("Mean recorded pipeline seconds / job (log)")
             ax.set_ylabel("Mean operational RMSE")
             ax.grid(alpha=.4)
-            ax.legend(fontsize=6, ncol=2)
         for ax in list(axes.flat)[len(chunk):]:
             ax.set_axis_off()
+        legend = {}
+        for ax in axes.flat:
+            handles, labels = ax.get_legend_handles_labels()
+            legend.update(zip(labels, handles))
+        fig.legend(list(legend.values()), list(legend), loc="outside lower center", ncol=3, fontsize=12.5, frameon=False)
         figures.append(save_figure(fig, output, f"{run['label']}_accuracy_time_{offset}", "Accuracy and recorded computational cost for the same declared jobs. Lower and left is preferable, but points have different qualification/fallback behavior; this plot is descriptive, not a Pareto-superiority test. Costs include tuning, final fitting, forecasting and saved-artifact serialization; lost work remains labeled incomplete."))
     return figures
 
@@ -1188,7 +1736,7 @@ def oracle_figure(audit, output):
     if not rows:
         return []
     tracks = sorted({r["track"] for r in rows})
-    fig, axes = plt.subplots(1, 2, figsize=(10.6, 3.5), layout="constrained")
+    fig, axes = plt.subplots(1, 2, figsize=(10.6, 4.8), layout="constrained")
     for track in tracks:
         eligible = [r for r in rows if r["track"] == track]
         for ax, field, label in zip(axes, ("rmse_by_lead", "crps_by_lead"), ("Realized RMSE", "Analytic marginal Gaussian CRPS")):
@@ -1210,7 +1758,7 @@ def curve_figures(curve, output, *, curve_index=0):
     figures = []
     for offset in range(0, len(keys), 2):
         chunk = keys[offset:offset + 2]
-        fig, axes = plt.subplots(len(chunk), 2, figsize=(10.6, 3.3 * len(chunk)), squeeze=False, layout="constrained")
+        fig, axes = plt.subplots(len(chunk), 2, figsize=(10.6, 4.8 * len(chunk)), squeeze=False, layout="constrained")
         for k, (scenario, track) in enumerate(chunk):
             for model in FOCUS:
                 for j, metric in enumerate(("rmse", "crps")):
@@ -1220,12 +1768,14 @@ def curve_figures(curve, output, *, curve_index=0):
                         population = "operational_population" if metric == "rmse" else "probability_population"
                         counts = "/".join(str(p[1][population]) for p in points)
                         axes[k, j].plot([p[0] for p in points], [p[1][metric] if p[1][metric] is not None else np.nan for p in points],
-                                       "o-", color=COLORS[model], label=f"{LABELS[model]} (n={counts})")
+                                       "o-", color=COLORS[model], label=f"{PLOT_LABELS[model]} n={counts}")
             for j, metric in enumerate(("RMSE (operational)", "CRPS (qualified native)")):
                 axes[k, j].set_title(f"{short_scenario(scenario)}/{track} / {metric}", loc="left")
                 axes[k, j].set_xlabel("Initial training rows" if curve["design"]["kind"] == "history" else "Observed sensors")
                 axes[k, j].grid(alpha=.4)
-                axes[k, j].legend(fontsize=7)
+                axes[k, j].legend(fontsize=12.5, ncol=2, loc="upper center", handlelength=1.2, columnspacing=.7)
+                low, high = axes[k, j].get_ylim()
+                axes[k, j].set_ylim(low, high + .5 * (high - low))
         figures.append(save_figure(fig, output, f"learning_curve_{curve_index}_{offset}", "Resolved matched design; only completed conditions are shown. Legend populations follow conditions in ascending x order. Final forecast period and scored target domain are held fixed. Native CRPS is conditional on qualification; a zero population produces a gap. Connecting points illustrates the declared information intervention, not monotonicity or a proven improvement."))
     return figures
 
@@ -1233,6 +1783,108 @@ def curve_figures(curve, output, *, curve_index=0):
 def section(title, paragraphs=(), table=None, figures=(), links=()):
     return {"title": title, "paragraphs": list(paragraphs), "table": table,
             "figures": list(figures), "links": list(links)}
+
+
+def prior_sections(checks):
+    sections = []
+    for index, check in enumerate(checks):
+        if check["status"] != "complete":
+            sections.append(section("Conditional prior assessment: unavailable", [
+                "The explicitly supplied prior assessment is absent. No prior adequacy or trajectory-stability claim is inferred."]))
+            continue
+        value, parameter_rows, amplitude_rows, dependence = check["document"], [], [], []
+        for case in value["cases"]:
+            name = next((short_scenario(key) for key in SCENARIOS if key in case["ablation_directory"]),
+                        Path(case["ablation_directory"]).name)
+            results = case["results"]
+            parameters = results["prior_parameters"]
+            parameter_rows.append([name, f"{fmt(parameters['a0'])} / {fmt(parameters['b0'])}",
+                f"{fmt(parameters['log_precision_mean'])} / {fmt(parameters['log_precision_sd'])}",
+                f"{fmt(parameters['log_q_mean'])} / {fmt(parameters['log_q_sd'])}",
+                f"{fmt(parameters['log_ell_mean'])} / {fmt(parameters['log_ell_sd'])}", fmt(parameters["rho_eta_sd"])])
+            for design in results["designs"]:
+                sd = design["observation_pointwise_prior_sd"]
+                design_label = {"conditioning_reference": "Reference design", "observed_history_fitting_design": "Fitting design"}[design["name"]]
+                amplitude_rows.append([name, design_label,
+                    fmt(sd["conditioning_standard_deviation_units"]["rms"]),
+                    fmt(sd["original_response_units"]["rms"]),
+                    fmt(results["stationary_residual_prior_sd"]["original_response_units"]["rms"])])
+            dependence.append(f"{name}: median |rho| = {fmt(results['ar_absolute_rho_median'])}; "
+                f"Pr(|rho| > 0.9) = {fmt(results['ar_absolute_rho_tail_probabilities']['0.9'])}.")
+        links = [("Actual prior law, frozen designs and saved numerical checks", f"evidence/prior_check_{index}.json")]
+        shape_statement = ("All supplied cases have a0 = 2: finite prior variance and an infinite fourth moment. "
+                           if all(case["results"]["prior_parameters"]["a0"] == 2 for case in value["cases"]) else "")
+        sections.append(section("Conditional prior specification: the actual saved parameters", [
+            "These are first and second prior-predictive moments conditional on each saved encoder, spatial basis, historical feature path and response standardization. They integrate the original priors. They differ from posterior conditional scale summaries and do not assess autonomous ESN prior rollouts.",
+            "The precision, relative spatial scale and correlation range have independent lognormal priors. The table gives normal means / standard deviations on their log scales. The scalar ridge prior applies to every coefficient, including intercept columns. Sigma squared has inverse-gamma shape a0 and scale b0.",
+            shape_statement + "Finite prior variance requires a0 > 1; the fourth moment exists only for a0 > 2. These conditions apply to each scalar prior-predictive observation about its frozen center, which has positive residual variance. They concern prior tails, not posterior variance, and do not by themselves show that the prior is adequate.",
+            "The renderer binds the source, tool, P5 inventories, saved model specifications and feature hashes, then verifies closed-form moment and unit reductions. It reads no posterior arrays and performs no refit, quadrature or trajectory simulation."],
+            table=(["DGP", "IG a0 / b0", "log lambda mu / SD", "log q mu / SD", "log ell mu / SD", "rho eta SD"], parameter_rows), links=links))
+        sections.append(section("Prior amplitude and signed temporal dependence", [
+            "Pointwise prior observation SD is summarized by its root mean square across the fixed site/time design. Reference design uses the frozen conditioning rows; fitting design uses the observed historical features entering the likelihood. Conditioning-SD units use the saved response standardizer; original units multiply by that case's response scale. Stationary iid and full-residual AR specifications share the same pointwise prior amplitude under these common priors.",
+            "For the AR prior, rho = tanh(eta) with a symmetric normal eta. Positive draws give persistent residual correlation and negative draws give alternating correlation. Averaging over both signs makes odd-lag residual covariance zero; individual draws remain temporally dependent. " + " ".join(dependence),
+            "The recorded 128/256-point quadrature agreement checks concern integrated spatial correlation and rho moments. The frozen historical design does not certify self-generated trajectory stability, coverage or model adequacy. This retrospective assessment leaves prior choices, predictive comparisons and MCMC qualification unchanged."],
+            table=(["DGP", "Frozen temporal design", "Observation RMS SD / conditioning SD", "Observation RMS SD, response units", "Residual SD, response units"], amplitude_rows), links=links))
+    return sections
+
+
+def stress_sections(audits):
+    sections = []
+    for index, audit in enumerate(audits):
+        if audit["status"] != "complete":
+            sections.append(section("Paired stress comparisons: unavailable", [
+                "The explicitly supplied optional stress audit is absent. No noise-robustness or hidden-shift performance is inferred."]))
+            continue
+        value = audit["document"]
+        links = [("Full paired primary, interval, joint/path and cost evidence", f"evidence/stress_audit_{index}.json")]
+        scopes = list(dict.fromkeys(arm["costs"]["scope"] for arm in value["arms"]))
+        sections.append(section("Paired stress design and incremental work", [
+            f"Control study: {audit['control_label']}. Each intervention uses five paired fields and the same frozen roster. Whole-field and local Student-t G5 arms retain their matched G4 generating components. G6 evaluates the original G2 forecasts against a future with a hidden velocity transition at lead 25; it uses no parameter refit, post-origin assimilation, adaptation or post-shift calibration.",
+            "Each difference is stress minus control. Positive means larger loss; for coverage indicators it means more coverage, and for interval width it means a wider band. Both sides of a dimensionful loss use the same control training-only SD. Standalone G5 arm scales are preserved in their receipts but are not the comparison denominator. Coverage differences remain dimensionless.",
+            f"New G5 fitting jobs: {value['new_parameter_fits']}; incremental recorded pipeline time {fmt(value['incremental_pipeline_seconds'], 5)} seconds, CPU {fmt(value['incremental_pipeline_cpu_seconds'], 5)} seconds. Historical shared G4/G2 control pipeline time is {fmt(value['historical_shared_control_pipeline_seconds'], 5)} seconds, counted once separately. Complete incremental accounting: {value['compute_accounting_complete']}.",
+            "These sums have the following recorded scopes and are not elapsed parallel-campaign time: " + " ".join(scopes),
+            "Coupled control/stress arms are not independent macro strata and are not pooled into the core G1-G4 macro comparison. Pointwise paired-dataset bootstrap intervals and MCSEs are exploratory with five fields. Native comparisons condition on their exact common-qualified intersections; operational point comparisons retain declared fallbacks."],
+            table=(["Intervention", "New fit jobs", "Incremental wall sec", "Incremental CPU sec", "Complete cost"], [
+                [STRESS_ARMS[arm["id"]], str(arm["costs"]["new_parameter_fits"]),
+                 fmt(arm["costs"]["incremental_pipeline_seconds"], 5), fmt(arm["costs"]["incremental_pipeline_cpu_seconds"], 5),
+                 str(arm["costs"]["compute_accounting_complete"])] for arm in value["arms"]]), links=links))
+        for arm in value["arms"]:
+            selected = [row for row in arm["effects"] if (row["population"], row["metric"]) in
+                        {("operational_scores", "rmse"), ("native_scores", "crps")}]
+            selected.sort(key=lambda row: (row["track"], row["model_id"], row["population"]))
+            rows = []
+            for effect in selected:
+                interval = effect["common_normalized"]["pointwise95"]
+                rows.append([f"{LABELS.get(effect['model_id'], effect['model_id'])} / {effect['track']}",
+                    "Operational RMSE" if effect["population"] == "operational_scores" else "Native CRPS",
+                    f"{effect['N_pair']}/5", f"{fmt(effect['raw']['mean'])} ({fmt(effect['raw']['mcse'])})",
+                    f"{fmt(effect['common_normalized']['mean'])} ({fmt(effect['common_normalized']['mcse'])})",
+                    "unavailable" if interval is None else f"[{fmt(interval[0])}, {fmt(interval[1])}]"])
+            paragraphs = [
+                "The table preserves every compatible model/task cell for operational RMSE and native CRPS. Parentheses give MCSE across independent paired fields. Zero usable pairs remain unavailable; one pair has no estimated sampling uncertainty. All raw and common-normalized MAE, native RMSE and companion effects are retained in the linked evidence.",
+                "Common normalization is applied to each field's difference before averaging. Dividing an average difference by an average scale would be a different estimand. Exact pair IDs, qualification/fallback outcomes and original complete score objects are included in the audit."]
+            if arm["id"] == "velocity_shift":
+                costs = arm["costs"]
+                paragraphs.append(f"G6 used {costs['reused_saved_forecasts']} retained native forecasts and replayed {costs['replayed_model_forecasts']} frozen models with their original forecast seeds. Every original G2 score object was checked before G6 scoring; deterministic fallback reconstruction is recorded separately in each job receipt. New parameter fits: 0.")
+            sections.append(section(STRESS_ARMS[arm["id"]] + ": paired marginal effects", paragraphs,
+                table=(["Model / task", "Score population", "Pairs", "Raw delta (MCSE)", "Control-SD delta (MCSE)", "95% interval, control SD"], rows), links=links))
+            metrics = ("field_energy", "functional_crps/path_maximum", "intervals/0.9/coverage",
+                       "intervals/0.9/width", "intervals/0.9/whole_path_covered")
+            companions = {(r["model_id"], r["track"], r["metric"]): r for r in arm["effects"]
+                          if r["population"] == "native_scores" and r["metric"] in metrics}
+            companion_rows = []
+            for model, track in sorted({key[:2] for key in companions}, key=lambda key: (key[1], key[0])):
+                cells = [f"{LABELS.get(model, model)} / {track}"]
+                for metric in metrics:
+                    effect = companions.get((model, track, metric))
+                    cells.append("unavailable" if effect is None else f"{fmt(effect['common_normalized']['mean'])} (n={effect['N_pair']})")
+                companion_rows.append(cells)
+            sections.append(section(STRESS_ARMS[arm["id"]] + ": dependence and interval companions", [
+                "Entries are stress-minus-control paired means, with the exact eligible count for that metric. Energy, path-maximum CRPS and interval width use the common control SD; marginal and whole-path coverage differences are unscaled. More coverage can reflect wider bands, so it is not a stand-alone improvement criterion.",
+                "The full sealed audit also retains spatial and temporal variogram scores, all declared interval levels, interval scores, field coverage and the remaining path-function CRPS contrasts, with raw/common-normalized effects and their pointwise uncertainty. Their score objects preserve the original coherent joint paths; no forecast or calibration is recomputed by this report."],
+                table=(["Model / task", "Field energy delta / SD", "Path-max CRPS delta / SD", "90% coverage delta", "90% width delta / SD", "Whole-path coverage delta"], companion_rows) if companion_rows else None,
+                links=links))
+    return sections
 
 
 def sections_for(data, output):
@@ -1258,6 +1910,7 @@ def sections_for(data, output):
         "The iid Gaussian scalar-ridge reference uses the Matérn residual correlation and original proper hyperpriors. Conditioning-window preprocessing is frozen before likelihood fitting. Recursive forecasts feed back simulated observed-site values; they do not assimilate future observations or latent DGP states.",
         "Conditional Gaussian coefficient recovery and inverse-gamma scale recovery are exact for this reference. The likelihood is a product of causal conditional densities; recursive ESN predictors do not imply that the unconditional response sequence is jointly Gaussian.",
         "Other priors, dynamics and covariance extensions retain separate configuration labels and compatibility gates. Their implementation alone is not evidence that they improve prediction."], figures=[hierarchy], links=[("Full hierarchy and extension equations", "evidence/models.md")]))
+    sections.extend(prior_sections(data.get("prior_checks", [])))
     transformed = equation_figure(output, "exact_coordinate_change", [
         r"$a=\log\lambda,\quad\xi=\log q,\quad\zeta=\log\ell,\quad\eta=a+\mathrm{softplus}(\xi)$",
         r"$a=\eta-\mathrm{softplus}(\xi),\qquad |\partial(\eta,\xi,\zeta)/\partial(a,\xi,\zeta)|=1$",
@@ -1409,15 +2062,17 @@ def sections_for(data, output):
             for contrast in value["contrasts"]:
                 macro = contrast["macro"] or {}
                 pairs = ", ".join(f"{short_scenario(c['scenario'])}:{len(c['usable_replications'])}" for c in contrast["cells"])
+                family = "Native" if contrast["score_family"] == "native_scores" else "Operational"
+                decision = f"{fmt(contrast['margin'])} / {contrast['bound_passed']}" if contrast["is_decision_contrast"] else "descriptive"
                 rows.append([f"{LABELS.get(contrast['model_id'], contrast['model_id'])} / {contrast['track']}",
-                    contrast["metric"].upper(), pairs, fmt(macro.get("difference")), fmt(macro.get("upper_one_sided95")),
-                    f"{fmt(contrast['margin'])} / {contrast['bound_passed']}"])
+                    family + " " + contrast["metric"].upper(), pairs, fmt(macro.get("difference")), fmt(macro.get("lower_one_sided95")), decision])
             sections.append(section("History length: recorded development choice", [
-                f"Selected initial supplied history: {value['selected_initial_history']} rows. The recorded rule chooses 1000 only if every prespecified score bound passes, native qualification is not worse, cost accounting is complete and the measured time saving meets its margin. Otherwise it retains the declared 2000-row default.",
-                f"Score bounds passed: {value['score_bounds_passed']}; qualification not worse: {value['qualification_not_worse']}; cost gate passed: {value['cost_gate_passed']}. Summed pipeline time was {fmt(value['summed_pipeline_seconds']['1000'], 5)} seconds at 1000 and {fmt(value['summed_pipeline_seconds']['2000'], 5)} at 2000; saving fraction {fmt(value['short_history_time_saving_fraction'])}.",
-                "Differences are short minus long, divided by the same training-only scale; negative favors the shorter history. Native CRPS uses common-qualified paired fields, while RMSE includes operational fallback. The table preserves each prespecified model/task population.",
-                "The upper bounds are saved, stratified, one-sided 95% percentile-bootstrap development summaries. They are not simultaneous confidence bounds, and the small number of independent datasets limits their precision. Retaining the longer default does not establish its superiority. No confirmation outcomes entered this choice."],
-                table=(["Model / task", "Metric", "Usable pairs", "Short - long", "Upper 95%", "Margin / pass"], rows), links=links))
+                f"Selected initial supplied history: {value['selected_initial_history']} rows. The prospective rule retains 1000 by default. It promotes 2000 only if both ESN tracks have at least three common-qualified pairs per mechanism and a macro normalized native-CRPS improvement lower bound of at least 0.02, long-history qualification is not worse, and complete summed pipeline cost is at most 2.5 times the shorter history.",
+                f"Score bounds passed: {value['score_bounds_passed']}; long-history qualification not worse: {value['qualification_not_worse']}; cost gate passed: {value['cost_gate_passed']}. Summed pipeline time was {fmt(value['summed_pipeline_seconds']['1000'], 5)} seconds at 1000 and {fmt(value['summed_pipeline_seconds']['2000'], 5)} at 2000; long/short ratio {fmt(value['long_to_short_pipeline_time_ratio'])}.",
+                "Differences are short minus long, divided by the same training-only scale; positive favors the longer history. Native CRPS and native RMSE use each model's common-qualified paired fields. Operational RMSE includes the declared fallbacks on all paired fields. Every model's effects remain visible, regardless of the ESN-centered choice.",
+                "The lower bounds are saved, stratified, one-sided 95% percentile-bootstrap development summaries. Small samples do not establish formal interval coverage or simultaneous superiority. The 0.02 improvement and 2.5 cost margins are explicit practical preferences. Retaining 1000 when the gate fails is not evidence that additional data have no benefit. No confirmation outcomes entered this choice.",
+                "Recorded retention reasons: " + ("; ".join(value["retention_reasons"]) if value["retention_reasons"] else "none; the declared promotion gate passed")],
+                table=(["Model / task", "Score population", "Usable pairs", "Short - long", "Lower 95%", "Decision margin / pass"], rows), links=links))
         else:
             rows = []
             for row in value["rows"]:
@@ -1432,6 +2087,7 @@ def sections_for(data, output):
                 "The last column is mean / maximum unit-iid-noise variance amplification for the geometry-only normalized-ridge operator A = Phi_U (Phi_O' Phi_O / n + eta I)^(-1) Phi_O' / n. It is a fixed diagnostic of interpolation geometry; it is neither correlated-residual forecast variance nor a predictive score.",
                 "Additional sensors can change fitted basis scaling, conditioning and identifiability as well as sample count. The fixed-reference diagnostic makes its basis choice explicit; it does not retroactively change any fitted model or prior. One field supports descriptive sensitivity, with no independent-replication MCSE or general sensor-benefit claim."],
                 table=(["O sensors", "Task", "Qualified", "Phi rank / cols", "Z rank / cols", "IID noise mean / max"], rows), links=links))
+    sections.extend(stress_sections(data.get("stress_audits", [])))
     extensions = data["extensions"]
     policy_entries = extensions.get("current_entries", current_extension_entries(extensions.get("studies", [])))
     extension_rows = [[r.get("name", r.get("id")).replace("_", " "), r["status"].replace("_", " "),
@@ -1439,12 +2095,20 @@ def sections_for(data, output):
     scope_links = [("Predeclared extension scope", f"evidence/p5_{index}.json")
                    for index, study in enumerate(extensions.get("studies", []))
                    if study.get("document", {}).get("scientific_results_in_this_file") is False]
+    scope_links.extend(("Sealed release disposition overlay", f"evidence/p5_{index}.json")
+                       for index, study in enumerate(extensions.get("studies", []))
+                       if study.get("document", {}).get("schema") == "v03-release-extension-dispositions-1.0")
     sections.append(section("Extension dispositions", [f"Status: {extensions['status']}. These are supplied research decisions with their stated evidence, not automatic claims of improvement.",
-        "The table shows one current disposition per extension. A supplied final findings document supersedes its earlier implementation scope; that predeclared scope remains separately linked. Individual study receipts remain below as evidence for the current decision.",
+        "The table shows one current disposition per extension. Final P5 findings supersede their earlier implementation scope. A separately sealed release overlay can update a disposition using later evidence; it binds the unchanged P5 base and every cited later receipt. Earlier scientific inputs remain immutable and individually linked.",
         "Grouped ridge, finite-slab regularized horseshoe, residual dynamics, anisotropy, calibration and larger feature maps should advance only when a diagnosed deficiency, compatible inference route and bounded development comparison justify them. Implemented optional routes may remain unvalidated at the benchmark scale."],
         table=(["Extension", "Disposition", "Reason / evidence"], extension_rows) if extension_rows else None,
         links=scope_links))
     for study_index, study in enumerate(extensions.get("studies", [])):
+        if study.get("document", {}).get("replay_provenance"):
+            sections.append(section("P5 execution replay and independent evidence", [
+                "The final-source disposition records a fresh execution of the original P5 datasets, seeds, budgets and decisions. It reproduces the earlier numerical results and binds the unchanged historical disposition. This verifies execution under the current source and adds zero independent datasets.",
+                "The historical and current executions are not pooled as separate replications. The ablation still has one development field per mechanism; its inference failures and negative predictive findings retain their original interpretation."],
+                links=[("Replay provenance and unchanged historical evidence", f"evidence/p5_{study_index}.json")]))
         assessment = study.get("document", {}).get("path_count_assessment")
         if assessment:
             selected = assessment["selected_for_subsequent_studies"]
@@ -1472,7 +2136,7 @@ def sections_for(data, output):
         if scientific["ablation"]:
             ablation = scientific["ablation"]
             table = (["Variant", "Qualified", "RMSE", "Native CRPS", "Fit invocation sec"], [[
-                r["variant"], str(r["qualified"]), fmt(r.get("scores", {}).get("rmse")),
+                {"scalar_reference": "Scalar ridge", "full_residual_ar": "Full-residual AR", "grouped_ridge": "Grouped ridge"}.get(r["variant"], r["variant"]), str(r["qualified"]), fmt(r.get("scores", {}).get("rmse")),
                 fmt(r.get("scores", {}).get("crps")), fmt(r.get("fit_invocation_seconds"), 4)] for r in ablation["rows"]])
             paragraphs.append("This is one prespecified development dataset with a contemporaneously refitted scalar reference, fixed observations and fixed feature design. Differences below are extension minus scalar; negative favors the extension. No across-dataset MCSE or general superiority claim is available from one case.")
             for pair in ablation["comparisons"]:
@@ -1514,16 +2178,31 @@ def sections_for(data, output):
     memory = engineering["memory"]
     text = ["Scientific identity binds design, source, data, numerical runtime and transition policy. Worker count, memory ceiling and execution chunk limits belong to attempt receipts. Safe resume preserves scientific seeds and checkpoint trajectories; incompatible evidence is invalidated rather than reused.",
         "Memory admission combines a conservative workload estimate with host/cgroup headroom before each job. Jobs use one numerical thread each. A resource pause does not silently reduce model dimensions or relax diagnostics. Current benchmark scoring still materializes forecast samples; end-to-end disk-backed scoring is not claimed."]
+    if engineering.get("memory_admission"):
+        text.append("Shared cgroup file cache is recorded separately from the admission estimate. The scheduler credits at most half eligible clean file cache after conservatively excluding shared/tmpfs, dirty, writeback, mapped and unevictable bytes. Raw usage, hard limits, the 65% budget cap and up-to-2-GiB reserve remain visible and unchanged. Missing or invalid statistics revert to raw usage. This policy is a scheduling heuristic, not guaranteed reclaim or a claim of available RAM; no cgroup limits or reclaim controls are written.")
     if memory:
         a, b = memory["rows"]
         text.append(f"The isolated ownership probe used a {a['shape'][0]} x {a['shape'][1]} x {a['shape'][2]} float64 path array. Public-copy peak RSS was {a['peak_rss_bytes']/1024**2:.1f} MiB; private owned-transfer peak was {b['peak_rss_bytes']/1024**2:.1f} MiB. Incremental peak reduction was {memory['incremental_peak_reduction_bytes']/1024**2:.1f} MiB with identical numerical payload hashes. This measures the allocation/constructor workload only, not model-fit memory or universal forecasting speed.")
     tests = engineering["tests"]
     test_rows = [[r["file"], str(r["tests"]), str(r["failures"] + r["errors"]), str(r["skipped"])] for r in tests]
-    text.append("Test totals below are saved JUnit snapshots with their original timestamps. They do not automatically certify changes made after the snapshot. Release/publication status is verified only by explicit supplied release receipts; building this report does not publish a release.")
+    text.append("Counts below are JUnit cases, including separately recorded subtests; they are not counts of distinct pytest test functions. These saved snapshots retain their original timestamps and do not certify later changes. Release/publication status is verified only by explicit supplied release receipts; building this report does not publish a release.")
     if not engineering["release"]:
         text.append("No release-verification receipt is included in this synthesis. Repository publication and asset checks remain separately recorded release gates.")
     sections.append(section("Engineering evidence and reproducibility", text,
-        table=(["Saved test receipt", "Tests", "Failures + errors", "Skipped"], test_rows) if test_rows else None))
+        table=(["Saved test receipt", "JUnit cases", "Failures + errors", "Skipped"], test_rows) if test_rows else None))
+    if engineering["release"]:
+        release_rows = []
+        for item in engineering["release"]:
+            receipt = item["receipt"]
+            status = (f"{sum(j.get('conclusion') == 'success' for j in receipt['jobs'])}/{len(receipt['jobs'])} jobs succeeded"
+                      if item["kind"] == "saved remote CI" else str(receipt["passed"]))
+            release_rows.append([item["file"], item["kind"], status,
+                receipt.get("commit", receipt.get("source_fingerprint", "per-file source hashes in receipt"))])
+        sections.append(section("Release and remote-CI snapshots", [
+            "These are saved gate receipts for their recorded source or commit. Historical successful CI does not certify the report's later HEAD. A local isolated-installation gate does not establish public publication, and an audit or resource plan is not a release receipt.",
+            "Publication still requires explicit exact-commit verification and asset readback in the release workflow. This renderer performs no publication or remote CI action. PDF tables show 12-character commit/source prefixes; full identities remain in the HTML and JSON evidence."],
+            table=(["Saved receipt", "Gate", "Recorded outcome", "Commit / source scope"], release_rows),
+            links=[("Complete engineering receipts", "evidence/engineering_evidence.json")]))
     media_links = []
     for group in data["media"]:
         for item in group["files"]:
@@ -1559,8 +2238,8 @@ def render_html(sections, output, source):
         links = "".join(f'<li><a href="{html.escape(href)}">{html.escape(label)}</a></li>' for label, href in item["links"])
         videos = "".join(f'<video controls preload="none" playsinline src="{html.escape(href)}"></video>' for _, href in item["links"] if href.endswith(".mp4"))
         pieces.append(f'<section id="section-{i}"><div class="eyebrow">{i+1:02d} / evidence</div><h2>{html.escape(item["title"])}</h2>{paragraphs}{_html_table(item["table"])}{figures}<ul>{links}</ul>{videos}</section>')
-    css = """body{margin:0;background:#f0f5f7;color:#10283f;font:16px/1.65 system-ui,sans-serif}main{max-width:1140px;margin:auto;padding:30px 24px 70px}header{background:#10283f;color:#fff;border-radius:20px;padding:48px 44px}header p{max-width:800px;color:#c8dbe6}h1{font-size:clamp(36px,5vw,62px);line-height:1.05;letter-spacing:-.04em;max-width:850px;margin:18px 0 25px}h2{font-size:28px;line-height:1.2;margin:12px 0 24px;letter-spacing:-.02em}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:700;color:#008c82}header .eyebrow{color:#77d6cc}section{background:#fff;border-radius:16px;padding:32px 36px;margin:24px 0;scroll-margin-top:20px}nav{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0}nav a{font-size:12px;padding:7px 11px;background:#e2edef;border-radius:7px;text-decoration:none}a{color:#007c75}figure{margin:28px 0}img,video{width:100%;height:auto}figcaption{font-size:13px;color:#5c7083;line-height:1.55;margin-top:10px}table{border-collapse:collapse;width:100%;font-size:13px;margin:15px 0}td,th{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid #dce7ed}th{background:#edf5f6;color:#10283f}tr:nth-child(even) td{background:#f8fbfc}.table-wrap{overflow-x:auto}code{overflow-wrap:anywhere;font-size:11px}footer{font-size:12px;color:#5c7083;margin-top:30px}@media(max-width:650px){main{padding:12px}header,section{padding:25px 22px}h2{font-size:24px}}"""
-    content = f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bayesian ESNs / v0.3 study synthesis</title><style>{css}</style></head><body><main><header><div class="eyebrow">Bayes-STESN / v0.3 / auditable research</div><h1>Forecasting spatial dynamics,<br>with evidence that travels.</h1><p>Model hierarchy, exact inference changes, predictive performance, qualification and computational cost. A synthesis of saved, versioned experiments.</p><p><a style="color:#77d6cc" href="bayes_stesn_v03_report.pdf">Download the PDF report</a></p></header><nav>{navigation}</nav>{"".join(pieces)}<footer>Scientific source fingerprint: <code>{source}</code><br>Saved-artifact renderer. No model fitting or forecasting occurs during report generation.</footer></main></body></html>'
+    css = """body{margin:0;background:#f0f5f7;color:#10283f;font:16px/1.65 system-ui,sans-serif}main{max-width:1140px;margin:auto;padding:30px 24px 70px}header{background:#10283f;color:#fff;border-radius:20px;padding:48px 44px}header p{max-width:800px;color:#c8dbe6}h1{font-size:clamp(36px,5vw,62px);line-height:1.05;letter-spacing:-.04em;max-width:850px;margin:18px 0 25px}h2{font-size:28px;line-height:1.2;margin:12px 0 24px;letter-spacing:-.02em}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:700;color:#008c82}header .eyebrow{color:#77d6cc}section{background:#fff;border-radius:16px;padding:32px 36px;margin:24px 0;scroll-margin-top:20px}nav{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0}nav a{font-size:12px;padding:7px 11px;background:#e2edef;border-radius:7px;text-decoration:none}a{color:#007c75}figure{margin:28px 0}img,video{width:100%;max-width:100%;height:auto}figcaption{font-size:13px;color:#5c7083;line-height:1.55;margin-top:10px}table{border-collapse:collapse;width:100%;font-size:13px;margin:15px 0}td,th{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid #dce7ed}th{background:#edf5f6;color:#10283f}tr:nth-child(even) td{background:#f8fbfc}.table-wrap{overflow-x:auto}code{overflow-wrap:anywhere;font-size:11px}footer{font-size:12px;color:#5c7083;margin-top:30px}@media(max-width:650px){main{padding:12px}header,section{padding:25px 22px}h2{font-size:24px}}"""
+    content = f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bayesian spatiotemporal forecasting / v0.3</title><style>{css}</style></head><body><main><header><div class="eyebrow">Bayes-STESN / v0.3 / study synthesis</div><h1>Bayesian spatiotemporal forecasting</h1><p>Development comparisons and inference: model hierarchy, predictive performance, qualification and computational cost. A synthesis of saved, versioned experiments.</p><p><a style="color:#77d6cc" href="bayes_stesn_v03_report.pdf">Download the PDF report</a></p></header><nav>{navigation}</nav>{"".join(pieces)}<footer>Scientific source fingerprint: <code>{source}</code><br>Saved-artifact renderer. No model fitting or forecasting occurs during report generation.</footer></main></body></html>'
     (output / "index.html").write_text(content, encoding="utf-8")
 
 
@@ -1588,8 +2267,8 @@ def render_pdf(sections, output, source):
     doc = SimpleDocTemplate(str(output / "bayes_stesn_v03_report.pdf"), pagesize=A4, rightMargin=46, leftMargin=46,
         topMargin=49, bottomMargin=45, title="Bayes-STESN v0.3 study synthesis", author="bayes-stesn project", pageCompression=1)
     story = [Spacer(1, 70), Paragraph("BAYES-STESN / v0.3", styles["caption"]),
-             Paragraph("Forecasting spatial dynamics", styles["title"]),
-             Paragraph("A reproducible study synthesis", styles["h2"]),
+             Paragraph("Bayesian spatiotemporal forecasting", styles["title"]),
+             Paragraph("Development comparisons and inference", styles["h2"]),
              Paragraph("Model hierarchy, exact inference changes, qualification, predictive performance and computational cost. Built from saved, versioned evidence.", styles["body"]),
              Spacer(1, 25), Paragraph("Read the scope before the scores. Development evidence does not establish a confirmatory model ranking. Each result retains its actual qualification population, study design and numerical provenance.", styles["body"]),
              Spacer(1, 30), Paragraph("Open index.html for linked animations and full numerical evidence. The PDF is a static companion; the input and output inventories are recorded in report_manifest.json.", styles["caption"]), PageBreak()]
@@ -1611,8 +2290,19 @@ def render_pdf(sections, output, source):
                 fractions = [.08, .34, .29, .29]
             elif headers[0] == "Target / level":
                 fractions = [.28, .24, .24, .24]
+            elif headers[0] == "Variant":
+                fractions = [.25, .13, .18, .2, .24]
+            elif len(headers) == 5 and headers[1] == "Frozen temporal design":
+                fractions = [.13, .27, .22, .2, .18]
+            elif headers[0] == "Intervention":
+                fractions = [.32, .12, .2, .2, .16]
+            elif headers[0] == "Model / task" and len(headers) == 6:
+                fractions = [.23, .17, .07, .18, .19, .16] if headers[1] == "Score population" else [.23, .16, .17, .14, .15, .15]
+            display_rows = rows
+            if headers[-1] == "Commit / source scope":
+                display_rows = [list(row[:-1]) + [str(row[-1])[:12] + "..." if re.fullmatch(r"[a-f0-9]{40,64}", str(row[-1])) else row[-1]] for row in rows]
             table = Table([[Paragraph(html.escape(str(x)), styles["head" if i == 0 else "cell"]) for x in row]
-                           for i, row in enumerate([headers, *rows])], colWidths=[width * f for f in fractions], repeatRows=1, hAlign="LEFT")
+                           for i, row in enumerate([headers, *display_rows])], colWidths=[width * f for f in fractions], repeatRows=1, hAlign="LEFT")
             table.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(PALE)),
                 ("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 7),
                 ("RIGHTPADDING", (0, 0), (-1, -1), 7), ("TOPPADDING", (0, 0), (-1, -1), 7),
@@ -1661,6 +2351,8 @@ def export_evidence(data, output):
                 write_json(folder / f"curve_{index}_{run['value']}_summary.json", run["summary"])
     for index, audit in enumerate(data.get("curve_audits", [])):
         write_json(folder / f"curve_audit_{index}.json", audit)
+    for index, audit in enumerate(data.get("stress_audits", [])):
+        write_json(folder / f"stress_audit_{index}.json", audit)
     write_json(folder / "engineering_evidence.json", data["engineering"])
     write_json(folder / "extension_dispositions.json", data["extensions"])
     for index, study in enumerate(data["extensions"].get("studies", [])):
@@ -1672,6 +2364,8 @@ def export_evidence(data, output):
         write_json(folder / f"calibration_{index}_seal.json", calibration["seal"])
     for index, diagnostic in enumerate(data.get("diagnostics", [])):
         write_json(folder / f"diagnostic_{index}.json", diagnostic)
+    for index, check in enumerate(data.get("prior_checks", [])):
+        write_json(folder / f"prior_check_{index}.json", check)
     for name in ("docs/models.md", "docs/derivations/07_sampler_coordinates_recovery.md", "docs/study_design_v03.md"):
         shutil.copyfile(ROOT / name, folder / Path(name).name)
     for group in data["media"]:
@@ -1718,8 +2412,12 @@ def render(data, inputs, output):
     evidence["calibrations"] = [{"label": value["label"], "identity": value["seal"]["identity"]} for value in data.get("calibrations", [])]
     evidence["curve_audits"] = [{"status": value["status"], "identity": value.get("document", {}).get("identity")}
                                for value in data.get("curve_audits", [])]
+    evidence["stress_audits"] = [{"status": value["status"], "identity": value.get("document", {}).get("identity")}
+                                for value in data.get("stress_audits", [])]
     evidence["diagnostics"] = [{"status": value["status"], "identity": value.get("document", {}).get("identity")}
                                for value in data.get("diagnostics", [])]
+    evidence["prior_checks"] = [{"status": value["status"], "identity": value.get("document", {}).get("identity")}
+                               for value in data.get("prior_checks", [])]
     write_json(output / "evidence_summary.json", evidence)
     inputs.verify_unchanged()
     files = [{"path": str(p.relative_to(output)), "bytes": p.stat().st_size, "sha256": sha256(p)}
@@ -1732,6 +2430,8 @@ def render(data, inputs, output):
         "environment": {"python": sys.version.split()[0], "numpy": np.__version__,
                         "matplotlib": matplotlib.__version__, "reportlab": reportlab.Version},
         "inputs": list(inputs.files.values()), "files": files, "evidence": evidence,
+        "figure_typography": [{"path": figure["path"], "minimum_pdf_font_pt": figure["minimum_pdf_font_pt"]}
+                              for section in sections for figure in section["figures"]],
         "checks": {"manifests": True, "complete_scientific_results": True,
                    "artifact_hashes": True, "saved_scalar_reductions": True, "inputs_unchanged": True,
                    "pdf_visual_qa": "pending; render and inspect before publication"}}
@@ -1748,11 +2448,14 @@ def parser():
                          help="Optional resolved curve directory or curve_design.json; repeat for separate history/sensor designs")
     command.add_argument("--curve-audit", action="append", default=[], type=Path,
                          help="Optional source-bound history-choice or sensor-representation JSON; requires its matching --curve")
+    command.add_argument("--stress-audit", action="append", default=[], type=Path,
+                         help="Optional sealed G5/G6 paired-stress summary; requires its completed control --run")
     command.add_argument("--extensions", action="append", default=[], type=Path,
                          help="Optional scope JSON or completed P5 directory/decisions.json; repeat for multiple studies")
     command.add_argument("--audit", action="append", type=named_path, default=[], metavar="RUN_LABEL=JSON", help="Saved source-bound reference audit and G1 known-parameter scores")
     command.add_argument("--calibration", action="append", type=named_path, default=[], metavar="RUN_LABEL=DIRECTORY", help="Saved raw/calibrated study with calibration_evidence.json seal")
     command.add_argument("--diagnostic", action="append", type=Path, default=[], help="Optional saved source-bound G3 first-step diagnostic JSON; no replay")
+    command.add_argument("--prior-check", action="append", type=Path, default=[], help="Saved conditional fixed-design prior assessment; requires its matching complete P5 --extensions inputs")
     command.add_argument("--media", action="append", type=named_path, default=[], metavar="RUN_LABEL=DIRECTORY", help="Existing core report/comparison assets; no new animation is generated")
     command.add_argument("--allow-coordinate-source", help="Explicit exact SHA for historical ancillary coordinate evidence only")
     command.add_argument("--output", required=True, type=Path)

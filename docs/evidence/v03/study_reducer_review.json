@@ -1,0 +1,110 @@
+{
+  "artifact_type": "read_only_source_and_contract_review",
+  "concrete_unresolved_defects": [],
+  "contracts_reviewed": {
+    "history": [
+      "Whole short/long paired datasets are resampled independently within the equally weighted G1/G3/G4 strata; no site/time pseudo-replication.",
+      "Native effects use the exact common-qualified intersection with fallback exclusion; operational RMSE retains all five completed paired fields in each mechanism.",
+      "The shared O25 [3500,4000) training-only scale is reproduced from the observations; saved normalization identities agree across conditions.",
+      "Realized observation arrays, coordinates, times and O/C/U scoring roles are checked equal across the two history conditions.",
+      "Both ESN tracks require the one-sided 95-percent bootstrap lower bound of normalized native-CRPS improvement to be at least 0.02, with at least three common-qualified pairs per scenario/track cell.",
+      "Each ESN cell must have no lower long-history qualification count; complete recorded all-roster pipeline costs must have long/short ratio at most 2.5.",
+      "A failed or insufficient gate retains 1000 without asserting absence of a data benefit; all compatible model contrasts remain reported."
+    ],
+    "sensors": [
+      "The same realized observed field is checked across conditions, with nested O and fixed U.",
+      "Fitted sensor-specific bases and their spatial/temporal numerical ranks remain distinct from the diagnostic fixed 100-sensor basis.",
+      "The normalized-ridge reconstruction operator uses geometry only and reports unit-iid-noise amplification; it is not a correlated predictive-variance estimate.",
+      "One field supports descriptive sensitivity only, with no across-replication MCSE or general sensor-benefit claim."
+    ],
+    "stress": [
+      "G5 uses the matched G4 generator seed family and preserves the nonintervened components; its two arms retain the declared ordinary scenario-specific fitting seed policy.",
+      "G6 preserves all pre-break observations/latent values and geometry/roles; the first affected row is final_origin+24 for lead 25.",
+      "G6 prediction uses only the original pre-origin O history, frozen model parameters and original forecast seed, with no C/U labels or post-origin conditioning.",
+      "Every original G2 score leaf is verified at the fixed 1e-10 relative/absolute tolerance before scoring the paired G6 future.",
+      "The original qualification and fallback statuses are preserved; common-qualified native effects exclude unqualified raw traces.",
+      "Both sides of each stress comparison use the same control training-only scale, with the declared metric powers.",
+      "New G5 pipeline and G6 generation/replay/scoring costs are separate; historical control costs are deduplicated; omitted G5 generation/controller overhead is explicitly scoped.",
+      "Coupled arms are not pooled as independent scenario strata; uncertainty remains exploratory with five paired fields."
+    ]
+  },
+  "execution_boundaries": {
+    "extra_tests_executed_for_this_review": 0,
+    "forecasts_executed": 0,
+    "model_fits": 0,
+    "new_datasets_generated": 0,
+    "partial_outcome_values_inspected": false,
+    "scores_recomputed": 0,
+    "source_or_sealed_scientific_receipts_modified": false
+  },
+  "identity": "a8517ddcc3dc82dac4b3e3b71ffbafbd69c74e907d0b909d2586692975760145",
+  "recorded_at": "2026-11-03T08:43:26.117047+00:00",
+  "review_scope": [
+    "Prospective history and sensor recipe versus the current saved-artifact reduction logic.",
+    "Paired G5/G6 preparation, zero-parameter-refit G6 replay and saved-result reduction contracts.",
+    "Closure review of the selected-history provenance guard and unqualified-forecast wording.",
+    "Command signatures in the ordered reproduction guide and linked study commands."
+  ],
+  "reviewer": "pro_inference_plan; independent of the study-reducer author",
+  "schema": "v03-study-reducer-source-review-1.0",
+  "scientific_results_in_this_file": false,
+  "scope_limits": [
+    "This is a source/contract review, not an executed history, sensor, stress or calibration result and not an empirical performance finding.",
+    "No claim is made that pending scientific jobs, qualification gates, numerical reductions or complete artifact inventories have already passed.",
+    "The source review does not certify universal correctness, formal bootstrap coverage, continuum fidelity, model adequacy or negligible predictive Monte Carlo error.",
+    "The earlier four focused P5 aggregation tests are separate work and are not represented as executed tests of these study reducers."
+  ],
+  "source_fingerprint": "9f73b28a6ee6b8eec4bd21c3366b0c260c9433f798610be16697b2e44166d5ac",
+  "source_inputs": [
+    {
+      "bytes": 24502,
+      "path": "tools/summarize_v03_learning_curves.py",
+      "sha256": "b13e374b2729ce1fb90d52b6d14d337ff13f43b74547b4c8a45b2ea61011ec2d"
+    },
+    {
+      "bytes": 10281,
+      "path": "configs/benchmark/v03/studies/remaining_studies.yaml",
+      "sha256": "c0875c7f22ec96e4ad7b8732eccf40f53f8d46a40f52d850b30fa729ea8f04e0"
+    },
+    {
+      "bytes": 20417,
+      "path": "configs/benchmark/v03/studies/prepare.py",
+      "sha256": "bf5e3f980ca9cfaab91d23792d7cd3b8ff4a92609623bdd3159584c61412905c"
+    },
+    {
+      "bytes": 49502,
+      "path": "tools/summarize_v03_stress.py",
+      "sha256": "8b4cdd923798bb72a825e22f6bf6fd906d73dd8942bd8631f3c37a0afba45a6b"
+    },
+    {
+      "bytes": 1089,
+      "path": "configs/benchmark/v03/studies/stress_prepare.py",
+      "sha256": "f1cc3e1cfd92cc5c520d4f498e14f18ade78a6c2d74bb8d797b3c7c85d2b4a3b"
+    },
+    {
+      "bytes": 3588,
+      "path": "configs/benchmark/v03/studies/stress_recipe.yaml",
+      "sha256": "2688a62bfd3c9460f3d460108b8e4eff7dac6dd54b404f52ebc03bfa14e9501a"
+    },
+    {
+      "bytes": 8520,
+      "path": "configs/benchmark/v03/studies/stress_README.md",
+      "sha256": "7a57616b3f2bf35b2191c4c1c0947d22f5b01319355603f62180d4df0888c9ec"
+    },
+    {
+      "bytes": 10136,
+      "path": "docs/reproduction_v03.md",
+      "sha256": "b0585b9a157b8378dd81955d06856f49b891adf865bcee4be0b50103879c0d80"
+    }
+  ],
+  "stress_fix_verification": {
+    "selected_history_provenance": {
+      "status": "closed_by_source_inspection",
+      "verified": "stress_prepare requires history-choice and resolved-profiles inputs; verified_revised_control binds decision identity/source/current rule, reducer and input hashes, execution-ready resolution, chosen YAML identity and initial history; read_run then requires full completed-control protocol equality."
+    },
+    "unqualified_raw_trace_wording": {
+      "status": "closed_by_source_inspection",
+      "verified": "The guide now states that replayed unqualified raw forecasts retain failed qualification and never enter common-qualified effects."
+    }
+  }
+}

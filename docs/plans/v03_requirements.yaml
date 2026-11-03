@@ -182,6 +182,7 @@ requirements:
         - configs/benchmark/v03/studies/remaining_studies.yaml
         - configs/benchmark/v03/studies/prepare.py
         - configs/benchmark/v03/studies/README.md
+        - configs/benchmark/v03/studies/run_chunks.py
         - tools/summarize_v03_learning_curves.py
       behavior:
         - Resolve the full history curve at a common endpoint before executing any subset.
@@ -263,6 +264,10 @@ requirements:
         - docs/study_design_v03.md
         - configs/benchmark/v03/studies/remaining_studies.yaml
         - configs/benchmark/v03/studies/README.md
+        - configs/benchmark/v03/studies/stress_recipe.yaml
+        - configs/benchmark/v03/studies/stress_prepare.py
+        - configs/benchmark/v03/studies/stress_README.md
+        - tools/summarize_v03_stress.py
       behavior:
         - Separate operational outcomes, common-qualified native scores, and incomplete infrastructure work.
         - Freeze reference/comparator/task/metric/scenario weights and selection mode.
@@ -272,6 +277,7 @@ requirements:
         - Freeze attempted R, source/runtime and final seeds before confirmation; preserve cap shortfalls.
         - Declare one 220-fit revised pilot at the history chosen prospectively from paired development curves, with geometry and scientific settings matched to its confirmation draft.
         - Reuse preselected qualified uncropped revised fits for a separate 25-block calibration exercise with no extra parameter fits; mark unavailable cases without favorable substitutions.
+        - Seal separate five-field G5 noise arms and zero-refit G6 replay before stress generation; verify shared streams, control scales, permitted history, original score reproduction, exact qualification populations and complete expected receipt identities.
       limitations:
         - Pointwise intervals are not simultaneous superiority claims.
         - Wilson/variance sensitivity calculations are approximate precision planning, not test power.
@@ -279,13 +285,16 @@ requirements:
     tests:
       - tests/test_benchmark_studies_v03.py
       - tests/test_benchmark_pipeline.py
+      - tests/test_v03_stress_tools.py
     executed:
       status: formula_and_integrity_checks_recorded_confirmation_pending
       evidence:
         - docs/evidence/v03/integrated_tests.xml
+        - docs/evidence/v03/stress_tool_tests.xml
       pending:
         - Qualified matched-dimension development cells and generator evidence required by the frozen roster.
         - A valid schema-4 confirmation freeze and completed independent final campaign.
+        - Completed G5/G6 paired stress outcomes and eligible calibration cases; tool tests alone establish no stress or calibration result.
     scientific_conclusion:
       status: not_established
       statement: No completed schema-4 confirmation, achieved MCSE, or simultaneous ranking is claimed.

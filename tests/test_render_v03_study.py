@@ -194,6 +194,18 @@ def test_scope_only_extensions_are_never_presented_as_ablation_results(tmp_path)
     assert result["entries"][0]["status"] == "deferred"
 
 
+def test_scientific_audits_and_plans_are_not_mistaken_for_release_verification(tmp_path, monkeypatch):
+    monkeypatch.setattr(renderer, "ROOT", tmp_path)
+    folder = tmp_path / "docs/evidence/v03"
+    save(folder / "reference_release_audit.json", {"schema": "v03-reference-audit-1.0", "status": "passed"})
+    save(folder / "tuned_release_plan.json", {"memory_admissible": True})
+    save(folder / "implementation_remote_ci.json", {"schema": "github-actions-verification-1.0", "commit": "fixed-head",
+        "jobs": [{"status": "completed", "conclusion": "success"}]})
+    evidence = renderer.load_engineering(renderer.Inputs())
+    assert [(row["file"], row["kind"]) for row in evidence["release"]] == [
+        ("implementation_remote_ci.json", "saved remote CI")]
+
+
 def test_final_extension_disposition_supersedes_scope_independently_of_argument_order():
     scope = {"document": {"scientific_results_in_this_file": False},
              "entries": [{"id": "full_residual_ar", "status": "candidate", "rationale": "Training residual trigger"}]}
@@ -204,6 +216,28 @@ def test_final_extension_disposition_supersedes_scope_independently_of_argument_
     conflicting = {**final, "entries": [{**final["entries"][0], "status": "promoted"}]}
     with pytest.raises(ValueError, match="Conflicting extension dispositions"):
         renderer.current_extension_entries([final, conflicting])
+    overlay = {"document": {"schema": "v03-release-extension-dispositions-1.0"},
+               "entries": [{"id": "full_residual_ar", "status": "not_promoted", "rationale": "Later completed evidence retains the decision"}]}
+    for studies in ([scope, final, overlay], [overlay, final, scope]):
+        assert renderer.current_extension_entries(studies) == overlay["entries"]
+
+
+def test_release_disposition_overlay_binds_immutable_base_and_later_evidence(tmp_path):
+    base_path, later_path = tmp_path / "p5_findings.json", tmp_path / "later_calibration.json"
+    base = save(base_path, {"schema": "p5-extension-findings-1.0", "source_fingerprint": SOURCE,
+                          "extensions": []}, "identity")
+    save(later_path, {"complete": True, "raw_coverage": .8, "calibrated_coverage": .9}, "identity")
+    value = {"schema": "v03-release-extension-dispositions-1.0", "source_fingerprint": SOURCE,
+        "base_findings": {"path": str(base_path), "sha256": renderer.sha256(base_path), "identity": base["identity"]},
+        "source_inputs": [{"path": str(p), "sha256": renderer.sha256(p), "bytes": p.stat().st_size} for p in (base_path, later_path)],
+        "extensions": [{"id": "calibration", "disposition": "completed", "rationale": "Actual separately measured calibration"}]}
+    path = tmp_path / "release_dispositions.json"
+    save(path, value, "identity")
+    assert renderer.load_extensions(path, renderer.Inputs(), SOURCE)["entries"][0]["status"] == "completed"
+    assert renderer.read_json(base_path) == base
+    save(later_path, {"complete": True, "raw_coverage": .8, "calibrated_coverage": .95}, "identity")
+    with pytest.raises(ValueError, match="hash mismatch"):
+        renderer.load_extensions(path, renderer.Inputs(), SOURCE)
 
 
 def test_extension_findings_verify_inventory_contents_not_only_inventory_identity(tmp_path):
@@ -220,6 +254,23 @@ def test_extension_findings_verify_inventory_contents_not_only_inventory_identit
     assert renderer.load_extensions(path, renderer.Inputs(), SOURCE)["entries"][0]["status"] == "not_promoted"
     save(artifact, {"qualified": True, "native_scores": {"rmse": 0.}})
     with pytest.raises(ValueError, match="hash mismatch"):
+        renderer.load_extensions(path, renderer.Inputs(), SOURCE)
+
+
+def test_extension_source_replay_preserves_the_independent_dataset_count(tmp_path):
+    previous_path = tmp_path / "historical.json"
+    previous = save(previous_path, {"source_fingerprint": "old-source", "extensions": []}, "identity")
+    value = {"source_fingerprint": SOURCE, "extensions": [], "replay_provenance": {
+        "new_independent_datasets": 0, "same_datasets_and_seeds": True,
+        "new_model_selection_rules": False, "historical_artifacts_modified": False,
+        "historical_findings_path": str(previous_path), "historical_findings_sha256": renderer.sha256(previous_path),
+        "historical_findings_identity": previous["identity"], "historical_source_fingerprint": "old-source"}}
+    path = tmp_path / "current.json"
+    save(path, value, "identity")
+    assert renderer.load_extensions(path, renderer.Inputs(), SOURCE)["document"]["replay_provenance"]["new_independent_datasets"] == 0
+    value["replay_provenance"]["new_independent_datasets"] = 2
+    save(path, value, "identity")
+    with pytest.raises(ValueError, match="replication population"):
         renderer.load_extensions(path, renderer.Inputs(), SOURCE)
 
 
@@ -298,18 +349,109 @@ def test_curve_representation_audit_binds_source_inventory_and_fit_qualification
 def test_history_choice_uses_actual_paired_saved_losses_and_preserves_the_default(completed_run):
     run = renderer.load_run(completed_run, "test", renderer.Inputs(), SOURCE)
     value = {"confirmation_outcomes_inspected": False, "contrasts": [{"metric": "rmse", "track": "A",
+        "score_family": "operational_scores", "is_decision_contrast": False, "sufficient_pairs": True,
         "model_id": "bayes_esn_ridge", "cells": [{"scenario": "g1_gaussian_ar", "usable_replications": [0, 1],
-            "qualified1000": 1, "qualified2000": 1}],
-        "macro": {"paired_differences": {"g1_gaussian_ar": [0., 0.]}, "upper_one_sided95": 0.},
-        "margin": .01, "bound_passed": True}], "qualification_cells": [],
+            "qualified1000": 1, "qualified2000": 1, "paired_differences": [0., 0.]}],
+        "macro": {"paired_differences": {"g1_gaussian_ar": [0., 0.]}, "lower_one_sided95": 0.},
+        "margin": None, "bound_passed": None}, {"metric": "crps", "track": "A",
+        "score_family": "native_scores", "is_decision_contrast": True, "sufficient_pairs": False,
+        "model_id": "bayes_esn_ridge", "cells": [{"scenario": "g1_gaussian_ar", "usable_replications": [0],
+            "qualified1000": 1, "qualified2000": 1, "paired_differences": [0.]}],
+        "macro": None, "margin": .02, "bound_passed": False}],
+        "qualification_cells": [{"model_id": "bayes_esn_ridge", "track": "A", "scenario": "g1_gaussian_ar", "not_worse": True}],
         "summed_pipeline_seconds": {"1000": 12.8, "2000": 12.8}, "short_history_time_saving_fraction": 0.,
-        "complete_compute_accounting": True, "cost_gate_passed": False, "score_bounds_passed": True,
-        "qualification_not_worse": True, "selected_initial_history": 2000,
-        "decision_rule": {"minimum_measured_pipeline_time_saving_fraction": .2}}
+        "long_to_short_pipeline_time_ratio": 1., "promotion_gate_passed": False,
+        "complete_compute_accounting": True, "cost_gate_passed": True, "score_bounds_passed": False,
+        "qualification_not_worse": True, "selected_initial_history": 1000,
+        "decision_rule": {"maximum_measured_long_to_short_pipeline_time_ratio": 2.5, "tracks": ["A"],
+                          "minimum_common_qualified_pairs_per_native_cell": 3,
+                          "decision_model": "bayes_esn_ridge", "minimum_normalized_crps_improvement": .02}}
     renderer._validate_history_choice(value, {1000: run, 2000: run})
     value["contrasts"][0]["macro"]["paired_differences"]["g1_gaussian_ar"][0] = -.3
     with pytest.raises(ValueError, match="paired losses differ"):
         renderer._validate_history_choice(value, {1000: run, 2000: run})
+
+
+@pytest.fixture
+def stress_effect_case():
+    spec = importlib.util.spec_from_file_location("stress_producer_contract", renderer.ROOT / "tools/summarize_v03_stress.py")
+    producer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(producer)
+    pairs, originals = [], []
+    for replication, scale in enumerate((1., 2., 4., 8., 16.)):
+        control = {"replication": replication, "model_id": "bayes_esn_ridge", "track": "A",
+            "qualified": replication != 4, "fallback": replication == 4, "receipt_identity": f"control-{replication}",
+            "training_scale": scale, "normalization_reference": {"identity": f"scale-{replication}"},
+            "native_scores": {"rmse": 1., "mae": .5, "crps": 2., "field_energy": 3.,
+                              "intervals": {"0.9": {"coverage": .9, "width": 2., "whole_path_covered": True}}},
+            "operational_scores": {"rmse": 1., "mae": .5}}
+        stress = {**control, "receipt_identity": f"stress-{replication}", "training_scale": 1000000. + replication,
+            "qualified": replication != 2, "fallback": replication == 2,
+            "native_scores": {"rmse": 1. + scale, "mae": .5 + 2 * scale, "crps": 2. + .3 * scale,
+                              "field_energy": 3. + .5 * scale,
+                              "intervals": {"0.9": {"coverage": .8, "width": 2. + scale, "whole_path_covered": False}}},
+            "operational_scores": {"rmse": 1. + scale, "mae": .5 + 2 * scale}}
+        pairs.append(producer.pair_record(control, stress, scale=scale, normalization=control["normalization_reference"], arm="local_t"))
+        originals.append((control, stress))
+    recipe = {"inference": {"bootstrap_seed": 17, "bootstrap_resamples": 50}}
+    arm = {"id": "local_t", "paired_jobs": pairs, "effects": producer.effects_from_pairs(pairs, "local_t", recipe)}
+    return arm, recipe, originals
+
+
+def test_stress_effects_verify_common_scale_exact_population_and_dimensionless_coverage(stress_effect_case):
+    arm, recipe, originals = stress_effect_case
+    renderer.validate_stress_effects(arm, recipe)
+    for pair, (control, stress) in zip(arm["paired_jobs"], originals):
+        renderer._validate_stress_pair(pair, control, stress, arm["id"])
+    effects = {(row["population"], row["metric"]): row for row in arm["effects"]}
+    rmse = effects["operational_scores", "rmse"]
+    assert rmse["raw"]["mean"] == pytest.approx(31 / 5)
+    assert rmse["common_normalized"]["mean"] == 1.
+    assert rmse["common_normalized"]["mcse"] == 0.
+    native = effects["native_scores", "crps"]
+    assert native["N_pair"] == 3
+    assert native["pair_ids"] == [f"rep_{n:03d}/A/bayes_esn_ridge" for n in (0, 1, 3)]
+    assert native["common_normalized"]["mean"] == pytest.approx(.3)
+    coverage = effects["native_scores", "intervals/0.9/coverage"]
+    assert coverage["normalization_power"] == 0
+    assert coverage["common_normalized"]["mean"] == pytest.approx(-.1)
+
+
+@pytest.mark.parametrize("fault", ["standalone_scale", "population", "interval", "coverage_units", "missing_companion"])
+def test_stress_report_rejects_incorrect_paired_numbers(stress_effect_case, fault):
+    arm, recipe, _ = stress_effect_case
+    effect = next(row for row in arm["effects"] if row["population"] == "native_scores" and row["metric"] == "crps")
+    if fault == "standalone_scale":
+        effect["normalized_differences"][0] = effect["raw_differences"][0] / 1000000.
+    elif fault == "population":
+        effect["N_pair"] = 5
+    elif fault == "interval":
+        effect["common_normalized"]["pointwise95"][1] += .1
+    elif fault == "coverage_units":
+        next(row for row in arm["effects"] if row["metric"] == "intervals/0.9/coverage")["normalization_power"] = 1
+    else:
+        arm["effects"] = [row for row in arm["effects"] if row["metric"] != "field_energy"]
+    with pytest.raises(ValueError):
+        renderer.validate_stress_effects(arm, recipe)
+
+
+def test_stress_audit_rejects_resealed_source_input_tampering_before_reading_science(completed_run, tmp_path):
+    run = renderer.load_run(completed_run, "control", renderer.Inputs(), SOURCE)
+    bound = tmp_path / "stress_design.json"
+    bound.write_text("sealed input")
+    path = tmp_path / "audit.json"
+    value = {"schema": "v03-paired-stress-summary-1.0", "complete": True, "source_fingerprint": SOURCE,
+        "standalone_g5_normalization_is_cross_arm_comparable": False,
+        "control_manifest_identity": run["manifest"]["identity"],
+        "source_inputs": [{"path": str(bound), "sha256": renderer.sha256(bound), "bytes": bound.stat().st_size}]}
+    save(path, value, "identity")
+    bound.write_text("edited input")
+    with pytest.raises(ValueError, match="hash mismatch"):
+        renderer.load_stress_audits([path], [run], renderer.Inputs(), SOURCE)
+    value["control_manifest_identity"] = "different control"
+    save(path, value, "identity")
+    with pytest.raises(ValueError, match="supplied completed control"):
+        renderer.load_stress_audits([path], [run], renderer.Inputs(), SOURCE)
 
 
 def test_saved_first_step_diagnostic_requires_bound_inputs_and_valid_mse_decomposition(completed_run, tmp_path):
@@ -337,6 +479,112 @@ def test_saved_first_step_diagnostic_requires_bound_inputs_and_valid_mse_decompo
         renderer.load_diagnostics([path], [run], renderer.Inputs(), SOURCE)
 
 
+@pytest.fixture
+def prior_check_case(tmp_path):
+    """Small hand-computable prior design, no model fit or posterior use."""
+    directory = tmp_path / "final_ar_g4_existing_fronts"
+    prepared = {"Phi": np.array([[1.], [2.]]), "Z": np.array([[1.], [2.], [3.]]),
+        "reference_Z": np.array([[1.]]), "split": {"fitting_start": 1, "fitting_stop": 3},
+        "response_center": .5, "response_scale": 2.,
+        "spec": {"prior": {"kind": "ridge", "mean_log_precision": 0., "sd_log_precision": 0.},
+            "covariance": {"kind": "matern", "range_prior": "lognormal", "scale_mode": "relative",
+                "anisotropy": False, "nonstationary": False, "static_variance": False, "infer_nu": False,
+                "log_q_mean": 0., "log_q_sd": 0., "log_ell_mean": -1., "log_ell_sd": .2, "nu": 1.5},
+            "features": {}, "spatial_mean": {}}}
+    parameters = {"a0": 2., "b0": .5, "log_precision_mean": 0., "log_precision_sd": 0.,
+        "log_q_mean": 0., "log_q_sd": 0., "log_ell_mean": -1., "log_ell_sd": .2, "nu": 1.5,
+        "rho_eta_mean": 0., "rho_eta_sd": .8}
+    for variant, temporal in (("scalar_reference", "iid"), ("full_residual_ar", "full_residual_ar")):
+        save_state(directory / variant / "fitted.npz", {"prepared": prepared,
+            "sampler": {"a0": 2., "b0": .5, "rho_prior_sd": .8, "temporal": temporal},
+            "posterior": {"unused_array": np.arange(10.)}}, kind="fitted_model")
+    manifest = save(directory / "manifest.json", {"source_fingerprint": SOURCE, "environment": {}}, "identity")
+    save(directory / "output_inventory.json", {"source_fingerprint": SOURCE, "complete": True,
+        "manifest_identity": manifest["identity"]}, "identity")
+    def sd_summary(variance):
+        variance = np.asarray(variance)
+        sd = np.sqrt(variance)
+        summary = {"minimum": float(sd.min()), "maximum": float(sd.max()),
+                   "median": float(np.median(sd)), "rms": float(np.sqrt(variance.mean()))}
+        return {"conditioning_standard_deviation_units": summary,
+                "original_response_units": {key: 2 * value for key, value in summary.items()}}
+    designs = []
+    for name, z, variance in (("conditioning_reference", prepared["reference_Z"], np.array([[.5], [2.]])),
+            ("observed_history_fitting_design", prepared["Z"][1:3], np.array([[2., 4.5], [8., 18.]]))):
+        designs.append({"name": name, "frozen_design_hash": content_hash({"Phi": prepared["Phi"], "Z": z}),
+            "sites": 2, "times": len(z), "spatial_columns": 1, "temporal_columns": 1,
+            "readout_pointwise_prior_sd": sd_summary(variance), "observation_pointwise_prior_sd": sd_summary(variance + 1)})
+    results = {"prior_parameters": parameters, "response_center": .5, "response_scale": 2.,
+        "expected_sigma2_standardized": .5, "expected_inverse_lambda": 1., "expected_q": 1.,
+        "marginal_coefficient_variance_standardized": .5, "marginal_coefficient_variance_original_units": 2.,
+        "predictive_variance_finite": True, "predictive_fourth_moment_finite": False,
+        "designs": designs, "stationary_residual_prior_sd": sd_summary(np.array([1., 1.])),
+        "ar_absolute_rho_tail_probabilities": {"0.9": .06572796740759036, "0.95": .022037203554479936},
+        "ar_absolute_rho_median": .4926789123765065,
+        "quadrature": {"passed": True, "orders": [128, 256], "absolute_agreement_tolerance": 1e-8,
+            "expected_kernel_max_absolute_difference": 0., "rho_moment_max_absolute_difference": 0.}}
+    value = {"schema": "conditional-fixed-design-prior-check-1.0", "source_fingerprint": SOURCE,
+        "environment": {}, "tool_sha256": renderer.sha256(renderer.ROOT / "tools/check_conditional_prior_v03.py"),
+        **{key: False for key in ("posterior_samples_used", "future_labels_used", "models_refitted", "prior_retuning_performed",
+                                 "extension_promotion", "autonomous_prior_rollouts_assessed")},
+        "input_hashes": {str(directory / name): renderer.sha256(directory / name) for name in (
+            "manifest.json", "output_inventory.json", "scalar_reference/fitted.npz", "full_residual_ar/fitted.npz")},
+        "cases": [{"ablation_directory": str(directory), "manifest_identity": manifest["identity"],
+            "identical_frozen_design_and_shared_priors_verified": True, "saved_scalar_sampler_temporal": "iid",
+            "saved_ar_sampler_temporal": "full_residual_ar", "results": results}]}
+    path = tmp_path / "prior.json"
+    save(path, value, "identity")
+    studies = [{"path": str(directory / "decisions.json"), "scientific_evidence": {"mode": "extensions"},
+                "document": {"manifest_identity": manifest["identity"]}}]
+    return path, value, studies
+
+
+def test_prior_assessment_binds_actual_spec_and_design_without_reading_posterior_arrays(prior_check_case, monkeypatch):
+    path, value, studies = prior_check_case
+    original_load, accessed = np.load, []
+    class ArrayAccess:
+        def __init__(self, *args, **kwargs):
+            self.archive = original_load(*args, **kwargs)
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            self.archive.close()
+        def __getitem__(self, key):
+            accessed.append(key)
+            # Sorted state traversal stores the synthetic posterior first.
+            assert key != "a000000", "Posterior arrays must not enter a prior assessment"
+            return self.archive[key]
+    monkeypatch.setattr(renderer.np, "load", ArrayAccess)
+    checks = renderer.load_prior_checks([path], studies, renderer.Inputs(), SOURCE)
+    assert checks[0]["status"] == "complete"
+    assert len(accessed) == 8
+    paragraphs = " ".join(text for section in renderer.prior_sections(checks) for text in section["paragraphs"])
+    assert "finite prior variance and an infinite fourth moment" in paragraphs
+    assert "autonomous ESN prior rollouts" in paragraphs
+    assert "negative draws give alternating correlation" in paragraphs
+
+
+@pytest.mark.parametrize("fault", ["parameters", "moments", "units", "design", "scope", "missing_input"])
+def test_prior_assessment_rejects_resealed_wrong_numbers_or_scope(prior_check_case, fault):
+    path, value, studies = prior_check_case
+    results = value["cases"][0]["results"]
+    if fault == "parameters":
+        results["prior_parameters"]["b0"] = 9.
+    elif fault == "moments":
+        results["predictive_fourth_moment_finite"] = True
+    elif fault == "units":
+        results["designs"][0]["observation_pointwise_prior_sd"]["original_response_units"]["rms"] = 99.
+    elif fault == "design":
+        results["designs"][0]["frozen_design_hash"] = "changed"
+    elif fault == "scope":
+        value["autonomous_prior_rollouts_assessed"] = True
+    else:
+        del value["input_hashes"][next(iter(value["input_hashes"]))]
+    save(path, value, "identity")
+    with pytest.raises(ValueError):
+        renderer.load_prior_checks([path], studies, renderer.Inputs(), SOURCE)
+
+
 def test_check_inputs_never_fits_generates_forecasts_or_writes_output(completed_run, tmp_path, monkeypatch, capsys):
     from bayes_stesn.benchmark import runner
     def forbidden(*args, **kwargs):
@@ -362,8 +610,12 @@ def test_full_chart_and_html_recipe_from_synthetic_saved_values_without_pdf(comp
     out = args.output
     out.mkdir()
     sections = renderer.sections_for(data, out)
+    assert all(figure["minimum_pdf_font_pt"] >= 7.5 for section in sections for figure in section["figures"])
     renderer.render_html(sections, out, SOURCE)
     assert (out / "index.html").is_file()
+    html = (out / "index.html").read_text()
+    assert "Bayesian spatiotemporal forecasting" in html
+    assert "max-width:100%" in html and "overflow-x:auto" in html
     assert len(list((out / "figures").glob("*.png"))) >= 6
     assert len(list((out / "figures").glob("*.svg"))) >= 6
     assert not list(out.glob("*.pdf"))

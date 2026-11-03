@@ -30,6 +30,11 @@ six models on A (persistence, KRR, GP, ridge ESN, basis GRU, E-QESN), and five o
 20 finite ensemble members. The selected 512 predictive paths apply to models
 that sample paths; they do not manufacture 512 E-QESN members.
 
+The separately declared stress follow-up adds 110 G5 fits and at most 55 G6
+forecast replays, with no G6 parameter refit. It reuses the completed revised
+G4/G2 controls, so it follows the core studies. Its commands, paired-scale
+contract, and independent cost accounting are in [stress_README.md](stress_README.md).
+
 History labels specify the rows available **before the first nominal validation
 origin**. Final fitting also includes the next three H100 blocks, so the 1000
 and 2000 cases supply 1300 and 2300 rows at the identical final forecast origin.
@@ -59,8 +64,8 @@ from scratch without that receipt, complete Section 3 before this resolution
 step; the builder deliberately refuses to materialize the studies without it.
 
 ```bash
-export STESN_PY=/workspace/scratch/158260e8300f/bstesn-v03-env/bin/python
-export STESN_PATH_DECISION=docs/evidence/v03/extension_findings.json
+export STESN_PY=.venv/bin/python
+export STESN_PATH_DECISION=docs/evidence/v03/extension_findings_final.json
 export PYTHONPATH=src
 export OPENBLAS_NUM_THREADS=1
 export OMP_NUM_THREADS=1
@@ -84,6 +89,37 @@ current package source. The earlier `tuned_release` and P5 evidence remain
 historical if a later resource-accounting source freeze changes the package
 fingerprint. A fresh source requires fresh matching selection/path evidence;
 the builder supplies no compatibility override.
+
+For a from-scratch reproduction, create the locked `.venv` as described in
+`docs/reproduction.md`, run the declared selection and P5 inputs, and produce
+their own matching findings receipt before this step. The names above identify
+this campaign's current-source evidence. Never edit an old receipt's hashes or
+reuse a different-source finding to satisfy the builder.
+
+After the new reference and four P5 outputs are complete, aggregate them with
+the existing prospective rule. For the published input directory names:
+
+```bash
+"$STESN_PY" tools/summarize_extensions_v03.py \
+  --reference-run results/v03/development/reference_final \
+  --g4-ar results/v03/extensions/final_ar_g4_existing_fronts \
+  --g3-ar results/v03/extensions/final_ar_g3_excitable_field \
+  --g4-paths results/v03/extensions/final_paths_g4_existing_fronts \
+  --g3-paths results/v03/extensions/final_paths_g3_excitable_field \
+  --scope docs/evidence/v03/extension_scope.json \
+  --rule-document docs/evidence/v03/development_decisions.json \
+  --rule-evidence docs/evidence/v03/extension_findings.json \
+  --output results/v03/extension_findings_reproduced.json
+```
+
+For a fresh rerun, substitute its new input directories and output, set
+`STESN_PATH_DECISION` to that new receipt, then invoke `prepare.py`. The retained
+historical `--rule-evidence` establishes the original declaration timestamps and
+dataset identities; it does not supply historical numeric findings to the new
+aggregation. Optional `--compare-findings
+docs/evidence/v03/extension_findings_final.json` verifies exact scientific
+reproduction against the saved final receipt. Missing optional aggregate
+resource companions leave those cost fields null rather than inferred.
 
 The deterministic transfer changes basis-GRU stopping to the actual H100 task
 and requires a complete 100-step validation tail. Architecture, regularization,
@@ -116,6 +152,9 @@ import sys
 profiles = Path("results/v03/study_design/drafts")
 for job in json.loads((profiles / "preflight_jobs.json").read_text()):
     subprocess.run([
+        sys.executable, "configs/benchmark/v03/studies/run_chunks.py",
+        "--output", "results/v03/study_design/timing",
+        "--reserve-gib", "4", "--next-output-mib", "512", "--command",
         sys.executable, "configs/benchmark/v03/studies/training_preflight.py",
         "--profiles", str(profiles), "--case", job["case"],
         "--model", job["model_id"], "--track", job["track"],
@@ -192,12 +231,12 @@ The `curve` API resolves all conditions before running an allowed subset:
   --config results/v03/study_design/resolved/history_base.yaml \
   --values 500,1000,2000,4000 --common-endpoint 4000 \
   --execute-values 1000,2000 --output results/v03/history \
-  --workers 2 --max-memory-mb 5120
+  --workers 1 --max-memory-mb 5120
 
 "$STESN_PY" -m bayes_stesn benchmark curve sensors \
   --config results/v03/study_design/resolved/sensors_base.yaml \
   --values 25,50,100 --execute-values 25,50,100 \
-  --output results/v03/sensors --workers 2 --max-memory-mb 5120
+  --output results/v03/sensors --workers 1 --max-memory-mb 5120
 ```
 
 `curve` itself has no invocation job/time chunk flags. For bounded sessions,
@@ -220,21 +259,41 @@ for kind in ("history", "sensors"):
         target.write_bytes(source.read_bytes())
 PY
 
-"$STESN_PY" -m bayes_stesn benchmark run \
+"$STESN_PY" configs/benchmark/v03/studies/run_chunks.py \
   --config results/v03/study_design/resolved/history_1000.yaml \
   --output results/v03/history/v03_fixed_history_history_1000 \
-  --workers 2 --max-memory-mb 5120 --max-jobs 20 --max-wall-seconds 600
+  --max-invocations 165 --jobs-per-invocation 1 --max-memory-mb 5120 \
+  --reserve-gib 4 --next-output-mib 512
 
 "$STESN_PY" -m bayes_stesn benchmark status \
   results/v03/history/v03_fixed_history_history_1000
-"$STESN_PY" -m bayes_stesn benchmark resume \
+"$STESN_PY" configs/benchmark/v03/studies/run_chunks.py \
+  --config results/v03/study_design/resolved/history_1000.yaml \
   --output results/v03/history/v03_fixed_history_history_1000 \
-  --workers 2 --max-memory-mb 5120 --max-jobs 20 --max-wall-seconds 600
+  --max-invocations 165 --jobs-per-invocation 1 --max-memory-mb 5120 \
+  --reserve-gib 4 --next-output-mib 512
 ```
 
 Repeat for `history_2000` and `sensors_25`, `sensors_50`, `sensors_100`, using the
-`name` in each YAML as its child directory. Invocation limits pause between
-atomic jobs; they do not reduce scientific fitting budgets. Preserve existing
+`name` in each YAML as its child directory. Each sensor condition has 11 jobs;
+use `--max-invocations 11 --next-output-mib 1024` for those larger artifacts.
+Run one condition at a time on the assigned science slot. This controller
+always invokes the existing runner with one worker and a 600-second
+between-job chunk allowance; it does not add a scientific fitting restriction.
+The same command initializes an absent run or resumes its exact saved identity.
+
+`run_chunks.py` checks current available disk before every invocation and logs
+its own hash, source identity, allowance, child exit, and elapsed time under
+`resource_guards/`. It requires at least 4 GiB reserve plus the declared next
+batch's estimated output and temporary storage. Exit 75 signals a resource or
+no-progress pause; inspect retained state and retry only when headroom is
+adequate. Concurrent unrelated writes can still consume disk during an atomic
+job. The allowance is a prospective estimate, not a filesystem quota. Even an
+apparently complete summary goes through the core integrity verifier on resume.
+Do not edit the controller while a campaign is using its recorded hash.
+
+Invocation limits pause between atomic jobs; they do not reduce scientific
+fitting budgets. Preserve existing
 receipts and checkpoint identities. Never add `--models`, `--scenarios`, or a
 different replication count to an already initialized campaign.
 
@@ -306,10 +365,11 @@ corresponding `revised_L1000.yaml` or `revised_L2000.yaml` and its matching
 confirmation draft. For example, after a declared choice of 1000:
 
 ```bash
-"$STESN_PY" -m bayes_stesn benchmark run \
+"$STESN_PY" configs/benchmark/v03/studies/run_chunks.py \
   --config results/v03/study_design/resolved/revised_L1000.yaml \
   --output results/v03/development/revised_L1000 \
-  --workers 2 --max-memory-mb 5120 --max-jobs 20 --max-wall-seconds 600
+  --max-invocations 220 --jobs-per-invocation 1 --max-memory-mb 5120 \
+  --reserve-gib 4 --next-output-mib 512
 ```
 
 Resume the same campaign until all 220 jobs are terminal. Keep all five fields

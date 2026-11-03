@@ -1,0 +1,63 @@
+schema: v03-stress-recipe-1.0
+declared_at: '2026-11-03T07:57:05+00:00'
+declared_before: Any dataset generation, fitting, or forecast scoring for these stress studies.
+source_fingerprint: 9f73b28a6ee6b8eec4bd21c3366b0c260c9433f798610be16697b2e44166d5ac
+replications: 5
+horizon: 100
+initial_history: The prospectively selected uncropped revised-development history, 1000 or 2000.
+model_policy: Exactly the revised-development frozen roster, configurations, fit caps, inference budgets and path convention.
+controls:
+  g5: g4_existing_fronts
+  g6: g2_spectral_transport
+  policy: Reuse the five corresponding completed revised-development fields; verify actual shared streams and role identities.
+g5:
+  scenario: g5_noise_stress
+  arms: [whole_field_t, local_t]
+  student_t_df: 5.0
+  variance_matching: true
+  required_new_fits_per_arm: 55
+  required_new_fits_total: 110
+  model_seeds: Existing scenario-specific fit policy; identical across G5 arms, distinct from G4 control fit seeds.
+  unchanged_components:
+    whole_field_t: generating mean and Gaussian measurement residual
+    local_t: latent field and generating mean
+  normalization: >-
+    Paired analysis divides both arm and control raw losses by the same saved
+    G4 control training-only SD. Standalone arm normalization receipts remain
+    untouched and are not the cross-arm comparison scale.
+  variants: Existing Gaussian/ridge comparators only; no automatic promotion or implementation of robust t models.
+g6:
+  scenario: g6_velocity_shift
+  break_lead: 25
+  new_velocity: [-0.003, 0.008]
+  new_parameter_fits: 0
+  maximum_forecast_jobs: 55
+  policy: >-
+    Reuse each saved G2 forecast when retained; otherwise replay the frozen
+    saved model with its original forecast seed and exact O history ending at
+    the original final origin. Verify every saved G2 score numerically before
+    scoring against the paired G6 future. No post-origin state conditioning,
+    parameter refit, adaptation, or G6 calibration.
+  score_replay_tolerance: {rtol: 1.0e-10, atol: 1.0e-10}
+  prebreak_policy: Exact observations/latent values before origin + 25 - 1; identical full coordinate/time/role arrays.
+  normalization: The saved G2 control training-only SD is shared by both futures.
+inference:
+  primary_descriptive_losses: [rmse, mae, crps]
+  companions: Original complete native/operational score objects, interval width/score/coverage, and joint/path scores.
+  sign: stress_minus_control_positive_means_larger_loss
+  populations: All completed operational pairs and each exact common-qualified native intersection, separately.
+  bootstrap_resamples: 5000
+  bootstrap_seed: 2026110306
+  uncertainty: Pointwise paired-dataset percentile intervals and MCSE; five fields do not justify precise robustness claims.
+  pooling: No independent-stratum macro average over coupled G4/G5 or G2/G6 arms.
+resource_policy:
+  model_workers: 1
+  numerical_threads: 1
+  disk_reserve_gib: 4
+  next_job_output_and_temporary_allowance_mib: 512
+  scope: Pause between atomic jobs if headroom is insufficient; never delete unrelated data or rewrite old receipts.
+  costs: Charge new G5 fitting pipelines, G6 generation/replay/scoring, and calibration separately; reused control costs are historical shared costs.
+closure:
+  g5_heteroskedastic_arm: Conditional additional study; not silently included in these two declared noise interventions.
+  robust_t_models: Conditional on compatible priors, derivation, inference and validation evidence.
+  g6_post_shift_adaptation: Separate undeclared task; no adaptation conclusion from this blind-shift study.

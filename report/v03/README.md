@@ -11,7 +11,8 @@ qualification, operational and conditional-native populations, paired and
 joint scores, error evolution, measured wall/CPU cost, accuracy versus time,
 learning curves, the saved G1 privileged-parameter reference, separate
 raw-versus-calibrated intervals, bounded extension/path results, memory
-ownership evidence, tests, and research limits.
+ownership evidence, an explicitly supplied conditional prior assessment,
+separate paired G5/G6 stress comparisons, tests, and research limits.
 Numerical conclusions come from the supplied artifacts; missing optional
 studies remain visibly unexecuted.
 
@@ -81,6 +82,18 @@ Record visual QA separately; changing the report manifest requires recomputing
 its content identity. Do not manually alter inventoried assets without a new
 render or an explicit audited postprocessing recipe.
 
+Plot typography is checked against its actual tight bounding box and the PDF's
+A4 placement limits. A plot whose smallest visible label would be below 7.5 pt
+is rejected. Tables use short display labels while exact model/configuration
+identifiers remain in linked JSON. Selection tables aggregate across datasets;
+adding replications does not duplicate a fixed configuration in the PDF.
+JUnit totals are labeled **cases, including subtests**, rather than distinct
+test functions. PDF commit/source cells use 12-character prefixes; HTML and
+machine evidence retain full hashes. Responsive CSS constrains media to its
+container and gives wide tables horizontal scrolling. Static layout/link checks
+and actual browser review are separate QA activities and must be recorded as
+such; blocked browser access is not a successful browser review.
+
 When operating inside the ChatGPT PDF workflow, run that environment's
 required PDF authoring marker immediately before the first generation command.
 The renderer itself remains an ordinary reproducible Python CLI outside that
@@ -116,11 +129,55 @@ The renderer verifies the audit's content identity, source fingerprint,
 curve identity, design/tool/recipe hashes and complete source-receipt
 inventory. It checks history paired differences and qualification against
 the supplied condition receipts, and checks the recorded time sums and
-decision gates. The sensor audit displays saved spatial/temporal ranks and
+decision gates. The frozen history rule defaults to 1000 rows, promoting
+2000 only if both ESN tracks meet the declared practical native-CRPS lower
+bound, common-qualified-pair minimum, qualification and all-roster cost
+conditions. Every comparator's native CRPS, native RMSE and operational RMSE
+effects remain visible; failure of this exploratory gate is not evidence
+that more data have no benefit. The sensor audit displays saved spatial/temporal ranks and
 geometry-only unit-iid-noise amplification, with fit qualification visible.
 Its fixed 100-sensor reference basis is a diagnostic choice; it does not
 change a fitted basis, prior or forecast, and it is not actual correlated
 forecast variance. The one-field sensor study has no replication MCSE.
+
+### Separate paired G5/G6 stress comparisons
+
+Pass the completed `v03-paired-stress-summary-1.0` audit with its corresponding
+revised control run:
+
+```text
+--run revised=/path/to/completed/revised-development
+--stress-audit /path/to/sealed/stress_summary.json
+```
+
+The stress audit is a separate experiment. It binds the immutable stress design,
+recipe/tool inputs, original control manifest, complete G5 arm manifests, G6
+replay receipts and saved artifact hashes. Both G5 noise arms are compared with
+their matched G4 fields; blind G6 compares the same original G2 forecasts with a
+future whose hidden velocity shift starts at lead 25. G6 reuses retained native
+forecasts or replays frozen models with their original seeds, verifies every
+original G2 score, and performs **zero parameter refits or post-shift adaptation**.
+The renderer itself never generates a field or replays a forecast.
+
+For each field, both sides of a paired dimensionful loss use the saved **control
+training-only SD**. Standalone G5 normalization receipts remain unchanged and
+are not used as a cross-arm denominator. Coverage indicators remain dimensionless.
+The renderer independently checks original score copies, exact pair IDs,
+qualification/fallback intersections, normalization powers, means, MCSEs and
+the recorded paired-dataset bootstrap intervals. Native effects use the exact
+common-qualified population; operational RMSE/MAE retain declared fallbacks.
+Every primary and declared interval, joint and path companion effect remains
+in the exported audit, even when the printed table shows a compact subset.
+
+G5 costs sum recorded ordinary model-job pipelines and exclude shared DGP
+generation/controller overhead that the original dataset receipts do not itemize.
+G6 separately records generation, forecast reuse/replay, all-score verification,
+scoring and serialization. Unknown CPU work remains unavailable and interrupted
+accounting remains incomplete. Reused G4/G2 control costs are deduplicated and
+shown separately from incremental work. These are measured sums, not elapsed
+parallel-campaign time. Coupled controls and stress arms are not pooled as
+independent strata in the core macro comparison. Five paired fields support
+exploratory pointwise uncertainty, not a precise universal robustness claim.
 
 ### G1 known-parameter reference
 
@@ -225,6 +282,24 @@ An entry can also supply `run_directory` to bind its decision
 to a complete benchmark run. A narrative recommendation never becomes a
 measured ablation result merely by being included in the report.
 
+If a final-source disposition includes a source replay, its historical
+disposition identity and hash remain bound separately. The report explicitly
+counts the reused fields once: exact replay under a new source adds zero
+independent datasets and does not turn a failed gate into a qualified result.
+
+A later release closure uses a new immutable overlay rather than changing a
+P5 findings file already referenced by study configurations. Pass the overlay
+with another `--extensions` option. Its schema is
+`v03-release-extension-dispositions-1.0`, with `identity`, `source_fingerprint`,
+`base_findings: {path, identity, sha256}`, `source_inputs: [{path, sha256, bytes}]`
+and an `extensions` list containing the actual later dispositions/rationales.
+The inventory includes the unchanged base findings and every cited later
+calibration, stress or confirmation-gate receipt. The renderer verifies these
+bindings and gives the overlay priority over P5 findings and implementation
+scope, independently of argument order. Conflicting overlays at the same
+priority are rejected. Earlier scientific findings and their hashes remain
+unchanged.
+
 If an explicitly optional curve or extension path is absent, the report says
 `not available`. If it is omitted, the report says `not supplied`. Existing
 malformed or incompatible evidence is an error.
@@ -241,6 +316,37 @@ the saved fixed decoder span. It is an evaluator-only lower bound for that
 target/span, not a latent-field result, a permitted forecast, or a universal
 irreducible-error estimate. A larger path budget does not repair a restricted
 decoder or poor long-horizon dynamics.
+
+### Conditional prior moments
+
+Add the separately saved mathematical assessment alongside its two matching
+completed P5 ablations:
+
+```text
+--extensions results/v03/extensions/final_ar_g4_existing_fronts
+--extensions results/v03/extensions/final_ar_g3_excitable_field
+--prior-check docs/evidence/v03/conditional_prior_check_final.json
+```
+
+The typed `conditional-fixed-design-prior-check-1.0` input binds the scientific
+source, prior-check tool hash, numerical environment, P5 manifests/inventories
+and both saved fitted archives. The renderer reads only the model metadata and
+frozen `Phi`, `Z` and `reference_Z` arrays; it never loads posterior arrays.
+Metadata and selected design members each have a 32 MiB uncompressed limit.
+It checks actual saved prior parameters, feature hashes, closed-form variance
+reductions, response-unit conversion, rho tail probabilities and the recorded
+quadrature agreement. It does not repeat quadrature, generate prior trajectories
+or refit a model.
+
+These are prior moments conditional on the frozen encoder and historical feature
+paths. They are distinct from posterior conditional scale summaries and from
+autonomous prior-predictive rollouts. The report shows the actual inverse-gamma
+shape and scale; the current shape of two gives finite prior variance and an
+infinite fourth moment for a scalar predictive observation about its frozen
+center. A symmetric signed rho prior averages positive and alternating residual
+dependence: zero odd-lag marginal covariance does not remove dependence from
+individual draws. This retrospective mathematical check makes no model-adequacy,
+forecast-coverage, promotion or additional-independent-replication claim.
 
 ### Historical coordinate evidence
 

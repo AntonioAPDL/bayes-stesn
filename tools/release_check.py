@@ -363,6 +363,12 @@ def main(argv=None):
                     "configs/benchmark/v03/studies/remaining_studies.yaml",
                     "tools/summarize_v03_learning_curves.py","tools/render_v03_study.py",
                     "tools/seal_v03_calibration.py","report/v03/README.md",
+                    "configs/benchmark/v03/studies/stress_prepare.py",
+                    "configs/benchmark/v03/studies/stress_recipe.yaml",
+                    "configs/benchmark/v03/studies/stress_README.md",
+                    "tools/summarize_v03_stress.py","tools/check_conditional_prior_v03.py",
+                    "tools/audit_decoder_v03.py","tools/summarize_extensions_v03.py",
+                    "docs/reproduction_v03.md",
                     "tests/test_v03_study_tools.py"]
         missing = [name for name in required if not (extracted/name).is_file()]
         if missing:

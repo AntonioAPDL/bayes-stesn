@@ -1,0 +1,73 @@
+{
+  "core_harness": {
+    "exit_code": 0,
+    "installed_package_origin": "/workspace/scratch/158260e8300f/bstesn-v03-core/lib/python3.12/site-packages/bayes_stesn/__init__.py",
+    "optional_deselected": [
+      "tests/test_benchmark_basis_gru.py::TestBasisGRU::test_finite_fit_and_honest_statistical_diagnostics",
+      "tests/test_benchmark_basis_gru.py::TestBasisGRU::test_first_step_matches_conditional_mean_and_dense_spatial_covariance",
+      "tests/test_benchmark_basis_gru.py::TestBasisGRU::test_frozen_conditioning_and_memory_cap",
+      "tests/test_benchmark_basis_gru.py::TestBasisGRU::test_path_prefixes_duplicates_and_target_query_independence",
+      "tests/test_benchmark_basis_gru.py::TestBasisGRU::test_portable_weights_and_rng_isolation",
+      "tests/test_benchmark_basis_gru.py::TestBasisGRU::test_selection_prefix_scales_and_deterministic_training",
+      "tests/test_benchmark_basis_gru.py::TestBasisGRU::test_unknown_configuration_and_short_history_fail",
+      "tests/test_benchmark_neural.py::DiffusionGRUTests::test_deterministic_training_checkpoint_and_point_capability",
+      "tests/test_benchmark_neural.py::DiffusionGRUTests::test_free_rollout_context_target_boundaries",
+      "tests/test_benchmark_neural.py::DiffusionGRUTests::test_gate_equation_and_zero_diffusion_reduction",
+      "tests/test_benchmark_neural.py::DiffusionGRUTests::test_graph_and_diffusion_equations",
+      "tests/test_benchmark_neural.py::DiffusionGRUTests::test_tail_cannot_train_gradients_or_scales",
+      "tests/test_v03_tuning.py::test_tiny_neural_fit_consumes_full_stopping_horizon[basis_gru]",
+      "tests/test_v03_tuning.py::test_tiny_neural_fit_consumes_full_stopping_horizon[dcrnn]"
+    ],
+    "passed": 375,
+    "scope": "Previously rebuilt extracted sdist; this is not a gate for later report/stress-tool changes.",
+    "seconds": 46.79,
+    "subtests_passed": 76,
+    "unexpected_skipped": [],
+    "warnings": 0
+  },
+  "finding": "The two Torch importorskip cases are already marked neural. The CI-style class-name -k filter retains them; the release harness intentionally deselects neural markers in core scope.",
+  "full_current_release_gate": "Deferred to the final frozen inputs",
+  "harness_source_sha256": "ca281838c7638930e87626d546e66a032a4baadff54a922eb193d34c669622c6",
+  "identity": "6fb2b7fa27b2eff7e5e28afb0c93101ebd4ed3273607f483519bfe3988ce7e4f",
+  "marker_present_since_commit": "e68cb8dbff0b5d1ba92d0e62d6c68f742dcb0c8f",
+  "neural_collection_only": {
+    "collected": 389,
+    "exit_code": 0,
+    "included_cases": [
+      "tests/test_v03_tuning.py::test_tiny_neural_fit_consumes_full_stopping_horizon[basis_gru]",
+      "tests/test_v03_tuning.py::test_tiny_neural_fit_consumes_full_stopping_horizon[dcrnn]"
+    ],
+    "installed_package_origin": "/workspace/scratch/158260e8300f/v03_work/cache_admission_ci_41597947055/locked_installed_target/bayes_stesn/__init__.py",
+    "method": "Same release harness with --collect-only added to pytest invocation; no neural tests executed.",
+    "optional_deselected": [],
+    "unexpected_skipped": [],
+    "warnings": 0
+  },
+  "repository_commit": "7633dd9b28051f13ff1c3f1905fe893a790287d1",
+  "retained_evidence": [
+    {
+      "path": "/workspace/scratch/158260e8300f/v03_work/cache_admission_ci_41597947055/core_scope_harness.log",
+      "sha256": "fe486aa30238c08c2abbfe596f3d1d183fe36026ad73b9e81fb6e50e7787a095"
+    },
+    {
+      "path": "/workspace/scratch/158260e8300f/v03_work/cache_admission_ci_41597947055/core_scope_harness_receipt.json",
+      "sha256": "7add0b10969a39693f953d98043e55288dde1e7a408dbbb2a8a371dd6c81a987"
+    },
+    {
+      "path": "/workspace/scratch/158260e8300f/v03_work/cache_admission_ci_41597947055/core_scope_harness.xml",
+      "sha256": "a0a2236d56e73c80decaaae6f0150c86e6babfea9749f22117e638718fbe56b8"
+    },
+    {
+      "path": "/workspace/scratch/158260e8300f/v03_work/cache_admission_ci_41597947055/neural_scope_collection.log",
+      "sha256": "7a72aefc9dc483af97077fcd07aacdc67e22f230380d9790dfcb9852496bf91a"
+    },
+    {
+      "path": "/workspace/scratch/158260e8300f/v03_work/cache_admission_ci_41597947055/neural_scope_collection_receipt.json",
+      "sha256": "58cd57f87c40a52b3127bce917fe1bbb88c444fd1cf6f8e20f3fc3ea0246af76"
+    }
+  ],
+  "schema": "neural-scope-classification-check-1.0",
+  "source_fingerprint": "9f73b28a6ee6b8eec4bd21c3366b0c260c9433f798610be16697b2e44166d5ac",
+  "test_edit_required": false,
+  "test_file_sha256": "1f9ae751d119463d10e15ad8220ce0b2983b378b2bc636ade0703f09a576ef12"
+}

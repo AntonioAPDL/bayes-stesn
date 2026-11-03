@@ -1,0 +1,446 @@
+{
+  "commit": "7633dd9b28051f13ff1c3f1905fe893a790287d1",
+  "conclusion": "success",
+  "identity": "291b3eea18ebb0b83627238ca79c24589ccaa47ed6ba6b270969a7d0b933180a",
+  "jobs": [
+    {
+      "conclusion": "success",
+      "id": 125797151942,
+      "name": "Core without PyTorch / Python 3.13",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@v7",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v7",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install project and test dependencies",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove the core runtime has no PyTorch dependency",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Numerical, sampling and core workflow checks",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Installed command-line smoke reproduction",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Lightweight benchmark smoke without PyTorch",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Source and wheel packaging",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Dependency consistency",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v7",
+          "number": 19,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v7",
+          "number": 20,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 21,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "id": 125797152187,
+      "name": "Optional CPU neural models / locked CPython 3.12",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@v7",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v7",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install pinned release build tools",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Isolated CPU wheel, all optional tests, and benchmark execution gate",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Show release validation logs on failure",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Retain release validation evidence",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v7",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v7",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 15,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "id": 125797152263,
+      "name": "Core without PyTorch / Python 3.12",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@v7",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v7",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install project and test dependencies",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove the core runtime has no PyTorch dependency",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Numerical, sampling and core workflow checks",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Installed command-line smoke reproduction",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Lightweight benchmark smoke without PyTorch",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Source and wheel packaging",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Dependency consistency",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v7",
+          "number": 19,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v7",
+          "number": 20,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 21,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "id": 125797152281,
+      "name": "Core without PyTorch / Python 3.11",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@v7",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v7",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install project and test dependencies",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove the core runtime has no PyTorch dependency",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Numerical, sampling and core workflow checks",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Installed command-line smoke reproduction",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Lightweight benchmark smoke without PyTorch",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Source and wheel packaging",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Dependency consistency",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v7",
+          "number": 19,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v7",
+          "number": 20,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 21,
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "meaning": "Observed executed remote CI for the packaging-correction commit. Scientific source is unchanged; later report/tool commits require exact-head verification.",
+  "neural_gate": {
+    "archive_content_gate": {
+      "passed": true,
+      "required_sdist_files": [
+        "requirements-core.lock",
+        "requirements-report.lock",
+        "requirements-dev.lock",
+        "docs/reproduction.md",
+        "tools/release_check.py",
+        "benchmarks/controlled_study.py",
+        "tests/fixtures/v3_reference.npz",
+        "requirements-neural-cpu.lock",
+        "benchmarks/profile_sparse_workflow.py",
+        "tests/test_sparse_workflow.py",
+        "src/bayes_stesn/benchmark/runner.py",
+        "CONTRIBUTING.md",
+        "docs/benchmark_validation.md",
+        "docs/benchmark_models.md",
+        "docs/benchmark_registry.yaml",
+        "configs/benchmark/smoke.yaml",
+        "docs/evidence/v02/generator_validation.json",
+        "docs/assets/v01_forecast_montage.png",
+        "tools/render_model_comparison.py",
+        "configs/benchmark/v03/studies/prepare.py",
+        "configs/benchmark/v03/studies/remaining_studies.yaml",
+        "tools/summarize_v03_learning_curves.py",
+        "tools/render_v03_study.py",
+        "tools/seal_v03_calibration.py",
+        "report/v03/README.md",
+        "tests/test_v03_study_tools.py"
+      ]
+    },
+    "benchmark_smoke": {
+      "artifact_directory": "results/validation/installed_benchmark_smoke/bstesn-release-work-n453vlk9",
+      "comparison_status": "execution only",
+      "jobs": 13,
+      "passed": true,
+      "scope": "Execution-only benchmark check; no convergence or superiority claim.",
+      "stage": "execution_test"
+    },
+    "cli_smoke": {
+      "artifact_directory": "results/validation/installed_smoke/bstesn-release-work-n453vlk9",
+      "diagnostic_gate_passed": false,
+      "passed": true,
+      "scope": "Execution test; short-chain diagnostic failure is expected and is not convergence.",
+      "smoke_only": true
+    },
+    "elapsed_seconds": 91.512375383,
+    "installed_tests": {
+      "errors": 0,
+      "failures": 0,
+      "feature_scope": "neural",
+      "package_version": "0.3.0",
+      "passed": 464,
+      "pytest_summary_lines": [
+        "388 passed, 76 subtests passed in 27.52s"
+      ],
+      "skipped": 0,
+      "source_imports_detected": {},
+      "tests": 464,
+      "warning_count": 0
+    },
+    "passed": true,
+    "safe_roundtrip": {
+      "latent_bitwise_equal": true,
+      "observation_bitwise_equal": true,
+      "passed": true,
+      "posterior_identity": "5fe5638684e07e8f074fff09645cbc6987a32ae2234009b90266b064caf4920e",
+      "rhs_tradeoff_scale": 0.5,
+      "safe_numeric_npz_only": true,
+      "sampler_initialization": "auto",
+      "shape": [
+        16,
+        10,
+        25
+      ]
+    },
+    "scientific_source_drift_after_build": [],
+    "source_tests": {
+      "errors": 0,
+      "failures": 0,
+      "feature_scope": "neural",
+      "package_version": "0.3.0",
+      "passed": 464,
+      "pytest_summary_lines": [
+        "388 passed, 76 subtests passed in 26.91s"
+      ],
+      "skipped": 0,
+      "source_imports_detected": {},
+      "tests": 464,
+      "warning_count": 0
+    },
+    "unlocked_distributions": [],
+    "version_lock_mismatches": {},
+    "with_neural": true,
+    "working_tree_changed_during_check": []
+  },
+  "previous_failed_run": 41597947055,
+  "remote_artifact": {
+    "bytes": 220464,
+    "downloaded_digest_matches_github": true,
+    "file": "results/v03/remote_ci/packaging_41600288423.zip",
+    "files": 25,
+    "id": 13213843990,
+    "sha256": "e96c4460a4a897f799341b9c6e574bd19b7cc48a05fd4bcef7646b5b9f8e5fd1",
+    "zip_crc_passed": true
+  },
+  "run_id": 41600288423,
+  "schema": "github-actions-verification-1.0",
+  "source_fingerprint": "9f73b28a6ee6b8eec4bd21c3366b0c260c9433f798610be16697b2e44166d5ac",
+  "url": "https://github.com/AntonioAPDL/bayes-stesn/actions/runs/41600288423",
+  "verified_at_utc": "2026-11-03T08:08:05.677848+00:00"
+}
