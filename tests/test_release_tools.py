@@ -287,6 +287,32 @@ class TestOptional(unittest.TestCase):
                 stream.write('\n@unittest.skip("unexpected skip")\nclass TestUnexpected(unittest.TestCase):\n    def test_skipped(self):\n        pass\n')
             result=execute('core');self.assertNotEqual(result.returncode,0)
 
+    def test_harness_deselects_neural_marker_only_in_core_scope(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);fixture_package(root)
+            (root/'pytest.ini').write_text('[pytest]\nmarkers =\n    neural: optional CPU neural fixture\n')
+            (root/'tests/test_marked.py').write_text('''from pathlib import Path
+import pytest
+def test_core():
+    pass
+@pytest.mark.neural
+def test_optional():
+    Path(__file__).with_name("neural_executed.txt").write_text("executed")
+''')
+            harness=root/'harness.py';harness.write_text(release.HARNESS)
+            env={**os.environ,'PYTEST_DISABLE_PLUGIN_AUTOLOAD':'1','PYTHONNOUSERSITE':'1'}
+            for scope,selected,deselected in (('core',1,1),('neural',2,0)):
+                with self.subTest(scope=scope):
+                    result=subprocess.run([sys.executable,'-I',str(harness),'source',str(root),str(root/'src'),
+                        str(root/'receipt.json'),str(root/'tests.xml'),scope],cwd=root,env=env,capture_output=True,text=True)
+                    self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+                    receipt=json.loads((root/'receipt.json').read_text())
+                    self.assertEqual(len(receipt['optional_deselected']),deselected)
+                    self.assertEqual(receipt['unexpected_skipped'],[])
+                    self.assertEqual(receipt['warning_count'],0)
+                    self.assertEqual(release.junit_summary(root/'tests.xml')['passed'],selected)
+                    self.assertEqual((root/'tests/neural_executed.txt').exists(),scope=='neural')
+
     def test_harness_rejects_pytest_warnings_even_when_tests_pass(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp);fixture_package(root)

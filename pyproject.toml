@@ -27,4 +27,7 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+markers = [
+    "neural: requires the optional CPU PyTorch environment; explicitly deselected by the core release gate",
+]
 

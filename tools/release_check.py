@@ -170,7 +170,8 @@ def main():
             for item in items:
                 cls = getattr(item, "cls", None)
                 reason = str(getattr(cls, "__unittest_skip_why__", ""))
-                if getattr(cls, "__unittest_skip__", False) and "torch" in reason.lower():
+                legacy_optional = getattr(cls, "__unittest_skip__", False) and "torch" in reason.lower()
+                if item.get_closest_marker("neural") is not None or legacy_optional:
                     optional.append(item)
                     self.optional_deselected.append(item.nodeid)
                 else:
@@ -311,7 +312,7 @@ def main(argv=None):
                 "with_neural":args.with_neural,"neural_package_index":PYTORCH_CPU if args.with_neural else None,
                 "neural_support_package_index":PYPI if args.with_neural else None,
                 "test_policy":"All optional tests; zero skips or pytest warnings" if args.with_neural else
-                              "Core tests; only declared optional-PyTorch classes deselected; zero skips or pytest warnings",
+                              "Core tests; declared neural markers and optional-PyTorch classes deselected; zero skips or pytest warnings",
                 "work_directory":str(work),"fresh_venv":str(args.fresh_venv),
                 "claim_scope":"Local tests, built artifacts and isolated installation; no public publication or remote CI claim."}
     harness = work/"pytest_harness.py"

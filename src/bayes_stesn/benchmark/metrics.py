@@ -201,7 +201,11 @@ def aggregate_results(receipts, *, seed=0, bootstrap_resamples=2000,
                "fit_seconds_total": sum(r.get("fit_seconds", 0.) for r in rows),
                "forecast_seconds_total": sum(r.get("forecast_seconds", 0.) for r in rows),
                "tuning_seconds_total": sum(r.get("tuning_seconds", 0.) for r in rows),
-               "total_seconds_including_tuning": sum(r.get("total_seconds", 0.)+r.get("tuning_seconds", 0.) for r in rows),
+               "total_seconds_including_tuning": sum(r.get("total_pipeline_seconds",
+                   r.get("total_seconds", 0.)+r.get("tuning_seconds", 0.)) for r in rows),
+               "total_pipeline_cpu_seconds": (sum(r["total_pipeline_cpu_seconds"] for r in rows)
+                   if all(r.get("total_pipeline_cpu_seconds") is not None for r in rows) else None),
+               "compute_accounting_complete": all(r.get("compute_accounting_complete",False) for r in rows),
                "mcse_units": "original response units",
                "aggregation": "mean dataset-level loss; RMSE is not pooled root-MSE"}
         for metric in ("rmse", "mae"):

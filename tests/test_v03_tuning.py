@@ -145,6 +145,7 @@ def test_horizon_resolution_reserves_the_requested_historical_tail(model):
         resolve_model_config(model,raw,fitting_sites=6,fitting_rows=80)
 
 
+@pytest.mark.neural
 @pytest.mark.parametrize("model",["basis_gru","dcrnn"])
 def test_tiny_neural_fit_consumes_full_stopping_horizon(model):
     torch=pytest.importorskip("torch")

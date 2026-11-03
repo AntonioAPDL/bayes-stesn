@@ -127,8 +127,13 @@ def benchmark_environment():
     env=environment()
     from threadpoolctl import threadpool_info
     env["numeric_thread_policy"]="one thread per process"
-    env["threadpools"]=[{key:item.get(key) for key in ("user_api","internal_api","num_threads","prefix","version","architecture")}
-                        for item in threadpool_info() if item.get("user_api")=="blas"]
+    records=[{key:item.get(key) for key in ("user_api","internal_api","num_threads","prefix","version","architecture")}
+             for item in threadpool_info() if item.get("user_api")=="blas"]
+    # Dynamic-library enumeration follows import order, which can differ in a
+    # fresh spawned worker. The complete inventory is a multiset: retain every
+    # record (including duplicates) and every numerical identity field, while
+    # removing incidental enumeration order from the computation identity.
+    env["threadpools"]=sorted(records,key=lambda record:json.dumps(record,sort_keys=True,separators=(",",":")))
     try:
         import importlib.metadata
         env["torch"]=importlib.metadata.version("torch")
@@ -473,6 +478,7 @@ def _final_job(model_id,sim,protocol,track,seed,directory,selection):
           "selection_metric":MODELS[model_id].selection_metric,
           "fit_seconds":0.,"forecast_seconds":0.,"scoring_seconds":0.,"serialization_seconds":0.,
           "fallback_seconds":0.,"tuning_seconds":selection["compute_seconds"],
+          "tuning_cpu_seconds":selection.get("compute_cpu_seconds"),
           "training_scale":training_scale,"normalization_reference":normalization_reference,
           "final_fit_seed":int(seed_for(seed,"final_fit")),"forecast_seed":int(seed_for(seed,"final_forecast")),
           "native_scores":{},"diagnostics":{},"origin_index":protocol.final_origin,
@@ -487,12 +493,16 @@ def _final_job(model_id,sim,protocol,track,seed,directory,selection):
             info["diagnostics"]=jsonable(fitted.diagnostics)
             info["qualified"]=bool(fitted.diagnostics.get("qualified",True))
             serialization_start=time.perf_counter()
-            save_model(fitted,directory/"model.npz")
-            info["serialization_seconds"]+=time.perf_counter()-serialization_start
+            try:
+                save_model(fitted,directory/"model.npz")
+            finally:
+                info["serialization_seconds"]+=time.perf_counter()-serialization_start
             forecast_start=time.perf_counter()
-            forecast=fitted.forecast(protocol.horizon,target_coordinates=coords,target_site_ids=ids,
-                                     n_paths=protocol.paths,seed=seed_for(seed,"final_forecast"))
-            info["forecast_seconds"]=time.perf_counter()-forecast_start
+            try:
+                forecast=fitted.forecast(protocol.horizon,target_coordinates=coords,target_site_ids=ids,
+                                         n_paths=protocol.paths,seed=seed_for(seed,"final_forecast"))
+            finally:
+                info["forecast_seconds"]=time.perf_counter()-forecast_start
             info["completed"]=True
         except Exception as error:
             _propagate_nonmethod_failure(error)
@@ -529,9 +539,12 @@ def _final_job(model_id,sim,protocol,track,seed,directory,selection):
     scoring_start=time.perf_counter()
     info["operational_scores"]=dict(info["native_scores"]) if not info["fallback"] else score_forecast(operational,truth)
     info["scoring_seconds"]+=time.perf_counter()-scoring_start
-    info["diagnostic_seconds"] = sum(value for key,value in info["diagnostics"].get("recovery",{}).get(
-        "completed_phase_seconds",{}).items() if "gate" in key)
-    info["timing_scope"] = "fit_seconds includes diagnostics; diagnostic_seconds is its measured ESN subcomponent; total excludes tuning and final artifact serialization"
+    recovery = info["diagnostics"].get("recovery",{})
+    info["diagnostic_seconds"] = sum(value for key,value in recovery.get(
+        "completed_phase_seconds",{}).items() if "diagnostics" in key)
+    info["fit_resumed"] = bool(recovery.get("resumed",False))
+    info["diagnostic_timing_scope"] = "sum of completed ESN diagnostic phases across compatible invocations; not added again; may exceed current fit_seconds after recovery"
+    info["timing_scope"] = "fit_seconds includes this invocation's diagnostics; total_seconds and cpu_seconds cover final fitting through scoring, excluding tuning and final artifact serialization"
     info.update(total_seconds=time.perf_counter()-started,cpu_seconds=time.process_time()-cpu_start,
                 process_peak_rss_bytes=_peak_rss(),
                 memory_measurement="process lifetime high-water mark; not an isolated per-model increment")
@@ -588,6 +601,7 @@ def _load_terminal(job):
 def _finish_job(job, protocol, info, forecast, operational):
     directory = Path(job["directory"])
     serialization_start = time.perf_counter()
+    serialization_cpu_start = time.process_time()
     info.update(model_id=job["model_id"], scenario=job["scenario"], track=job["track"],
         replication=job["replication"], dgp_seed=job["dgp_seed"],
         dgp_seed_namespace=_MATCHED_CONTROL.get(job["scenario"], job["scenario"]),
@@ -610,10 +624,14 @@ def _finish_job(job, protocol, info, forecast, operational):
     info["artifact_serialization_seconds"] = time.perf_counter()-serialization_start
     info["serialization_seconds"] = info.get("serialization_seconds",0.)+info["artifact_serialization_seconds"]
     info["total_pipeline_seconds"] = info.get("tuning_seconds",0.)+info["total_seconds"]+info["artifact_serialization_seconds"]
+    info["artifact_serialization_cpu_seconds"] = time.process_time()-serialization_cpu_start
+    info["total_pipeline_cpu_seconds"] = (None if info.get("tuning_cpu_seconds") is None else
+        info["tuning_cpu_seconds"]+info["cpu_seconds"]+info["artifact_serialization_cpu_seconds"])
+    info["process_peak_rss_bytes"] = _peak_rss()
     state_path = directory/"state.json"
     state = json.loads(state_path.read_text()) if state_path.exists() else {}
     info["infrastructure_retries"] = state.get("failures", [])
-    info["compute_accounting_complete"] = not bool(info["infrastructure_retries"])
+    info["compute_accounting_complete"] = not bool(info["infrastructure_retries"]) and not info.get("fit_resumed",False)
     info = jsonable(info)
     info["receipt_identity"] = content_hash(info)
     write_json(directory/"receipt.json", info)
@@ -672,6 +690,9 @@ def _process_failure(job, error):
              "error": f"{type(error).__name__}: {error}",
              "finished_unix": time.time(), "incomplete_compute_accounting": True,
              "scientific_seed_unchanged": True}
+    event["known_attempt_wall_seconds"] = (max(0.,time.time()-current["started_unix"])
+        if current.get("started") and current.get("started_unix") is not None else None)
+    event["known_attempt_wall_scope"] = "elapsed since the persisted worker start; may include time between process loss and its detection"
     return _record_state(job, "interrupted", terminal=False,
                          failures=[*current.get("failures", []), event],
                          phase=current.get("phase", "queued"))
@@ -828,6 +849,9 @@ def _run_benchmark(protocol, output, resume, progress, workers, power_freeze, ma
         state_path = Path(job["directory"])/"state.json"
         state = json.loads(state_path.read_text()) if state_path.exists() else {}
         attempts = int(state.get("attempts", 0))
+        if state.get("status") in {"running","queued"} and attempts:
+            job["attempt"] = attempts
+            _process_failure(job,RuntimeError("Previous coordinator ended before a terminal receipt; interrupted attempt recovered"))
         if attempts >= 1+max_infrastructure_retries:
             _record_state(job, "unresolved_infrastructure_failure", terminal=False)
             return False
