@@ -177,6 +177,44 @@ sensor counts, future origins, role assignments and normalization references
 are different declared interventions; do not combine their losses as if they
 were additional independent fields from one design.
 
+### Preserve the confirmation decision
+
+The core `benchmark freeze` command refuses insufficient common-qualified
+pilot pairs without writing a freeze. The following saved-artifact assessment
+records that specific scientific rejection as well as a successful admission.
+Use the history selected by the sealed `history_choice.json`; this example is
+for a selected initial history of 1000:
+
+```bash
+PYTHONPATH=src .venv/bin/python tools/assess_confirmation_v03.py \
+  --pilot results/v03/development/revised_L1000 \
+  --config results/v03/study_design/resolved/confirmation_L1000.yaml \
+  --primary-comparisons results/v03/study_design/resolved/primary_comparisons.json \
+  --fhn-validation docs/evidence/v03/generator_validation_long_history_grid64.json \
+  --minimum-pairs 5 --target-mcse .02 \
+  --output results/v03/confirmation/assessment.json \
+  --freeze-output results/v03/confirmation/freeze.json \
+  --resolved-config results/v03/confirmation/frozen.yaml
+```
+
+Retain the one-thread environment from Section 1. If the history rule selects
+2000, use `revised_L2000` and `confirmation_L2000.yaml` together. The tool
+verifies all saved pilot artifacts, the matched design and generator evidence,
+then calls the unchanged confirmation factory. It records the exact primary
+cell pair counts and binds its inputs by SHA256. An arbitrary configuration,
+runtime, integrity or infrastructure error remains an error; it cannot become
+a completed scientific rejection.
+
+Inspect the assessment's `admitted` field before continuing. A zero process
+exit and `complete: true` mean the assessment completed, including when it
+reports `blocked_insufficient_common_pairs`. A blocked assessment creates no
+freeze or runnable frozen configuration. Admission is also distinct from
+completed confirmation or achieved precision; a valid freeze can record an
+MCSE target shortfall at the prespecified replication cap. The assessment
+generates no confirmation data or forecasts and never replaces deficient
+pilot seeds. Preserve existing assessments and freezes by using new output
+paths for a separately justified reassessment.
+
 ## 6. Audit, render, and publish verified artifacts
 
 Use [the report guide](../report/v03/README.md) to bind the completed runs,

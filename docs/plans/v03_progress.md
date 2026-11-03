@@ -2,7 +2,29 @@
 
 Starting source: `37d2d918aa2d03cb4f76477231df33c06ca448bd`.
 
-## Current source freeze and execution
+## Recovery execution from the preserved source
+
+The recovery checkout starts at
+`51cb672b07d83d14ced663bf4bc2673128ef00b7`. Its numerical package and dependency
+locks are unchanged. The preceding session's untracked numerical workspace was
+not available, so the preserved v0.3 designs are being executed again with the
+same seeds, budgets and qualification rules. These re-executions do not add
+independent datasets to the historical experiments.
+
+Completed phase archives retain the numerical arrays, checkpoints, manifests,
+receipts, logs, checksums and restoration instructions. Partial tuning archives
+are explicitly labeled partial and are superseded for restoration when a
+complete snapshot of that same campaign becomes available. Historical
+documentation and test receipts remain historical; the new release requires
+its own completed evidence and final source/installed-wheel gate.
+
+Use `docs/reproduction_v03.md` for the ordered procedure. The confirmation
+assessment now records the unchanged factory's specific insufficient-pair
+rejection without manufacturing a valid freeze. Successful gate assessment,
+scientific admission, completed confirmation and achieved precision remain
+separate outcomes.
+
+## Previous execution snapshot retained at the recovered commit
 
 Published numerical implementation commit: `001024f5dfdcfa5288b0742cf5cbb917e6b875ae`.
 Subsequent packaging correction: `7633dd9b28051f13ff1c3f1905fe893a790287d1`.

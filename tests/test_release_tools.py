@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 REPO=Path(__file__).resolve().parents[1]
@@ -209,6 +210,23 @@ class ToolChecks(unittest.TestCase):
                     self.assertNotEqual(sealed['benchmark']['identity'],sealed['additional_benchmarks'][0]['identity'])
                     self.assertEqual(len(sealed['supplemental_evidence']),1)
                     self.assertFalse(any('integration_old' in name or 'render_interim' in name for name in names))
+                volume_output=output/'volumes'
+                package.main(['--benchmark-run',str(run),'--benchmark-report',str(report),
+                              '--additional-benchmark',str(extra_run),str(extra_report),
+                              '--supplemental-evidence',str(supplemental),'--supplemental-max-files','1',
+                              '--archive-volume-bytes','32768','--archive-reserve-bytes','0',
+                              '--output',str(volume_output)])
+                volume_index=json.loads((volume_output/'release_volumes.json').read_text())
+                logical=json.loads((volume_output/'release_artifacts.json').read_text())
+                self.assertEqual(logical['payloads'],sealed['payloads'])
+                archived=[name for volume in volume_index['volumes'] for name in volume['payloads']]
+                self.assertEqual(set(archived),set(logical['payloads']))
+                self.assertEqual(len(archived),len(set(archived)))
+                self.assertTrue(all(volume['bytes']<=32768 for volume in volume_index['volumes']))
+                self.assertFalse((volume_output/'bayes_stesn_implementation.zip').exists())
+                for line in (volume_output/'SHA256SUMS').read_text().splitlines():
+                    expected,name=line.split('  ',1)
+                    self.assertEqual(package.digest(volume_output/name),expected)
                 with self.assertRaisesRegex(FileNotFoundError,'controlled_study'):
                     package.main(['--output',str(output)])
                 legacy=root/'report/controlled_study';legacy.mkdir()
@@ -377,6 +395,117 @@ def test_spawn():
             self.assertEqual(receipt['source_imports_detected'],{})
             self.assertEqual(receipt['warning_count'],0)
             self.assertEqual(release.junit_summary(root/'tests.xml')['passed'],1)
+
+
+class ArchiveVolumeChecks(unittest.TestCase):
+    @staticmethod
+    def fixture(root):
+        sources={}
+        for index,name in enumerate(('model/first.npz','model/second.npz','model/third.npz',
+                                     'results/fourth.npz','results/fifth.npz','results/δ_évidence.npz')):
+            path=root/'inputs'/name;path.parent.mkdir(parents=True,exist_ok=True)
+            path.write_bytes(bytes([index+1])*2800)
+            sources[name]=path
+        manifest={'schema_version':2,'git_commit':'a'*40,'created_at_utc':'2026-11-03T00:00:00+00:00',
+                  'payloads':{name:{'bytes':path.stat().st_size,'sha256':package.digest(path)}
+                              for name,path in sources.items()}}
+        return manifest,sources
+
+    def test_volumes_are_bounded_independently_extractable_complete_and_deterministic(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);manifest,sources=self.fixture(root)
+            output=root/'download'
+            result=package.write_archive_volumes(output,manifest,sources,8192)
+            self.assertGreater(len(result['volumes']),1)
+            self.assertEqual(result['payload_count'],len(sources))
+            self.assertEqual(result['payload_bytes'],sum(p.stat().st_size for p in sources.values()))
+            manifest_bytes,plans=package.plan_archive_volumes(manifest,8192)
+            self.assertEqual((output/'release_artifacts.json').read_bytes(),manifest_bytes)
+            self.assertEqual([p['file'] for p in plans],[v['file'] for v in result['volumes']])
+            seen=[];restored=root/'restored'
+            for volume,plan in zip(result['volumes'],plans):
+                path=output/volume['file']
+                self.assertLessEqual(path.stat().st_size,8192)
+                self.assertEqual(path.stat().st_size,plan['bytes'])
+                self.assertEqual(package.digest(path),volume['sha256'])
+                with zipfile.ZipFile(path) as archive:
+                    self.assertIsNone(archive.testzip())
+                    self.assertTrue(all(member.compress_type==zipfile.ZIP_STORED for member in archive.infolist()))
+                    local=json.loads(archive.read(plan['metadata_name']))
+                    self.assertEqual(local['release_artifacts_sha256'],hashlib.sha256(manifest_bytes).hexdigest())
+                    self.assertEqual(local['payloads'],volume['payloads'])
+                    for name in volume['payloads']:
+                        self.assertEqual(archive.read('bayes-stesn/'+name),sources[name].read_bytes())
+                    archive.extractall(restored)
+                seen.extend(volume['payloads'])
+            self.assertEqual(set(seen),set(sources));self.assertEqual(len(seen),len(set(seen)))
+            for name,source in sources.items():
+                self.assertEqual((restored/'bayes-stesn'/name).read_bytes(),source.read_bytes())
+            self.assertFalse((output/'bayes_stesn_implementation.zip').exists())
+            # Filesystem timestamps do not affect volume membership or bytes.
+            os.utime(next(iter(sources.values())),(100,100))
+            repeated=package.write_archive_volumes(root/'repeated',manifest,sources,8192)
+            self.assertEqual(repeated,result)
+
+    def test_oversized_file_unsafe_name_and_invalid_cap_are_rejected_before_writing(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);manifest,sources=self.fixture(root)
+            name=next(iter(sources))
+            sources[name].write_bytes(b'x'*8192)
+            manifest['payloads'][name]={'bytes':8192,'sha256':package.digest(sources[name])}
+            with self.assertRaisesRegex(ValueError,'cannot fit whole'):
+                package.write_archive_volumes(root/'oversized',manifest,sources,8192)
+            self.assertFalse((root/'oversized').exists())
+            self.assertEqual(sources[name].stat().st_size,8192)
+            for limit in (0,package.MAX_VOLUME_BYTES+1):
+                with self.subTest(limit=limit),self.assertRaisesRegex(ValueError,'240 MiB'):
+                    package.plan_archive_volumes(manifest,limit)
+            bad={'payloads':{'../escape.npz':manifest['payloads'][name]}}
+            with self.assertRaisesRegex(ValueError,'Unsafe'):
+                package.plan_archive_volumes(bad,8192)
+
+    def test_changed_input_leaves_no_complete_volume_set_and_never_deletes_input(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);manifest,sources=self.fixture(root)
+            source=next(iter(sources.values()));source.write_bytes(b'changed'*400)
+            output=root/'changed'
+            with self.assertRaisesRegex(ValueError,'changed while writing'):
+                package.write_archive_volumes(output,manifest,sources,8192)
+            self.assertEqual(source.read_bytes(),b'changed'*400)
+            self.assertEqual(list(output.iterdir()),[])
+            sources.pop(next(iter(sources)))
+            with self.assertRaisesRegex(ValueError,'complete logical inventory'):
+                package.write_archive_volumes(root/'missing',manifest,sources,8192)
+
+    def test_disk_admission_and_existing_outputs_prevent_partial_or_overwriting_release(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);manifest,sources=self.fixture(root)
+            output=root/'no_space'
+            with mock.patch.object(package.shutil,'disk_usage',return_value=mock.Mock(free=0)):
+                with self.assertRaisesRegex(OSError,'headroom'):
+                    package.write_archive_volumes(output,manifest,sources,8192,reserve_bytes=4096)
+            self.assertEqual(list(output.iterdir()),[])
+            output=root/'complete';package.write_archive_volumes(output,manifest,sources,8192)
+            before={p.name:package.digest(p) for p in output.iterdir()}
+            with self.assertRaisesRegex(FileExistsError,'not overwritten'):
+                package.write_archive_volumes(output,manifest,sources,8192)
+            self.assertEqual(before,{p.name:package.digest(p) for p in output.iterdir()})
+
+    def test_crc_valid_payload_substitution_fails_logical_sha256_verification(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);manifest,sources=self.fixture(root)
+            output=root/'download';package.write_archive_volumes(output,manifest,sources,8192)
+            manifest_bytes,plans=package.plan_archive_volumes(manifest,8192)
+            plan=plans[0];path=output/plan['file'];target='bayes-stesn/'+plan['payloads'][0]
+            with zipfile.ZipFile(path) as archive:
+                members=[(info,archive.read(info.filename)) for info in archive.infolist()]
+            with zipfile.ZipFile(path,'w',allowZip64=False) as archive:
+                for info,value in members:
+                    archive.writestr(info,b'z'*len(value) if info.filename==target else value)
+            with zipfile.ZipFile(path) as archive:
+                self.assertIsNone(archive.testzip())
+            with self.assertRaisesRegex(RuntimeError,'SHA256'):
+                package.verify_archive_volume(path,plan,manifest_bytes,manifest['payloads'])
 
 
 if __name__=='__main__':

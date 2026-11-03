@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import hashlib
 import html
+import importlib.util
 import json
 import math
 from pathlib import Path
@@ -104,6 +105,7 @@ def safe_member(root, relative):
 class Inputs:
     """An immutable-in-use input inventory; hashing is streamed, never buffered."""
     files: dict = field(default_factory=dict)
+    current_release_sources: dict | None = None
 
     def add(self, path, *, expected=None, size=None):
         path = Path(path).resolve()
@@ -128,6 +130,9 @@ class Inputs:
         for item in self.files.values():
             if sha256(item["path"]) != item["sha256"]:
                 raise ValueError(f"Input changed during rendering: {item['path']}")
+        if (self.current_release_sources is not None
+                and release_source_hashes() != self.current_release_sources):
+            raise ValueError("Current release source set changed during rendering")
 
 
 def bound_inputs(rows, inputs):
@@ -353,6 +358,128 @@ def load_audits(specs, runs, inputs, current_source):
             raise ValueError("Known-parameter audit omits a declared G1 dataset/task")
         audits.append({"label": label, "path": str(path), "document": audit})
     return audits
+
+
+def load_confirmation_evidence(path, runs, inputs, current_source):
+    """Check a saved admission assessment; never call the freeze factory."""
+    if path is None:
+        return None
+    from bayes_stesn.benchmark.metrics import macro_comparisons
+    from bayes_stesn.benchmark.protocol import BenchmarkProtocol
+    from bayes_stesn.benchmark.runner import benchmark_environment, jsonable, single_thread_runtime
+    from bayes_stesn.benchmark.studies import (
+        _fhn_evidence, _matched_development_design, _validate_primary_for_protocol,
+        verify_confirmation_freeze,
+    )
+
+    path = Path(path).resolve()
+    value = inputs.json(path)
+    if not isinstance(value, dict):
+        raise ValueError("Confirmation assessment must be a JSON object")
+    identity(value, label="Confirmation assessment")
+    if (value.get("schema") != "v03-confirmation-assessment-1.0" or value.get("complete") is not True
+            or value.get("source_fingerprint") != current_source or type(value.get("admitted")) is not bool
+            or value.get("confirmation_outcomes_generated") is not False
+            or type(value.get("model_fit_calls")) is not int or value["model_fit_calls"] != 0
+            or value.get("planning_mode") != "paired_macro"
+            or type(value.get("macro_bootstrap_resamples")) is not int or value["macro_bootstrap_resamples"] != 1000
+            or type(value.get("minimum_pairs")) is not int or value["minimum_pairs"] < 5
+            or not _finite(value.get("target_mcse")) or value["target_mcse"] <= 0):
+        raise ValueError("Confirmation assessment needs its complete current-source, zero-fit paired-macro contract")
+    matched = [run for run in runs if run["manifest"]["identity"] == value.get("pilot_manifest_identity")]
+    if len(matched) != 1 or matched[0]["manifest"]["stage"] != "development":
+        raise ValueError("Confirmation assessment must bind exactly one supplied complete development run")
+    run = matched[0]
+    pilot = Path(value["pilot_run"])
+    pilot = (pilot if pilot.is_absolute() else ROOT / pilot).resolve()
+    if pilot != Path(run["path"]):
+        raise ValueError("Confirmation assessment names a different pilot directory")
+    with single_thread_runtime():
+        environment = jsonable(benchmark_environment())
+    if value.get("environment") != run["manifest"]["environment"] or value["environment"] != environment:
+        raise ValueError("Confirmation assessment and pilot must match the current one-thread numerical runtime")
+    bound = bound_inputs(value["source_inputs"], inputs)
+
+    def reference(entry, *, require_bound=True):
+        member = Path(entry["path"])
+        member = (member if member.is_absolute() else ROOT / member).resolve()
+        inputs.add(member, expected=entry["sha256"], size=entry["bytes"])
+        if require_bound and member not in bound:
+            raise ValueError("Confirmation assessment input is absent from its source inventory")
+        return member
+
+    config = reference(value["protocol_config"])
+    primary = reference(value["primary_comparisons_input"])
+    required = {pilot / "manifest.json", pilot / "summary.json", config, primary,
+                ROOT / "tools/assess_confirmation_v03.py", ROOT / "tools/render_v03_study.py"}
+    for row in run["receipts"]:
+        dataset = pilot / row["scenario"] / f"rep_{row['replication']:03d}"
+        job = dataset / row["track"] / row["model_id"]
+        required.update((dataset / "data_receipt.json", dataset / "simulation.npz", job / "receipt.json"))
+        required.update(safe_member(job, entry["file"]).resolve() for entry in row["artifacts"])
+    if not required.issubset(bound):
+        raise ValueError("Confirmation assessment omits pilot, artifact, configuration or validator-source inputs")
+    draft = BenchmarkProtocol.load(config)
+    if draft.schema_version != "4.0" or draft.stage != "confirmation" or draft.identity != value["protocol_identity"]:
+        raise ValueError("Confirmation assessment protocol differs from its schema-4 draft")
+    _matched_development_design(run["manifest"], draft)
+    comparisons = _validate_primary_for_protocol(draft, inputs.json(primary))
+    if comparisons != value["primary_comparisons"]:
+        raise ValueError("Confirmation assessment changes its declared primary comparisons")
+    fhn_input = value.get("fhn_validation_input")
+    fhn = _fhn_evidence(draft, None if fhn_input is None else inputs.json(reference(fhn_input)))
+    if (value.get("fhn_prerequisite_verified") is not (fhn is not None)
+            or value.get("fhn_prerequisite") != ("verified" if fhn is not None else "not_applicable")):
+        raise ValueError("Confirmation assessment misstates its independent generator prerequisite")
+    macros = jsonable(macro_comparisons(run["summary"], comparisons,
+                      seed=draft.master_seed, bootstrap_resamples=1000))
+    if content_hash(value["macros"]) != content_hash(macros):
+        raise ValueError("Confirmation assessment macros disagree with the saved pilot pairs")
+    deficient = [{"contrast_id": macro["id"], "scenario": cell["scenario"], "pairs": cell["pairs"]}
+                 for macro in macros for cell in macro["cells"] if cell["pairs"] < value["minimum_pairs"]]
+    if content_hash(value["deficient_cells"]) != content_hash(deficient) or value["admitted"] != (not deficient):
+        raise ValueError("Confirmation admission or deficient cells disagree with the recomputed pair gate")
+    attempt = value["freeze_attempt"]
+    if attempt.get("api") != "bayes_stesn.benchmark.studies.freeze_confirmation" or attempt.get("called") is not True:
+        raise ValueError("Confirmation assessment does not record the unchanged freeze authority")
+    frozen = None
+    if deficient:
+        missing = [(row["contrast_id"], row["scenario"], row["pairs"]) for row in deficient]
+        expected = (f"At least {value['minimum_pairs']} common qualified development pairs "
+                    f"required for every primary cell: {missing}")
+        if (value["outcome"] != "blocked_insufficient_common_pairs" or value["freeze"] is not None
+                or attempt.get("exception_type") != "ValueError" or attempt.get("message") != expected):
+            raise ValueError("Blocked confirmation assessment does not retain the exact pair-gate rejection")
+    else:
+        if (value["outcome"] != "admitted" or not isinstance(value["freeze"], dict)
+                or attempt.get("exception_type") is not None or attempt.get("message") is not None):
+            raise ValueError("Admitted confirmation assessment lacks its successful freeze result")
+        saved = value["freeze"]
+        frozen = inputs.json(reference(saved, require_bound=False))
+        resolved = BenchmarkProtocol.load(reference(saved["resolved_config"], require_bound=False))
+        verify_confirmation_freeze(resolved, frozen)
+        expected_protocol = draft.to_dict()
+        expected_protocol["replications"] = frozen["power"]["R"]
+        if (frozen["pilot_manifest"] != run["manifest"] or frozen["pilot_summary"] != run["summary"]
+                or resolved.to_dict() != expected_protocol or saved["identity"] != frozen["identity"]
+                or saved["protocol_identity"] != frozen["protocol_identity"]
+                or type(saved["R"]) is not int or saved["R"] != frozen["power"]["R"]
+                or saved["power_status"] != frozen["power_status"]
+                or frozen["power"]["minimum_pairs"] != value["minimum_pairs"]
+                or frozen["power"]["target_normalized_mcse"] != value["target_mcse"]):
+            raise ValueError("Confirmation freeze or precision plan differs from the assessed pilot/draft")
+    confirmed = []
+    for candidate in runs:
+        if candidate["manifest"]["stage"] == "confirmation":
+            if frozen is None or candidate["manifest"].get("confirmation_freeze") != frozen["identity"]:
+                raise ValueError("Supplied confirmation run does not bind this assessment's admitted freeze")
+            if (candidate["manifest"]["protocol_identity"] != frozen["protocol_identity"]
+                    or candidate["manifest"]["environment"] != frozen["environment"]):
+                raise ValueError("Supplied confirmation run changes its assessed frozen protocol")
+            confirmed.append(candidate["label"])
+    return {"status": value["outcome"], "label": run["label"], "path": str(path),
+            "document": value, "protocol": draft.to_dict(), "macros": macros,
+            "freeze": frozen, "matching_complete_confirmation_runs": confirmed}
 
 
 def load_calibrations(specs, runs, inputs, current_source):
@@ -1381,7 +1508,154 @@ def load_media(specs, runs, inputs):
     return output
 
 
-def load_engineering(inputs):
+def release_source_hashes():
+    """Use the release checker's exact source inventory, including reporting tools."""
+    spec = importlib.util.spec_from_file_location(
+        "v03_report_release_checker", Path(__file__).with_name("release_check.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.source_hashes(ROOT)
+
+
+def load_junit(path, inputs, *, strict=False):
+    path = inputs.add(path)
+    try:
+        tree = ElementTree.parse(path).getroot()
+    except ElementTree.ParseError as error:
+        raise ValueError(f"Malformed JUnit evidence: {path}") from error
+    suites = ([tree] if tree.tag == "testsuite" else
+              list(tree.iter("testsuite")) if strict else list(tree.findall("testsuite")))
+    if not suites or tree.tag not in {"testsuite", "testsuites"}:
+        raise ValueError(f"JUnit evidence needs testsuite records: {path}")
+    counts = {key: 0 for key in ("tests", "failures", "errors", "skipped")}
+    seconds = 0.
+    for suite in suites:
+        for key in counts:
+            value = suite.get(key, None if strict else "0")
+            if value is None or re.fullmatch(r"[0-9]+", value) is None:
+                raise ValueError(f"JUnit evidence has an invalid {key} count: {path}")
+            counts[key] += int(value)
+        try:
+            elapsed = float(suite.get("time", "0"))
+        except ValueError as error:
+            raise ValueError(f"JUnit evidence has an invalid duration: {path}") from error
+        if not math.isfinite(elapsed) or elapsed < 0:
+            raise ValueError(f"JUnit evidence has an invalid duration: {path}")
+        seconds += elapsed
+    passed = counts["tests"] - sum(counts[key] for key in ("failures", "errors", "skipped"))
+    if passed < 0:
+        raise ValueError(f"JUnit outcome counts exceed the recorded case count: {path}")
+    # Successful unittest subtests can increase JUnit totals without creating
+    # separate testcase elements. Do not replace the recorded totals with an
+    # XML-element count or describe them as distinct pytest test functions.
+    return {"file": path.name, "path": str(path), **counts, "passed": passed,
+            "seconds": seconds, "recorded_at": suites[0].get("timestamp", "unrecorded")}
+
+
+def load_release_evidence(path, inputs):
+    """Verify a current complete local gate without copying it into source docs."""
+    path = Path(path).resolve()
+    receipt = inputs.json(path)
+    required = {"passed", "steps", "source_hashes", "repository_published",
+                "validation_artifacts", "artifacts", "source_tests", "installed_tests"}
+    if (not isinstance(receipt, dict) or type(receipt.get("schema_version")) is not int
+            or receipt.get("schema_version") != 2
+            or not required.issubset(receipt) or type(receipt["passed"]) is not bool
+            or type(receipt["repository_published"]) is not bool):
+        raise ValueError("Explicit release evidence needs a complete schema-2 local release-check receipt")
+    if "identity" in receipt:
+        identity(receipt, label="Current release receipt")
+    expected = receipt["source_hashes"]
+    if (not isinstance(expected, dict) or not expected
+            or any(not isinstance(name, str) or not isinstance(digest, str)
+                   or re.fullmatch(r"[a-f0-9]{64}", digest) is None
+                   for name, digest in expected.items())):
+        raise ValueError("Current release source hashes are malformed or empty")
+    for name in expected:
+        safe_member(ROOT, name)
+    actual = release_source_hashes()
+    if expected != actual:
+        changed = sorted(name for name in set(expected) | set(actual)
+                         if expected.get(name) != actual.get(name))
+        raise ValueError(f"Current release source hashes do not match this checkout: {changed}")
+    for name, digest in expected.items():
+        inputs.add(safe_member(ROOT, name), expected=digest)
+    inputs.current_release_sources = dict(expected)
+
+    inventories = {}
+    for key in ("validation_artifacts", "artifacts"):
+        entries = receipt[key]
+        if not isinstance(entries, list) or not entries:
+            raise ValueError(f"Current release {key} inventory is missing or empty")
+        inventory = {}
+        for entry in entries:
+            if (not isinstance(entry, dict) or not isinstance(entry.get("file"), str)
+                    or type(entry.get("bytes")) is not int or entry["bytes"] < 0
+                    or not isinstance(entry.get("sha256"), str)
+                    or re.fullmatch(r"[a-f0-9]{64}", entry["sha256"]) is None):
+                raise ValueError(f"Malformed current release {key} inventory entry")
+            member = safe_member(ROOT, entry["file"]).resolve()
+            if member in inventory or any(member in previous for previous in inventories.values()):
+                raise ValueError("Current release inventories contain duplicate artifacts")
+            inputs.add(member, expected=entry["sha256"], size=entry["bytes"])
+            inventory[member] = entry
+        inventories[key] = inventory
+
+    validation = inventories["validation_artifacts"]
+    steps = receipt["steps"]
+    if not isinstance(steps, list) or not steps:
+        raise ValueError("Current release receipt needs recorded validation steps")
+    names = set()
+    for step in steps:
+        if (not isinstance(step, dict) or not isinstance(step.get("name"), str) or not step["name"]
+                or step["name"] in names or type(step.get("exit_code")) is not int
+                or not isinstance(step.get("log"), str)):
+            raise ValueError("Malformed or duplicate current release validation step")
+        names.add(step["name"])
+        log = safe_member(ROOT, step["log"]).resolve()
+        if log not in validation or validation[log]["sha256"] != step.get("log_sha256"):
+            raise ValueError("Current release step log is not bound by its validation inventory")
+        if receipt["passed"] and step["exit_code"] != 0:
+            raise ValueError("A passed current release receipt contains a failed validation step")
+    if receipt["passed"] and (receipt.get("working_tree_changed_during_check")
+                              or receipt.get("scientific_source_drift_after_build")):
+        raise ValueError("A passed current release receipt records source drift")
+
+    test_paths = []
+    for prefix in ("source", "installed"):
+        summary = receipt[prefix + "_tests"]
+        if prefix == "source" and isinstance(summary, dict) and summary.get("skipped_by_explicit_flag") is True:
+            continue
+        xml = (ROOT / "results/validation" / f"{prefix}_pytest.xml").resolve()
+        harness = (ROOT / "results/validation" / f"{prefix}_pytest_receipt.json").resolve()
+        if not isinstance(summary, dict) or xml not in validation or harness not in validation:
+            raise ValueError(f"Current release {prefix} test evidence is missing from its validation inventory")
+        if prefix + "_pytest" not in names:
+            raise ValueError(f"Current release {prefix} tests have no recorded validation step")
+        saved = load_junit(xml, inputs, strict=True)
+        for key in ("tests", "failures", "errors", "skipped", "passed"):
+            if type(summary.get(key)) is not int or summary[key] != saved[key]:
+                raise ValueError(f"Current release {prefix} test summary disagrees with JUnit {key}")
+        _same_number(summary.get("seconds"), saved["seconds"], f"Current release {prefix} test duration")
+        recorded = inputs.json(harness)
+        if (not isinstance(recorded, dict) or not recorded
+                or any(summary.get(key) != value for key, value in recorded.items())):
+            raise ValueError(f"Current release {prefix} test summary disagrees with its harness receipt")
+        if receipt["passed"] and (saved["failures"] or saved["errors"] or saved["skipped"]
+                                  or type(recorded.get("pytest_exit_code")) is not int
+                                  or recorded["pytest_exit_code"] != 0):
+            raise ValueError(f"A passed current release receipt contains unsuccessful {prefix} tests")
+        test_paths.append(str(xml))
+    return {"file": path.name, "path": str(path), "kind": "current local release gate",
+            "evidence_scope": "current checkout", "receipt": receipt,
+            "source_hashes_identity": content_hash(expected),
+            "validation_paths": [str(member) for member in validation], "test_paths": test_paths,
+            "checks": {"current_source_hashes": True, "validation_artifacts": len(validation),
+                       "distribution_artifacts": len(inventories["artifacts"]),
+                       "test_summaries": len(test_paths)}}
+
+
+def load_engineering(inputs, *, release_evidence=None, test_evidence=()):
     folder = ROOT / "docs/evidence/v03"
     memory = inputs.json(folder / "forecast_ownership.json") if (folder / "forecast_ownership.json").exists() else None
     if memory:
@@ -1394,22 +1668,36 @@ def load_engineering(inputs):
         incremental = [(r["peak_rss_bytes"] - r["peak_rss_before_constructor_bytes"]) for r in rows]
         if memory["incremental_peak_reduction_bytes"] != incremental[0] - incremental[1]:
             raise ValueError("Memory ownership reduction disagrees with its measurements")
-    tests = []
-    for path in sorted(folder.glob("*tests*.xml")):
-        inputs.add(path)
-        tree = ElementTree.parse(path).getroot()
-        suites = list(tree.findall("testsuite")) or [tree]
-        tests.append({"file": path.name, **{key: sum(int(s.get(key, 0)) for s in suites)
-                     for key in ("tests", "failures", "errors", "skipped")},
-                      "recorded_at": suites[0].get("timestamp", "unrecorded")})
     release = []
     for path in sorted(set(folder.glob("*release*.json")) | set(folder.glob("*ci*.json"))):
         receipt = inputs.json(path)
         if receipt.get("schema") == "github-actions-verification-1.0":
-            release.append({"file": path.name, "kind": "saved remote CI", "receipt": receipt})
+            release.append({"file": path.name, "kind": "saved remote CI", "receipt": receipt,
+                            "evidence_scope": "historical snapshot"})
         elif (receipt.get("schema_version") == 2
               and {"passed", "steps", "source_hashes", "repository_published"}.issubset(receipt)):
-            release.append({"file": path.name, "kind": "isolated local release gate", "receipt": receipt})
+            release.append({"file": path.name, "kind": "isolated local release gate", "receipt": receipt,
+                            "evidence_scope": "historical snapshot"})
+    current = load_release_evidence(release_evidence, inputs) if release_evidence is not None else None
+    if current:
+        release.append(current)
+    tests_by_path = {}
+    for path in sorted(folder.glob("*tests*.xml")):
+        row = load_junit(path, inputs)
+        row["evidence_scope"] = "historical snapshot"
+        tests_by_path[row["path"]] = row
+    supplied = set()
+    for path in test_evidence:
+        path = str(Path(path).resolve())
+        if path in supplied:
+            raise ValueError("The same explicit JUnit evidence was supplied more than once")
+        supplied.add(path)
+        if current and path not in current["test_paths"]:
+            raise ValueError("Explicit JUnit evidence is not a test receipt bound by the current release inventory")
+        row = load_junit(path, inputs, strict=True)
+        row["evidence_scope"] = "current release" if current else "supplied; source unbound"
+        tests_by_path[path] = row
+    tests = list(tests_by_path.values())
     admission_path = folder / "cache_admission_review.json"
     admission = inputs.json(admission_path) if admission_path.exists() else None
     if admission:
@@ -1446,16 +1734,19 @@ def collect(args):
     extensions["current_entries"] = current_extension_entries(extension_studies)
     media = load_media(args.media or [], runs, inputs)
     audits = load_audits(args.audit or [], runs, inputs, source)
+    confirmation = load_confirmation_evidence(getattr(args, "confirmation_evidence", None), runs, inputs, source)
     calibrations = load_calibrations(args.calibration or [], runs, inputs, source)
     diagnostics = load_diagnostics(args.diagnostic, runs, inputs, source)
     prior_checks = load_prior_checks(args.prior_check, extension_studies, inputs, source)
-    engineering = load_engineering(inputs)
+    engineering = load_engineering(inputs, release_evidence=getattr(args, "release_evidence", None),
+                                   test_evidence=getattr(args, "test_evidence", ()))
     for name in ("docs/models.md", "docs/derivations/07_sampler_coordinates_recovery.md", "docs/study_design_v03.md"):
         inputs.add(ROOT / name)
     return {"source_fingerprint": source, "coordinate": coordinate, "runs": runs, "curves": curves,
             "curve_audits": curve_audits, "stress_audits": stress_audits,
             "extensions": extensions, "media": media, "audits": audits,
             "calibrations": calibrations, "diagnostics": diagnostics, "prior_checks": prior_checks,
+            "confirmation": confirmation,
             "engineering": engineering}, inputs
 
 
@@ -1785,6 +2076,56 @@ def section(title, paragraphs=(), table=None, figures=(), links=()):
             "figures": list(figures), "links": list(links)}
 
 
+def confirmation_sections(assessment):
+    if assessment is None:
+        return [section("Independent confirmation gate", [
+            "No standalone confirmation assessment was supplied. This synthesis does not infer admission from a complete development run. Any supplied confirmation run retains its separate frozen-design verification."])]
+    value = assessment["document"]
+    minimum = value["minimum_pairs"]
+    labels = {macro["id"]: f"{LABELS.get(macro['reference'], macro['reference'])} - "
+              f"{LABELS.get(macro['other_model'], macro['other_model'])} / {macro['track']} / {macro['metric'].upper()}"
+              for macro in assessment["macros"]}
+    rows = [[labels[macro["id"]], cell["scenario"].split("_")[0].upper(), str(cell["pairs"]),
+             str(minimum), "blocked" if cell["pairs"] < minimum else "sufficient pairs"]
+            for macro in assessment["macros"] for cell in macro["cells"]]
+    paragraphs = [
+        f"The assessment of saved development run {assessment['label']} is complete. It requires at least {minimum} usable paired datasets in every declared primary cell. The renderer independently recomputes the fixed-weight macro contrasts, exact cell populations and 1000-resample bootstrap summaries from the verified pilot scores.",
+        "CRPS cells use the common-qualified native population; operational RMSE cells retain declared fallbacks. Sites, forecast leads, paths and fitting seeds do not add independent datasets. Completing this assessment is separate from admission, confirmation execution and achieved precision.",
+        ("The saved independent finite-grid time-step prerequisite is verified. This does not establish continuum mesh convergence."
+         if value["fhn_prerequisite"] == "verified" else
+         "The declared roster has no G3 mechanism, so the independent G3 numerical prerequisite is not applicable."),
+        "The assessment generated no confirmation observations and fitted no model parameters. Its primary comparisons, minimum pair count and target were retained; no favorable replacement seeds or lower threshold were substituted."]
+    links = [("Complete confirmation assessment and exact deficient cells", "evidence/confirmation_assessment.json"),
+             ("Declared confirmation draft", "evidence/confirmation_protocol.json")]
+    if not value["admitted"]:
+        paragraphs.insert(0, f"Confirmation is blocked: {len(value['deficient_cells'])} declared primary cells fall below the pair requirement. The unchanged freeze authority returned its specific insufficient-common-pairs error; no valid freeze was created. These results remain development evidence.")
+    else:
+        frozen = assessment["freeze"]
+        power = frozen["power"]
+        paragraphs.insert(0, f"The pair gate admitted a valid freeze for {power['R']} attempted independent datasets per scenario, with a target normalized macro MCSE of {fmt(value['target_mcse'])}. Admission alone is not completed confirmation or achieved precision.")
+        links.append(("Verified freeze and complete precision/sensitivity plan", "evidence/confirmation_freeze.json"))
+        matching = assessment["matching_complete_confirmation_runs"]
+        paragraphs.append("Separately supplied complete confirmation runs bound to this exact freeze: " + ", ".join(matching) + ". Their actual outcomes are reported in their own sections."
+                          if matching else "No completed confirmation run bound to this freeze was supplied. The frozen R and MCSE values below are planning quantities.")
+    result = [section("Independent confirmation gate", paragraphs,
+        table=(["Contrast / task", "Scenario", "Usable pairs", "Required pairs", "Pair gate"], rows), links=links)]
+    if value["admitted"]:
+        frozen = assessment["freeze"]
+        power = frozen["power"]
+        rows = [[labels[contrast["id"]], str(contrast["requested_R"]), str(power["R"]),
+                 fmt(contrast["planned_mcse_at_R"]),
+                 "target unmet at cap" if contrast["planned_mcse_at_R"] > value["target_mcse"] else "planned within target"]
+                for contrast in power["primary_contrasts"]]
+        result.append(section("Confirmation precision planning", [
+            f"Recorded freeze status: {frozen['power_status']}. The largest unconstrained replication request is {power['uncapped_R']}; the permitted attempted-R range is {power['minimum']} to {power['maximum']}, and the frozen value is {power['R']}.",
+            ("The MCSE target is not met at the declared cap under the planning calculation. The shortfall remains explicit; this admission does not establish the requested precision."
+             if power["cap_binding"] else "The planning target is within the declared budget under the pilot estimates. This remains a planning result, not measured final precision."),
+            "The plan uses within-cell paired variances and a Wilson lower bound on joint qualification, with recorded qualification and variance sensitivity analyses. Pilot uncertainty and future attrition can change achieved precision. These calculations are not hypothesis-test power, a simultaneous superiority guarantee or additional forecast outcomes."],
+            table=(["Contrast / task", "Requested R", "Frozen R", "Planned MCSE", "Planning status"], rows),
+            links=[("Full frozen planning and sensitivity receipt", "evidence/confirmation_freeze.json")]))
+    return result
+
+
 def prior_sections(checks):
     sections = []
     for index, check in enumerate(checks):
@@ -1909,7 +2250,7 @@ def sections_for(data, output):
         "The spatial basis Phi maps a low-rank coefficient surface to fixed input or prediction sites. A frozen, causal encoder and reservoir construct nonlinear temporal features. Deep or multiscale reservoirs replace the first displayed recursion layer by layer; the saved configuration specifies the actual feature map.",
         "The iid Gaussian scalar-ridge reference uses the Matérn residual correlation and original proper hyperpriors. Conditioning-window preprocessing is frozen before likelihood fitting. Recursive forecasts feed back simulated observed-site values; they do not assimilate future observations or latent DGP states.",
         "Conditional Gaussian coefficient recovery and inverse-gamma scale recovery are exact for this reference. The likelihood is a product of causal conditional densities; recursive ESN predictors do not imply that the unconditional response sequence is jointly Gaussian.",
-        "Other priors, dynamics and covariance extensions retain separate configuration labels and compatibility gates. Their implementation alone is not evidence that they improve prediction."], figures=[hierarchy], links=[("Full hierarchy and extension equations", "evidence/models.md")]))
+        "Other priors, dynamics and covariance extensions retain separate configuration labels and compatibility gates. Their implementation alone is not evidence that they improve prediction."], figures=[hierarchy], links=[("Full hierarchy and extension equations", "evidence/models.md.txt")]))
     sections.extend(prior_sections(data.get("prior_checks", [])))
     transformed = equation_figure(output, "exact_coordinate_change", [
         r"$a=\log\lambda,\quad\xi=\log q,\quad\zeta=\log\ell,\quad\eta=a+\mathrm{softplus}(\xi)$",
@@ -1930,7 +2271,7 @@ def sections_for(data, output):
     else:
         text.append("No coordinate-development results were supplied. The equations describe implemented behavior, not a measured efficiency result.")
     sections.append(section("Exact sampler change and observed qualification", text, figures=figures,
-        links=[("Coordinate derivation and recovery contract", "evidence/07_sampler_coordinates_recovery.md")]))
+        links=[("Coordinate derivation and recovery contract", "evidence/07_sampler_coordinates_recovery.md.txt")]))
     for run in runs:
         protocol, summary = run["manifest"]["protocol"], run["summary"]
         counts = [[short_scenario(r["scenario"]), r["track"], LABELS.get(r["model_id"], r["model_id"]),
@@ -2049,7 +2390,7 @@ def sections_for(data, output):
             text.append("No completed curve conditions are included. This report cannot establish whether more history or more sensors improve prediction.")
         sections.append(section("More data and expressiveness: " + curve.get("design", {}).get("kind", "unavailable"), text,
             figures=curve_figures(curve, output, curve_index=curve_index),
-            links=[("Matched information interventions and populations", "evidence/study_design_v03.md")]))
+            links=[("Matched information interventions and populations", "evidence/study_design_v03.md.txt")]))
     for audit_index, audit in enumerate(data.get("curve_audits", [])):
         if audit["status"] != "complete":
             sections.append(section("Learning-curve audit: unavailable", [
@@ -2175,6 +2516,7 @@ def sections_for(data, output):
             table=(["Lead", "Saved mean RMSE", "Projection residual RMSE", "Predictive SD RMS", "Mean MCSE RMS"], rows),
             links=[("Saved first-step review and input hashes", f"evidence/diagnostic_{diagnostic_index}.json")]))
     engineering = data["engineering"]
+    sections.extend(confirmation_sections(data.get("confirmation")))
     memory = engineering["memory"]
     text = ["Scientific identity binds design, source, data, numerical runtime and transition policy. Worker count, memory ceiling and execution chunk limits belong to attempt receipts. Safe resume preserves scientific seeds and checkpoint trajectories; incompatible evidence is invalidated rather than reused.",
         "Memory admission combines a conservative workload estimate with host/cgroup headroom before each job. Jobs use one numerical thread each. A resource pause does not silently reduce model dimensions or relax diagnostics. Current benchmark scoring still materializes forecast samples; end-to-end disk-backed scoring is not claimed."]
@@ -2184,12 +2526,13 @@ def sections_for(data, output):
         a, b = memory["rows"]
         text.append(f"The isolated ownership probe used a {a['shape'][0]} x {a['shape'][1]} x {a['shape'][2]} float64 path array. Public-copy peak RSS was {a['peak_rss_bytes']/1024**2:.1f} MiB; private owned-transfer peak was {b['peak_rss_bytes']/1024**2:.1f} MiB. Incremental peak reduction was {memory['incremental_peak_reduction_bytes']/1024**2:.1f} MiB with identical numerical payload hashes. This measures the allocation/constructor workload only, not model-fit memory or universal forecasting speed.")
     tests = engineering["tests"]
-    test_rows = [[r["file"], str(r["tests"]), str(r["failures"] + r["errors"]), str(r["skipped"])] for r in tests]
-    text.append("Counts below are JUnit cases, including separately recorded subtests; they are not counts of distinct pytest test functions. These saved snapshots retain their original timestamps and do not certify later changes. Release/publication status is verified only by explicit supplied release receipts; building this report does not publish a release.")
+    test_rows = [[r["file"], r.get("evidence_scope", "historical snapshot"), str(r["tests"]),
+                  str(r["failures"] + r["errors"]), str(r["skipped"])] for r in tests]
+    text.append("Counts below are JUnit cases, including subtests; they are not counts of distinct pytest test functions or XML testcase elements. Historical snapshots retain their original timestamps and do not certify later changes. Supplied XML is labeled current only when its hashes and recorded totals bind a verified current local release receipt; standalone supplied XML remains source-unbound. Building this report does not publish a release.")
     if not engineering["release"]:
         text.append("No release-verification receipt is included in this synthesis. Repository publication and asset checks remain separately recorded release gates.")
     sections.append(section("Engineering evidence and reproducibility", text,
-        table=(["Saved test receipt", "JUnit cases", "Failures + errors", "Skipped"], test_rows) if test_rows else None))
+        table=(["Saved test receipt", "Evidence scope", "JUnit cases", "Failures + errors", "Skipped"], test_rows) if test_rows else None))
     if engineering["release"]:
         release_rows = []
         for item in engineering["release"]:
@@ -2197,9 +2540,10 @@ def sections_for(data, output):
             status = (f"{sum(j.get('conclusion') == 'success' for j in receipt['jobs'])}/{len(receipt['jobs'])} jobs succeeded"
                       if item["kind"] == "saved remote CI" else str(receipt["passed"]))
             release_rows.append([item["file"], item["kind"], status,
-                receipt.get("commit", receipt.get("source_fingerprint", "per-file source hashes in receipt"))])
+                item.get("source_hashes_identity", receipt.get("commit", receipt.get(
+                    "source_fingerprint", "per-file source hashes in receipt")))])
         sections.append(section("Release and remote-CI snapshots", [
-            "These are saved gate receipts for their recorded source or commit. Historical successful CI does not certify the report's later HEAD. A local isolated-installation gate does not establish public publication, and an audit or resource plan is not a release receipt.",
+            "Historical gate snapshots apply to their recorded source or commit and do not certify the report's later HEAD. An explicitly supplied current local gate is checked against the entire current release-source file set and its validation and distribution inventories. Its source-scope identity hashes that complete file-hash mapping. Explicitly skipped source tests remain unexecuted; the installed test gate is separate. A local isolated-installation gate does not establish public publication, and an audit or resource plan is not a release receipt.",
             "Publication still requires explicit exact-commit verification and asset readback in the release workflow. This renderer performs no publication or remote CI action. PDF tables show 12-character commit/source prefixes; full identities remain in the HTML and JSON evidence."],
             table=(["Saved receipt", "Gate", "Recorded outcome", "Commit / source scope"], release_rows),
             links=[("Complete engineering receipts", "evidence/engineering_evidence.json")]))
@@ -2298,6 +2642,8 @@ def render_pdf(sections, output, source):
                 fractions = [.32, .12, .2, .2, .16]
             elif headers[0] == "Model / task" and len(headers) == 6:
                 fractions = [.23, .17, .07, .18, .19, .16] if headers[1] == "Score population" else [.23, .16, .17, .14, .15, .15]
+            elif headers[0] == "Saved test receipt" and len(headers) == 5:
+                fractions = [.42, .2, .12, .14, .12]
             display_rows = rows
             if headers[-1] == "Commit / source scope":
                 display_rows = [list(row[:-1]) + [str(row[-1])[:12] + "..." if re.fullmatch(r"[a-f0-9]{40,64}", str(row[-1])) else row[-1]] for row in rows]
@@ -2366,8 +2712,17 @@ def export_evidence(data, output):
         write_json(folder / f"diagnostic_{index}.json", diagnostic)
     for index, check in enumerate(data.get("prior_checks", [])):
         write_json(folder / f"prior_check_{index}.json", check)
+    confirmation = data.get("confirmation")
+    if confirmation:
+        write_json(folder / "confirmation_assessment.json", confirmation["document"])
+        write_json(folder / "confirmation_protocol.json", confirmation["protocol"])
+        if confirmation["freeze"] is not None:
+            write_json(folder / "confirmation_freeze.json", confirmation["freeze"])
     for name in ("docs/models.md", "docs/derivations/07_sampler_coordinates_recovery.md", "docs/study_design_v03.md"):
-        shutil.copyfile(ROOT / name, folder / Path(name).name)
+        # The release checker covers all report/**/*.md source documents.
+        # Plain-text copies retain the bytes without adding covered source
+        # after the final gate or making a later render overwrite its inputs.
+        shutil.copyfile(ROOT / name, folder / (Path(name).name + ".txt"))
     for group in data["media"]:
         for item in group["files"]:
             destination = output / "media" / group["label"] / item["name"]
@@ -2418,6 +2773,11 @@ def render(data, inputs, output):
                                for value in data.get("diagnostics", [])]
     evidence["prior_checks"] = [{"status": value["status"], "identity": value.get("document", {}).get("identity")}
                                for value in data.get("prior_checks", [])]
+    confirmation = data.get("confirmation")
+    evidence["confirmation"] = None if confirmation is None else {
+        "identity": confirmation["document"]["identity"], "status": confirmation["status"],
+        "admitted": confirmation["document"]["admitted"], "pilot_run_label": confirmation["label"],
+        "matching_complete_confirmation_runs": confirmation["matching_complete_confirmation_runs"]}
     write_json(output / "evidence_summary.json", evidence)
     inputs.verify_unchanged()
     files = [{"path": str(p.relative_to(output)), "bytes": p.stat().st_size, "sha256": sha256(p)}
@@ -2453,10 +2813,13 @@ def parser():
     command.add_argument("--extensions", action="append", default=[], type=Path,
                          help="Optional scope JSON or completed P5 directory/decisions.json; repeat for multiple studies")
     command.add_argument("--audit", action="append", type=named_path, default=[], metavar="RUN_LABEL=JSON", help="Saved source-bound reference audit and G1 known-parameter scores")
+    command.add_argument("--confirmation-evidence", type=Path, metavar="JSON", help="Saved confirmation assessment; requires its matching complete development --run and verifies any admitted freeze")
     command.add_argument("--calibration", action="append", type=named_path, default=[], metavar="RUN_LABEL=DIRECTORY", help="Saved raw/calibrated study with calibration_evidence.json seal")
     command.add_argument("--diagnostic", action="append", type=Path, default=[], help="Optional saved source-bound G3 first-step diagnostic JSON; no replay")
     command.add_argument("--prior-check", action="append", type=Path, default=[], help="Saved conditional fixed-design prior assessment; requires its matching complete P5 --extensions inputs")
     command.add_argument("--media", action="append", type=named_path, default=[], metavar="RUN_LABEL=DIRECTORY", help="Existing core report/comparison assets; no new animation is generated")
+    command.add_argument("--release-evidence", type=Path, metavar="JSON", help="Current complete local release-check receipt; verifies its exact source and artifact inventories")
+    command.add_argument("--test-evidence", action="append", type=Path, default=[], metavar="XML", help="Additional JUnit receipt; repeat for source/installed suites, which must bind --release-evidence when supplied")
     command.add_argument("--allow-coordinate-source", help="Explicit exact SHA for historical ancillary coordinate evidence only")
     command.add_argument("--output", required=True, type=Path)
     command.add_argument("--check-inputs", action="store_true", help="Validate only; do not create figures, HTML or PDF")
@@ -2470,7 +2833,8 @@ def main(argv=None):
         inputs.verify_unchanged()
         print(json.dumps({"valid": True, "input_files": len(inputs.files), "runs": [r["label"] for r in data["runs"]],
             "coordinate": data["coordinate"] is not None, "curve_status": [curve["status"] for curve in data["curves"]],
-            "extension_status": data["extensions"]["status"], "source_fingerprint": data["source_fingerprint"]}, sort_keys=True))
+            "extension_status": data["extensions"]["status"], "source_fingerprint": data["source_fingerprint"],
+            "confirmation_status": data["confirmation"]["status"] if data["confirmation"] else "not supplied"}, sort_keys=True))
     else:
         receipt = render(data, inputs, args.output)
         print(json.dumps({"output": str(args.output.resolve()), "identity": receipt["identity"],

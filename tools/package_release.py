@@ -12,13 +12,44 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+import shutil
+import stat
 import subprocess
+import tempfile
 import zipfile
 
 from release_check import source_hashes
 
 ROOT = Path(__file__).resolve().parents[1]
+MAX_VOLUME_BYTES = 240 * 1024**2
+VOLUME_PREFIX = 'bayes_stesn_implementation.part'
+VOLUME_METADATA = 'release_volume_manifests'
+VOLUME_README = '''Bayes-STESN independently extractable release volumes
+
+Each numbered ZIP is an ordinary, complete ZIP archive. Original payload files
+remain whole: no concatenation, split-file reconstruction or special extractor
+is required. Extract every numbered ZIP into the same NEW empty directory.
+Common release_artifacts.json and this guide are identical in every volume;
+the per-volume manifests have distinct names and payload paths never overlap.
+
+Verify SHA256SUMS before extraction. release_volumes.json lists the byte count,
+SHA256 and payload names of every volume. The complete logical payload inventory
+and provenance are in release_artifacts.json, also embedded in every volume.
+Each release_volume_manifests/volume-XXXXX.json binds its payload list to that
+same logical-manifest SHA256. All volumes are needed for the complete release.
+
+On a system with sha256sum and unzip, from the download directory:
+  sha256sum -c SHA256SUMS
+  mkdir restored
+  for volume in bayes_stesn_implementation.part*.zip; do
+    unzip -n "$volume" -d restored
+  done
+
+The restored project is under restored/bayes-stesn/. Its Git history can be
+reconstructed with git clone bayes_stesn_repository.bundle in a separate folder.
+The archive is a local evidence delivery; publication is separately verified.
+'''.encode('utf-8')
 
 
 def digest(path):
@@ -97,7 +128,7 @@ def supplemental_inventory(directory, remaining_bytes, remaining_files=10000):
         size = path.stat().st_size
         total += size
         if total > remaining_bytes or len(entries) >= remaining_files:
-            raise ValueError('Supplemental evidence exceeds its declared byte budget or 10,000-file cap')
+            raise ValueError('Supplemental evidence exceeds its declared byte budget or file cap')
         entries.append({'file':str(path.relative_to(ROOT)), 'bytes':size, 'sha256':digest(path)})
         paths.add(path)
     if not entries:
@@ -113,6 +144,203 @@ def source_fingerprint():
         value.update(str(path.relative_to(root)).encode())
         value.update(path.read_bytes())
     return value.hexdigest()
+
+
+def json_bytes(value, *, compact=False):
+    options = {'separators': (',', ':')} if compact else {'indent': 2}
+    return (json.dumps(value, sort_keys=True, allow_nan=False, **options) + '\n').encode('utf-8')
+
+
+def archive_name(name):
+    if not isinstance(name, str):
+        raise ValueError(f'Unsafe archive payload name: {name}')
+    relative = PurePosixPath(name)
+    if (not name or relative.is_absolute()
+            or '..' in relative.parts or '\\' in name or str(relative) != name
+            or any(':' in part for part in relative.parts)):
+        raise ValueError(f'Unsafe or nonportable archive payload name: {name}')
+    return 'bayes-stesn/' + name
+
+
+def stored_member_bytes(name, size):
+    encoded = name.encode('utf-8')
+    if len(encoded) > 65535:
+        raise ValueError('Archive member name exceeds the ZIP filename limit')
+    # Seekable, non-ZIP64, stored entries: 30-byte local + 46-byte central
+    # headers, two filename copies, no extra fields/comments/data descriptor.
+    return 76 + 2 * len(encoded) + size
+
+
+def plan_archive_volumes(manifest, maximum_bytes):
+    """Plan whole-file ZIPs exactly, before any volume is written."""
+    if type(maximum_bytes) is not int or not 1 <= maximum_bytes <= MAX_VOLUME_BYTES:
+        raise ValueError('Archive volume byte limit must be positive and at most 240 MiB')
+    payloads = manifest.get('payloads')
+    if not isinstance(payloads, dict) or not payloads:
+        raise ValueError('Archive volumes require a nonempty complete logical payload inventory')
+    for name, entry in payloads.items():
+        archive_name(name)
+        if name in {'release_artifacts.json', 'RESTORE_VOLUMES.txt'} or name.startswith(VOLUME_METADATA + '/'):
+            raise ValueError(f'Payload collides with generated volume metadata: {name}')
+        if (not isinstance(entry, dict) or type(entry.get('bytes')) is not int or entry['bytes'] < 0
+                or not isinstance(entry.get('sha256'), str) or len(entry['sha256']) != 64
+                or any(char not in '0123456789abcdef' for char in entry['sha256'])):
+            raise ValueError(f'Malformed logical payload inventory entry: {name}')
+    encoded = json_bytes(manifest)
+    manifest_hash = hashlib.sha256(encoded).hexdigest()
+    common = (22 + stored_member_bytes(archive_name('release_artifacts.json'), len(encoded))
+              + stored_member_bytes(archive_name('RESTORE_VOLUMES.txt'), len(VOLUME_README)))
+    plans = []
+
+    def start(ordinal):
+        filename = f'{VOLUME_PREFIX}{ordinal:05d}.zip'
+        metadata_name = archive_name(f'{VOLUME_METADATA}/volume-{ordinal:05d}.json')
+        metadata = {'schema': 'release-archive-volume-1.0', 'archive': filename,
+                    'ordinal': ordinal, 'maximum_archive_bytes': maximum_bytes,
+                    'release_artifacts_sha256': manifest_hash, 'payloads': []}
+        size = common + stored_member_bytes(metadata_name, len(json_bytes(metadata, compact=True)))
+        return {'file': filename, 'metadata_name': metadata_name, 'metadata': metadata,
+                'payloads': [], 'bytes': size}
+
+    current = start(1)
+    for name in sorted(payloads):
+        # Only the JSON string and comma are added to the per-volume metadata;
+        # this avoids repeatedly serializing a growing list of tiny payloads.
+        name_bytes = len(json.dumps(name).encode('utf-8'))
+        member_bytes = stored_member_bytes(archive_name(name), payloads[name]['bytes'])
+        increment = member_bytes + name_bytes + bool(current['payloads'])
+        if (current['bytes'] + increment > maximum_bytes
+                or len(current['payloads']) + 4 > zipfile.ZIP_FILECOUNT_LIMIT):
+            if current['payloads']:
+                plans.append(current)
+                current = start(len(plans) + 1)
+                increment = member_bytes + name_bytes
+            if current['bytes'] + increment > maximum_bytes:
+                raise ValueError(f'Payload cannot fit whole in a {maximum_bytes}-byte archive volume '
+                                 f'with its required metadata: {name} ({payloads[name]["bytes"]} bytes)')
+        current['payloads'].append(name)
+        current['bytes'] += increment
+    if current['payloads']:
+        plans.append(current)
+    for plan in plans:
+        plan['metadata']['payloads'] = plan['payloads']
+        plan['metadata_bytes'] = json_bytes(plan['metadata'], compact=True)
+    return encoded, plans
+
+
+def volume_zip_info(name, size, mode=0o644):
+    info = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+    info.compress_type = zipfile.ZIP_STORED
+    info.file_size = size
+    info.create_system = 3
+    info.external_attr = (stat.S_IFREG | stat.S_IMODE(mode)) << 16
+    return info
+
+
+def verify_archive_volume(path, plan, manifest_bytes, payloads):
+    metadata = {archive_name('release_artifacts.json'): manifest_bytes,
+                archive_name('RESTORE_VOLUMES.txt'): VOLUME_README,
+                plan['metadata_name']: plan['metadata_bytes']}
+    expected_names = set(metadata) | {archive_name(name) for name in plan['payloads']}
+    if path.stat().st_size != plan['bytes']:
+        raise RuntimeError(f'Archive volume size differs from its exact stored-ZIP plan: {path.name}')
+    with zipfile.ZipFile(path) as archive:
+        if len(archive.namelist()) != len(expected_names) or set(archive.namelist()) != expected_names:
+            raise RuntimeError(f'Archive volume payload membership mismatch: {path.name}')
+        bad = archive.testzip()
+        if bad is not None:
+            raise RuntimeError(f'Archive CRC failure: {path.name}: {bad}')
+        for name, expected in metadata.items():
+            if archive.read(name) != expected:
+                raise RuntimeError(f'Archive metadata changed: {path.name}: {name}')
+        for name in plan['payloads']:
+            value, size = hashlib.sha256(), 0
+            with archive.open(archive_name(name)) as stream:
+                for block in iter(lambda: stream.read(1024 * 1024), b''):
+                    value.update(block)
+                    size += len(block)
+            if size != payloads[name]['bytes'] or value.hexdigest() != payloads[name]['sha256']:
+                raise RuntimeError(f'Archived payload SHA256 or byte count mismatch: {name}')
+
+
+def write_archive_volumes(output, manifest, sources, maximum_bytes, *, reserve_bytes=0):
+    """Write and verify independent volumes without an intermediate monolith."""
+    if type(reserve_bytes) is not int or reserve_bytes < 0:
+        raise ValueError('Archive disk reserve must be a nonnegative byte count')
+    if set(sources) != set(manifest.get('payloads', {})):
+        raise ValueError('Archive source files differ from the complete logical inventory')
+    manifest_bytes, plans = plan_archive_volumes(manifest, maximum_bytes)
+    output = Path(output).resolve()
+    output.mkdir(parents=True, exist_ok=True)
+    final_names = {'release_artifacts.json', 'release_volumes.json', 'RESTORE_VOLUMES.txt', 'SHA256SUMS'}
+    final_names.update(plan['file'] for plan in plans)
+    if any((output / name).exists() for name in final_names) or list(output.glob(VOLUME_PREFIX + '*.zip')):
+        raise FileExistsError('Use a new output directory for a volume release; existing outputs are not overwritten')
+    destinations = {output / filename for filename in final_names}
+    for name, source in sources.items():
+        source = Path(source)
+        if not source.is_file() or has_symlink(source):
+            raise ValueError(f'Archive payload is missing or symlinked: {name}')
+        if source.resolve() in destinations:
+            raise ValueError('An archive output would overwrite an input payload')
+    # The external index is small relative to the retained files; use its exact
+    # serialization with fixed-width placeholder hashes for the admission sum.
+    index = {'schema': 'release-archive-volumes-1.0', 'git_commit': manifest.get('git_commit'),
+             'maximum_archive_bytes': maximum_bytes, 'compression': 'ZIP_STORED',
+             'payload_policy': 'whole files; extract all ordinary ZIPs into one new directory',
+             'logical_inventory': {'file': 'release_artifacts.json', 'bytes': len(manifest_bytes),
+                                   'sha256': hashlib.sha256(manifest_bytes).hexdigest()},
+             'payload_count': len(sources), 'payload_bytes': sum(e['bytes'] for e in manifest['payloads'].values()),
+             'volumes': [{'file': p['file'], 'bytes': p['bytes'], 'sha256': '0' * 64,
+                          'payloads': p['payloads']} for p in plans],
+             'verification': {'crc_passed': True, 'payload_sha256_passed': True,
+                              'complete_logical_inventory': True}}
+    required = (sum(plan['bytes'] for plan in plans) + len(manifest_bytes) + len(VOLUME_README)
+                + len(json_bytes(index)) + 4096 + 256 * len(plans))
+    if shutil.disk_usage(output).free < required + reserve_bytes:
+        raise OSError(f'Insufficient archive headroom: need {required} bytes plus {reserve_bytes} bytes reserve')
+    staging = Path(tempfile.mkdtemp(prefix='.release-volumes-', dir=output))
+    try:
+        for plan, record in zip(plans, index['volumes']):
+            destination = staging / plan['file']
+            with zipfile.ZipFile(destination, 'x', allowZip64=False) as archive:
+                for name, value in ((archive_name('release_artifacts.json'), manifest_bytes),
+                                    (archive_name('RESTORE_VOLUMES.txt'), VOLUME_README),
+                                    (plan['metadata_name'], plan['metadata_bytes'])):
+                    archive.writestr(volume_zip_info(name, len(value)), value)
+                for name in plan['payloads']:
+                    source, expected = Path(sources[name]), manifest['payloads'][name]
+                    value, size = hashlib.sha256(), 0
+                    info = volume_zip_info(archive_name(name), expected['bytes'], source.stat().st_mode)
+                    with source.open('rb') as incoming, archive.open(info, 'w') as outgoing:
+                        for block in iter(lambda: incoming.read(1024 * 1024), b''):
+                            if size + len(block) > expected['bytes']:
+                                raise ValueError(f'Input payload grew while writing archive volume: {name}')
+                            outgoing.write(block)
+                            value.update(block)
+                            size += len(block)
+                    if size != expected['bytes'] or value.hexdigest() != expected['sha256']:
+                        raise ValueError(f'Input payload changed while writing archive volume: {name}')
+            if destination.stat().st_size > maximum_bytes:
+                raise RuntimeError('Archive volume exceeds its declared byte limit')
+            verify_archive_volume(destination, plan, manifest_bytes, manifest['payloads'])
+            record['sha256'] = digest(destination)
+        archived = [name for volume in index['volumes'] for name in volume['payloads']]
+        if len(archived) != len(set(archived)) or set(archived) != set(sources):
+            raise RuntimeError('Archive volumes omit or duplicate a logical payload')
+        (staging / 'release_artifacts.json').write_bytes(manifest_bytes)
+        (staging / 'release_volumes.json').write_bytes(json_bytes(index))
+        (staging / 'RESTORE_VOLUMES.txt').write_bytes(VOLUME_README)
+        # Rename verified outputs on the same filesystem; no second archive
+        # copy is needed and a failed build leaves no apparently complete set.
+        for path in sorted(staging.iterdir()):
+            if (output / path.name).exists():
+                raise FileExistsError(f'Archive output appeared during packaging: {path.name}')
+        for path in sorted(staging.iterdir()):
+            path.rename(output / path.name)
+    finally:
+        shutil.rmtree(staging)
+    return index
 
 
 def verify_benchmark(run, report):
@@ -194,7 +422,13 @@ def main(argv=None):
     parser.add_argument('--supplemental-evidence', type=Path, action='append', default=[],
                         metavar='DIRECTORY', help='Named saved-evidence subtree inside results/ or report/; repeatable')
     parser.add_argument('--supplemental-max-bytes', type=int, default=2*1024**3,
-                        help='Combined supplemental byte cap (default: 2 GiB); maximum 10,000 supplemental files')
+                        help='Combined supplemental byte cap (default: 2 GiB)')
+    parser.add_argument('--supplemental-max-files', type=int, default=10000,
+                        help='Combined supplemental file cap (default: 10,000); declare a measured larger budget explicitly')
+    parser.add_argument('--archive-volume-bytes', type=int,
+                        help='Write independent whole-file ZIP volumes at this hard byte cap (maximum: 240 MiB); omit for the legacy single ZIP')
+    parser.add_argument('--archive-reserve-bytes', type=int, default=4*1024**3,
+                        help='Free disk reserve retained when admitting volume creation (default: 4 GiB)')
     args = parser.parse_args(argv)
     if (args.benchmark_run is None) != (args.benchmark_report is None):
         parser.error('--benchmark-run and --benchmark-report must be supplied together')
@@ -202,8 +436,19 @@ def main(argv=None):
         parser.error('Additional/supplemental evidence requires --benchmark-run and --benchmark-report')
     if args.supplemental_max_bytes < 1:
         parser.error('--supplemental-max-bytes must be positive')
+    if args.supplemental_max_files < 1:
+        parser.error('--supplemental-max-files must be positive')
+    if args.archive_volume_bytes is not None and not 1 <= args.archive_volume_bytes <= MAX_VOLUME_BYTES:
+        parser.error('--archive-volume-bytes must be positive and at most 251658240 (240 MiB)')
+    if args.archive_reserve_bytes < 0:
+        parser.error('--archive-reserve-bytes cannot be negative')
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
+    if args.archive_volume_bytes is not None:
+        reserved = ('bayes_stesn_repository.bundle', 'release_artifacts.json', 'release_volumes.json',
+                    'RESTORE_VOLUMES.txt', 'SHA256SUMS', 'bayes_stesn_implementation.zip')
+        if any((output / name).exists() for name in reserved) or list(output.glob(VOLUME_PREFIX + '*.zip')):
+            raise FileExistsError('Use a new output directory for a volume release; existing outputs are not overwritten')
     # Untracked generated files are intentionally separate from the source.
     subprocess.run(['git', 'diff', '--exit-code', '--quiet'], cwd=ROOT, check=True)
     subprocess.run(['git', 'diff', '--cached', '--exit-code', '--quiet'], cwd=ROOT, check=True)
@@ -249,7 +494,7 @@ def main(argv=None):
             paths.update(files)
             directories.append(extra_run)
         remaining = args.supplemental_max_bytes
-        remaining_files = 10000
+        remaining_files = args.supplemental_max_files
         seen_directories = set()
         for name in args.supplemental_evidence:
             directory = project_directory(name)
@@ -299,6 +544,8 @@ def main(argv=None):
                    stdout=subprocess.DEVNULL)
     entries = {str(path.relative_to(ROOT)): {'sha256': digest(path), 'bytes': path.stat().st_size}
                for path in paths}
+    if 'bayes_stesn_repository.bundle' in entries:
+        raise ValueError('A project payload collides with the generated Git history bundle')
     entries['bayes_stesn_repository.bundle'] = {'sha256': digest(bundle), 'bytes': bundle.stat().st_size}
     manifest = {
         'schema_version': 2, 'git_commit': commit,
@@ -314,6 +561,25 @@ def main(argv=None):
         'publication': 'Local Git bundle; remote publication is not implied by this archive.',
     }
     manifest_path = output / 'release_artifacts.json'
+    if args.archive_volume_bytes is not None:
+        manifest['archive_layout'] = {'schema': 'independent-zip-volumes-1.0',
+            'maximum_archive_bytes': args.archive_volume_bytes, 'compression': 'ZIP_STORED',
+            'payload_policy': 'whole files; no omission, fragmentation or concatenation',
+            'volume_index': 'release_volumes.json'}
+        sources = {str(path.relative_to(ROOT)): path for path in paths}
+        sources[bundle.name] = bundle
+        index = write_archive_volumes(output, manifest, sources, args.archive_volume_bytes,
+                                      reserve_bytes=args.archive_reserve_bytes)
+        artifacts = ([output / volume['file'] for volume in index['volumes']]
+                     + [bundle, manifest_path, output / 'release_volumes.json', output / 'RESTORE_VOLUMES.txt'])
+        checksums = {path.name: digest(path) for path in artifacts}
+        (output / 'SHA256SUMS').write_text(''.join(f'{value}  {name}\n' for name, value in checksums.items()))
+        print(json.dumps({'git_commit': commit, 'files': len(entries),
+            'archive_format': 'independent_zip_volumes', 'maximum_archive_bytes': args.archive_volume_bytes,
+            'archives': [{key: volume[key] for key in ('file', 'bytes', 'sha256')} for volume in index['volumes']],
+            'archive_total_bytes': sum(volume['bytes'] for volume in index['volumes']),
+            'sha256': checksums, 'archive_crc_passed': True, 'complete_logical_inventory': True}, indent=2))
+        return
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n')
     archive = output / 'bayes_stesn_implementation.zip'
     with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=6) as zf:

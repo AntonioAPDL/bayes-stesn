@@ -101,6 +101,99 @@ environment.
 
 ## 3. Optional evidence
 
+### Current local verification receipts
+
+Historical test and release snapshots in `docs/evidence/v03` remain visible as
+historical evidence. To include the final local source/installed-wheel gate,
+pass its generated receipts directly instead of copying them into that source
+directory:
+
+```text
+--release-evidence results/release_manifest.json
+--test-evidence results/validation/source_pytest.xml
+--test-evidence results/validation/installed_pytest.xml
+```
+
+The optional `--release-evidence` accepts one complete schema-2 receipt from
+`tools/release_check.py`. The renderer uses the release checker's exact source
+inventory function and requires the full file/hash mapping to match the current
+checkout, including documentation, tests and reporting tools. Added source
+files are detected as well as changed or omitted files. Every source input,
+distribution and validation-inventory member is hashed; unsafe paths, duplicate
+entries and mismatched sizes or hashes are rejected. Recorded step-log hashes,
+source/installed JUnit totals and the corresponding harness receipts must agree.
+A receipt marked passed cannot contain failed steps or unsuccessful tests. The
+complete source set and input hashes are checked again before rendering ends.
+The displayed current source-scope identity is the canonical hash of the entire
+source-file/hash mapping, not a Git commit or a scientific-source fingerprint.
+
+`--test-evidence` is repeatable. With `--release-evidence`, supplied XML must be
+the source or installed test receipt bound by that current gate. An explicitly
+skipped source suite does not authorize leftover source-test XML. Without a
+current release receipt, additional XML is accepted as a **supplied snapshot
+with unbound source**, never labeled as current verification. JUnit totals can
+include successful subtests without separate `testcase` elements; the renderer
+retains the producer's counts and does not claim a count of distinct test
+functions. Malformed explicit XML and incomplete outcome counts are rejected.
+
+Finish all covered source, tool and documentation edits before the final local
+gate. The subsequent synthesis can consume receipts under `results/` without
+changing the source hash set. Generated PDF/HTML/JSON/media outputs are separate
+from the release checker's covered reporting scripts and Markdown. Exported
+copies of the three source documents use `.md.txt` names and retain their exact
+bytes, so rendering does not create additional covered Markdown source files.
+If reusing an older synthesis that contains `.md` copies, rerender it with the
+current tool **before** the final gate to replace those legacy generated copies.
+Keep visual QA in a separate generated receipt, and do not edit covered
+documentation after the gate without rerunning it. These inputs establish the
+recorded local gate; exact remote commit, CI and published-asset verification
+remain separate.
+
+### Explicit confirmation admission or scientific block
+
+Pass the saved assessment produced by `tools/assess_confirmation_v03.py`, along
+with its complete development run:
+
+```text
+--run revised=results/v03/development/revised_L1000
+--confirmation-evidence results/v03/confirmation/assessment.json
+```
+
+Use the actual history selected by the sealed rule and the actual new assessment
+path. This option does not run the freeze factory, simulate final data, fit
+parameters or produce confirmation forecasts. The assessment helper and report
+renderer are themselves bound in the assessment's source inventory, so finalize
+these tools before producing the assessment intended for this release.
+
+The renderer checks the assessment identity, current package and one-thread
+numerical runtime, matching supplied pilot, complete source/artifact inventory,
+draft and primary-comparison inputs. It verifies the independent G3 numerical
+prerequisite when G3 is declared; a roster without G3 is **not applicable**, not
+a failed prerequisite. It independently recomputes the saved fixed-weight macro
+comparisons with the declared seed and 1000 bootstrap resamples, every usable
+pair count and the exact deficient-cell list.
+
+A blocked assessment must retain the unchanged factory's specific
+insufficient-common-pairs `ValueError`, with `admitted: false` and `freeze: null`.
+An unrelated error is not accepted as this scientific block. The report lists
+every primary cell and its required/usable pair counts, preserves a
+development-only conclusion and creates no substitute freeze.
+
+For admission, the saved freeze and resolved configuration must validate with
+the existing core verifier, bind the same pilot/draft and reproduce the
+replication/precision plan. The report displays frozen attempted R, uncapped
+requests, planned MCSEs and the actual cap status. `mcse_target_not_met_at_cap`
+remains an explicit shortfall. **A completed assessment is not admission;
+admission is not confirmation execution or achieved precision.** A separately
+supplied completed confirmation run is recognized only against its exact freeze.
+
+The portable report exports `evidence/confirmation_assessment.json` and
+`evidence/confirmation_protocol.json`. It exports
+`evidence/confirmation_freeze.json` only for a validated admission. These are
+generated JSON copies, not additional covered Markdown source files. Omitting
+the option produces an explicit “not supplied” gate section without inferring a
+decision from a complete development campaign.
+
 ### Matched learning curves
 
 Pass `--curve DIRECTORY` or `--curve DIRECTORY/curve_design.json`. Repeat the

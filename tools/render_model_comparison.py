@@ -18,6 +18,7 @@ not evidence of an aggregate ranking. Incomplete model results fail explicitly.
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -130,7 +131,15 @@ def _load_inputs(run: Path, scenario: str, replication: int, track: str):
             raise ValueError(f"{model}: actual future observations are missing")
         truth = sim.observation[this_origin:this_origin + len(forecast.mean), target_indices]
         rmse = np.sqrt(np.mean((forecast.mean - truth) ** 2, axis=1))
-        scores = receipt.get("native_scores", {})
+        scores = receipt.get("native_scores")
+        # A failed native scoring/qualification step can leave a saved forecast
+        # without scores. It remains an unqualified diagnostic illustration.
+        if scores is None and not qualified:
+            scores = {}
+        if not isinstance(scores, Mapping):
+            raise ValueError(f"{model}: native scores must be a mapping; only an unqualified forecast may omit them")
+        if qualified and "rmse" not in scores:
+            raise ValueError(f"{model}: a qualified native forecast requires its saved RMSE")
         check = {"receipt_native_rmse_present": "rmse" in scores}
         if "rmse" in scores:
             direct = float(np.sqrt(np.mean((forecast.mean - truth) ** 2)))

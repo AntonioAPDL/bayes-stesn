@@ -206,6 +206,418 @@ def test_scientific_audits_and_plans_are_not_mistaken_for_release_verification(t
         ("implementation_remote_ci.json", "saved remote CI")]
 
 
+@pytest.fixture
+def current_release(tmp_path, monkeypatch):
+    """Small saved local-gate fixture, with no package build or test subprocess."""
+    root = tmp_path / "checkout"
+    monkeypatch.setattr(renderer, "ROOT", root)
+    source_files = {
+        "src/bayes_stesn/__init__.py": "# Synthetic release fixture.\n",
+        "README.md": "Synthetic source inventory fixture.\n",
+        "docs/models.md": "Synthetic model documentation.\n",
+        "docs/derivations/07_sampler_coordinates_recovery.md": "Synthetic derivation.\n",
+        "docs/study_design_v03.md": "Synthetic study documentation.\n",
+    }
+    for name, text in source_files.items():
+        path = root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+    historical = root / "docs/evidence/v03/previous_release.json"
+    save(historical, {"schema_version": 2, "passed": True, "steps": [],
+                      "source_hashes": {"old.py": "b" * 64}, "repository_published": False})
+    old_xml = historical.with_name("previous_tests.xml")
+    old_xml.write_text('<testsuite tests="2" failures="0" errors="0" skipped="0" time="0.1"/>')
+    validation = root / "results/validation"
+    validation.mkdir(parents=True)
+    receipt = {"schema_version": 2, "passed": True, "repository_published": False,
+        "working_tree_changed_during_check": [], "scientific_source_drift_after_build": [],
+        "source_hashes": {name: renderer.sha256(root / name)
+                          for name in (*source_files, str(historical.relative_to(root)))}, "steps": []}
+    for prefix in ("source", "installed"):
+        # Successful unittest subtests contribute to tests=3 while a parent
+        # testcase can be the sole XML element. Preserve the producer's totals.
+        xml = validation / f"{prefix}_pytest.xml"
+        xml.write_text('<testsuites><testsuite tests="3" failures="0" errors="0" skipped="0" '
+                       'time="0.25" timestamp="2026-11-03T00:00:00"><testcase name="parent"/>'
+                       '</testsuite></testsuites>')
+        harness = {"pytest_exit_code": 0, "warning_count": 0, "warnings": [],
+                   "source_imports_detected": {}, "unexpected_skipped": [], "feature_scope": "neural"}
+        save(validation / f"{prefix}_pytest_receipt.json", harness)
+        receipt[prefix + "_tests"] = {"tests": 3, "failures": 0, "errors": 0, "skipped": 0,
+                                      "passed": 3, "seconds": .25, **harness}
+        log = validation / f"{prefix}_pytest.log"
+        log.write_text("Synthetic validation log.\n")
+        receipt["steps"].append({"name": f"{prefix}_pytest", "exit_code": 0,
+            "log": str(log.relative_to(root)), "log_sha256": renderer.sha256(log)})
+    distribution = root / "dist"
+    distribution.mkdir()
+    for name in ("fixture.whl", "fixture.tar.gz"):
+        (distribution / name).write_bytes(b"Synthetic distribution checksum fixture.")
+    for key, folder in (("validation_artifacts", validation), ("artifacts", distribution)):
+        receipt[key] = [{"file": str(path.relative_to(root)), "bytes": path.stat().st_size,
+                         "sha256": renderer.sha256(path)} for path in sorted(folder.iterdir())]
+    release_path = root / "results/release_manifest.json"
+    save(release_path, receipt)
+    return root, release_path, receipt
+
+
+def test_current_release_evidence_binds_sources_inventories_and_junit_while_retaining_history(current_release):
+    root, path, receipt = current_release
+    xml = root / "results/validation/source_pytest.xml"
+    inputs = renderer.Inputs()
+    evidence = renderer.load_engineering(inputs, release_evidence=path, test_evidence=[xml])
+    historical, current = evidence["release"]
+    assert historical["evidence_scope"] == "historical snapshot"
+    assert current["kind"] == "current local release gate"
+    assert current["source_hashes_identity"] == content_hash(receipt["source_hashes"])
+    assert current["checks"] == {"current_source_hashes": True, "validation_artifacts": 6,
+                                  "distribution_artifacts": 2, "test_summaries": 2}
+    assert [(row["evidence_scope"], row["tests"]) for row in evidence["tests"]] == [
+        ("historical snapshot", 2), ("current release", 3)]
+    assert all(str(root / name) in inputs.files for name in receipt["source_hashes"])
+    assert str(root / "dist/fixture.whl") in inputs.files
+    inputs.verify_unchanged()
+
+
+def test_explicit_release_evidence_flows_through_check_inputs_without_rendering(
+        current_release, completed_run, tmp_path, monkeypatch, capsys):
+    from bayes_stesn.benchmark import runner
+    monkeypatch.setattr(runner, "source_fingerprint", lambda: SOURCE)
+    root, path, _ = current_release
+    out = tmp_path / "not_rendered"
+    renderer.main(["--run", f"synthetic={completed_run}", "--release-evidence", str(path),
+        "--test-evidence", str(root / "results/validation/source_pytest.xml"),
+        "--test-evidence", str(root / "results/validation/installed_pytest.xml"),
+        "--output", str(out), "--check-inputs"])
+    assert json.loads(capsys.readouterr().out)["valid"] is True
+    assert not out.exists()
+
+
+def test_current_release_report_exports_do_not_add_covered_markdown_source(
+        current_release, completed_run, monkeypatch):
+    from bayes_stesn.benchmark import runner
+    monkeypatch.setattr(runner, "source_fingerprint", lambda: SOURCE)
+    root, path, receipt = current_release
+    output = root / "report/v03/rendered"
+    args = renderer.parser().parse_args(["--run", f"synthetic={completed_run}",
+        "--release-evidence", str(path), "--output", str(output)])
+    data, inputs = renderer.collect(args)
+    renderer.export_evidence(data, output)
+    assert not list(output.rglob("*.md"))
+    for name in ("docs/models.md", "docs/derivations/07_sampler_coordinates_recovery.md",
+                 "docs/study_design_v03.md"):
+        exported = output / "evidence" / (Path(name).name + ".txt")
+        assert exported.read_bytes() == (root / name).read_bytes()
+    assert renderer.release_source_hashes() == receipt["source_hashes"]
+    inputs.verify_unchanged()
+
+
+@pytest.mark.parametrize("fault", ["modified", "new_file", "omitted_source"])
+def test_current_release_evidence_rejects_a_different_complete_source_set(current_release, fault):
+    root, path, receipt = current_release
+    if fault == "modified":
+        (root / "README.md").write_text("A later source edit.\n")
+    elif fault == "new_file":
+        added = root / "tools/later.py"
+        added.parent.mkdir()
+        added.write_text("# New covered source after validation.\n")
+    else:
+        receipt["source_hashes"].pop("README.md")
+        save(path, receipt)
+    with pytest.raises(ValueError, match="Current release source hashes do not match"):
+        renderer.load_engineering(renderer.Inputs(), release_evidence=path)
+
+
+def test_current_release_source_additions_during_rendering_are_rejected(current_release):
+    root, path, _ = current_release
+    inputs = renderer.Inputs()
+    renderer.load_engineering(inputs, release_evidence=path)
+    (root / "docs/added_after_validation.md").write_text("Later documentation edit.\n")
+    with pytest.raises(ValueError, match="source set changed during rendering"):
+        inputs.verify_unchanged()
+
+
+@pytest.mark.parametrize("fault", ["schema", "missing_inventory", "duplicate", "unsafe_path",
+                                  "byte_count", "summary", "step_hash", "failed_step",
+                                  "missing_test_step", "identity"])
+def test_current_release_evidence_rejects_malformed_or_inconsistent_receipts(current_release, fault):
+    _, path, receipt = current_release
+    if fault == "schema":
+        receipt["schema_version"] = 999
+    elif fault == "missing_inventory":
+        receipt.pop("validation_artifacts")
+    elif fault == "duplicate":
+        receipt["validation_artifacts"].append(receipt["validation_artifacts"][0])
+    elif fault == "unsafe_path":
+        receipt["artifacts"][0]["file"] = "../outside.whl"
+    elif fault == "byte_count":
+        receipt["artifacts"][0]["bytes"] = True
+    elif fault == "summary":
+        receipt["source_tests"]["tests"] += 1
+    elif fault == "step_hash":
+        receipt["steps"][0]["log_sha256"] = "0" * 64
+    elif fault == "failed_step":
+        receipt["steps"][0]["exit_code"] = 1
+    elif fault == "missing_test_step":
+        receipt["steps"] = [step for step in receipt["steps"] if step["name"] != "source_pytest"]
+    else:
+        receipt["identity"] = "0" * 64
+    save(path, receipt)
+    with pytest.raises(ValueError):
+        renderer.load_engineering(renderer.Inputs(), release_evidence=path)
+
+
+@pytest.mark.parametrize("member", ["dist/fixture.whl", "results/validation/source_pytest.xml"])
+def test_current_release_evidence_rejects_modified_distribution_or_validation_payload(current_release, member):
+    root, path, _ = current_release
+    (root / member).write_bytes(b"Changed after release validation.")
+    with pytest.raises(ValueError, match="hash mismatch"):
+        renderer.load_engineering(renderer.Inputs(), release_evidence=path)
+
+
+def test_explicit_junit_must_bind_current_release_and_standalone_junit_stays_source_unbound(current_release):
+    root, path, _ = current_release
+    copied = root / "results/copied_source_pytest.xml"
+    copied.write_bytes((root / "results/validation/source_pytest.xml").read_bytes())
+    with pytest.raises(ValueError, match="not a test receipt bound by the current release"):
+        renderer.load_engineering(renderer.Inputs(), release_evidence=path, test_evidence=[copied])
+    standalone = renderer.load_engineering(renderer.Inputs(), test_evidence=[copied])
+    assert standalone["tests"][-1]["evidence_scope"] == "supplied; source unbound"
+    assert standalone["tests"][-1]["tests"] == 3
+    with pytest.raises(ValueError, match="more than once"):
+        renderer.load_engineering(renderer.Inputs(), test_evidence=[copied, copied])
+
+
+@pytest.mark.parametrize("xml", ["not XML", '<unknown/>',
+    '<testsuite tests="-1" failures="0" errors="0" skipped="0"/>',
+    '<testsuite tests="1" failures="0" errors="0"/>'])
+def test_explicit_junit_rejects_malformed_or_missing_counts(tmp_path, monkeypatch, xml):
+    monkeypatch.setattr(renderer, "ROOT", tmp_path)
+    path = tmp_path / "tests.xml"
+    path.write_text(xml)
+    with pytest.raises(ValueError, match="JUnit"):
+        renderer.load_engineering(renderer.Inputs(), test_evidence=[path])
+
+
+def test_current_release_explicit_source_test_skip_does_not_bind_leftover_xml(current_release):
+    root, path, receipt = current_release
+    receipt["source_tests"] = {"skipped_by_explicit_flag": True}
+    receipt["steps"] = [step for step in receipt["steps"] if step["name"] != "source_pytest"]
+    receipt["validation_artifacts"] = [entry for entry in receipt["validation_artifacts"]
+        if not Path(entry["file"]).name.startswith("source_pytest")]
+    save(path, receipt)
+    evidence = renderer.load_engineering(renderer.Inputs(), release_evidence=path,
+        test_evidence=[root / "results/validation/installed_pytest.xml"])
+    assert evidence["release"][-1]["checks"]["test_summaries"] == 1
+    with pytest.raises(ValueError, match="not a test receipt bound by the current release"):
+        renderer.load_engineering(renderer.Inputs(), release_evidence=path,
+            test_evidence=[root / "results/validation/source_pytest.xml"])
+
+
+@pytest.fixture
+def confirmation_case(tmp_path, monkeypatch):
+    """Real assessment/freeze authority over small saved-score fixtures; no fits."""
+    from bayes_stesn.benchmark.runner import benchmark_environment, single_thread_runtime, source_fingerprint
+    monkeypatch.setitem(sys.modules, "render_v03_study", renderer)
+    spec = importlib.util.spec_from_file_location("report_confirmation_factory", renderer.ROOT / "tools/assess_confirmation_v03.py")
+    tool = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tool)
+
+    def make(*, pairs=4, target_mcse=.02, scenario="g1_gaussian_ar"):
+        root = tmp_path / "pilot"
+        options = {"g3_excitable_field": {"grid_size": 64, "dt": .05, "delta": 2., "burnin": 200}}
+        protocol = profile("v03_pilot", initial_fit=120, horizon=8, n_side=5, n_observed=10,
+            n_calibration=3, scenarios=(scenario,), tracks=("A",),
+            models=("bayes_esn_ridge", "separable_stgp"), replications=5,
+            generator_options=options if scenario == "g3_excitable_field" else None)
+        with single_thread_runtime():
+            environment = jsonable(benchmark_environment())
+        source = source_fingerprint()
+        design = content_hash({"protocol": protocol.to_dict(), "confirmation_freeze": None})
+        computation = content_hash({"design_identity": design, "source_fingerprint": source,
+            "environment": environment, "algorithm_schema": "benchmark-computation-4.0"})
+        manifest = save(root / "manifest.json", {"schema": "benchmark-run-4.0", "stage": "development",
+            "protocol": protocol.to_dict(), "protocol_identity": protocol.identity, "design_identity": design,
+            "computation_identity": computation, "confirmation_freeze": None,
+            "source_fingerprint": source, "environment": environment}, "identity")
+        receipts = []
+        for replication in range(5):
+            folder = root / scenario / f"rep_{replication:03d}"
+            folder.mkdir(parents=True)
+            simulation = folder / "simulation.npz"
+            np.savez(simulation, fixture_observation=np.array([float(replication)]))
+            data = save(folder / "data_receipt.json", {"manifest_identity": manifest["identity"],
+                "sha256": renderer.sha256(simulation), "observation_hash": f"fixture-{replication}"}, "identity")
+            for model in protocol.models:
+                job = folder / "A" / model
+                job.mkdir(parents=True)
+                artifact = job / "model.npz"
+                np.savez(artifact, fixture_parameter=np.array([0.]))
+                qualified = model != "bayes_esn_ridge" or replication < pairs
+                crps = 1. + (replication - 2) * .04 if model == "bayes_esn_ridge" else 1.
+                scores = {"rmse": crps + .2, "mae": crps, "crps": crps}
+                receipts.append(save(job / "receipt.json", {"scenario": scenario, "track": "A",
+                    "model_id": model, "replication": replication, "manifest_identity": manifest["identity"],
+                    "computation_identity": computation, "data_identity": data["identity"],
+                    "terminal_scientific_result": True, "completed": True, "qualified": qualified,
+                    "fallback": not qualified, "selection_metric": "crps", "operational_scores": scores,
+                    "native_scores": scores if qualified else None, "training_scale": 2.,
+                    "normalization_reference": {"identity": "common-training-reference"},
+                    "origin_index": protocol.final_origin, "target_ids": ["s0"], "fit_seconds": 1.,
+                    "forecast_seconds": .1, "tuning_seconds": .2, "total_seconds": 1.1,
+                    "total_pipeline_seconds": 1.3, "compute_accounting_complete": True,
+                    "artifacts": [{"file": artifact.name, "bytes": artifact.stat().st_size,
+                                   "sha256": renderer.sha256(artifact)}]}, "receipt_identity"))
+        summary = aggregate_results(receipts, bootstrap_resamples=10)
+        summary.update(manifest_identity=manifest["identity"], complete=True, source_stable=True,
+            final_source_fingerprint=source, jobs=10, scheduled_jobs=10, pending_jobs=0,
+            unresolved_infrastructure_failures=0, stage="development")
+        save(root / "summary.json", summary)
+        draft = replace(protocol, name="fixture_confirmation", stage="confirmation", replications=20)
+        config = tmp_path / "draft.yaml"
+        draft.save(config)
+        primary = tmp_path / "primary.json"
+        primary.write_text(json.dumps([{"reference": "bayes_esn_ridge", "other_model": "separable_stgp",
+            "track": "A", "metric": "crps", "scenario_weights": {scenario: 1.}}]))
+        destination = tmp_path / "assessment.json"
+        fhn = None
+        if scenario == "g3_excitable_field":
+            # A synthetic integrity/policy fixture, not a generator experiment.
+            # It must work in both current locked and supported core CI runtimes.
+            import scipy
+            from bayes_stesn.benchmark import generators
+            fhn = tmp_path / "synthetic_fhn_validation.json"
+            save(fhn, {"schema": "benchmark-generator-validation-2.0", "fixture": True,
+                "generator_source_sha256": renderer.sha256(generators.__file__),
+                "numerical_versions": {"numpy": np.__version__, "scipy": scipy.__version__},
+                "n_observations": 20, "observation_spacing": 2., "physical_burnin": 200,
+                "fhn_time_halving": {"rmse": .001}, "fhn_mean_temporal_sd": .1,
+                "finite_grid_policy": {"target": "finite_semidiscrete", "continuum_claim": False,
+                    "grid_size": 64, "dt": .05, "refined_dt": .025,
+                    "physical_parameters": {"a": .7, "b": .8, "epsilon": .08, "kappa": .2},
+                    "time_gate_passed": True, "morphology_gate_passed": True, "mesh_gate_passed": False}}, "identity")
+        document = tool.assess(root, config, primary, destination, freeze_output=tmp_path / "freeze.json",
+            resolved_config=tmp_path / "frozen.yaml", fhn_validation=fhn, target_mcse=target_mcse)
+        return {"pilot": root, "path": destination, "document": document, "source": source}
+    return make
+
+
+def load_confirmation_case(case):
+    inputs = renderer.Inputs()
+    run = renderer.load_run(case["pilot"], "revised", inputs, case["source"])
+    result = renderer.load_confirmation_evidence(case["path"], [run], inputs, case["source"])
+    return result, inputs
+
+
+@pytest.mark.parametrize("pairs,target", [(4, .02), (5, .02), (5, 1e-6)])
+def test_confirmation_report_recomputes_real_gate_and_keeps_execution_and_precision_separate(
+        confirmation_case, pairs, target, monkeypatch):
+    case = confirmation_case(pairs=pairs, target_mcse=target)
+    originals = {path: path.read_bytes() for path in case["path"].parent.rglob("*") if path.is_file()}
+    from bayes_stesn.benchmark import studies
+    monkeypatch.setattr(studies, "freeze_confirmation", lambda *args, **kwargs: pytest.fail("Renderer must not refreeze"))
+    result, inputs = load_confirmation_case(case)
+    assert result["document"]["admitted"] is (pairs == 5)
+    assert result["matching_complete_confirmation_runs"] == []
+    sections = renderer.confirmation_sections(result)
+    text = " ".join(paragraph for section in sections for paragraph in section["paragraphs"])
+    assert sections[0]["table"][1][0][2:4] == [str(pairs), "5"]
+    assert "not applicable" in text and "no model parameters" in text
+    if pairs == 4:
+        assert result["freeze"] is None and len(sections) == 1
+        assert "Confirmation is blocked" in text and "no valid freeze was created" in text
+    else:
+        assert "No completed confirmation run" in text and len(sections) == 2
+        assert result["freeze"]["power"]["R"] == (60 if target == 1e-6 else 20)
+        if target == 1e-6:
+            assert "mcse_target_not_met_at_cap" in text and "target is not met" in text
+    assert all(path.read_bytes() == value for path, value in originals.items())
+    inputs.verify_unchanged()
+
+
+def test_confirmation_report_checks_saved_g3_prerequisite_even_for_blocked_gate(confirmation_case):
+    result, _ = load_confirmation_case(confirmation_case(scenario="g3_excitable_field"))
+    assert result["status"] == "blocked_insufficient_common_pairs"
+    assert result["document"]["fhn_prerequisite"] == "verified"
+    text = " ".join(renderer.confirmation_sections(result)[0]["paragraphs"])
+    assert "time-step prerequisite is verified" in text
+    assert "does not establish continuum mesh convergence" in text
+
+
+@pytest.mark.parametrize("fault", ["source", "runtime", "fits", "macro", "deficient_cells", "outcome",
+                                  "unexpected_error", "missing_model", "missing_validator", "fhn_claim"])
+def test_confirmation_report_rejects_resealed_inconsistent_assessment(confirmation_case, fault):
+    case = confirmation_case()
+    value = case["document"]
+    if fault == "source":
+        value["source_fingerprint"] = "b" * 64
+    elif fault == "runtime":
+        value["environment"]["numpy"] = "other-runtime"
+    elif fault == "fits":
+        value["model_fit_calls"] = 1
+    elif fault == "macro":
+        value["macros"][0]["cells"][0]["pairs"] = 5
+    elif fault == "deficient_cells":
+        value["deficient_cells"] = []
+    elif fault == "outcome":
+        value["admitted"] = True
+    elif fault == "unexpected_error":
+        value["freeze_attempt"].update(exception_type="TimeoutError", message="Infrastructure failure")
+    elif fault in {"missing_model", "missing_validator"}:
+        name = "model.npz" if fault == "missing_model" else "render_v03_study.py"
+        index = next(i for i, row in enumerate(value["source_inputs"]) if Path(row["path"]).name == name)
+        value["source_inputs"].pop(index)
+    else:
+        value["fhn_prerequisite"] = "verified"
+    save(case["path"], value, "identity")
+    with pytest.raises(ValueError):
+        load_confirmation_case(case)
+
+
+def test_confirmation_report_rejects_resealed_false_precision_claim(confirmation_case):
+    case = confirmation_case(pairs=5, target_mcse=1e-6)
+    value = case["document"]
+    frozen_path = Path(value["freeze"]["path"])
+    frozen_path = frozen_path if frozen_path.is_absolute() else renderer.ROOT / frozen_path
+    frozen = renderer.read_json(frozen_path)
+    frozen["power_status"] = "planned_mcse_target_within_budget"
+    frozen = save(frozen_path, frozen, "identity")
+    value["freeze"].update(identity=frozen["identity"], sha256=renderer.sha256(frozen_path),
+                          bytes=frozen_path.stat().st_size, power_status=frozen["power_status"])
+    save(case["path"], value, "identity")
+    with pytest.raises(ValueError, match="Power-cap status"):
+        load_confirmation_case(case)
+
+
+@pytest.mark.parametrize("pairs", [4, 5])
+def test_confirmation_report_does_not_pair_assessment_with_unrelated_confirmation_run(confirmation_case, pairs):
+    case = confirmation_case(pairs=pairs)
+    inputs = renderer.Inputs()
+    run = renderer.load_run(case["pilot"], "revised", inputs, case["source"])
+    unrelated = {"label": "unrelated", "manifest": {"identity": "b" * 64,
+                 "stage": "confirmation", "confirmation_freeze": "c" * 64}}
+    with pytest.raises(ValueError, match="does not bind this assessment"):
+        renderer.load_confirmation_evidence(case["path"], [run, unrelated], inputs, case["source"])
+
+
+def test_confirmation_cli_and_export_preserve_block_without_creating_freeze_or_markdown(
+        confirmation_case, tmp_path, capsys):
+    case = confirmation_case()
+    output = tmp_path / "report"
+    arguments = ["--run", f"revised={case['pilot']}", "--confirmation-evidence", str(case["path"]),
+                 "--output", str(output)]
+    renderer.main([*arguments, "--check-inputs"])
+    assert json.loads(capsys.readouterr().out)["confirmation_status"] == "blocked_insufficient_common_pairs"
+    assert not output.exists()
+    data, inputs = renderer.collect(renderer.parser().parse_args(arguments))
+    renderer.export_evidence(data, output)
+    assert renderer.read_json(output / "evidence/confirmation_assessment.json")["admitted"] is False
+    assert (output / "evidence/confirmation_protocol.json").is_file()
+    assert not (output / "evidence/confirmation_freeze.json").exists()
+    assert not list(output.rglob("*.md"))
+    inputs.verify_unchanged()
+
+
 def test_final_extension_disposition_supersedes_scope_independently_of_argument_order():
     scope = {"document": {"scientific_results_in_this_file": False},
              "entries": [{"id": "full_residual_ar", "status": "candidate", "rationale": "Training residual trigger"}]}
