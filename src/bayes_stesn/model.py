@@ -190,6 +190,8 @@ def fit(prepared: PreparedModel, config=None, *, checkpoint_path=None, resume=Fa
     config = SamplerConfig() if config is None else config
     temporal = "full_residual_ar" if prepared.spec.innovations == "full_residual_ar" else "iid"
     config = replace(config, temporal=temporal)
+    if config.parameterization != "legacy" and prepared.spec.innovations != "iid":
+        raise ValueError("ridge_total_scale is supported only for the certified iid Gaussian hierarchy")
     checkpoint = {"identity": prepared.identity, "config": asdict(config), "chains": {}}
     if resume:
         if checkpoint_path is None:
@@ -199,6 +201,10 @@ def fit(prepared: PreparedModel, config=None, *, checkpoint_path=None, resume=Fa
         old_draws, new_draws = old_config.pop("draws"), new_config.pop("draws")
         old_config.pop("checkpoint_every", None)
         new_config.pop("checkpoint_every", None)
+        # Missing means the original v0.2 transition.  Keep old checkpoints
+        # readable/resumable without permitting a different proposal policy.
+        old_config.setdefault("parameterization", "legacy")
+        new_config.setdefault("parameterization", "legacy")
         if (checkpoint["identity"] != prepared.identity or old_config != new_config
                 or new_draws < old_draws):
             raise ValueError("Checkpoint model/data/config identity mismatch")

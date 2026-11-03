@@ -1,0 +1,60 @@
+schema_version: '4.0'
+name: v03_pilot
+stage: development
+initial_fit: 400
+training_start: 0
+horizon: 40
+validation_blocks: 3
+n_side: 7
+n_observed: 25
+n_calibration: 4
+paths: 128
+trials: 8
+finalist_count: 2
+finalist_seeds: 3
+replications: 5
+master_seed: 20261102
+models:
+- persistence
+- seasonal_naive
+- basis_lgssm
+- separable_stgp
+- basis_krr
+- bayes_esn_ridge
+- eqesn_rollout
+- dcrnn
+- basis_gru
+scenarios:
+- g1_gaussian_ar
+- g2_spectral_transport
+- g3_excitable_field
+- g4_existing_fronts
+tracks:
+- A
+- B
+mcmc_warmup: 1000
+mcmc_draws: 2000
+mcmc_continuation: 2000
+mcmc_functional_draws: 512
+mcmc_chains: 4
+neural_epochs: 80
+ensemble_members: 20
+score_pairs: 512
+score_observed_count: null
+retain_paths_replications:
+- 0
+generator_options:
+  g3_excitable_field:
+    grid_size: 64
+    dt: 0.05
+    delta: 2.0
+model_options: null
+fhn_target_policy: finite_semidiscrete
+fhn_time_tolerance: 0.02
+selection_policy: qualified_finalists
+spatial_validation_blocks: 2
+replacement_finalists: 2
+selection_mode: retuned_pipeline
+frozen_configurations: null
+candidate_proposal_cap: 4096
+normalization_reference: null

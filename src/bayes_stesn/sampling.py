@@ -48,6 +48,7 @@ class SamplerConfig:
     temporal: str = "iid"
     rho_prior_sd: float = .8
     algorithm: str = "auto"
+    parameterization: str = "legacy"
     rhs_tradeoff_scale: float = .5
     initialize: str = "auto"
     init_maxiter: int = 100
@@ -66,6 +67,8 @@ class SamplerConfig:
             raise ValueError("sample_regression supports iid or full_residual_ar; augmented models use sample_augmented")
         if self.algorithm not in ("auto","collapsed","conditional"):
             raise ValueError("algorithm must be auto, collapsed or conditional")
+        if self.parameterization not in ("legacy", "ridge_total_scale"):
+            raise ValueError("parameterization must be legacy or ridge_total_scale")
         if self.initialize not in ("auto","prior"):
             raise ValueError("initialize must be auto or prior")
         if self.backend not in ("auto","spectral_gaussian","temporal_whitened_spectral",
@@ -88,6 +91,69 @@ class SamplerConfig:
                 raise ValueError(f"{key} must be a positive integer")
         if not np.isfinite(self.init_dispersion) or self.init_dispersion<=0:
             raise ValueError("init_dispersion must be finite and positive")
+
+
+class _SamplingCoordinates:
+    """Proposal coordinates only; retained states keep their scientific units.
+
+    For scalar ridge, eta = log(lambda) + log(1 + q).  The determinant
+    between the original and transformed *log coordinates* is one, so the
+    original target evaluated at ``to_scientific(value)`` is the exact new
+    target.  No prior is reassigned to eta and sigma2 remains collapsed.
+    """
+
+    def __init__(self, policy: str, scientific_names: Sequence[str]):
+        self.policy = policy
+        self.scientific_names = tuple(scientific_names)
+        names = list(self.scientific_names)
+        self.log_abs_det_jacobian = 0.
+        if policy == "ridge_total_scale":
+            self.precision_index = names.index("prior.log_precision")
+            self.amplitude_index = names.index("log_q")
+            names[self.precision_index] = "proposal.log_kappa"
+        elif policy != "legacy":
+            raise ValueError("Unknown sampler coordinate policy")
+        self.proposal_names = tuple(names)
+
+    def _vector(self, value):
+        vector = np.asarray(value, float)
+        if vector.shape != (len(self.scientific_names),):
+            raise ValueError("Sampler coordinate vector has the wrong shape")
+        return vector
+
+    def to_sampler(self, value):
+        vector = self._vector(value)
+        if self.policy == "legacy":
+            return vector
+        transformed = vector.copy()
+        transformed[self.precision_index] += np.logaddexp(0., vector[self.amplitude_index])
+        return transformed
+
+    def to_scientific(self, value):
+        vector = self._vector(value)
+        if self.policy == "legacy":
+            return vector
+        original = vector.copy()
+        original[self.precision_index] -= np.logaddexp(0., vector[self.amplitude_index])
+        return original
+
+
+def _sampling_coordinates(config, prior, covariance, runtime, coordinates, collapsed):
+    """Certify the deliberately narrow first transformed-coordinate route."""
+    if config.parameterization == "ridge_total_scale":
+        supported = (collapsed and prior.kind == "ridge" and config.temporal == "iid"
+                     and covariance.kind == "matern" and covariance.scale_mode == "relative"
+                     and not covariance.static_variance and not covariance.nonstationary
+                     and not covariance.anisotropy and not covariance.infer_nu)
+        if not supported:
+            raise ValueError("ridge_total_scale requires collapsed scalar-ridge iid Gaussian "
+                             "inference with relative-scale isotropic stationary Matérn covariance, "
+                             "constant nugget and fixed smoothness; use legacy for other combinations")
+    names = (["prior."+name for name in runtime.parameter_names] if collapsed else [])
+    names += list(covariance.parameter_names(coordinates))
+    if config.temporal == "full_residual_ar":
+        names.append("temporal.eta_rho")
+    return _SamplingCoordinates(config.parameterization, names)
 
 
 def _vecchia_operator_route(covariance, prior, config) -> bool:
@@ -408,6 +474,10 @@ def _signature(Y,Phi,Z,coordinates,groups,prior,covariance,config,reference_Z):
     # leaves the transition kernel and its deterministic continuation intact.
     cfg.pop("draws")
     cfg.pop("checkpoint_every")
+    # The default retains the v0.2 transition exactly.  Omitting its newly
+    # named option preserves the signatures of existing legacy checkpoints.
+    if cfg.get("parameterization") == "legacy":
+        cfg.pop("parameterization")
     def convert(x):
         if isinstance(x,np.ndarray):
             return x.tolist()
@@ -484,6 +554,7 @@ def sample_regression(Y: np.ndarray,Phi: np.ndarray,Z: np.ndarray,coordinates: n
         raise ValueError("An entrywise/general precision cannot use the separable spectral backend")
     if collapsed and config.backend in ("gaussian_matrixfree","matrixfree","dense"):
         raise ValueError("A coefficient-sampling backend is incompatible with fully collapsed inference")
+    parameter_coordinates = _sampling_coordinates(config, prior, covariance, runtime, coords, collapsed)
     expected = config.chains*config.draws*(runtime.dimension+len(covariance.parameter_names(coords))+8)*8
     if expected>config.max_stored_hyperstate_bytes:
         raise MemoryError(f"Retained hyperstates need approximately {expected/1024**2:.1f} MiB; reduce retained draws or prior dimension")
@@ -497,6 +568,7 @@ def sample_regression(Y: np.ndarray,Phi: np.ndarray,Z: np.ndarray,coordinates: n
     invalid_counts,solver_records,final_checkpoints,initial_states = [],[],[],[]
 
     def unpack(vector,nu,ps=None):
+        vector = parameter_coordinates.to_scientific(vector)
         if collapsed:
             ps = runtime.state_from_vector(vector[:npdim])
             start = npdim
@@ -545,7 +617,8 @@ def sample_regression(Y: np.ndarray,Phi: np.ndarray,Z: np.ndarray,coordinates: n
         if collapsed and config.initialize=="auto" and dimension<=config.init_max_dimension:
             initial_prior = runtime.initial_state()
             initial_cov = covariance.initial_parameters(coords)
-            center = np.r_[runtime.vector(initial_prior),covariance.parameters_to_vector(initial_cov,coords),[0.] if ar else []]
+            center = parameter_coordinates.to_sampler(np.r_[runtime.vector(initial_prior),
+                         covariance.parameters_to_vector(initial_cov,coords),[0.] if ar else []])
             initialization = _calibrate_initialization(
                 lambda x:collapsed_target(x,float(initial_cov["nu"]))[0],center,config)
         else:
@@ -562,7 +635,8 @@ def sample_regression(Y: np.ndarray,Phi: np.ndarray,Z: np.ndarray,coordinates: n
             ps = runtime.initial_state()
             cp = covariance.initial_parameters(coords)
             nu = float(cp["nu"])
-            vector = np.r_[runtime.vector(ps) if collapsed else [],covariance.parameters_to_vector(cp,coords),[0.] if ar else []]
+            vector = parameter_coordinates.to_sampler(np.r_[runtime.vector(ps) if collapsed else [],
+                         covariance.parameters_to_vector(cp,coords),[0.] if ar else []])
             initial_covariance = None
             if collapsed and initialization["method"]=="local_map_finite_difference_laplace":
                 initial_covariance = np.asarray(initialization["covariance"])
@@ -583,7 +657,8 @@ def sample_regression(Y: np.ndarray,Phi: np.ndarray,Z: np.ndarray,coordinates: n
             if collapsed:
                 current,evaluation = collapsed_target(vector,nu)
                 if not np.isfinite(current):
-                    vector = np.r_[runtime.vector(ps),covariance.parameters_to_vector(cp,coords),[0.] if ar else []]
+                    vector = parameter_coordinates.to_sampler(np.r_[runtime.vector(ps),
+                                 covariance.parameters_to_vector(cp,coords),[0.] if ar else []])
                     current,evaluation = collapsed_target(vector,nu)
                 if not np.isfinite(current):
                     raise ValueError("The configured model has no finite initial collapsed density")
@@ -753,6 +828,10 @@ def sample_regression(Y: np.ndarray,Phi: np.ndarray,Z: np.ndarray,coordinates: n
     else:
         backend = "temporal_whitened_spectral" if ar else "spectral_gaussian"
     metadata = {"schedule":"collapsed" if collapsed else "conditional","backend":backend,
+                "parameterization":config.parameterization,
+                "proposal_parameter_names":parameter_coordinates.proposal_names,
+                "retained_parameter_coordinates":"original_scientific_log_or_logit",
+                "coordinate_log_abs_det_jacobian":parameter_coordinates.log_abs_det_jacobian,
                 "spatial_backend":"vecchia_operator" if operator_route else
                                   ("dense_exact" if covariance.kind=="matern" else "dense_reference"),
                 "spatial_dense_materialization":not operator_route,

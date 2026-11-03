@@ -11,7 +11,7 @@ from typing import Protocol, Any, Mapping
 import json
 import numpy as np
 
-from ..data import SpatioTemporalData, readonly
+from ..data import SpatioTemporalData
 
 Panel = SpatioTemporalData
 
@@ -34,10 +34,18 @@ class Forecast:
     metadata: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
-        mean = readonly(self.mean)
-        coords = readonly(self.coordinates)
+        self._initialize(owned=False)
+
+    def _initialize(self, *, owned):
+        # The core prediction producer already owns and freezes its complete
+        # output allocation. Reuse its transfer contract rather than copying
+        # every posterior path once more at the benchmark boundary.
+        from ..prediction import _all_finite, _freeze_owned
+        mean = (_freeze_owned(self.mean, float) if owned else
+                _freeze_owned(np.array(self.mean, dtype=float, copy=True, order="C"), float))
+        coords = _freeze_owned(np.array(self.coordinates, dtype=float, copy=True, order="C"), float)
         ids = tuple(map(str, self.site_ids))
-        if mean.ndim != 2 or min(mean.shape) < 1 or not np.isfinite(mean).all():
+        if mean.ndim != 2 or min(mean.shape) < 1 or not _all_finite(mean):
             raise ValueError("Forecast mean must be finite [lead,site]")
         if coords.ndim != 2 or len(coords) != mean.shape[1] or not np.isfinite(coords).all():
             raise ValueError("Forecast coordinates must match site axis")
@@ -45,8 +53,9 @@ class Forecast:
             raise ValueError("Forecast site IDs must be unique and aligned")
         samples = None
         if self.samples is not None:
-            samples = readonly(self.samples)
-            if samples.ndim != 3 or samples.shape[1:] != mean.shape or not len(samples) or not np.isfinite(samples).all():
+            samples = (_freeze_owned(self.samples, float) if owned else
+                       _freeze_owned(np.array(self.samples, dtype=float, copy=True, order="C"), float))
+            if samples.ndim != 3 or samples.shape[1:] != mean.shape or not len(samples) or not _all_finite(samples):
                 raise ValueError("Samples must be finite nonempty [path,lead,site]")
         metadata = json.loads(json.dumps(dict(self.metadata), allow_nan=False))
         object.__setattr__(self, "mean", mean)
@@ -54,6 +63,24 @@ class Forecast:
         object.__setattr__(self, "site_ids", ids)
         object.__setattr__(self, "samples", samples)
         object.__setattr__(self, "metadata", metadata)
+
+    @classmethod
+    def _from_owned(cls, mean, samples, coordinates, site_ids, metadata=None):
+        """Transfer private float64 allocations without copying large paths.
+
+        Internal producers or fresh numeric deserialization only: callers must
+        relinquish every mutable alias. Full immutable views from
+        ``PredictiveSample`` are accepted; partial, strided or wrong-dtype
+        allocations are rejected. The public constructor still makes defensive
+        copies, and published arrays cannot simply re-enable their write flag.
+        """
+        instance = object.__new__(cls)
+        for name, value in (("mean", mean), ("samples", samples),
+                            ("coordinates", coordinates), ("site_ids", site_ids),
+                            ("metadata", {} if metadata is None else metadata)):
+            object.__setattr__(instance, name, value)
+        instance._initialize(owned=True)
+        return instance
 
     @property
     def median(self):
@@ -75,7 +102,7 @@ class Forecast:
     @classmethod
     def load(cls, path):
         from ..io import load_state
-        return cls(**load_state(path, kind="benchmark_forecast"))
+        return cls._from_owned(**load_state(path, kind="benchmark_forecast"))
 
 
 class FittedForecaster(Protocol):

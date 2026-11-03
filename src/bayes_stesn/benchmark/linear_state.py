@@ -13,6 +13,11 @@ from .contracts import Forecast, validate_history, forecast_targets
 from ..io import seed_for
 
 
+DEFAULT_CONFIG = {"rank":12,"basis_width":.25,"initial_variance":1.,
+    "transition_norm_cap":.995,"variance_floor":1e-6,"max_iter":40,
+    "tolerance":1e-5,"mstep_steps":100,"max_forecast_bytes":1_073_741_824}
+
+
 def reduced_filter(b, A, q, noise, n_sites, *, initial_mean=None,
                    initial_cov=None, predict_initial=False, store=False):
     """Filter projected observations b=Y Phi/n; returns their log density.
@@ -164,7 +169,12 @@ class LinearStateFit(ClassicalFit):
             variance_floor_hits=int(np.sum(self.q<=floor*(1+1e-8)))+int(self.noise<=floor*(1+1e-8)),
             uncertainty="Gaussian_state_and_observation_uncertainty_given_fitted_parameters",
             initial_state="fixed_proper_N(0,initial_variance_I)",
-            mean="global_training_mean_evaluable_at_every_site")
+            mean="global_training_mean_evaluable_at_every_site",
+            optimizer_budget={"max_iter":maximum,"tolerance":tolerance,
+                              "mstep_steps":int(self.config.get("mstep_steps",100))},
+            stop_reason="decreasing_step_rejected" if rejected else "relative_likelihood_tolerance" if converged else "iteration_cap",
+            final_relative_likelihood_gain=(None if len(likelihoods)<2 else
+                (likelihoods[-1]-likelihoods[-2])/(1+abs(likelihoods[-2]))))
 
     def _after_load(self):
         self._phi = self.basis.evaluate(self.data.coordinates)

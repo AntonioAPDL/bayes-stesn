@@ -17,6 +17,7 @@ import numpy as np
 from .contracts import Forecast
 from .generators import Simulation
 from .runner import write_json
+from .. import __version__
 
 COLORS={"persistence":"#94A3B8","seasonal_naive":"#64748B","spatial_persistence":"#94A3B8",
         "basis_lgssm":"#8B5CF6","separable_stgp":"#2563EB","basis_krr":"#D18B22",
@@ -279,7 +280,7 @@ def _pdf_report(output,summary,manifest,figures):
     def footer(canvas,document):
         canvas.setStrokeColor(colors.HexColor("#E2E8F0"));canvas.line(margin,30,width-margin,30)
         canvas.setFillColor(colors.HexColor("#64748B"));canvas.setFont("Helvetica",8)
-        canvas.drawString(margin,18,"bayes-stesn 0.2 | saved-artifact report | "+summary["stage"])
+        canvas.drawString(margin,18,"bayes-stesn "+__version__+" | saved-artifact report | "+summary["stage"])
         canvas.drawRightString(width-margin,18,str(document.page))
     doc.build(story,onFirstPage=footer,onLaterPages=footer)
 
@@ -288,6 +289,9 @@ def create_report(run,output,*,animations=True):
     run=Path(run);output=Path(output);output.mkdir(parents=True,exist_ok=True)
     figures_dir=output/"figures";media_dir=output/"media";figures_dir.mkdir(exist_ok=True);media_dir.mkdir(exist_ok=True)
     summary=json.loads((run/"summary.json").read_text());manifest=json.loads((run/"manifest.json").read_text())
+    if manifest.get("schema")=="benchmark-run-4.0" and (
+            not summary.get("complete") or (run/"invalidation.json").exists()):
+        raise ValueError("Complete, provenance-verified scientific outcomes are required for this benchmark report")
     figures=[];media=[];data_media=[]
     scenarios=list(dict.fromkeys(r["scenario"] for r in summary["table"]))
     chunks=[scenarios[i:i+2] for i in range(0,len(scenarios),2)]
@@ -320,7 +324,7 @@ def create_report(run,output,*,animations=True):
     videos="".join(f'<section><h2>{html.escape(SCENARIOS[m["scenario"]])} / data evolution</h2><video controls loop muted playsinline src="media/{Path(m["mp4"]).name}"></video></section>' for m in data_media if "mp4" in m)+videos
     text=f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Forecasting spatial dynamics</title>
 <style>body{{font:16px/1.6 system-ui,sans-serif;margin:0;background:#f1f5f9;color:#10283f}}main{{max-width:1180px;margin:auto;padding:48px 24px}}header{{padding:40px;border-radius:20px;background:#10283f;color:white}}h1{{font-size:48px;line-height:1.05;max-width:780px;margin:12px 0 24px}}.eyebrow{{color:#72d8cd;letter-spacing:.18em;text-transform:uppercase;font-size:12px}}.cards{{display:flex;gap:18px;margin:24px 0;flex-wrap:wrap}}.card{{padding:20px 28px;background:white;border-radius:14px;flex:1}}.card b{{font-size:32px;display:block}}section{{margin:28px 0;padding:24px;background:white;border-radius:16px}}h2{{font-size:23px}}img,video{{max-width:100%;height:auto}}.note{{color:#64748b}}code{{overflow-wrap:anywhere;font-size:12px}}a{{color:#008c82}}</style>
-<main><header><div class="eyebrow">Reproducible spatiotemporal forecasting / version 0.2</div><h1>Forecasting spatial dynamics</h1><p>Bayesian ESNs, classical state-space and kernel models, reservoir ensembles, and neural comparators.</p><p>{html.escape(summary['comparison_status'])}</p></header>
+<main><header><div class="eyebrow">Reproducible spatiotemporal forecasting / version {__version__}</div><h1>Forecasting spatial dynamics</h1><p>Bayesian ESNs, classical state-space and kernel models, reservoir ensembles, and neural comparators.</p><p>{html.escape(summary['comparison_status'])}</p></header>
 <div class="cards"><div class="card"><b>{attempted}</b>final model/task attempts</div><div class="card"><b>{qualified}</b>qualified fits</div><div class="card"><b>{manifest['protocol']['replications']}</b>independent datasets per scenario</div></div>
 <section><h2>How to read this evidence</h2><p>Point scores include every attempt with an explicit persistence fallback for failed fits. Probability scores use qualified native distributions and report their populations. Whiskers show twice the Monte Carlo standard error across independent datasets. Fit seeds, sites, and forecast leads are not extra dataset replications.</p><p class="note">Animations use replication 0, selected before evaluation. Gray cells lie outside the target domain. Forecasts run freely from one fixed origin; no future observations are assimilated. Unqualified forecasts are labeled diagnostic. The finite-grid excitable-field DGP is not evidence of continuum mesh convergence.</p></section>
 {sections}{videos}<section><h2>Reproduction</h2><p>Run identity <code>{manifest['identity']}</code><br>Source fingerprint <code>{manifest['source_fingerprint']}</code></p><p>Numerical records: <a href="summary.json">summary.json</a>. Full model checkpoints, simulation arrays, per-candidate costs and failure traces are in the run directory.</p></section></main></html>'''

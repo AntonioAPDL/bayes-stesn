@@ -47,6 +47,7 @@ DEFAULT_CONFIG = {
     "train_fraction": .85, "gradient_clip": 1.,
     "forecast_training_steps": 4, "stride": 4,
     "validation_horizon": 64, "refit_full": True,
+    "require_full_validation_horizon": False,
 }
 
 
@@ -73,7 +74,23 @@ def _config(config):
     if not isinstance(result["refit_full"], (bool, np.bool_)):
         raise ValueError("refit_full must be boolean")
     result["refit_full"] = bool(result["refit_full"])
+    if not isinstance(result["require_full_validation_horizon"], (bool,np.bool_)):
+        raise ValueError("require_full_validation_horizon must be boolean")
+    result["require_full_validation_horizon"] = bool(result["require_full_validation_horizon"])
     return result
+
+
+def stopping_split(n_rows, config):
+    """Reserve the requested rollout horizon before any network is allocated."""
+    cutoff=int(n_rows*config["train_fraction"])
+    if config["require_full_validation_horizon"]:
+        cutoff=min(cutoff,n_rows-config["validation_horizon"])
+    if cutoff<config["context"]+config["forecast_training_steps"] or cutoff>=n_rows:
+        raise ValueError("Training prefix is too short for context and the declared chronological stopping horizon")
+    leads=min(config["validation_horizon"],n_rows-cutoff)
+    if config["require_full_validation_horizon"] and leads!=config["validation_horizon"]:
+        raise ValueError("Full declared validation_horizon is unavailable")
+    return cutoff,leads
 
 
 def _torch():
@@ -244,6 +261,8 @@ def _fit_epochs(torch, raw, graph, config, seed, *, cutoff=None, epochs=None):
             if cutoff is not None:
                 network.eval()
                 horizon = min(config["validation_horizon"], len(raw)-cutoff)
+                if config["require_full_validation_horizon"] and horizon!=config["validation_horizon"]:
+                    raise ValueError("Full declared validation_horizon is unavailable")
                 with torch.no_grad():
                     prediction = network(observed[cutoff-context:cutoff][None], horizon)
                     validation_loss = float(torch.mean((prediction[0]-observed[cutoff:cutoff+horizon])**2))
@@ -335,9 +354,7 @@ def fit_neural(model_id, data: Panel, config=None, seed=0):
     if not isinstance(data, Panel):
         raise TypeError("Neural fitting accepts an observation Panel")
     config = _config(config)
-    cutoff = int(len(data.y)*config["train_fraction"])
-    if cutoff < config["context"]+config["forecast_training_steps"] or cutoff >= len(data.y):
-        raise ValueError("Training prefix is too short for chronological tail validation and the chosen context")
+    cutoff,validation_leads = stopping_split(len(data.y),config)
     torch = _torch()
     graph = coordinate_diffusion_operator(data.coordinates, config["graph_k"])
     selected, center, scale, selection_records, selected_epoch = _fit_epochs(
@@ -356,7 +373,10 @@ def fit_neural(model_id, data: Panel, config=None, seed=0):
         "torch_threads": int(torch.get_num_threads()), "graph_nonzeros": int(graph.nnz),
         "graph_definition": "symmetric geometric kNN, Gaussian distance weights, row-stochastic single-direction diffusion",
         "context": config["context"], "selection_training_rows": cutoff,
-        "selection_validation_rows": min(config["validation_horizon"], len(data.y)-cutoff),
+        "selection_validation_rows": validation_leads,
+        "selection_validation_requested": config["validation_horizon"],
+        "full_validation_horizon_required": config["require_full_validation_horizon"],
+        "selection_horizon_truncated": validation_leads!=config["validation_horizon"],
         "selected_epoch": selected_epoch, "best_checkpoint_restored": True,
         "parameter_fit_rows": parameter_fit_rows, "refit_full": config["refit_full"],
         "selection_losses": selection_records, "refit_losses": refit_records,

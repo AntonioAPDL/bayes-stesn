@@ -1,4 +1,4 @@
-"""Bayesian spatiotemporal echo state networks, version 0.2.1.
+"""Bayesian spatiotemporal echo state networks, version 0.3.0.
 
 Public data arrays use [time,site]; predictive arrays use [path,lead,site].
 See docs/api.md for supported model combinations and information policies.
@@ -23,7 +23,7 @@ from .assessment import diagnose
 from .calibration import (CalibrationMap, fit_standardized_calibration,
                           calibrated_intervals, reservoir_weighted_calibration)
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 __all__ = ["SpatioTemporalData", "SplitPlan", "EvaluationTruth", "FeatureSpec",
            "SpatialMeanSpec", "PriorSpec", "CovarianceSpec", "SamplerConfig",
            "ModelSpec", "PreparedModel", "FittedModel", "prepare", "fit", "refit",

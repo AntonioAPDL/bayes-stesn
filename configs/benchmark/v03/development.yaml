@@ -1,0 +1,56 @@
+schema_version: '4.0'
+name: v03_development
+stage: development
+initial_fit: 2000
+training_start: 0
+horizon: 100
+validation_blocks: 3
+n_side: 25
+n_observed: 100
+n_calibration: 20
+paths: 256
+trials: 8
+finalist_count: 2
+finalist_seeds: 3
+replications: 5
+master_seed: 20261102
+models:
+- persistence
+- seasonal_naive
+- basis_lgssm
+- separable_stgp
+- basis_krr
+- bayes_esn_ridge
+- eqesn_rollout
+- dcrnn
+- basis_gru
+scenarios:
+- g1_gaussian_ar
+- g2_spectral_transport
+- g3_excitable_field
+- g4_existing_fronts
+tracks:
+- A
+- B
+mcmc_warmup: 1000
+mcmc_draws: 2000
+mcmc_continuation: 2000
+mcmc_functional_draws: 512
+mcmc_chains: 4
+neural_epochs: 200
+ensemble_members: 30
+score_pairs: 512
+score_observed_count: null
+retain_paths_replications:
+- 0
+generator_options: null
+model_options: null
+fhn_target_policy: finite_semidiscrete
+fhn_time_tolerance: 0.02
+selection_policy: qualified_finalists
+spatial_validation_blocks: 2
+replacement_finalists: 2
+selection_mode: retuned_pipeline
+frozen_configurations: null
+candidate_proposal_cap: 4096
+normalization_reference: null

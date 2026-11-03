@@ -300,12 +300,17 @@ def test_worker_failure_retained_and_midrun_source_change_invalidated(tmp_path,m
         raise RuntimeError("simulated worker boundary failure")
     monkeypatch.setattr(runner,"_execute_job",crash)
     summary=run_benchmark(p,tmp_path/"worker_failure")
-    assert summary["table"][0]["fallback"]==1 and summary["table"][0]["qualified"]==0
-    receipt=json.loads(next((tmp_path/"worker_failure").rglob("receipt.json")).read_text())
-    assert receipt["process_failure"] and receipt["incomplete_compute_accounting"]
+    assert summary["table"]==[] and not summary["complete"] and summary["jobs"]==0
+    assert summary["pending_jobs"]==1 and summary["unresolved_infrastructure_failures"]==1
+    assert not list((tmp_path/"worker_failure").rglob("receipt.json"))
+    state=json.loads(next((tmp_path/"worker_failure").rglob("state.json")).read_text())
+    assert state["attempts"]==3 and all(x["incomplete_compute_accounting"] for x in state["failures"])
     monkeypatch.setattr(runner,"_execute_job",original)
-    fingerprints=iter(("stable","stable","changed"))
-    monkeypatch.setattr(runner,"source_fingerprint",lambda:next(fingerprints))
+    count=[0]
+    def fingerprint():
+        count[0]+=1
+        return "stable" if count[0]<=2 else "changed"
+    monkeypatch.setattr(runner,"source_fingerprint",fingerprint)
     with pytest.raises(RuntimeError,match="changed during execution"):
         run_benchmark(p,tmp_path/"changed_source")
     changed=json.loads((tmp_path/"changed_source"/"summary.json").read_text())

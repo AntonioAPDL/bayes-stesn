@@ -316,6 +316,8 @@ def sample_augmented(Y: Array, Phi: Array, Z: Array, coordinates: Array,
     from .priors import PriorRuntime
     from .sampling import RegressionPosterior, _resolve_resume, _signature
 
+    if config.parameterization != "legacy":
+        raise ValueError("ridge_total_scale is not certified for augmented innovation hierarchies; use legacy")
     if kind not in {"latent_ar", "field_t", "local_t", "heteroskedastic"}:
         raise ValueError("unknown augmented model kind")
     Y, Phi, Z, coordinates = (np.asarray(a, dtype=float) for a in (Y, Phi, Z, coordinates))

@@ -9,10 +9,17 @@ from __future__ import annotations
 from functools import lru_cache
 import numpy as np
 from scipy.linalg import cho_factor, cho_solve, eigh
-from scipy.optimize import minimize
+from .optimization import bounded_lbfgsb
 from .classical import ClassicalFit, _positive, _horizon, _paths, matern_correlation, psd_root
 from .contracts import Forecast, validate_history, forecast_targets
 from ..io import seed_for
+
+
+# Response-dependent center/signal/noise defaults are resolved only at fitting.
+DEFAULT_CONFIG = {"max_fit_sites":512,"spatial_nu":1.5,"temporal_nu":.5,
+    "spatial_length":.25,"fit_hyperparameters":True,
+    "max_iter":25,"continuation_max_iter":0,"ftol":1e-8,"gtol":1e-5,
+    "max_joint_dimension":2000,"max_forecast_bytes":1_073_741_824}
 
 
 def temporal_system(length, nu, delta=1.):
@@ -118,15 +125,17 @@ class SeparableGPFit(ClassicalFit):
                                  [1e-3*scale,5*scale],[1e-4*scale,3*scale]]))
         if optimize:
             initial=np.clip(initial,bounds[:,0],bounds[:,1])
-            result=minimize(objective,initial,method="L-BFGS-B",bounds=bounds,
-                            options={"maxiter":int(self.config.get("max_iter",25)),
-                                     "ftol":float(self.config.get("ftol",1e-8)),
-                                     "gtol":float(self.config.get("gtol",1e-5)),
-                                     "maxls":30})
+            result,optimization=bounded_lbfgsb(objective,initial,bounds,
+                            max_iter=int(self.config.get("max_iter",25)),
+                            continuation_max_iter=int(self.config.get("continuation_max_iter",0)),
+                            ftol=float(self.config.get("ftol",1e-8)),
+                            gtol=float(self.config.get("gtol",1e-5)))
             parameters=result.x
-            converged=bool(result.success)
+            converged=optimization["qualified"]
             self.diagnostics.update(optimizer="L-BFGS-B_marginal_likelihood",optimizer_message=str(result.message),
-                                    iterations=int(result.nit),function_evaluations=int(result.nfev))
+                                    iterations=optimization["iterations"],function_evaluations=optimization["function_evaluations"],
+                                    optimizer_details=optimization,
+                                    optimizer_projected_gradient_inf=optimization["projected_gradient_inf"])
         else:
             parameters=initial;converged=True
             self.diagnostics.update(optimizer="fixed_declared_hyperparameters",iterations=0,function_evaluations=1)

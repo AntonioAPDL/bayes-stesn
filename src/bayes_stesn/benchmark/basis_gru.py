@@ -25,7 +25,7 @@ from __future__ import annotations
 import importlib
 import numpy as np
 from scipy.linalg import cho_factor, cho_solve
-from scipy.optimize import minimize
+from .optimization import bounded_lbfgsb
 
 from .classical import (ClassicalFit, CoordinateBasis, _positive, _horizon,
                         _paths, _panel_state, matern_correlation, psd_root)
@@ -40,6 +40,8 @@ DEFAULTS = {
     "gradient_clip":1., "min_delta":1e-6, "refit":True,
     "covariance_spatial_nu":1.5, "covariance_spatial_length":.25,
     "covariance_max_iter":40, "covariance_ftol":1e-9,
+    "covariance_gtol":1e-5, "covariance_continuation_max_iter":0,
+    "require_full_validation_horizon":False,
     "mean_paths":128, "prediction_batch_size":64, "max_fit_sites":512,
     "max_domain_sites":1024, "max_forecast_bytes":1_073_741_824,
 }
@@ -66,7 +68,7 @@ def _configuration(config):
             raise ValueError(f"{key} must be a positive integer")
         result[key]=int(value)
     for key in ("basis_width","learning_rate","gradient_clip",
-                "covariance_spatial_length","covariance_ftol"):
+                "covariance_spatial_length","covariance_ftol","covariance_gtol"):
         result[key]=_positive(result[key],key)
     for key in ("weight_decay","min_delta"):
         result[key]=float(result[key])
@@ -79,7 +81,26 @@ def _configuration(config):
         raise ValueError("covariance_spatial_nu must be 0.5, 1.5 or 2.5")
     if not isinstance(result["refit"],bool):
         raise ValueError("refit must be boolean")
+    if not isinstance(result["require_full_validation_horizon"],bool):
+        raise ValueError("require_full_validation_horizon must be boolean")
+    continuation=result["covariance_continuation_max_iter"]
+    if isinstance(continuation,bool) or not isinstance(continuation,(int,np.integer)) or continuation<0:
+        raise ValueError("covariance_continuation_max_iter must be a nonnegative integer")
+    result["covariance_continuation_max_iter"]=int(continuation)
     return result
+
+
+def stopping_split(n_rows, config):
+    """Return a feasible chronological prefix and the actual stopping leads."""
+    cutoff=int(np.floor((1-config["validation_fraction"])*n_rows))
+    if config["require_full_validation_horizon"]:
+        cutoff=min(cutoff,n_rows-config["validation_horizon"])
+    if cutoff<config["lags"]+3 or cutoff>=n_rows:
+        raise ValueError("Insufficient rows for lag context and the declared chronological stopping horizon")
+    leads=min(config["validation_horizon"],n_rows-cutoff)
+    if config["require_full_validation_horizon"] and leads!=config["validation_horizon"]:
+        raise ValueError("Full declared validation_horizon is unavailable")
+    return cutoff,leads
 
 
 def _network(torch,rank,hidden_size):
@@ -131,6 +152,8 @@ def _fit_network(data,phi,config,seed,*,cutoff,epochs,select_epoch):
             if select_epoch:
                 network.eval()
                 steps=min(config["validation_horizon"],len(data.y)-cutoff)
+                if config["require_full_validation_horizon"] and steps!=config["validation_horizon"]:
+                    raise ValueError("Full declared validation_horizon is unavailable")
                 context=tensor[cutoff-lags:cutoff][None].clone()
                 predictions=[]
                 with torch.no_grad():
@@ -166,9 +189,7 @@ class BasisGRUFit(ClassicalFit):
         self.training=data
         if len(data.coordinates)>config["max_fit_sites"]:
             raise MemoryError("basis_gru residual covariance exceeds max_fit_sites")
-        cutoff=int(np.floor((1-config["validation_fraction"])*len(data.y)))
-        if cutoff<config["lags"]+3 or cutoff>=len(data.y):
-            raise ValueError("Insufficient rows for lag context and chronological stopping tail")
+        cutoff,validation_leads=stopping_split(len(data.y),config)
         self.basis=CoordinateBasis.fit(data.coordinates,config["rank"],config["basis_width"])
         self._phi=self.basis.evaluate(data.coordinates)
         network,center,scale,selected,selection,stopped=_fit_network(
@@ -196,7 +217,10 @@ class BasisGRUFit(ClassicalFit):
             qualified=bool(self.diagnostics["covariance_converged"]),finite_fit=True,
             neural_stop_reason="patience" if stopped else "epoch_budget",
             neural_optimizer_convergence="not_claimed",selected_epoch=selected,
-            selection_training_rows=cutoff,selection_validation_rows=min(config["validation_horizon"],len(data.y)-cutoff),
+            selection_training_rows=cutoff,selection_validation_rows=validation_leads,
+            selection_validation_requested=config["validation_horizon"],
+            full_validation_horizon_required=config["require_full_validation_horizon"],
+            selection_horizon_truncated=validation_leads!=config["validation_horizon"],
             selection_history=selection,refit_history=refitting,
             covariance_fit_rows=covariance_rows-self.lags,
             covariance_fit_policy="one_step_residuals_on_optimization_rows_only",
@@ -241,17 +265,21 @@ class BasisGRUFit(ClassicalFit):
                 return 1e100
             return float(value) if np.isfinite(value) else 1e100
 
-        result=minimize(objective,np.clip(initial,bounds[:,0],bounds[:,1]),method="L-BFGS-B",bounds=bounds,
-            options={"maxiter":self.config["covariance_max_iter"],"ftol":self.config["covariance_ftol"],"maxls":30})
+        result,optimization=bounded_lbfgsb(objective,np.clip(initial,bounds[:,0],bounds[:,1]),bounds,
+            max_iter=self.config["covariance_max_iter"],ftol=self.config["covariance_ftol"],
+            gtol=self.config["covariance_gtol"],
+            continuation_max_iter=self.config["covariance_continuation_max_iter"])
         self.spatial_length,self.signal_sd,self.noise_sd=map(float,np.exp(result.x))
         if not np.isfinite(result.fun) or result.fun>=1e99:
             raise FloatingPointError("Residual covariance likelihood is nonfinite")
         boundary=[name for j,name in enumerate(("spatial_length","signal_sd","noise_sd"))
                   if min(abs(result.x[j]-bounds[j,0]),abs(result.x[j]-bounds[j,1]))<1e-4]
-        self.diagnostics.update(covariance_converged=bool(result.success),
+        self.diagnostics.update(covariance_converged=optimization["qualified"],
             covariance_optimizer="L-BFGS-B_Gaussian_residual_likelihood",
-            covariance_optimizer_message=str(result.message),covariance_iterations=int(result.nit),
-            covariance_function_evaluations=int(result.nfev),covariance_boundary_hits=boundary,
+            covariance_optimizer_message=str(result.message),covariance_iterations=optimization["iterations"],
+            covariance_function_evaluations=optimization["function_evaluations"],covariance_boundary_hits=boundary,
+            covariance_optimizer_details=optimization,
+            covariance_projected_gradient_inf=optimization["projected_gradient_inf"],
             covariance_log_likelihood_original=float(-result.fun-count*n*np.log(self.scale)))
 
     def _cache_covariance(self):

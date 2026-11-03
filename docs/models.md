@@ -224,6 +224,16 @@ The conditional IG shape is $a_0+(N+k)/2$ for Gaussian, L1 and L3. It is $a_0+(2
 
 All adaptation stops at warmup. Checkpoints retain the RNG, transition/adaptation state and all required latent states; resuming can increase the retained-draw target while keeping the model, data and transition configuration fixed.
 
+The opt-in `SamplerConfig(parameterization="ridge_total_scale")` uses
+`log(kappa) = log(lambda) + log(1+q)` as a proposal coordinate for the
+certified scalar-ridge, isotropic fixed-smoothness iid Gaussian Matérn route.
+Its unit log-coordinate Jacobian and inverse evaluation preserve the
+original posterior and priors. The default remains `legacy`; original
+scientific parameters remain the diagnostic quantities. Benchmark fits now
+persist their phase and initial/maximum draw targets so an interruption
+cannot award an extra continuation. See [the coordinate and recovery
+derivation](derivations/07_sampler_coordinates_recovery.md).
+
 ## 5. Sparse spatial reference implementations S1
 
 **Vecchia:** input row order and Euclidean predecessor neighbours are fixed independently of sampled parameters. Conditional factors give $\widetilde Q=L^\top D^{-1}L$. Targets are appended, preserving every input factor. Rebuilding different target sets/orderings is not claimed to be projective; use a fixed master target domain. Duplicate latent coordinates must be deduplicated. Truncated conditioning need not give unit marginal variance: `operator(...).marginal_variances()` returns the actual diagonal.

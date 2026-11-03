@@ -1,0 +1,14 @@
+{
+  "captured_at_utc": "2026-11-03T06:01:26.499633+00:00",
+  "starting_commit": "37d2d918aa2d03cb4f76477231df33c06ca448bd",
+  "memory_limit_bytes": 8589934592,
+  "memory_current_bytes": 1995456512,
+  "cpu_quota": "800000 100000",
+  "affinity_cpus": 9,
+  "disk_free_bytes": 60356513792,
+  "initial_workers": 2,
+  "threads_per_worker": 1,
+  "aggregate_job_memory_target_bytes": 5368709120,
+  "reserve_bytes": 2147483648,
+  "scope": "pre-implementation environment snapshot; no scientific results"
+}

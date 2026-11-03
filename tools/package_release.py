@@ -127,8 +127,12 @@ def verify_benchmark(run, report):
     manifest = json.loads((run/'manifest.json').read_text())
     summary = json.loads((run/'summary.json').read_text())
     report_manifest = json.loads((report/'report_manifest.json').read_text())
-    if manifest.get('schema') != 'benchmark-run-3.0':
+    if manifest.get('schema') not in {'benchmark-run-3.0', 'benchmark-run-4.0'}:
         raise ValueError('Unsupported benchmark run manifest schema')
+    if manifest.get('schema') == 'benchmark-run-4.0' and (
+            not summary.get('complete') or summary.get('pending_jobs', 0) or
+            summary.get('jobs') != summary.get('scheduled_jobs')):
+        raise ValueError('Incomplete benchmark campaigns cannot be packaged as completed evidence')
     if yaml.safe_load((run/'resolved_protocol.yaml').read_text()) != manifest.get('protocol'):
         raise ValueError('Resolved benchmark protocol differs from the sealed manifest')
     # The run manifest contains only JSON values, so its content_hash is the

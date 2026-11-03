@@ -1,0 +1,55 @@
+{
+  "schema": "benchmark-forecast-ownership-probe-1.0",
+  "rows": [
+    {
+      "mode": "public_defensive_copy",
+      "shape": [
+        256,
+        100,
+        505
+      ],
+      "paths_bytes": 103424000,
+      "mean_bytes": 404000,
+      "peak_rss_before_constructor_bytes": 217038848,
+      "peak_rss_bytes": 322015232,
+      "constructor_seconds": 0.021899280000070576,
+      "shares_path_memory": false,
+      "runtime": {
+        "python": "3.12.14",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+      },
+      "constructor_source_sha256": "1da8dac38583a2cfa138d01eeb8270e3adc0679159a19aafe5c80d00dda3692f",
+      "path_sha256": "00e4f224db875aeffe9bbd6f4e1948085aa69ee2d5a4e867f47941f98ec5560d",
+      "mean_sha256": "f937347cce3b62edb11b051001c4cd44653970879dc3aa8ee32806248670cdf1"
+    },
+    {
+      "mode": "private_owned_transfer",
+      "shape": [
+        256,
+        100,
+        505
+      ],
+      "paths_bytes": 103424000,
+      "mean_bytes": 404000,
+      "peak_rss_before_constructor_bytes": 214237184,
+      "peak_rss_bytes": 215330816,
+      "constructor_seconds": 0.006386957997165155,
+      "shares_path_memory": true,
+      "runtime": {
+        "python": "3.12.14",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+      },
+      "constructor_source_sha256": "1da8dac38583a2cfa138d01eeb8270e3adc0679159a19aafe5c80d00dda3692f",
+      "path_sha256": "00e4f224db875aeffe9bbd6f4e1948085aa69ee2d5a4e867f47941f98ec5560d",
+      "mean_sha256": "f937347cce3b62edb11b051001c4cd44653970879dc3aa8ee32806248670cdf1"
+    }
+  ],
+  "peak_rss_reduction_bytes": 106684416,
+  "incremental_peak_reduction_bytes": 103882752,
+  "method": "two fresh sequential subprocesses; one numeric thread; process-lifetime peak isolated per constructor workload",
+  "scope": "fixed 256x100x505 float64 allocation and validation; no claim about total model fit memory or forecast throughput",
+  "numerical_payloads_equal": true,
+  "script_sha256": "96b1af99f59a9c60941d872b65ee86d96fba79f1b8e8464ff71a9457a4c23c74"
+}

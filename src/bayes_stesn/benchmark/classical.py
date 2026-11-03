@@ -26,7 +26,7 @@ CLASSICAL_CONFIG_KEYS = {
     "separable_stgp": frozenset({"max_fit_sites", "center", "spatial_nu", "temporal_nu",
         "spatial_length", "temporal_length", "signal_sd", "noise_sd",
         "fit_hyperparameters", "max_iter", "ftol", "gtol", "max_joint_dimension",
-        "max_forecast_bytes"}),
+        "max_forecast_bytes", "continuation_max_iter"}),
 }
 
 
@@ -53,6 +53,11 @@ def _classical_config(model_id, config):
         if key == "period" and result[key] is None:
             continue
         result[key] = _integer_option(result[key], key)
+    if "continuation_max_iter" in result:
+        value=result["continuation_max_iter"]
+        if isinstance(value,(bool,np.bool_)) or not isinstance(value,(int,np.integer)) or value<0:
+            raise ValueError("continuation_max_iter must be a nonnegative integer")
+        result["continuation_max_iter"]=int(value)
     for key in {"exact", "fit_hyperparameters"} & set(result):
         if not isinstance(result[key], (bool, np.bool_)):
             raise ValueError(f"{key} must be boolean")

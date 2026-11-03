@@ -1,0 +1,498 @@
+schema_version: '4.0'
+name: v03_reference_reliability
+stage: development
+initial_fit: 400
+training_start: 0
+horizon: 40
+validation_blocks: 3
+n_side: 7
+n_observed: 25
+n_calibration: 4
+paths: 128
+trials: 8
+finalist_count: 2
+finalist_seeds: 3
+replications: 1
+master_seed: 20261102
+models:
+- persistence
+- seasonal_naive
+- basis_lgssm
+- separable_stgp
+- basis_krr
+- bayes_esn_ridge
+- eqesn_rollout
+- dcrnn
+- basis_gru
+scenarios:
+- g1_gaussian_ar
+- g2_spectral_transport
+- g3_excitable_field
+- g4_existing_fronts
+tracks:
+- A
+- B
+mcmc_warmup: 1000
+mcmc_draws: 2000
+mcmc_continuation: 2000
+mcmc_functional_draws: 512
+mcmc_chains: 4
+neural_epochs: 80
+ensemble_members: 20
+score_pairs: 512
+score_observed_count: null
+retain_paths_replications:
+- 0
+generator_options:
+  g3_excitable_field:
+    grid_size: 64
+    dt: 0.05
+    delta: 2.0
+model_options: null
+fhn_target_policy: finite_semidiscrete
+fhn_time_tolerance: 0.02
+selection_policy: qualified_finalists
+spatial_validation_blocks: 2
+replacement_finalists: 2
+selection_mode: development_frozen_configuration
+frozen_configurations:
+  persistence/A: {}
+  seasonal_naive/A:
+    period: 24
+    min_period: 8
+    max_period: 200
+  basis_lgssm/A:
+    rank: 8
+    basis_width: 0.2
+    initial_variance: 1.0
+    transition_norm_cap: 0.995
+    variance_floor: 1.0e-06
+    max_iter: 200
+    tolerance: 1.0e-05
+    mstep_steps: 100
+    max_forecast_bytes: 1073741824
+  separable_stgp/A:
+    max_fit_sites: 512
+    spatial_nu: 1.5
+    temporal_nu: 0.5
+    spatial_length: 0.2
+    fit_hyperparameters: true
+    max_iter: 60
+    continuation_max_iter: 120
+    ftol: 1.0e-08
+    gtol: 1.0e-05
+    max_joint_dimension: 2000
+    max_forecast_bytes: 1073741824
+    temporal_length: 16.0
+  basis_krr/A:
+    rank: 12
+    basis_width: 0.25
+    lags: 4
+    bandwidth_multiplier: 1.0
+    ridge: 0.001
+    exact: false
+    nystrom_rank: 128
+  bayes_esn_ridge/A:
+    conditioning: 80
+    features:
+      kind: pca_esn
+      modes: 8
+      units:
+      - 32
+      lags:
+      - 1
+      - 2
+      input_scales:
+      - 0.5
+      leak_patterns:
+      - - 0.2
+        - 0.5
+        - 0.9
+      score_bound: 3.0
+      squares: 16
+      products: 0
+      recurrent_norm: 0.9
+      connectivity: 0.08
+      feature_scale_floor: 0.04
+      seed: 0
+      graph_neighbors: 6
+      local_width: 0.25
+      encoder_width: 16
+      encoder_epochs: 120
+      encoder_learning_rate: 0.01
+      encoder_penalty: 0.0001
+      max_feature_bytes: 536870912
+    spatial_mean:
+      side: 3
+      width: 0.3
+      kernel: matern32
+      coordinate_terms: true
+      bounds: null
+      centers: null
+      max_columns: 4096
+    prior:
+      kind: ridge
+      unit: group
+      mean_log_precision: -2.3025850929940455
+      sd_log_precision: 1.5
+      tau0: 0.1
+      slab_scale: 2.0
+      slab_df: 4.0
+      fixed_slab: false
+      unshrunk_groups:
+      - intercept
+      fixed_variance: 10.0
+      shape_a: 0.5
+      shape_b: 0.5
+      tau_scale: 1.0
+      beta_a: 2.0
+      beta_b: 2.0
+      allocation: dirichlet
+      alpha: 1.0
+      logistic_mean: []
+      logistic_cov: []
+      base_columns: null
+      baseline_groups:
+      - intercept
+      - score
+      - base
+      lambda0: 0.1
+      penalty: null
+      max_penalty_size: 900
+    covariance:
+      kind: matern
+      anisotropy: false
+      nonstationary: false
+      static_variance: false
+      nu: 1.5
+      infer_nu: false
+      smoothness_choices:
+      - 0.5
+      - 1.5
+      - 2.5
+      smoothness_probabilities:
+      - 0.3333333333333333
+      - 0.3333333333333333
+      - 0.3333333333333333
+      range_prior: lognormal
+      scale_mode: relative
+      log_q_mean: 0.0
+      log_q_sd: 1.25
+      log_ell_mean: -1.7147984280919266
+      log_ell_sd: 0.65
+      anisotropy_sd: 0.5
+      variance_terms: 2
+      variance_sd: 0.3
+      geometry_terms: 4
+      nonstationary_sd: 0.15
+      pc_range_threshold: 0.3
+      pc_range_probability: 0.05
+      pc_sigma_threshold: 1.0
+      pc_sigma_probability: 0.05
+      sigma_e_scale: 1.0
+      vecchia_neighbors: 15
+      spde_order: 2
+      mesh_resolution: 8
+      mesh_padding: 0.5
+      mesh_nodes: null
+      max_dense_sites: 2000
+    innovations: iid
+    sampler:
+      chains: 4
+      warmup: 1000
+      draws: 2000
+      seed: 0
+      backend: auto
+      checkpoint_every: 0
+      proposal_scale: 0.12
+      target_accept: 0.3
+      adapt_interval: 25
+      solver_rtol: 1.0e-10
+      solver_atol: 0.0
+      solver_maxiter: null
+      dense_threshold: 900
+      max_dense_bytes: 268435456
+      max_stored_hyperstate_bytes: 536870912
+      thin: 1
+      initial_jitter: 0.15
+      a0: 2.0
+      b0: 0.05
+      temporal: iid
+      rho_prior_sd: 0.8
+      algorithm: auto
+      parameterization: ridge_total_scale
+      rhs_tradeoff_scale: 0.5
+      initialize: auto
+      init_maxiter: 100
+      init_max_evaluations: 2000
+      init_max_dimension: 20
+      init_dispersion: 2.0
+    diagnostics:
+      functional_draws: 512
+      rhat_limit: 1.01
+      min_ess: 400
+      min_chains: 4
+    continuation_draws: 2000
+  eqesn_rollout/A:
+    width: 64
+    lags: 3
+    modes: 8
+    ridge: 0.001
+    members: 20
+    leak: 0.3
+    input_scale: 0.5
+    spectral_radius: 0.9
+    sparsity: 0.1
+    washout: 32
+    quadratic: true
+  dcrnn/A:
+    hidden_size: 32
+    layers: 1
+    diffusion_order: 2
+    graph_k: 8
+    context: 24
+    learning_rate: 0.001
+    weight_decay: 1.0e-05
+    max_epochs: 80
+    patience: 20
+    batch_size: 32
+    train_fraction: 0.85
+    gradient_clip: 1.0
+    forecast_training_steps: 4
+    stride: 4
+    validation_horizon: 40
+    refit_full: true
+    require_full_validation_horizon: true
+  basis_gru/A:
+    rank: 8
+    basis_width: 0.25
+    lags: 8
+    hidden_size: 32
+    epochs: 80
+    patience: 12
+    learning_rate: 0.001
+    batch_size: 64
+    validation_fraction: 0.2
+    validation_horizon: 40
+    weight_decay: 0.0001
+    gradient_clip: 1.0
+    min_delta: 1.0e-06
+    refit: true
+    covariance_spatial_nu: 1.5
+    covariance_spatial_length: 0.25
+    covariance_max_iter: 40
+    covariance_ftol: 1.0e-09
+    covariance_gtol: 1.0e-05
+    covariance_continuation_max_iter: 80
+    require_full_validation_horizon: true
+    mean_paths: 128
+    prediction_batch_size: 64
+    max_fit_sites: 512
+    max_domain_sites: 1024
+    max_forecast_bytes: 1073741824
+  spatial_persistence/B:
+    spatial_length: 0.2
+    ridge: 0.01
+    spatial_nu: 1.5
+  basis_lgssm/B:
+    rank: 8
+    basis_width: 0.2
+    initial_variance: 1.0
+    transition_norm_cap: 0.995
+    variance_floor: 1.0e-06
+    max_iter: 200
+    tolerance: 1.0e-05
+    mstep_steps: 100
+    max_forecast_bytes: 1073741824
+  separable_stgp/B:
+    max_fit_sites: 512
+    spatial_nu: 1.5
+    temporal_nu: 0.5
+    spatial_length: 0.2
+    fit_hyperparameters: true
+    max_iter: 60
+    continuation_max_iter: 120
+    ftol: 1.0e-08
+    gtol: 1.0e-05
+    max_joint_dimension: 2000
+    max_forecast_bytes: 1073741824
+    temporal_length: 16.0
+  basis_krr/B:
+    rank: 12
+    basis_width: 0.25
+    lags: 4
+    bandwidth_multiplier: 1.0
+    ridge: 0.001
+    exact: false
+    nystrom_rank: 128
+  bayes_esn_ridge/B:
+    conditioning: 80
+    features:
+      kind: pca_esn
+      modes: 8
+      units:
+      - 32
+      lags:
+      - 1
+      - 2
+      input_scales:
+      - 0.5
+      leak_patterns:
+      - - 0.2
+        - 0.5
+        - 0.9
+      score_bound: 3.0
+      squares: 16
+      products: 0
+      recurrent_norm: 0.9
+      connectivity: 0.08
+      feature_scale_floor: 0.04
+      seed: 0
+      graph_neighbors: 6
+      local_width: 0.25
+      encoder_width: 16
+      encoder_epochs: 120
+      encoder_learning_rate: 0.01
+      encoder_penalty: 0.0001
+      max_feature_bytes: 536870912
+    spatial_mean:
+      side: 3
+      width: 0.3
+      kernel: matern32
+      coordinate_terms: true
+      bounds: null
+      centers: null
+      max_columns: 4096
+    prior:
+      kind: ridge
+      unit: group
+      mean_log_precision: -2.3025850929940455
+      sd_log_precision: 1.5
+      tau0: 0.1
+      slab_scale: 2.0
+      slab_df: 4.0
+      fixed_slab: false
+      unshrunk_groups:
+      - intercept
+      fixed_variance: 10.0
+      shape_a: 0.5
+      shape_b: 0.5
+      tau_scale: 1.0
+      beta_a: 2.0
+      beta_b: 2.0
+      allocation: dirichlet
+      alpha: 1.0
+      logistic_mean: []
+      logistic_cov: []
+      base_columns: null
+      baseline_groups:
+      - intercept
+      - score
+      - base
+      lambda0: 0.1
+      penalty: null
+      max_penalty_size: 900
+    covariance:
+      kind: matern
+      anisotropy: false
+      nonstationary: false
+      static_variance: false
+      nu: 1.5
+      infer_nu: false
+      smoothness_choices:
+      - 0.5
+      - 1.5
+      - 2.5
+      smoothness_probabilities:
+      - 0.3333333333333333
+      - 0.3333333333333333
+      - 0.3333333333333333
+      range_prior: lognormal
+      scale_mode: relative
+      log_q_mean: 0.0
+      log_q_sd: 1.25
+      log_ell_mean: -1.7147984280919266
+      log_ell_sd: 0.65
+      anisotropy_sd: 0.5
+      variance_terms: 2
+      variance_sd: 0.3
+      geometry_terms: 4
+      nonstationary_sd: 0.15
+      pc_range_threshold: 0.3
+      pc_range_probability: 0.05
+      pc_sigma_threshold: 1.0
+      pc_sigma_probability: 0.05
+      sigma_e_scale: 1.0
+      vecchia_neighbors: 15
+      spde_order: 2
+      mesh_resolution: 8
+      mesh_padding: 0.5
+      mesh_nodes: null
+      max_dense_sites: 2000
+    innovations: iid
+    sampler:
+      chains: 4
+      warmup: 1000
+      draws: 2000
+      seed: 0
+      backend: auto
+      checkpoint_every: 0
+      proposal_scale: 0.12
+      target_accept: 0.3
+      adapt_interval: 25
+      solver_rtol: 1.0e-10
+      solver_atol: 0.0
+      solver_maxiter: null
+      dense_threshold: 900
+      max_dense_bytes: 268435456
+      max_stored_hyperstate_bytes: 536870912
+      thin: 1
+      initial_jitter: 0.15
+      a0: 2.0
+      b0: 0.05
+      temporal: iid
+      rho_prior_sd: 0.8
+      algorithm: auto
+      parameterization: ridge_total_scale
+      rhs_tradeoff_scale: 0.5
+      initialize: auto
+      init_maxiter: 100
+      init_max_evaluations: 2000
+      init_max_dimension: 20
+      init_dispersion: 2.0
+    diagnostics:
+      functional_draws: 512
+      rhat_limit: 1.01
+      min_ess: 400
+      min_chains: 4
+    continuation_draws: 2000
+  basis_gru/B:
+    rank: 8
+    basis_width: 0.25
+    lags: 8
+    hidden_size: 32
+    epochs: 80
+    patience: 12
+    learning_rate: 0.001
+    batch_size: 64
+    validation_fraction: 0.2
+    validation_horizon: 40
+    weight_decay: 0.0001
+    gradient_clip: 1.0
+    min_delta: 1.0e-06
+    refit: true
+    covariance_spatial_nu: 1.5
+    covariance_spatial_length: 0.25
+    covariance_max_iter: 40
+    covariance_ftol: 1.0e-09
+    covariance_gtol: 1.0e-05
+    covariance_continuation_max_iter: 80
+    require_full_validation_horizon: true
+    mean_paths: 128
+    prediction_batch_size: 64
+    max_fit_sites: 512
+    max_domain_sites: 1024
+    max_forecast_bytes: 1073741824
+candidate_proposal_cap: 4096
+normalization_reference: null
+fit_time_limits_seconds: null
