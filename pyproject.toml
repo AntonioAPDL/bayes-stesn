@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bayes-stesn"
-version = "0.2.0"
+version = "0.2.1"
 description = "Auditable Bayesian spatiotemporal echo state networks"
 readme = "README.md"
 requires-python = ">=3.11"

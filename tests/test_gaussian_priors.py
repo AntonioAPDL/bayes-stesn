@@ -14,7 +14,7 @@ from bayes_stesn.priors import (PriorRuntime, PriorSpec, half_cauchy_log_coordin
                                inverse_gamma_log_coordinate, residualize_correction,
                                rhs_log_variance, sample_gig)
 from bayes_stesn.sampling import (RegressionPosterior, SamplerConfig,
-                                  _calibrate_initialization, sample_regression)
+                                  _AdaptiveProposal, _calibrate_initialization, sample_regression)
 from bayes_stesn.spatial import CovarianceSpec
 
 
@@ -387,6 +387,29 @@ class SamplingTests(unittest.TestCase):
         draws = [s["covariance_parameters"]["nu"] for chain in fit.states for s in chain]
         self.assertTrue(set(draws).issubset(set(cov.smoothness_choices)))
         self.assertIn("covariance.nu",fit.parameter_names)
+
+    def test_proposal_checkpoint_preserves_bitwise_transitions(self):
+        covariance = np.array([[2.,.3,.4],[.3,2.,.1],[.4,.1,1.]])
+        proposal = _AdaptiveProposal(3,self.config,initial_covariance=covariance)
+        for phase in ("initialized","adapted"):
+            if phase=="adapted":
+                adaptation_rng = np.random.default_rng(81)
+                for i in range(25):
+                    proposal.adapt(adaptation_rng.normal(size=3),bool(i%2))
+            for encoding in ("arrays","json"):
+                with self.subTest(phase=phase,encoding=encoding):
+                    state = proposal.state()
+                    if encoding=="json":
+                        state = json.loads(json.dumps(state,default=lambda x:x.tolist()))
+                    restored = _AdaptiveProposal(3,self.config,state=state)
+                    original_rng,restored_rng = np.random.default_rng(72),np.random.default_rng(72)
+                    current = np.array([.4,-.7,.3])
+                    for _ in range(16):
+                        assert_array_equal(proposal.propose(current,original_rng),
+                                           restored.propose(current,restored_rng))
+                    # The same values with different strides can select a
+                    # different BLAS accumulation order on another runtime.
+                    self.assertEqual(proposal.factor.strides,restored.factor.strides)
 
     def test_checkpoint_resume_is_bitwise_and_checks_identity(self):
         full = self.fit()

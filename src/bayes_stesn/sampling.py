@@ -272,6 +272,10 @@ class _AdaptiveProposal:
             self.factor = np.array(state["factor"])
             self.base_covariance = np.array(state["base_covariance"])
             self.log_scale = float(state["log_scale"])
+        # Keep Cholesky's column-major traversal after array/JSON checkpoint
+        # restoration too: changing strides can change BLAS rounding and
+        # break bitwise continuation despite identical matrix entries.
+        self.factor = np.asfortranarray(self.factor)
 
     def propose(self,current,rng):
         return current+np.exp(self.log_scale)*(self.factor@rng.normal(size=self.dimension))
@@ -286,11 +290,11 @@ class _AdaptiveProposal:
         if self.count>=max(25,2*self.dimension) and self.count%self.config.adapt_interval==0:
             empirical = self.M2/(self.count-1)
             covariance = (2.38**2/self.dimension)*(.95*empirical+.05*self.base_covariance)
-            self.factor = linalg.cholesky((covariance+covariance.T)/2,lower=True)
+            self.factor = np.asfortranarray(linalg.cholesky((covariance+covariance.T)/2,lower=True))
 
     def state(self):
         return {"count":self.count,"mean":self.mean.copy(),"M2":self.M2.copy(),
-                "factor":self.factor.copy(),"base_covariance":self.base_covariance.copy(),
+                "factor":self.factor.copy(order="F"),"base_covariance":self.base_covariance.copy(),
                 "log_scale":self.log_scale}
 
 
