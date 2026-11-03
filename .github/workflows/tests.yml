@@ -77,4 +77,25 @@ jobs:
           python tools/release_check.py --with-neural
           --fresh-venv "${{ runner.temp }}/bstesn-neural-release"
           --output results/release_manifest_neural.json
+      - name: Show release validation logs on failure
+        if: failure()
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for log in results/validation/*.log; do
+            printf '::group::%s (last 200 lines)\n' "$log"
+            tail -n 200 "$log"
+            printf '::endgroup::\n'
+          done
+      - name: Retain release validation evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: neural-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: warn
+          path: |
+            results/release_manifest_neural.json
+            results/validation/*.log
+            results/validation/*.xml
+            results/validation/*.json
 
