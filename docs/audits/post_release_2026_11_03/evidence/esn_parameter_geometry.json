@@ -1,0 +1,348 @@
+{
+  "scope": "Descriptive existing chains; G3 chains are unqualified, so correlations are diagnostic, not established posterior quantities",
+  "original_parameters": [
+    "prior.log_precision",
+    "log_ell",
+    "log_q"
+  ],
+  "transform": "eta = log_precision + logaddexp(0, log_q); xi = log_q",
+  "correlation_pairs": [
+    "log_precision, log_q",
+    "eta, xi"
+  ],
+  "cases": [
+    {
+      "scenario": "g1_gaussian_ar",
+      "track": "A",
+      "replication": 0,
+      "chains": [
+        {
+          "chain": 0,
+          "original_correlation": -0.9811475255037679,
+          "transformed_correlation": 0.07565377491316859,
+          "original_correlation_matrix": [
+            [
+              1.0,
+              0.18812018023179347,
+              -0.9811475255037674
+            ],
+            [
+              0.18812018023179347,
+              1.0,
+              -0.20041104707372326
+            ],
+            [
+              -0.9811475255037674,
+              -0.20041104707372323,
+              1.0
+            ]
+          ],
+          "initialization": "local_map_finite_difference_laplace",
+          "initialization_optimizer_success": true,
+          "draws": 2000,
+          "sampling_acceptance": 0.2525
+        },
+        {
+          "chain": 1,
+          "original_correlation": -0.9810924245247247,
+          "transformed_correlation": -0.028858972650168856,
+          "original_correlation_matrix": [
+            [
+              1.0,
+              0.15066632695070167,
+              -0.9810924245247256
+            ],
+            [
+              0.15066632695070167,
+              1.0,
+              -0.12940143308491542
+            ],
+            [
+              -0.9810924245247257,
+              -0.1294014330849154,
+              1.0
+            ]
+          ],
+          "initialization": "local_map_finite_difference_laplace",
+          "initialization_optimizer_success": true,
+          "draws": 2000,
+          "sampling_acceptance": 0.294
+        },
+        {
+          "chain": 2,
+          "original_correlation": -0.9830544643956852,
+          "transformed_correlation": -0.017776567012095932,
+          "original_correlation_matrix": [
+            [
+              0.9999999999999999,
+              0.2214661704448537,
+              -0.9830544643956861
+            ],
+            [
+              0.2214661704448537,
+              1.0,
+              -0.19583952441315972
+            ],
+            [
+              -0.9830544643956862,
+              -0.1958395244131597,
+              1.0
+            ]
+          ],
+          "initialization": "local_map_finite_difference_laplace",
+          "initialization_optimizer_success": true,
+          "draws": 2000,
+          "sampling_acceptance": 0.376
+        },
+        {
+          "chain": 3,
+          "original_correlation": -0.9834736547082619,
+          "transformed_correlation": 0.06849225567557755,
+          "original_correlation_matrix": [
+            [
+              1.0,
+              0.17234566843084734,
+              -0.9834736547082619
+            ],
+            [
+              0.17234566843084734,
+              0.9999999999999999,
+              -0.16298435955623694
+            ],
+            [
+              -0.9834736547082618,
+              -0.16298435955623697,
+              1.0
+            ]
+          ],
+          "initialization": "local_map_finite_difference_laplace",
+          "initialization_optimizer_success": true,
+          "draws": 2000,
+          "sampling_acceptance": 0.3
+        }
+      ]
+    },
+    {
+      "scenario": "g3_excitable_field",
+      "track": "A",
+      "replication": 0,
+      "chains": [
+        {
+          "chain": 0,
+          "original_correlation": -0.9040810579085351,
+          "transformed_correlation": -0.009382079351967379,
+          "original_correlation_matrix": [
+            [
+              1.0,
+              0.44200728669363964,
+              -0.904081057908536
+            ],
+            [
+              0.4420072866936396,
+              1.0,
+              -0.6139534194430077
+            ],
+            [
+              -0.904081057908536,
+              -0.6139534194430077,
+              1.0
+            ]
+          ],
+          "initialization": "local_map_finite_difference_laplace",
+          "initialization_optimizer_success": true,
+          "draws": 2000,
+          "sampling_acceptance": 0.2655
+        },
+        {
+          "chain": 1,
+          "original_correlation": -0.9423783347350406,
+          "transformed_correlation": 0.02362931671539053,
+          "original_correlation_matrix": [
+            [
+              1.0,
+              0.22497878782348044,
+              -0.9423783347350406
+            ],
+            [
+              0.22497878782348046,
+              1.0,
+              -0.26324181185398476
+            ],
+            [
+              -0.9423783347350407,
+              -0.26324181185398476,
+              1.0
+            ]
+          ],
+          "initialization": "local_map_finite_difference_laplace",
+          "initialization_optimizer_success": true,
+          "draws": 2000,
+          "sampling_acceptance": 0.286
+        },
+        {
+          "chain": 2,
+          "original_correlation": -0.9391560097177896,
+          "transformed_correlation": -0.025548908179670347,
+          "original_correlation_matrix": [
+            [
+              1.0,
+              0.3898099493064937,
+              -0.9391560097177895
+            ],
+            [
+              0.3898099493064937,
+              0.9999999999999999,
+              -0.45981464051158155
+            ],
+            [
+              -0.9391560097177893,
+              -0.45981464051158155,
+              1.0
+            ]
+          ],
+          "initialization": "local_map_finite_difference_laplace",
+          "initialization_optimizer_success": true,
+          "draws": 2000,
+          "sampling_acceptance": 0.301
+        },
+        {
+          "chain": 3,
+          "original_correlation": -0.9600458656269484,
+          "transformed_correlation": -0.009175677113424497,
+          "original_correlation_matrix": [
+            [
+              1.0,
+              0.15806146599458112,
+              -0.9600458656269488
+            ],
+            [
+              0.15806146599458112,
+              0.9999999999999999,
+              -0.19147640577789432
+            ],
+            [
+              -0.9600458656269489,
+              -0.19147640577789432,
+              1.0
+            ]
+          ],
+          "initialization": "local_map_finite_difference_laplace",
+          "initialization_optimizer_success": true,
+          "draws": 2000,
+          "sampling_acceptance": 0.335
+        }
+      ]
+    },
+    {
+      "scenario": "g4_existing_fronts",
+      "track": "A",
+      "replication": 0,
+      "chains": [
+        {
+          "chain": 0,
+          "original_correlation": -0.9813893026377816,
+          "transformed_correlation": 0.09906338634321639,
+          "original_correlation_matrix": [
+            [
+              0.9999999999999999,
+              -0.15638009643328954,
+              -0.9813893026377806
+            ],
+            [
+              -0.15638009643328957,
+              0.9999999999999999,
+              0.1831598903378248
+            ],
+            [
+              -0.9813893026377806,
+              0.18315989033782482,
+              1.0
+            ]
+          ],
+          "initialization": "local_map_finite_difference_laplace",
+          "initialization_optimizer_success": true,
+          "draws": 2000,
+          "sampling_acceptance": 0.326
+        },
+        {
+          "chain": 1,
+          "original_correlation": -0.9794402215247617,
+          "transformed_correlation": 0.09828303532067331,
+          "original_correlation_matrix": [
+            [
+              0.9999999999999999,
+              0.0285657899771115,
+              -0.9794402215247617
+            ],
+            [
+              0.0285657899771115,
+              0.9999999999999999,
+              0.013288009117353054
+            ],
+            [
+              -0.9794402215247617,
+              0.013288009117353054,
+              0.9999999999999999
+            ]
+          ],
+          "initialization": "local_map_finite_difference_laplace",
+          "initialization_optimizer_success": true,
+          "draws": 2000,
+          "sampling_acceptance": 0.327
+        },
+        {
+          "chain": 2,
+          "original_correlation": -0.9788249314208074,
+          "transformed_correlation": 0.15704982429232814,
+          "original_correlation_matrix": [
+            [
+              1.0,
+              0.00796605340965073,
+              -0.9788249314208077
+            ],
+            [
+              0.00796605340965073,
+              1.0,
+              0.010012850458882483
+            ],
+            [
+              -0.9788249314208078,
+              0.010012850458882483,
+              0.9999999999999999
+            ]
+          ],
+          "initialization": "local_map_finite_difference_laplace",
+          "initialization_optimizer_success": true,
+          "draws": 2000,
+          "sampling_acceptance": 0.264
+        },
+        {
+          "chain": 3,
+          "original_correlation": -0.9831296705593477,
+          "transformed_correlation": 0.046112143191714194,
+          "original_correlation_matrix": [
+            [
+              1.0,
+              -0.07023870229181073,
+              -0.983129670559348
+            ],
+            [
+              -0.07023870229181073,
+              1.0,
+              0.11198526149794258
+            ],
+            [
+              -0.983129670559348,
+              0.11198526149794258,
+              1.0
+            ]
+          ],
+          "initialization": "local_map_finite_difference_laplace",
+          "initialization_optimizer_success": true,
+          "draws": 2000,
+          "sampling_acceptance": 0.272
+        }
+      ]
+    }
+  ]
+}

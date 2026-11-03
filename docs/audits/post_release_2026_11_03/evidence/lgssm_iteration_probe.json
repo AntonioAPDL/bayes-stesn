@@ -1,0 +1,180 @@
+{
+  "scope": "Post-hoc development optimizer diagnostic; no forecasts/test scores",
+  "selection": "First failed receipt per scenario/track in lexical order, maximum six",
+  "only_changed_setting": {
+    "max_iter": [
+      50,
+      200
+    ]
+  },
+  "tolerance": 1e-05,
+  "resource_limits": {
+    "address_space_bytes": 1073741824,
+    "cpu_soft_seconds": 110,
+    "cpu_hard_seconds": 115,
+    "wall_seconds": 115,
+    "threads": 1
+  },
+  "cases": [
+    {
+      "scenario": "g1_gaussian_ar",
+      "track": "B",
+      "replication": 4,
+      "training_rows": 520,
+      "observed_sites": 25,
+      "seed": 2861325318172804905,
+      "original_config": {
+        "basis_width": 0.08,
+        "max_iter": 50,
+        "rank": 16
+      },
+      "baseline_qualified": false,
+      "new_qualified": true,
+      "baseline_iterations": 50,
+      "new_iterations": 56,
+      "baseline_log_likelihood": -12667.538171988777,
+      "new_log_likelihood": -12666.656599045396,
+      "original_likelihood_prefix_max_abs_difference": 0.0,
+      "original_likelihood_prefix_matches_rtol1e_12_atol1e_10": true,
+      "new_last_relative_ll_improvement": 9.861514828585227e-06,
+      "new_rejected_decreasing_step": false,
+      "new_variance_floor_hits": 0,
+      "baseline_recorded_fit_seconds": 2.622546415001125,
+      "new_fit_seconds": 2.656858069000009
+    },
+    {
+      "scenario": "g2_spectral_transport",
+      "track": "A",
+      "replication": 0,
+      "training_rows": 520,
+      "observed_sites": 25,
+      "seed": 17566910098486469448,
+      "original_config": {
+        "basis_width": 0.5,
+        "max_iter": 50,
+        "rank": 25
+      },
+      "baseline_qualified": false,
+      "new_qualified": true,
+      "baseline_iterations": 50,
+      "new_iterations": 81,
+      "baseline_log_likelihood": -319.39280121484785,
+      "new_log_likelihood": -319.0330802607839,
+      "original_likelihood_prefix_max_abs_difference": 0.0,
+      "original_likelihood_prefix_matches_rtol1e_12_atol1e_10": true,
+      "new_last_relative_ll_improvement": 9.90369351245685e-06,
+      "new_rejected_decreasing_step": false,
+      "new_variance_floor_hits": 0,
+      "baseline_recorded_fit_seconds": 3.668999547997373,
+      "new_fit_seconds": 5.947060751001118
+    },
+    {
+      "scenario": "g3_excitable_field",
+      "track": "A",
+      "replication": 0,
+      "training_rows": 520,
+      "observed_sites": 25,
+      "seed": 2414645531633809761,
+      "original_config": {
+        "basis_width": 0.2,
+        "max_iter": 50,
+        "rank": 8
+      },
+      "baseline_qualified": false,
+      "new_qualified": true,
+      "baseline_iterations": 50,
+      "new_iterations": 109,
+      "baseline_log_likelihood": -17963.76421847743,
+      "new_log_likelihood": -17940.766336782825,
+      "original_likelihood_prefix_max_abs_difference": 0.0,
+      "original_likelihood_prefix_matches_rtol1e_12_atol1e_10": true,
+      "new_last_relative_ll_improvement": 9.93124697939176e-06,
+      "new_rejected_decreasing_step": false,
+      "new_variance_floor_hits": 0,
+      "baseline_recorded_fit_seconds": 2.796807998998702,
+      "new_fit_seconds": 3.6119546970003285
+    },
+    {
+      "scenario": "g3_excitable_field",
+      "track": "B",
+      "replication": 0,
+      "training_rows": 520,
+      "observed_sites": 25,
+      "seed": 7043695776311312776,
+      "original_config": {
+        "basis_width": 0.2,
+        "max_iter": 50,
+        "rank": 8
+      },
+      "baseline_qualified": false,
+      "new_qualified": true,
+      "baseline_iterations": 50,
+      "new_iterations": 109,
+      "baseline_log_likelihood": -17963.76421847743,
+      "new_log_likelihood": -17940.766336782825,
+      "original_likelihood_prefix_max_abs_difference": 0.0,
+      "original_likelihood_prefix_matches_rtol1e_12_atol1e_10": true,
+      "new_last_relative_ll_improvement": 9.93124697939176e-06,
+      "new_rejected_decreasing_step": false,
+      "new_variance_floor_hits": 0,
+      "baseline_recorded_fit_seconds": 3.0870036350024748,
+      "new_fit_seconds": 3.9950587040002574
+    },
+    {
+      "scenario": "g4_existing_fronts",
+      "track": "A",
+      "replication": 0,
+      "training_rows": 520,
+      "observed_sites": 25,
+      "seed": 4070994006715442945,
+      "original_config": {
+        "basis_width": 0.5,
+        "max_iter": 50,
+        "rank": 16
+      },
+      "baseline_qualified": false,
+      "new_qualified": false,
+      "baseline_iterations": 50,
+      "new_iterations": 200,
+      "baseline_log_likelihood": 3718.441032579115,
+      "new_log_likelihood": 3743.654856673379,
+      "original_likelihood_prefix_max_abs_difference": 0.0,
+      "original_likelihood_prefix_matches_rtol1e_12_atol1e_10": true,
+      "new_last_relative_ll_improvement": 1.729330899465162e-05,
+      "new_rejected_decreasing_step": false,
+      "new_variance_floor_hits": 0,
+      "baseline_recorded_fit_seconds": 3.2535862030017597,
+      "new_fit_seconds": 9.594197333994089
+    },
+    {
+      "scenario": "g4_existing_fronts",
+      "track": "B",
+      "replication": 0,
+      "training_rows": 520,
+      "observed_sites": 25,
+      "seed": 16579350447555712432,
+      "original_config": {
+        "basis_width": 0.2,
+        "max_iter": 50,
+        "rank": 8
+      },
+      "baseline_qualified": false,
+      "new_qualified": true,
+      "baseline_iterations": 50,
+      "new_iterations": 56,
+      "baseline_log_likelihood": -2857.7752068240607,
+      "new_log_likelihood": -2857.5814099331074,
+      "original_likelihood_prefix_max_abs_difference": 0.0,
+      "original_likelihood_prefix_matches_rtol1e_12_atol1e_10": true,
+      "new_last_relative_ll_improvement": 9.490207025791566e-06,
+      "new_rejected_decreasing_step": false,
+      "new_variance_floor_hits": 0,
+      "baseline_recorded_fit_seconds": 2.067229869997391,
+      "new_fit_seconds": 1.9278647469982388
+    }
+  ],
+  "status": "completed",
+  "wall_seconds": 27.79685666700243,
+  "cpu_seconds": 28.474774961,
+  "process_peak_rss_bytes": 105922560
+}

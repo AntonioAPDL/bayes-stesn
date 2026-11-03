@@ -1,0 +1,32 @@
+{
+  "audited_source_commit": "f279c7a47ebe76bc282e0592fa266e96b163acf9",
+  "checks": {
+    "results_evidence_numerical_reproduction_exact": true,
+    "decoder_probe_numerical_reproduction_exact": true,
+    "g1_oracle_audit_numerical_reproduction_exact": true,
+    "esn_parameter_geometry_numerical_reproduction_exact": true,
+    "candidate_enumeration_exact": true,
+    "seven_scripts_compile_and_import": true,
+    "imports_preserve_resource_limits": true,
+    "imports_preserve_environment": true,
+    "imports_leave_no_alarm": true,
+    "markdown_local_links_resolve": true,
+    "original_receipt_hashes_match": true
+  },
+  "scripts": [
+    "analyze_saved_results.py",
+    "candidate_enumeration.py",
+    "decoder_probe.py",
+    "g1_oracle_audit.py",
+    "probe_esn_parameter_geometry.py",
+    "probe_lgssm_iterations.py",
+    "render_audit_overview.py"
+  ],
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "scope": "Read-only evidence reconstruction and bounded post-hoc diagnostics; no model implementation or original result changed. LGSSM probe reviewed from original bounded run, not repeated for this verification.",
+  "provenance_note": "G1 resource limits moved into main and decoder dependency imports deferred for safe import after original execution receipts. Original numerical receipts and hashes retained. G1 rows/summaries reproduced exactly with distributed script."
+}

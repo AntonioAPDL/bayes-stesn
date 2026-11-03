@@ -1,0 +1,994 @@
+{
+  "schema": "candidate-enumeration-audit-1",
+  "audited_source_commit": "f279c7a47ebe76bc282e0592fa266e96b163acf9",
+  "search_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "track": "A",
+  "scope": "Configuration generation only; no model fitting or scoring; not exact saved pilot seeds",
+  "profiles": {
+    "pilot.yaml": {
+      "configuration_sha256": "c8083124bf0d66982a244ada8c9377b503aa3aa04fc8e16de96e25ad2b57713e",
+      "protocol": {
+        "schema_version": "3.0",
+        "name": "pilot",
+        "stage": "development",
+        "initial_fit": 400,
+        "training_start": 0,
+        "horizon": 40,
+        "validation_blocks": 3,
+        "n_side": 7,
+        "n_observed": 25,
+        "n_calibration": 4,
+        "paths": 128,
+        "trials": 3,
+        "finalist_count": 2,
+        "finalist_seeds": 2,
+        "replications": 5,
+        "master_seed": 20261102,
+        "models": [
+          "persistence",
+          "seasonal_naive",
+          "basis_lgssm",
+          "separable_stgp",
+          "basis_krr",
+          "bayes_esn_ridge",
+          "eqesn_rollout",
+          "dcrnn",
+          "basis_gru"
+        ],
+        "scenarios": [
+          "g1_gaussian_ar",
+          "g2_spectral_transport",
+          "g3_excitable_field",
+          "g4_existing_fronts"
+        ],
+        "tracks": [
+          "A",
+          "B"
+        ],
+        "mcmc_warmup": 400,
+        "mcmc_draws": 1000,
+        "mcmc_continuation": 1000,
+        "mcmc_functional_draws": 512,
+        "mcmc_chains": 4,
+        "neural_epochs": 80,
+        "ensemble_members": 20,
+        "score_pairs": 512,
+        "score_observed_count": null,
+        "retain_paths_replications": [
+          0
+        ],
+        "generator_options": {
+          "g3_excitable_field": {
+            "grid_size": 64,
+            "dt": 0.05,
+            "delta": 2.0
+          }
+        },
+        "model_options": null,
+        "fhn_target_policy": "finite_semidiscrete",
+        "fhn_time_tolerance": 0.02
+      },
+      "models": {
+        "persistence": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            1
+          ],
+          "per_seed_candidate_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "reference": {}
+        },
+        "seasonal_naive": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            1,
+            2,
+            3
+          ],
+          "per_seed_candidate_counts": [
+            2,
+            2,
+            2,
+            3,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            3,
+            2,
+            3,
+            2,
+            2,
+            3,
+            1,
+            2
+          ],
+          "reference": {
+            "period": 24
+          }
+        },
+        "basis_lgssm": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            2,
+            3
+          ],
+          "per_seed_candidate_counts": [
+            3,
+            3,
+            3,
+            3,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            3,
+            3,
+            3
+          ],
+          "reference": {
+            "rank": 8,
+            "basis_width": 0.2,
+            "max_iter": 50
+          }
+        },
+        "separable_stgp": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            3
+          ],
+          "per_seed_candidate_counts": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "reference": {
+            "spatial_nu": 1.5,
+            "temporal_nu": 0.5,
+            "spatial_length": 0.2,
+            "temporal_length": 16.0,
+            "max_iter": 60
+          }
+        },
+        "basis_krr": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            3
+          ],
+          "per_seed_candidate_counts": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "reference": {
+            "rank": 12,
+            "lags": 4,
+            "bandwidth_multiplier": 1.0,
+            "ridge": 0.001,
+            "nystrom_rank": 128
+          }
+        },
+        "bayes_esn_ridge": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            2,
+            3
+          ],
+          "per_seed_candidate_counts": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2
+          ],
+          "reference": {
+            "conditioning": 80,
+            "features": {
+              "modes": 8,
+              "units": [
+                32
+              ],
+              "lags": [
+                1,
+                2
+              ],
+              "squares": 16,
+              "input_scales": [
+                0.5
+              ]
+            },
+            "spatial_mean": {
+              "side": 3,
+              "width": 0.3
+            },
+            "sampler": {
+              "chains": 4,
+              "warmup": 400,
+              "draws": 1000
+            },
+            "diagnostics": {
+              "functional_draws": 512
+            },
+            "continuation_draws": 1000
+          }
+        },
+        "eqesn_rollout": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            3
+          ],
+          "per_seed_candidate_counts": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "reference": {
+            "width": 64,
+            "lags": 3,
+            "modes": 8,
+            "ridge": 0.001,
+            "members": 20,
+            "leak": 0.3,
+            "input_scale": 0.5
+          }
+        },
+        "dcrnn": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            3
+          ],
+          "per_seed_candidate_counts": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "reference": {
+            "hidden_size": 32,
+            "layers": 1,
+            "graph_k": 8,
+            "diffusion_order": 2,
+            "context": 24,
+            "learning_rate": 0.001,
+            "weight_decay": 1e-05,
+            "max_epochs": 80,
+            "patience": 20,
+            "batch_size": 32
+          }
+        },
+        "basis_gru": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            1
+          ],
+          "per_seed_candidate_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "reference": {
+            "rank": 8,
+            "hidden_size": 32,
+            "lags": 8,
+            "epochs": 80
+          }
+        }
+      }
+    },
+    "main_draft.yaml": {
+      "configuration_sha256": "67c69eb2498c3d4b2dc63f0b7292eb0dc5dadb1f10af0fd14a2270bddb097c9f",
+      "protocol": {
+        "schema_version": "3.0",
+        "name": "main",
+        "stage": "confirmation",
+        "initial_fit": 2000,
+        "training_start": 0,
+        "horizon": 100,
+        "validation_blocks": 3,
+        "n_side": 25,
+        "n_observed": 100,
+        "n_calibration": 20,
+        "paths": 256,
+        "trials": 12,
+        "finalist_count": 2,
+        "finalist_seeds": 3,
+        "replications": 20,
+        "master_seed": 20261102,
+        "models": [
+          "persistence",
+          "seasonal_naive",
+          "basis_lgssm",
+          "separable_stgp",
+          "basis_krr",
+          "bayes_esn_ridge",
+          "eqesn_rollout",
+          "dcrnn"
+        ],
+        "scenarios": [
+          "g1_gaussian_ar",
+          "g2_spectral_transport",
+          "g3_excitable_field",
+          "g4_existing_fronts"
+        ],
+        "tracks": [
+          "A",
+          "B"
+        ],
+        "mcmc_warmup": 500,
+        "mcmc_draws": 1000,
+        "mcmc_continuation": 1000,
+        "mcmc_functional_draws": 512,
+        "mcmc_chains": 4,
+        "neural_epochs": 200,
+        "ensemble_members": 30,
+        "score_pairs": 512,
+        "score_observed_count": null,
+        "retain_paths_replications": [
+          0
+        ],
+        "generator_options": null,
+        "model_options": null,
+        "fhn_target_policy": "finite_semidiscrete",
+        "fhn_time_tolerance": 0.02
+      },
+      "models": {
+        "persistence": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            1
+          ],
+          "per_seed_candidate_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "reference": {}
+        },
+        "seasonal_naive": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            3,
+            4
+          ],
+          "per_seed_candidate_counts": [
+            4,
+            4,
+            3,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            3,
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "reference": {
+            "period": 24
+          }
+        },
+        "basis_lgssm": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "per_seed_candidate_counts": [
+            6,
+            6,
+            7,
+            7,
+            6,
+            7,
+            8,
+            6,
+            7,
+            7,
+            6,
+            6,
+            8,
+            9,
+            6,
+            7,
+            8,
+            6,
+            8,
+            7
+          ],
+          "reference": {
+            "rank": 8,
+            "basis_width": 0.2,
+            "max_iter": 50
+          }
+        },
+        "separable_stgp": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            11,
+            12
+          ],
+          "per_seed_candidate_counts": [
+            11,
+            11,
+            12,
+            12,
+            12,
+            12,
+            12,
+            11,
+            12,
+            11,
+            11,
+            12,
+            12,
+            11,
+            12,
+            12,
+            11,
+            12,
+            11,
+            12
+          ],
+          "reference": {
+            "spatial_nu": 1.5,
+            "temporal_nu": 0.5,
+            "spatial_length": 0.2,
+            "temporal_length": 16.0,
+            "max_iter": 60
+          }
+        },
+        "basis_krr": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            10,
+            11,
+            12
+          ],
+          "per_seed_candidate_counts": [
+            12,
+            12,
+            12,
+            12,
+            11,
+            12,
+            10,
+            11,
+            12,
+            12,
+            12,
+            11,
+            10,
+            11,
+            11,
+            12,
+            11,
+            12,
+            12,
+            12
+          ],
+          "reference": {
+            "rank": 12,
+            "lags": 4,
+            "bandwidth_multiplier": 1.0,
+            "ridge": 0.001,
+            "nystrom_rank": 128
+          }
+        },
+        "bayes_esn_ridge": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            9,
+            10,
+            11,
+            12
+          ],
+          "per_seed_candidate_counts": [
+            11,
+            12,
+            10,
+            10,
+            12,
+            9,
+            10,
+            10,
+            10,
+            11,
+            11,
+            9,
+            10,
+            10,
+            9,
+            10,
+            10,
+            10,
+            10,
+            10
+          ],
+          "reference": {
+            "conditioning": 200,
+            "features": {
+              "modes": 8,
+              "units": [
+                32
+              ],
+              "lags": [
+                1,
+                2
+              ],
+              "squares": 16,
+              "input_scales": [
+                0.5
+              ]
+            },
+            "spatial_mean": {
+              "side": 3,
+              "width": 0.3
+            },
+            "sampler": {
+              "chains": 4,
+              "warmup": 500,
+              "draws": 1000
+            },
+            "diagnostics": {
+              "functional_draws": 512
+            },
+            "continuation_draws": 1000
+          }
+        },
+        "eqesn_rollout": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            12
+          ],
+          "per_seed_candidate_counts": [
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12
+          ],
+          "reference": {
+            "width": 64,
+            "lags": 3,
+            "modes": 8,
+            "ridge": 0.001,
+            "members": 30,
+            "leak": 0.3,
+            "input_scale": 0.5
+          }
+        },
+        "dcrnn": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            11,
+            12
+          ],
+          "per_seed_candidate_counts": [
+            12,
+            11,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            11,
+            12,
+            12,
+            12,
+            12
+          ],
+          "reference": {
+            "hidden_size": 32,
+            "layers": 1,
+            "graph_k": 8,
+            "diffusion_order": 2,
+            "context": 24,
+            "learning_rate": 0.001,
+            "weight_decay": 1e-05,
+            "max_epochs": 200,
+            "patience": 20,
+            "batch_size": 32
+          }
+        }
+      }
+    },
+    "visual_demo.yaml": {
+      "configuration_sha256": "c3900ad9e6bd50cc41f5a370af7d7cb7d59645d3ebc81ad8bb449149812524a0",
+      "protocol": {
+        "schema_version": "3.0",
+        "name": "spatial_detail_demo",
+        "stage": "development",
+        "initial_fit": 2000,
+        "training_start": 0,
+        "horizon": 100,
+        "validation_blocks": 3,
+        "n_side": 25,
+        "n_observed": 100,
+        "n_calibration": 20,
+        "paths": 128,
+        "trials": 1,
+        "finalist_count": 1,
+        "finalist_seeds": 1,
+        "replications": 1,
+        "master_seed": 20261102,
+        "models": [
+          "bayes_esn_ridge",
+          "separable_stgp",
+          "basis_gru"
+        ],
+        "scenarios": [
+          "g4_existing_fronts"
+        ],
+        "tracks": [
+          "A",
+          "B"
+        ],
+        "mcmc_warmup": 500,
+        "mcmc_draws": 1000,
+        "mcmc_continuation": 1000,
+        "mcmc_functional_draws": 512,
+        "mcmc_chains": 4,
+        "neural_epochs": 80,
+        "ensemble_members": 30,
+        "score_pairs": 512,
+        "score_observed_count": null,
+        "retain_paths_replications": [
+          0
+        ],
+        "generator_options": null,
+        "model_options": {
+          "bayes_esn_ridge": {
+            "conditioning": 200,
+            "features": {
+              "modes": 12,
+              "units": [
+                64,
+                64
+              ],
+              "input_scales": [
+                0.3,
+                0.6
+              ],
+              "lags": [
+                1,
+                2,
+                4
+              ],
+              "squares": 32
+            },
+            "spatial_mean": {
+              "side": 5,
+              "width": 0.22
+            }
+          },
+          "basis_gru": {
+            "rank": 16,
+            "hidden_size": 32,
+            "lags": 12,
+            "epochs": 80,
+            "covariance_max_iter": 60
+          }
+        },
+        "fhn_target_policy": "finite_semidiscrete",
+        "fhn_time_tolerance": 0.02
+      },
+      "models": {
+        "bayes_esn_ridge": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            1
+          ],
+          "per_seed_candidate_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "reference": {
+            "conditioning": 200,
+            "features": {
+              "modes": 12,
+              "units": [
+                64,
+                64
+              ],
+              "input_scales": [
+                0.3,
+                0.6
+              ],
+              "lags": [
+                1,
+                2,
+                4
+              ],
+              "squares": 32
+            },
+            "spatial_mean": {
+              "side": 5,
+              "width": 0.22
+            },
+            "sampler": {
+              "chains": 4,
+              "warmup": 500,
+              "draws": 1000
+            },
+            "diagnostics": {
+              "functional_draws": 512
+            },
+            "continuation_draws": 1000
+          }
+        },
+        "separable_stgp": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            1
+          ],
+          "per_seed_candidate_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "reference": {
+            "spatial_nu": 1.5,
+            "temporal_nu": 0.5,
+            "spatial_length": 0.2,
+            "temporal_length": 16.0,
+            "max_iter": 60
+          }
+        },
+        "basis_gru": {
+          "unique_candidate_counts_over_20_fixed_search_seeds": [
+            1
+          ],
+          "per_seed_candidate_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "reference": {
+            "rank": 16,
+            "hidden_size": 32,
+            "lags": 12,
+            "epochs": 80,
+            "covariance_max_iter": 60
+          }
+        }
+      }
+    }
+  }
+}

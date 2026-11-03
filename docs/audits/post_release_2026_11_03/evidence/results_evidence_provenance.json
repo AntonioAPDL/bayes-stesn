@@ -1,0 +1,22 @@
+{
+  "audit_base_commit": "f279c7a47ebe76bc282e0592fa266e96b163acf9",
+  "original_scientific_snapshot_tag": "v0.2.0",
+  "original_scientific_snapshot_commit": "8ee53dfe9f2727d4bf25e26f38d4690007140fd9",
+  "scope": "Results audit; bounded training-only LGSSM diagnostic; descriptive transformed existing ESN chains",
+  "files": {
+    "results_evidence.json": {
+      "sha256": "ccda75d37edb03c929af464773041a1be89f56abbc1476648b47260cf47bfd6c",
+      "bytes": 585061
+    },
+    "esn_parameter_geometry.json": {
+      "sha256": "885249081b3955478bf00bb71b5c302d66fb98239998473ff1cb27bc7414392c",
+      "bytes": 9860
+    },
+    "lgssm_iteration_probe.json": {
+      "sha256": "499532a12ee0ce1f958fb841999cabfd688e468c93a8a6072e220be80b2f3011",
+      "bytes": 5986
+    }
+  },
+  "numerical_receipts_unchanged_after_creation": true,
+  "portable_script_refactor": "Three analysis/probe scripts subsequently gained argparse paths and main guards; no additional fit was run and numeric receipt files were not modified."
+}

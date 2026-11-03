@@ -1,0 +1,266 @@
+{
+  "schema": "post-release-compute-audit-1",
+  "recorded_at": "2026-11-03T05:15:02.138243+00:00",
+  "audited_git_head": "f279c7a47ebe76bc282e0592fa266e96b163acf9",
+  "resource_snapshot": {
+    "memory.max": "8589934592",
+    "memory.current": "1556008960",
+    "memory.peak": "8590712832",
+    "memory.events": "low 0\nhigh 0\nmax 32953\noom 0\noom_kill 0\noom_group_kill 0",
+    "cpu.max": "800000 100000",
+    "cpuset.cpus.effective": "0-8",
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "host_meminfo": {
+      "MemTotal": "10206472 kB",
+      "MemAvailable": "9375644 kB",
+      "SwapTotal": "0 kB",
+      "SwapFree": "0 kB"
+    },
+    "disk_free_bytes": 60831444992,
+    "runner_worker_cap": 4,
+    "runner_default_budget_bytes": 6871947673
+  },
+  "planning_estimates": {
+    "smoke": {
+      "dimensions": {
+        "times": 144,
+        "sites": 25,
+        "observed": 10,
+        "horizon": 8,
+        "paths": 16
+      },
+      "estimates": {
+        "1": {
+          "estimated_per_worker_bytes": 805483008,
+          "estimated_total_bytes": 805598208,
+          "native_path_bytes": 12288,
+          "dataset_bytes": 115200,
+          "assumption": "planning allowance; peak depends on model ranks, linear algebra, and allocator behavior"
+        },
+        "2": {
+          "estimated_per_worker_bytes": 805483008,
+          "estimated_total_bytes": 1611081216,
+          "native_path_bytes": 12288,
+          "dataset_bytes": 115200,
+          "assumption": "planning allowance; peak depends on model ranks, linear algebra, and allocator behavior"
+        },
+        "4": {
+          "estimated_per_worker_bytes": 805483008,
+          "estimated_total_bytes": 3222047232,
+          "native_path_bytes": 12288,
+          "dataset_bytes": 115200,
+          "assumption": "planning allowance; peak depends on model ranks, linear algebra, and allocator behavior"
+        }
+      }
+    },
+    "pilot": {
+      "dimensions": {
+        "times": 560,
+        "sites": 49,
+        "observed": 25,
+        "horizon": 40,
+        "paths": 128
+      },
+      "estimates": {
+        "1": {
+          "estimated_per_worker_bytes": 811304448,
+          "estimated_total_bytes": 812182528,
+          "native_path_bytes": 1024000,
+          "dataset_bytes": 878080,
+          "assumption": "planning allowance; peak depends on model ranks, linear algebra, and allocator behavior"
+        },
+        "2": {
+          "estimated_per_worker_bytes": 811304448,
+          "estimated_total_bytes": 1623486976,
+          "native_path_bytes": 1024000,
+          "dataset_bytes": 878080,
+          "assumption": "planning allowance; peak depends on model ranks, linear algebra, and allocator behavior"
+        },
+        "4": {
+          "estimated_per_worker_bytes": 811304448,
+          "estimated_total_bytes": 3246095872,
+          "native_path_bytes": 1024000,
+          "dataset_bytes": 878080,
+          "assumption": "planning allowance; peak depends on model ranks, linear algebra, and allocator behavior"
+        }
+      }
+    },
+    "visual_demo": {
+      "dimensions": {
+        "times": 2400,
+        "sites": 625,
+        "observed": 100,
+        "horizon": 100,
+        "paths": 128
+      },
+      "estimates": {
+        "1": {
+          "estimated_per_worker_bytes": 1111866368,
+          "estimated_total_bytes": 1159866368,
+          "native_path_bytes": 51712000,
+          "dataset_bytes": 48000000,
+          "assumption": "planning allowance; peak depends on model ranks, linear algebra, and allocator behavior"
+        },
+        "2": {
+          "estimated_per_worker_bytes": 1111866368,
+          "estimated_total_bytes": 2271732736,
+          "native_path_bytes": 51712000,
+          "dataset_bytes": 48000000,
+          "assumption": "planning allowance; peak depends on model ranks, linear algebra, and allocator behavior"
+        },
+        "4": {
+          "estimated_per_worker_bytes": 1111866368,
+          "estimated_total_bytes": 4495465472,
+          "native_path_bytes": 51712000,
+          "dataset_bytes": 48000000,
+          "assumption": "planning allowance; peak depends on model ranks, linear algebra, and allocator behavior"
+        }
+      }
+    },
+    "main_draft": {
+      "dimensions": {
+        "times": 2400,
+        "sites": 625,
+        "observed": 100,
+        "horizon": 100,
+        "paths": 256
+      },
+      "estimates": {
+        "1": {
+          "estimated_per_worker_bytes": 1370426368,
+          "estimated_total_bytes": 1418426368,
+          "native_path_bytes": 103424000,
+          "dataset_bytes": 48000000,
+          "assumption": "planning allowance; peak depends on model ranks, linear algebra, and allocator behavior"
+        },
+        "2": {
+          "estimated_per_worker_bytes": 1370426368,
+          "estimated_total_bytes": 2788852736,
+          "native_path_bytes": 103424000,
+          "dataset_bytes": 48000000,
+          "assumption": "planning allowance; peak depends on model ranks, linear algebra, and allocator behavior"
+        },
+        "4": {
+          "estimated_per_worker_bytes": 1370426368,
+          "estimated_total_bytes": 5529705472,
+          "native_path_bytes": 103424000,
+          "dataset_bytes": 48000000,
+          "assumption": "planning allowance; peak depends on model ranks, linear algebra, and allocator behavior"
+        }
+      }
+    }
+  },
+  "pilot_zip": "/workspace/scratch/158260e8300f/publication_release/bayes_stesn_v02_pilot_results.zip",
+  "pilot_receipts": 300,
+  "pilot_process_failures": 0,
+  "pilot_compute_by_model": {
+    "basis_gru": {
+      "jobs": 40,
+      "tuning_seconds": 186.73402256900226,
+      "fit_seconds": 58.7315101910026,
+      "forecast_seconds": 2.4339607839938253,
+      "total_seconds_including_tuning": 249.4637631900041,
+      "process_lifetime_peak_rss_bytes_min": 425369600,
+      "process_lifetime_peak_rss_bytes_max": 957063168
+    },
+    "basis_krr": {
+      "jobs": 40,
+      "tuning_seconds": 4.1238291220215615,
+      "fit_seconds": 0.4080000380126876,
+      "forecast_seconds": 0.06666543400206137,
+      "total_seconds_including_tuning": 5.406648532018153,
+      "process_lifetime_peak_rss_bytes_min": 98988032,
+      "process_lifetime_peak_rss_bytes_max": 957063168
+    },
+    "basis_lgssm": {
+      "jobs": 40,
+      "tuning_seconds": 220.0869236500148,
+      "fit_seconds": 97.98450518199752,
+      "forecast_seconds": 0.591929195994453,
+      "total_seconds_including_tuning": 320.13285080903006,
+      "process_lifetime_peak_rss_bytes_min": 108511232,
+      "process_lifetime_peak_rss_bytes_max": 957063168
+    },
+    "bayes_esn_ridge": {
+      "jobs": 40,
+      "tuning_seconds": 3102.170871540995,
+      "fit_seconds": 400.8964967769898,
+      "forecast_seconds": 20.69431264099694,
+      "total_seconds_including_tuning": 3554.416214836998,
+      "process_lifetime_peak_rss_bytes_min": 144683008,
+      "process_lifetime_peak_rss_bytes_max": 957063168
+    },
+    "dcrnn": {
+      "jobs": 20,
+      "tuning_seconds": 5019.9600059730255,
+      "fit_seconds": 814.0034509969992,
+      "forecast_seconds": 0.3525081819934712,
+      "total_seconds_including_tuning": 5834.695172393018,
+      "process_lifetime_peak_rss_bytes_min": 479666176,
+      "process_lifetime_peak_rss_bytes_max": 957063168
+    },
+    "eqesn_rollout": {
+      "jobs": 20,
+      "tuning_seconds": 99.71377287698851,
+      "fit_seconds": 5.071749968999939,
+      "forecast_seconds": 2.4399819540012686,
+      "total_seconds_including_tuning": 108.65470559398818,
+      "process_lifetime_peak_rss_bytes_min": 116854784,
+      "process_lifetime_peak_rss_bytes_max": 957063168
+    },
+    "persistence": {
+      "jobs": 20,
+      "tuning_seconds": 0.03157808500327519,
+      "fit_seconds": 0.0005407560056482907,
+      "forecast_seconds": 0.006914688990946161,
+      "total_seconds_including_tuning": 0.18761473500489956,
+      "process_lifetime_peak_rss_bytes_min": 97574912,
+      "process_lifetime_peak_rss_bytes_max": 957063168
+    },
+    "seasonal_naive": {
+      "jobs": 20,
+      "tuning_seconds": 0.07219246399836265,
+      "fit_seconds": 0.0005592420056927949,
+      "forecast_seconds": 0.006435600997065194,
+      "total_seconds_including_tuning": 0.23387783201178536,
+      "process_lifetime_peak_rss_bytes_min": 97574912,
+      "process_lifetime_peak_rss_bytes_max": 957063168
+    },
+    "separable_stgp": {
+      "jobs": 40,
+      "tuning_seconds": 123.61476578101428,
+      "fit_seconds": 46.636243777989876,
+      "forecast_seconds": 0.771952480004984,
+      "total_seconds_including_tuning": 172.45179286502025,
+      "process_lifetime_peak_rss_bytes_min": 98267136,
+      "process_lifetime_peak_rss_bytes_max": 957063168
+    },
+    "spatial_persistence": {
+      "jobs": 20,
+      "tuning_seconds": 0.0314073429981363,
+      "fit_seconds": 0.003946576005546376,
+      "forecast_seconds": 0.0076586830109590665,
+      "total_seconds_including_tuning": 0.1896642109932145,
+      "process_lifetime_peak_rss_bytes_min": 116854784,
+      "process_lifetime_peak_rss_bytes_max": 957063168
+    }
+  },
+  "aggregate_summary_one_timing_seconds": 0.025875312996504363,
+  "scope": [
+    "No scientific refits",
+    "Resource snapshot is current executor, not user laptop or cluster",
+    "Archived timing totals are sum of per-job wall durations, not study makespan",
+    "RSS is process-lifetime high-water, not comparable per-model peaks",
+    "Current planning estimates are not measured peaks"
+  ]
+}

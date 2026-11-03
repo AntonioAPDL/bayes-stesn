@@ -1,0 +1,87 @@
+{
+  "schema": "bayes-stesn-post-release-audit-1",
+  "audit_date": "2026-11-03",
+  "audited_head": "f279c7a47ebe76bc282e0592fa266e96b163acf9",
+  "audited_release": "v0.2.1",
+  "scientific_snapshot": "v0.2.0",
+  "files": {
+    "README.md": {
+      "bytes": 41291,
+      "sha256": "bf8397447c3699165576d42b0d2e89b4714a97c3b2ce704a413fbfdc79aadb1b"
+    },
+    "assets/audit_overview.png": {
+      "bytes": 215341,
+      "sha256": "0ae681c8c7abcdba9a0d0fe7cd247c9053501b239a832a940744c702b2ef5669"
+    },
+    "assets/audit_overview.svg": {
+      "bytes": 107800,
+      "sha256": "c69103bc63edee362e75595437376c55af5a82a5ad070270e1d242db76aba69d"
+    },
+    "evidence/audit_verification.json": {
+      "bytes": 1431,
+      "sha256": "4bc84d64c10942511ddadb4a2a164149dcc2144458e95053953b5386d4c975dd"
+    },
+    "evidence/candidate_enumeration.json": {
+      "bytes": 20840,
+      "sha256": "756e5a887273987d355fc4f03d42b8c94c4666d9ab1588a23a0b9a03761b0925"
+    },
+    "evidence/compute_evidence.json": {
+      "bytes": 9491,
+      "sha256": "df2dc4bfdf6c37c2726f3c428374d6f00b3cd0a5de8c381124323ccfc874f0d4"
+    },
+    "evidence/decoder_probe.json": {
+      "bytes": 38845,
+      "sha256": "d5f6a3a90950ba7935e6f7533a7cb4d7234bdc7ba7f0970a1100e9dbe88bbb4e"
+    },
+    "evidence/esn_parameter_geometry.json": {
+      "bytes": 9860,
+      "sha256": "885249081b3955478bf00bb71b5c302d66fb98239998473ff1cb27bc7414392c"
+    },
+    "evidence/g1_oracle_audit.json": {
+      "bytes": 82464,
+      "sha256": "d9a20d8bfdd26a1bb9947df7bc5181c440d72a02ae3713d00e868a6c4488b80e"
+    },
+    "evidence/lgssm_iteration_probe.json": {
+      "bytes": 5986,
+      "sha256": "499532a12ee0ce1f958fb841999cabfd688e468c93a8a6072e220be80b2f3011"
+    },
+    "evidence/results_evidence.json": {
+      "bytes": 585061,
+      "sha256": "ccda75d37edb03c929af464773041a1be89f56abbc1476648b47260cf47bfd6c"
+    },
+    "evidence/results_evidence_provenance.json": {
+      "bytes": 1012,
+      "sha256": "7b06151918e193f0f57ed1b1847cf40bf73eb6a1a4fba7a60a3c441c3a69c587"
+    },
+    "scripts/analyze_saved_results.py": {
+      "bytes": 11322,
+      "sha256": "d257d1769e08d2730e3ca5c7ac9c08a63b0c57f20191d5ca633461f1976a2191"
+    },
+    "scripts/candidate_enumeration.py": {
+      "bytes": 2637,
+      "sha256": "7b5e1563640580adda2d93e2c91796fd2ea0905bc3450eac5adfabdd9ad0fa57"
+    },
+    "scripts/decoder_probe.py": {
+      "bytes": 7076,
+      "sha256": "1247326900546ff5d112742ef47d83dad0c9af48fb95ac688feabe05400c40fa"
+    },
+    "scripts/g1_oracle_audit.py": {
+      "bytes": 10274,
+      "sha256": "3b6470e1b2310e99454b3149311d72cbff2bd203dca5b8e98e32c43eb7aa38b6"
+    },
+    "scripts/probe_esn_parameter_geometry.py": {
+      "bytes": 3261,
+      "sha256": "bd729a20f64f31a1fb57374618198a6d252f5691272d486c766c8d4b6b6ae8d3"
+    },
+    "scripts/probe_lgssm_iterations.py": {
+      "bytes": 6552,
+      "sha256": "57d6d5921f8e595740b90f99972bab9d830656795cbf79973aea60198bc9bb0b"
+    },
+    "scripts/render_audit_overview.py": {
+      "bytes": 5098,
+      "sha256": "264d557571793bc89588c62f478ab898aea22dce1354cb725e1c130e5a24c5f2"
+    }
+  },
+  "scope": "Audit, reproducible evidence extraction, and bounded post-hoc diagnostics. No changed model implementation, benchmark configuration, or original scientific results.",
+  "review": "Independent numerical/evidence and statistical/mathematical reviews completed; common-endpoint, original-quantity ESS, and default-versus-selected feature-dimension corrections incorporated."
+}

@@ -1,0 +1,1061 @@
+{
+  "schema": "training-only-decoder-probe-1",
+  "audited_source_commit": "f279c7a47ebe76bc282e0592fa266e96b163acf9",
+  "policy": {
+    "data": "replication 0; initial 400 rows; 25 observed sites only; no future or U responses",
+    "spatial_split": "existing geometry-only rightmost 20 percent of observed sites",
+    "fit": "separate contemporaneous least-squares coefficients at each time; rcond 1e-10",
+    "meaning": "geometric reconstruction diagnostics, not forecast scores or evidence of guaranteed improvement",
+    "overcomplete": "minimum coefficient norm; dependent on dictionary parametrization"
+  },
+  "sources": [
+    {
+      "scenario": "g1_gaussian_ar",
+      "archive": "bayes_stesn_v02_pilot_results.zip",
+      "member": "bayes-stesn/results/benchmark_v3/pilot_release/g1_gaussian_ar/rep_000/simulation.npz",
+      "member_sha256": "04241d482b6e02d73ef43057272ddd437cfa4ccb61cc4792ac324d63cc7f9c76",
+      "rows_used": [
+        0,
+        400
+      ],
+      "observed_site_ids": [
+        "site_00035",
+        "site_00006",
+        "site_00048",
+        "site_00000",
+        "site_00017",
+        "site_00038",
+        "site_00027",
+        "site_00022",
+        "site_00004",
+        "site_00002",
+        "site_00033",
+        "site_00030",
+        "site_00044",
+        "site_00008",
+        "site_00014",
+        "site_00025",
+        "site_00046",
+        "site_00015",
+        "site_00037",
+        "site_00034",
+        "site_00039",
+        "site_00041",
+        "site_00009",
+        "site_00007",
+        "site_00026"
+      ],
+      "held_site_ids": [
+        "site_00006",
+        "site_00027",
+        "site_00034",
+        "site_00041",
+        "site_00048"
+      ],
+      "response_sd": 1.0283534829770393
+    },
+    {
+      "scenario": "g2_spectral_transport",
+      "archive": "bayes_stesn_v02_pilot_results.zip",
+      "member": "bayes-stesn/results/benchmark_v3/pilot_release/g2_spectral_transport/rep_000/simulation.npz",
+      "member_sha256": "3b49626c1da68e1aba00814208d7cbf787a09497772494a0efa2c569ecb4ca51",
+      "rows_used": [
+        0,
+        400
+      ],
+      "observed_site_ids": [
+        "site_00025",
+        "site_00042",
+        "site_00000",
+        "site_00048",
+        "site_00006",
+        "site_00021",
+        "site_00003",
+        "site_00045",
+        "site_00016",
+        "site_00034",
+        "site_00030",
+        "site_00020",
+        "site_00036",
+        "site_00040",
+        "site_00008",
+        "site_00011",
+        "site_00014",
+        "site_00032",
+        "site_00033",
+        "site_00037",
+        "site_00031",
+        "site_00044",
+        "site_00038",
+        "site_00009",
+        "site_00007"
+      ],
+      "held_site_ids": [
+        "site_00040",
+        "site_00006",
+        "site_00020",
+        "site_00034",
+        "site_00048"
+      ],
+      "response_sd": 0.8661927468694013
+    },
+    {
+      "scenario": "g3_excitable_field",
+      "archive": "bayes_stesn_v02_pilot_results.zip",
+      "member": "bayes-stesn/results/benchmark_v3/pilot_release/g3_excitable_field/rep_000/simulation.npz",
+      "member_sha256": "9a87379125a1aabc8671c56750740782500b4300e7fd36632f08271ba172dddc",
+      "rows_used": [
+        0,
+        400
+      ],
+      "observed_site_ids": [
+        "site_00035",
+        "site_00006",
+        "site_00048",
+        "site_00000",
+        "site_00017",
+        "site_00038",
+        "site_00027",
+        "site_00022",
+        "site_00004",
+        "site_00002",
+        "site_00033",
+        "site_00030",
+        "site_00044",
+        "site_00008",
+        "site_00014",
+        "site_00025",
+        "site_00046",
+        "site_00015",
+        "site_00037",
+        "site_00034",
+        "site_00039",
+        "site_00041",
+        "site_00009",
+        "site_00007",
+        "site_00026"
+      ],
+      "held_site_ids": [
+        "site_00006",
+        "site_00027",
+        "site_00034",
+        "site_00041",
+        "site_00048"
+      ],
+      "response_sd": 1.236122983642595
+    },
+    {
+      "scenario": "g4_existing_fronts",
+      "archive": "bayes_stesn_v02_pilot_results.zip",
+      "member": "bayes-stesn/results/benchmark_v3/pilot_release/g4_existing_fronts/rep_000/simulation.npz",
+      "member_sha256": "b2f3534026f0eda702a7467a29f460d0d61e1454650ee4a06e128e2d73f39aca",
+      "rows_used": [
+        0,
+        400
+      ],
+      "observed_site_ids": [
+        "site_00035",
+        "site_00006",
+        "site_00048",
+        "site_00000",
+        "site_00017",
+        "site_00038",
+        "site_00027",
+        "site_00022",
+        "site_00004",
+        "site_00002",
+        "site_00033",
+        "site_00030",
+        "site_00044",
+        "site_00008",
+        "site_00014",
+        "site_00025",
+        "site_00046",
+        "site_00015",
+        "site_00037",
+        "site_00034",
+        "site_00039",
+        "site_00041",
+        "site_00009",
+        "site_00007",
+        "site_00026"
+      ],
+      "held_site_ids": [
+        "site_00006",
+        "site_00027",
+        "site_00034",
+        "site_00041",
+        "site_00048"
+      ],
+      "response_sd": 0.425610019807043
+    }
+  ],
+  "rows": [
+    {
+      "scenario": "g1_gaussian_ar",
+      "decoder": "esn_side3_width03",
+      "configuration": {
+        "side": 3,
+        "width": 0.3
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 12,
+        "numerical_rank": 12,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 85.45340758916052,
+        "median_independent_input_noise_amplification": 0.6868633658048503,
+        "max_independent_input_noise_amplification": 0.9719679978190788,
+        "training_rmse": 0.46668612956076017,
+        "target_rmse": 0.46668612956076017,
+        "training_rmse_over_training_sd": 0.45381878632795,
+        "target_rmse_over_training_sd": 0.45381878632795
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 12,
+        "numerical_rank": 12,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 72.82418273422566,
+        "median_independent_input_noise_amplification": 4.604922162142434,
+        "max_independent_input_noise_amplification": 5.503377188442591,
+        "training_rmse": 0.3981139088888588,
+        "target_rmse": 3.6457069324404237,
+        "training_rmse_over_training_sd": 0.3871372203032133,
+        "target_rmse_over_training_sd": 3.545188490912928
+      }
+    },
+    {
+      "scenario": "g1_gaussian_ar",
+      "decoder": "esn_side5_width022",
+      "configuration": {
+        "side": 5,
+        "width": 0.22
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 28,
+        "numerical_rank": 25,
+        "coefficient_nullity": 3,
+        "nonzero_singular_condition_number": 300.0544601355624,
+        "median_independent_input_noise_amplification": 1.0,
+        "max_independent_input_noise_amplification": 1.0000000000000022,
+        "training_rmse": 5.501350039595705e-15,
+        "target_rmse": 5.501350039595705e-15,
+        "training_rmse_over_training_sd": 5.349668310228825e-15,
+        "target_rmse_over_training_sd": 5.349668310228825e-15
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 28,
+        "numerical_rank": 20,
+        "coefficient_nullity": 8,
+        "nonzero_singular_condition_number": 86.71307937981192,
+        "median_independent_input_noise_amplification": 1.6341565992984441,
+        "max_independent_input_noise_amplification": 1.8764196561403959,
+        "training_rmse": 1.6299624922334458e-15,
+        "target_rmse": 1.2584487045586499,
+        "training_rmse_over_training_sd": 1.5850216090237513e-15,
+        "target_rmse_over_training_sd": 1.2237510986159106
+      }
+    },
+    {
+      "scenario": "g1_gaussian_ar",
+      "decoder": "esn_side5_width03",
+      "configuration": {
+        "side": 5,
+        "width": 0.3
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 28,
+        "numerical_rank": 25,
+        "coefficient_nullity": 3,
+        "nonzero_singular_condition_number": 456.35700581764996,
+        "median_independent_input_noise_amplification": 0.9999999999999998,
+        "max_independent_input_noise_amplification": 1.0000000000000062,
+        "training_rmse": 8.617812034471511e-15,
+        "target_rmse": 8.617812034471511e-15,
+        "training_rmse_over_training_sd": 8.380204061276005e-15,
+        "target_rmse_over_training_sd": 8.380204061276005e-15
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 28,
+        "numerical_rank": 20,
+        "coefficient_nullity": 8,
+        "nonzero_singular_condition_number": 153.7537798139873,
+        "median_independent_input_noise_amplification": 2.5291593091614053,
+        "max_independent_input_noise_amplification": 3.436515538435277,
+        "training_rmse": 2.550638276861867e-15,
+        "target_rmse": 1.7826563595342273,
+        "training_rmse_over_training_sd": 2.4803127709334715e-15,
+        "target_rmse_over_training_sd": 1.7335054424802583
+      }
+    },
+    {
+      "scenario": "g1_gaussian_ar",
+      "decoder": "gaussian_rbf_rank8_width025",
+      "configuration": {
+        "rank": 8,
+        "width": 0.25
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 8,
+        "numerical_rank": 8,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000000004,
+        "median_independent_input_noise_amplification": 0.5106055544431606,
+        "max_independent_input_noise_amplification": 0.9556119168955769,
+        "training_rmse": 0.6229305023230465,
+        "target_rmse": 0.6229305023230465,
+        "training_rmse_over_training_sd": 0.6057552316735383,
+        "target_rmse_over_training_sd": 0.6057552316735383
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 8,
+        "numerical_rank": 8,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000000135,
+        "median_independent_input_noise_amplification": 1.5905497557425683,
+        "max_independent_input_noise_amplification": 1.9376568873920665,
+        "training_rmse": 0.5338380805900529,
+        "target_rmse": 1.8455663155451083,
+        "training_rmse_over_training_sd": 0.5191192419989812,
+        "target_rmse_over_training_sd": 1.794680862267586
+      }
+    },
+    {
+      "scenario": "g1_gaussian_ar",
+      "decoder": "gaussian_rbf_rank16_width025",
+      "configuration": {
+        "rank": 16,
+        "width": 0.25
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 16,
+        "numerical_rank": 16,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000000073,
+        "median_independent_input_noise_amplification": 0.787878108773986,
+        "max_independent_input_noise_amplification": 0.9993562245202423,
+        "training_rmse": 0.3279544043599265,
+        "target_rmse": 0.3279544043599265,
+        "training_rmse_over_training_sd": 0.3189121345809153,
+        "target_rmse_over_training_sd": 0.3189121345809153
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 16,
+        "numerical_rank": 16,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.000000000000035,
+        "median_independent_input_noise_amplification": 5.096507959380646,
+        "max_independent_input_noise_amplification": 7.079540416100859,
+        "training_rmse": 0.25685990437322714,
+        "target_rmse": 3.9332609125888323,
+        "training_rmse_over_training_sd": 0.24977783284170801,
+        "target_rmse_over_training_sd": 3.824814110807706
+      }
+    },
+    {
+      "scenario": "g1_gaussian_ar",
+      "decoder": "gaussian_rbf_rank24_width025",
+      "configuration": {
+        "rank": 24,
+        "width": 0.25
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 24,
+        "numerical_rank": 24,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000001075,
+        "median_independent_input_noise_amplification": 0.9976458109459571,
+        "max_independent_input_noise_amplification": 0.9999999551195929,
+        "training_rmse": 0.06706871796805848,
+        "target_rmse": 0.06706871796805848,
+        "training_rmse_over_training_sd": 0.0652195174891589,
+        "target_rmse_over_training_sd": 0.0652195174891589
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 20,
+        "numerical_rank": 20,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000001308,
+        "median_independent_input_noise_amplification": 14.986979253316653,
+        "max_independent_input_noise_amplification": 22.812478009995736,
+        "training_rmse": 4.347105364845437e-15,
+        "target_rmse": 7.151570183322605,
+        "training_rmse_over_training_sd": 4.227248156208654e-15,
+        "target_rmse_over_training_sd": 6.95438903228014
+      }
+    },
+    {
+      "scenario": "g2_spectral_transport",
+      "decoder": "esn_side3_width03",
+      "configuration": {
+        "side": 3,
+        "width": 0.3
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 12,
+        "numerical_rank": 12,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 95.39807647129749,
+        "median_independent_input_noise_amplification": 0.6709941430686633,
+        "max_independent_input_noise_amplification": 0.9541103181675947,
+        "training_rmse": 0.34456040801629856,
+        "target_rmse": 0.34456040801629856,
+        "training_rmse_over_training_sd": 0.397787223757773,
+        "target_rmse_over_training_sd": 0.397787223757773
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 12,
+        "numerical_rank": 12,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 67.48009011629739,
+        "median_independent_input_noise_amplification": 5.050013951146958,
+        "max_independent_input_noise_amplification": 6.374570972128462,
+        "training_rmse": 0.25297188757197286,
+        "target_rmse": 2.4471477655378653,
+        "training_rmse_over_training_sd": 0.29205034155072906,
+        "target_rmse_over_training_sd": 2.825176930172136
+      }
+    },
+    {
+      "scenario": "g2_spectral_transport",
+      "decoder": "esn_side5_width022",
+      "configuration": {
+        "side": 5,
+        "width": 0.22
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 28,
+        "numerical_rank": 25,
+        "coefficient_nullity": 3,
+        "nonzero_singular_condition_number": 488.2764789623804,
+        "median_independent_input_noise_amplification": 0.9999999999999994,
+        "max_independent_input_noise_amplification": 1.0000000000000142,
+        "training_rmse": 8.731411110833694e-15,
+        "target_rmse": 8.731411110833694e-15,
+        "training_rmse_over_training_sd": 1.0080217298506377e-14,
+        "target_rmse_over_training_sd": 1.0080217298506377e-14
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 28,
+        "numerical_rank": 20,
+        "coefficient_nullity": 8,
+        "nonzero_singular_condition_number": 289.1922906296004,
+        "median_independent_input_noise_amplification": 11.770804831537863,
+        "max_independent_input_noise_amplification": 18.5981112859428,
+        "training_rmse": 2.3413952879510847e-15,
+        "target_rmse": 3.8361838971897155,
+        "training_rmse_over_training_sd": 2.7030880787369424e-15,
+        "target_rmse_over_training_sd": 4.428787831639636
+      }
+    },
+    {
+      "scenario": "g2_spectral_transport",
+      "decoder": "esn_side5_width03",
+      "configuration": {
+        "side": 5,
+        "width": 0.3
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 28,
+        "numerical_rank": 25,
+        "coefficient_nullity": 3,
+        "nonzero_singular_condition_number": 711.2160252809929,
+        "median_independent_input_noise_amplification": 1.0,
+        "max_independent_input_noise_amplification": 1.000000000000018,
+        "training_rmse": 7.15731943707192e-15,
+        "target_rmse": 7.15731943707192e-15,
+        "training_rmse_over_training_sd": 8.262963945311183e-15,
+        "target_rmse_over_training_sd": 8.262963945311183e-15
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 28,
+        "numerical_rank": 20,
+        "coefficient_nullity": 8,
+        "nonzero_singular_condition_number": 410.565965738627,
+        "median_independent_input_noise_amplification": 12.923335207068817,
+        "max_independent_input_noise_amplification": 21.435946629934758,
+        "training_rmse": 3.4005759424585462e-15,
+        "target_rmse": 4.1718924417925045,
+        "training_rmse_over_training_sd": 3.925888267650505e-15,
+        "target_rmse_over_training_sd": 4.816355778630775
+      }
+    },
+    {
+      "scenario": "g2_spectral_transport",
+      "decoder": "gaussian_rbf_rank8_width025",
+      "configuration": {
+        "rank": 8,
+        "width": 0.25
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 8,
+        "numerical_rank": 8,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000000067,
+        "median_independent_input_noise_amplification": 0.494004479273477,
+        "max_independent_input_noise_amplification": 0.9324615531517138,
+        "training_rmse": 0.49712209809069613,
+        "target_rmse": 0.49712209809069613,
+        "training_rmse_over_training_sd": 0.5739162558072641,
+        "target_rmse_over_training_sd": 0.5739162558072641
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 8,
+        "numerical_rank": 8,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000000135,
+        "median_independent_input_noise_amplification": 1.3003444586942308,
+        "max_independent_input_noise_amplification": 2.0620106332359476,
+        "training_rmse": 0.38896327030838634,
+        "target_rmse": 1.6363746245926123,
+        "training_rmse_over_training_sd": 0.449049327316789,
+        "target_rmse_over_training_sd": 1.8891576159080143
+      }
+    },
+    {
+      "scenario": "g2_spectral_transport",
+      "decoder": "gaussian_rbf_rank16_width025",
+      "configuration": {
+        "rank": 16,
+        "width": 0.25
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 16,
+        "numerical_rank": 16,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000000226,
+        "median_independent_input_noise_amplification": 0.7817055542349653,
+        "max_independent_input_noise_amplification": 0.9979584517018897,
+        "training_rmse": 0.21862714317356644,
+        "target_rmse": 0.21862714317356644,
+        "training_rmse_over_training_sd": 0.2524001083635598,
+        "target_rmse_over_training_sd": 0.2524001083635598
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 16,
+        "numerical_rank": 16,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.000000000000082,
+        "median_independent_input_noise_amplification": 15.05732858050434,
+        "max_independent_input_noise_amplification": 21.60207953312702,
+        "training_rmse": 0.14483506208614916,
+        "target_rmse": 4.105045181648232,
+        "training_rmse_over_training_sd": 0.16720881421555753,
+        "target_rmse_over_training_sd": 4.739182123707119
+      }
+    },
+    {
+      "scenario": "g2_spectral_transport",
+      "decoder": "gaussian_rbf_rank24_width025",
+      "configuration": {
+        "rank": 24,
+        "width": 0.25
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 24,
+        "numerical_rank": 24,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000001605,
+        "median_independent_input_noise_amplification": 0.9966246069040834,
+        "max_independent_input_noise_amplification": 0.9999999959043817,
+        "training_rmse": 0.06800876603804354,
+        "target_rmse": 0.06800876603804354,
+        "training_rmse_over_training_sd": 0.07851458729461913,
+        "target_rmse_over_training_sd": 0.07851458729461913
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 20,
+        "numerical_rank": 20,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.00000000000014,
+        "median_independent_input_noise_amplification": 27.336985729664903,
+        "max_independent_input_noise_amplification": 37.799921938957176,
+        "training_rmse": 3.4017396427685026e-15,
+        "target_rmse": 8.07034439212424,
+        "training_rmse_over_training_sd": 3.927231733425487e-15,
+        "target_rmse_over_training_sd": 9.317030673937323
+      }
+    },
+    {
+      "scenario": "g3_excitable_field",
+      "decoder": "esn_side3_width03",
+      "configuration": {
+        "side": 3,
+        "width": 0.3
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 12,
+        "numerical_rank": 12,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 85.45340758916052,
+        "median_independent_input_noise_amplification": 0.6868633658048503,
+        "max_independent_input_noise_amplification": 0.9719679978190788,
+        "training_rmse": 0.6860595621950448,
+        "target_rmse": 0.6860595621950448,
+        "training_rmse_over_training_sd": 0.5550091465602971,
+        "target_rmse_over_training_sd": 0.5550091465602971
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 12,
+        "numerical_rank": 12,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 72.82418273422566,
+        "median_independent_input_noise_amplification": 4.604922162142434,
+        "max_independent_input_noise_amplification": 5.503377188442591,
+        "training_rmse": 0.6392933230480166,
+        "target_rmse": 3.5474518374039508,
+        "training_rmse_over_training_sd": 0.5171761479300007,
+        "target_rmse_over_training_sd": 2.8698211135516263
+      }
+    },
+    {
+      "scenario": "g3_excitable_field",
+      "decoder": "esn_side5_width022",
+      "configuration": {
+        "side": 5,
+        "width": 0.22
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 28,
+        "numerical_rank": 25,
+        "coefficient_nullity": 3,
+        "nonzero_singular_condition_number": 300.0544601355624,
+        "median_independent_input_noise_amplification": 1.0,
+        "max_independent_input_noise_amplification": 1.0000000000000022,
+        "training_rmse": 1.1350643660386338e-14,
+        "target_rmse": 1.1350643660386338e-14,
+        "training_rmse_over_training_sd": 9.182454990795796e-15,
+        "target_rmse_over_training_sd": 9.182454990795796e-15
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 28,
+        "numerical_rank": 20,
+        "coefficient_nullity": 8,
+        "nonzero_singular_condition_number": 86.71307937981192,
+        "median_independent_input_noise_amplification": 1.6341565992984441,
+        "max_independent_input_noise_amplification": 1.8764196561403959,
+        "training_rmse": 2.5697144524994786e-15,
+        "target_rmse": 1.6905091026909125,
+        "training_rmse_over_training_sd": 2.07885015205127e-15,
+        "target_rmse_over_training_sd": 1.3675897342425725
+      }
+    },
+    {
+      "scenario": "g3_excitable_field",
+      "decoder": "esn_side5_width03",
+      "configuration": {
+        "side": 5,
+        "width": 0.3
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 28,
+        "numerical_rank": 25,
+        "coefficient_nullity": 3,
+        "nonzero_singular_condition_number": 456.35700581764996,
+        "median_independent_input_noise_amplification": 0.9999999999999998,
+        "max_independent_input_noise_amplification": 1.0000000000000062,
+        "training_rmse": 1.505090970452963e-14,
+        "target_rmse": 1.505090970452963e-14,
+        "training_rmse_over_training_sd": 1.2175899893211075e-14,
+        "target_rmse_over_training_sd": 1.2175899893211075e-14
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 28,
+        "numerical_rank": 20,
+        "coefficient_nullity": 8,
+        "nonzero_singular_condition_number": 153.7537798139873,
+        "median_independent_input_noise_amplification": 2.5291593091614053,
+        "max_independent_input_noise_amplification": 3.436515538435277,
+        "training_rmse": 5.381500416843452e-15,
+        "target_rmse": 2.1557861723628924,
+        "training_rmse_over_training_sd": 4.353531556370952e-15,
+        "target_rmse_over_training_sd": 1.7439900405461621
+      }
+    },
+    {
+      "scenario": "g3_excitable_field",
+      "decoder": "gaussian_rbf_rank8_width025",
+      "configuration": {
+        "rank": 8,
+        "width": 0.25
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 8,
+        "numerical_rank": 8,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000000004,
+        "median_independent_input_noise_amplification": 0.5106055544431606,
+        "max_independent_input_noise_amplification": 0.9556119168955769,
+        "training_rmse": 0.8834373726666748,
+        "target_rmse": 0.8834373726666748,
+        "training_rmse_over_training_sd": 0.7146840438670351,
+        "target_rmse_over_training_sd": 0.7146840438670351
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 8,
+        "numerical_rank": 8,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000000135,
+        "median_independent_input_noise_amplification": 1.5905497557425683,
+        "max_independent_input_noise_amplification": 1.9376568873920665,
+        "training_rmse": 0.7976779698074566,
+        "target_rmse": 1.8070661446751155,
+        "training_rmse_over_training_sd": 0.6453063168980703,
+        "target_rmse_over_training_sd": 1.4618821659233863
+      }
+    },
+    {
+      "scenario": "g3_excitable_field",
+      "decoder": "gaussian_rbf_rank16_width025",
+      "configuration": {
+        "rank": 16,
+        "width": 0.25
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 16,
+        "numerical_rank": 16,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000000073,
+        "median_independent_input_noise_amplification": 0.787878108773986,
+        "max_independent_input_noise_amplification": 0.9993562245202423,
+        "training_rmse": 0.5999219455255836,
+        "target_rmse": 0.5999219455255836,
+        "training_rmse_over_training_sd": 0.48532545180718145,
+        "target_rmse_over_training_sd": 0.48532545180718145
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 16,
+        "numerical_rank": 16,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.000000000000035,
+        "median_independent_input_noise_amplification": 5.096507959380646,
+        "max_independent_input_noise_amplification": 7.079540416100859,
+        "training_rmse": 0.38970362817373505,
+        "target_rmse": 5.2475126604333395,
+        "training_rmse_over_training_sd": 0.3152628284811599,
+        "target_rmse_over_training_sd": 4.245138008007926
+      }
+    },
+    {
+      "scenario": "g3_excitable_field",
+      "decoder": "gaussian_rbf_rank24_width025",
+      "configuration": {
+        "rank": 24,
+        "width": 0.25
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 24,
+        "numerical_rank": 24,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000001075,
+        "median_independent_input_noise_amplification": 0.9976458109459571,
+        "max_independent_input_noise_amplification": 0.9999999551195929,
+        "training_rmse": 0.17271367510055904,
+        "target_rmse": 0.17271367510055904,
+        "training_rmse_over_training_sd": 0.13972208055836652,
+        "target_rmse_over_training_sd": 0.13972208055836652
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 20,
+        "numerical_rank": 20,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000001308,
+        "median_independent_input_noise_amplification": 14.986979253316653,
+        "max_independent_input_noise_amplification": 22.812478009995736,
+        "training_rmse": 5.730935685031208e-15,
+        "target_rmse": 11.641235989411896,
+        "training_rmse_over_training_sd": 4.636218046964342e-15,
+        "target_rmse_over_training_sd": 9.41753866197651
+      }
+    },
+    {
+      "scenario": "g4_existing_fronts",
+      "decoder": "esn_side3_width03",
+      "configuration": {
+        "side": 3,
+        "width": 0.3
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 12,
+        "numerical_rank": 12,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 85.45340758916052,
+        "median_independent_input_noise_amplification": 0.6868633658048503,
+        "max_independent_input_noise_amplification": 0.9719679978190788,
+        "training_rmse": 0.2127757749887346,
+        "target_rmse": 0.2127757749887346,
+        "training_rmse_over_training_sd": 0.49993131055796064,
+        "target_rmse_over_training_sd": 0.49993131055796064
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 12,
+        "numerical_rank": 12,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 72.82418273422566,
+        "median_independent_input_noise_amplification": 4.604922162142434,
+        "max_independent_input_noise_amplification": 5.503377188442591,
+        "training_rmse": 0.1711566940724263,
+        "target_rmse": 1.3059697708429665,
+        "training_rmse_over_training_sd": 0.40214441885090696,
+        "target_rmse_over_training_sd": 3.0684657551883965
+      }
+    },
+    {
+      "scenario": "g4_existing_fronts",
+      "decoder": "esn_side5_width022",
+      "configuration": {
+        "side": 5,
+        "width": 0.22
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 28,
+        "numerical_rank": 25,
+        "coefficient_nullity": 3,
+        "nonzero_singular_condition_number": 300.0544601355624,
+        "median_independent_input_noise_amplification": 1.0,
+        "max_independent_input_noise_amplification": 1.0000000000000022,
+        "training_rmse": 2.3281787592440868e-15,
+        "target_rmse": 2.3281787592440868e-15,
+        "training_rmse_over_training_sd": 5.470216044959664e-15,
+        "target_rmse_over_training_sd": 5.470216044959664e-15
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 28,
+        "numerical_rank": 20,
+        "coefficient_nullity": 8,
+        "nonzero_singular_condition_number": 86.71307937981192,
+        "median_independent_input_noise_amplification": 1.6341565992984441,
+        "max_independent_input_noise_amplification": 1.8764196561403959,
+        "training_rmse": 6.074811730446874e-16,
+        "target_rmse": 0.37587338058349934,
+        "training_rmse_over_training_sd": 1.4273187772226287e-15,
+        "target_rmse_over_training_sd": 0.8831403470104098
+      }
+    },
+    {
+      "scenario": "g4_existing_fronts",
+      "decoder": "esn_side5_width03",
+      "configuration": {
+        "side": 5,
+        "width": 0.3
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 28,
+        "numerical_rank": 25,
+        "coefficient_nullity": 3,
+        "nonzero_singular_condition_number": 456.35700581764996,
+        "median_independent_input_noise_amplification": 0.9999999999999998,
+        "max_independent_input_noise_amplification": 1.0000000000000062,
+        "training_rmse": 3.4802158824640973e-15,
+        "target_rmse": 3.4802158824640973e-15,
+        "training_rmse_over_training_sd": 8.177006462493312e-15,
+        "target_rmse_over_training_sd": 8.177006462493312e-15
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 28,
+        "numerical_rank": 20,
+        "coefficient_nullity": 8,
+        "nonzero_singular_condition_number": 153.7537798139873,
+        "median_independent_input_noise_amplification": 2.5291593091614053,
+        "max_independent_input_noise_amplification": 3.436515538435277,
+        "training_rmse": 9.03067493671451e-16,
+        "target_rmse": 0.4961385200220812,
+        "training_rmse_over_training_sd": 2.1218191575491358e-15,
+        "target_rmse_over_training_sd": 1.1657115597208294
+      }
+    },
+    {
+      "scenario": "g4_existing_fronts",
+      "decoder": "gaussian_rbf_rank8_width025",
+      "configuration": {
+        "rank": 8,
+        "width": 0.25
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 8,
+        "numerical_rank": 8,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000000004,
+        "median_independent_input_noise_amplification": 0.5106055544431606,
+        "max_independent_input_noise_amplification": 0.9556119168955769,
+        "training_rmse": 0.2619374094849095,
+        "target_rmse": 0.2619374094849095,
+        "training_rmse_over_training_sd": 0.6154399504120297,
+        "target_rmse_over_training_sd": 0.6154399504120297
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 8,
+        "numerical_rank": 8,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000000135,
+        "median_independent_input_noise_amplification": 1.5905497557425683,
+        "max_independent_input_noise_amplification": 1.9376568873920665,
+        "training_rmse": 0.22571340124322783,
+        "target_rmse": 0.6531529455409232,
+        "training_rmse_over_training_sd": 0.5303291528370468,
+        "target_rmse_over_training_sd": 1.5346277463980766
+      }
+    },
+    {
+      "scenario": "g4_existing_fronts",
+      "decoder": "gaussian_rbf_rank16_width025",
+      "configuration": {
+        "rank": 16,
+        "width": 0.25
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 16,
+        "numerical_rank": 16,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000000073,
+        "median_independent_input_noise_amplification": 0.787878108773986,
+        "max_independent_input_noise_amplification": 0.9993562245202423,
+        "training_rmse": 0.11890557860459612,
+        "target_rmse": 0.11890557860459612,
+        "training_rmse_over_training_sd": 0.27937683106827194,
+        "target_rmse_over_training_sd": 0.27937683106827194
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 16,
+        "numerical_rank": 16,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.000000000000035,
+        "median_independent_input_noise_amplification": 5.096507959380646,
+        "max_independent_input_noise_amplification": 7.079540416100859,
+        "training_rmse": 0.09239988373723661,
+        "target_rmse": 1.4522233765752461,
+        "training_rmse_over_training_sd": 0.21709987884948656,
+        "target_rmse_over_training_sd": 3.4120986560270232
+      }
+    },
+    {
+      "scenario": "g4_existing_fronts",
+      "decoder": "gaussian_rbf_rank24_width025",
+      "configuration": {
+        "rank": 24,
+        "width": 0.25
+      },
+      "all_observed_reconstruction": {
+        "input_sites": 25,
+        "target_sites": 25,
+        "columns": 24,
+        "numerical_rank": 24,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000001075,
+        "median_independent_input_noise_amplification": 0.9976458109459571,
+        "max_independent_input_noise_amplification": 0.9999999551195929,
+        "training_rmse": 0.02393476164751395,
+        "target_rmse": 0.02393476164751395,
+        "training_rmse_over_training_sd": 0.05623636788054274,
+        "target_rmse_over_training_sd": 0.05623636788054274
+      },
+      "spatially_held_reconstruction": {
+        "input_sites": 20,
+        "target_sites": 5,
+        "columns": 20,
+        "numerical_rank": 20,
+        "coefficient_nullity": 0,
+        "nonzero_singular_condition_number": 1.0000000000001308,
+        "median_independent_input_noise_amplification": 14.986979253316653,
+        "max_independent_input_noise_amplification": 22.812478009995736,
+        "training_rmse": 1.9067969033321634e-15,
+        "target_rmse": 2.2560554060015336,
+        "training_rmse_over_training_sd": 4.480150406695406e-15,
+        "target_rmse_over_training_sd": 5.300757268412881
+      }
+    }
+  ],
+  "wall_seconds": 0.0781188960027066,
+  "cpu_seconds": 0.07637824800000004
+}
