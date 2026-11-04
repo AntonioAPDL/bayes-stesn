@@ -2,7 +2,7 @@
   "latent_bitwise_equal": true,
   "observation_bitwise_equal": true,
   "passed": true,
-  "posterior_identity": "4b864bf8c2f4782bed9c745253a2ec7840265823574601ce78735ad1d46afb0c",
+  "posterior_identity": "5fe5638684e07e8f074fff09645cbc6987a32ae2234009b90266b064caf4920e",
   "rhs_tradeoff_scale": 0.5,
   "safe_numeric_npz_only": true,
   "sampler_initialization": "auto",
