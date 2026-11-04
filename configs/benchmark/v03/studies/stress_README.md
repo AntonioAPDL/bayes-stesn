@@ -43,6 +43,8 @@ these separately sealed artifacts:
 | Complete G6 replay, with zero new parameter fits | `results/v03/stress/g6_velocity_shift_schema_fix/replay_summary.json` |
 | Exact scientific-equivalence and original-attempt preservation checks | `results/v03/release_evidence/g6_schema_validation/correction_equivalence.json` |
 | Paired stress results | `docs/evidence/v03/stress_summary.json` |
+| Current compact stress-summary verification | `results/v03/release_evidence/stress_serialization_current/stress_renderer_verification_compact.json` |
+| Binding to the retained interpretation | `results/v03/release_evidence/stress_serialization_current/interpretation_binding_compact.json` |
 
 Both G5 YAML profiles are byte-identical to their original sealed profiles.
 The corrected replay uses the same saved G2 fits, fields, seeds, information
@@ -50,6 +52,12 @@ cutoff and qualification rules. No model is refitted, and repeating the
 original five fields does not add independent replication. The equivalence
 receipt also retains the original helper source hash and verifies that the
 scientific package, confirmation assessor and synthesis renderer are unchanged.
+
+The current `stress_summary.json` uses compact JSON serialization. Its parsed
+scientific values and identity are unchanged; the original serialized bytes
+remain retained. The two compact-summary receipts above bind the current bytes
+and the retained interpretation. This serialization change did not rerun
+scoring or the paired bootstrap.
 
 For a restored release, use the saved corrected design and completed replay
 above. The general workflow below requires fresh output directories when its
@@ -188,6 +196,47 @@ guard's invocation logs measure wall time including that work, but do not
 separately itemize its CPU consumption. Do not describe job-pipeline sums as
 total campaign compute.
 
+Generate the release-wide companion at
+`results/v03/release_evidence/execution_costs.json` with the adopted
+`results/v03/release_evidence/execution_helpers_legacy_preconfirmation_compatibility/summarize_execution_costs.py`.
+The same tree's `ROOT_ADOPTION.json` and
+`results/v03/release_evidence/execution_helpers_legacy_preconfirmation_compatibility_retention.json`
+bind this exact producer, its narrow legacy-observation compatibility and the
+unchanged event-002 reader. Earlier helper inventories retain their historical
+scope. Use `--require-closed` only after the available execution and monitor
+windows have actually closed. The original G5/G6 timing scopes and completeness
+flags remain authoritative. Confirmation incidents `000`, `001`, and `002`
+have separate recovery provenance. Incident `002` left original lost
+post-checkpoint artifacts and measurements unavailable; valid later
+recomputation has its own receipts. Missing v10 evidence leaves its time
+coverage, sample count, shared-cgroup memory and disk extrema unavailable.
+That monitor did not sample CPU; lost-segment CPU and other unmeasured costs
+remain independently unavailable. These gaps do not change the stress results
+or justify rerunning this reduction to fill the cost gaps.
+
+The [final cost companion](../../../../results/v03/release_evidence/execution_costs.json)
+is now closed, with all 38 required phase entries complete and no pending
+available monitor windows. Its G6 incremental CPU/wall scopes are included
+separately from complete core G5 pipelines; reused controls and nested command
+envelopes are excluded. Ten incomplete-cost scopes across the wider studies
+remain excluded, and whole-campaign CPU and elapsed-time totals remain null.
+
 This study does not execute robust Student-t model variants, a heteroskedastic G5
 arm, post-shift adaptation, or post-shift calibration. Those remain conditional
 extensions with separate scientific requirements.
+
+The [sealed final disposition overlay](../../../../results/v03/release_evidence/extension_dispositions.json)
+contains 15 extension entries with 45 bound inputs. It records completed
+baseline whole-field-t and local-measurement-t stress while keeping the fitted
+robust-t ablations deferred: neither prior/inference specification nor a
+matched robust-model comparison was supplied. It also records six separately
+sealed calibration cases on one field; these do not establish post-shift
+calibration or a new predictive distribution. Heteroskedasticity still requires
+variance predictors available at the forecast origin, and E-QESN residual
+innovations still require a method-specific residual law and validation.
+
+The earlier decision-row adoption is retained at
+`results/v03/release_evidence/extension_review/root_adoption.json` with its
+original pre-sealing status. The later overlay preserves the original study
+findings, negative results and prospective scientific requirements; it does
+not add fits, independent fields or a general robustness claim.

@@ -9,7 +9,7 @@ Subsequent development uses the [GitHub execution workflow](github_workflow.md):
 verified-parent source updates, exact-commit CI, and separately checked release
 assets. The one-time history import below does not need to be repeated.
 
-## v0.3: final delivery gates pending at this update
+## v0.3: scientific evidence and generated delivery authorities
 
 The recovered v0.3 execution has completed the two initial history conditions,
 the one-field sensor study, bounded reference/coordinate/P5 diagnostics,
@@ -17,25 +17,82 @@ the one-field sensor study, bounded reference/coordinate/P5 diagnostics,
 both G5 arms and the corrected zero-refit G6 replay.
 The [current findings](results_v03.md) and
 [requirements ledger](plans/v03_requirements.yaml) identify their saved
-authorities and remaining scientific work. Historical public checkpoints and
+authorities, declared limitations and remaining delivery work. Historical public checkpoints and
 their CI receipts do not establish that a later documentation/tool tree has
 passed its final source and installed-wheel gate.
 
 The unchanged authority admitted a frozen confirmation of 60 datasets per
-scenario, while retaining its MCSE planning shortfall at the cap. That campaign
-is in progress at this 2026-11-04 update. The revised ordinary report and two
-fixed comparisons have complete saved-artifact and sampled visual reviews;
-all 26 revised ordinary PDF pages were actually viewed. Browser QA remains
-blocked and continuous playback unperformed. Final scientific disposition,
-complete synthesis and its QA, the local final gate, exact release-commit CI
-and new public assets remain pending. The [delivery procedure](release_v03.md)
-requires a generated
+scenario. Its uncapped planning request was 102, and
+`mcse_target_not_met_at_cap` remains the recorded planning shortfall. Actual
+qualification and achieved precision are separate findings.
+
+Final confirmation execution and native integrity:
+The frozen campaign completed all 2,640 scheduled jobs over 240 independent
+fields, with 60 fields per scenario: 2,630 outcomes qualified and 10 used
+declared fallbacks (seven ESN and three basis-GRU outcomes). No jobs remain
+pending or incomplete. The [completed interpretation](../results/v03/release_evidence/confirmation_result_interpretation.json)
+binds these counts and their statistical scope. The separate native integrity
+invocation used positive `--max-jobs 1`, exited zero and recorded zero submitted
+attempts; all 13,221 preexisting immutable files and their membership were
+unchanged. Its [postcheck](../results/v03/confirmation/operational/integrity_000/postcheck.json)
+and [root exit observation](../results/v03/confirmation/operational/integrity_exit_000/root_exit_observation.json)
+retain the actual native result and successful outer exit.
+
+Scientific disposition: Within the frozen four-scenario experiment, equal-quarter macro normalized
+native CRPS was higher for Bayes ESN than for separable GP or basis GRU in both
+tracks. All four ESN-minus-comparator pointwise 95% bootstrap intervals were
+positive. Track A has conditional ESN advantages over GP in G3 and G4 and over
+GRU in G4; all eight primary track-B scenario differences were positive.
+Realized macro MCSE was below 0.02 for both track-A comparisons and above 0.02
+for both track-B comparisons. These achieved values do not reclassify the
+frozen `mcse_target_not_met_at_cap` planning status at R=60 or its uncapped
+request of R=102.
+
+These native CRPS contrasts condition on each cell's common-qualified fits.
+Fallback point predictions remain in operational point-loss populations and
+are not substituted into distributional comparisons. The intervals are
+pointwise; they do not establish multiplicity-adjusted simultaneous superiority
+or generalization beyond this experiment.
+
+The [compute and recovery disclosure](results_v03.md#compute-and-memory-scope)
+distinguishes confirmation interruptions 000 and 001 from filesystem-loss
+event 002. The latter restored the verified checkpoint 33 prefix of 1,895 jobs;
+the original stdout observation at 1,917 remains unverified. Original lost
+post-checkpoint artifacts and measurements remain unavailable; valid later
+recomputation has its own receipts. Lost-segment CPU and other unmeasured costs
+remain unavailable, and the unbound finish-only guard is excluded from complete
+invocation totals. Missing v10 evidence leaves its time coverage, sample count,
+shared-cgroup memory and disk extrema unavailable; that monitor did not sample
+CPU. Scientific completion does not repair those accounting gaps or change
+the original native flags.
+
+The revised ordinary report and two fixed comparisons have complete
+saved-artifact and sampled visual reviews; all 26 revised ordinary PDF pages
+were actually viewed. That recorded scope excludes continuous playback and
+retains its blocked browser QA. Separate confirmation-media review scope:
+The [actual confirmation QA](../results/v03/rendering/confirmation_visual_qa.json)
+records all 12 planned cases passing mechanical checks, actual review of 72
+first/middle/last MP4 and GIF images and all 26 PDF pages, embedded fonts and
+zero blocking visual findings. Static HTML checks cover 22 embedded PNGs and
+13 local references. Browser viewport review remains blocked and continuous
+playback remains unperformed. The preselected replication-0 cases are
+illustrations, not aggregate model rankings; this ordinary-report receipt does
+not establish final-synthesis QA or publication readiness.
+
+The [delivery procedure](release_v03.md) identifies the generated final local
+gate at `results/release_manifest.json`, the synthesis inventory at
+`report/v03/rendered/report_manifest.json`, and the actual inspection record at
+`results/v03/release_evidence/inspection_records/final_media_pdf_qa.json`.
+Source text and preparation reviews do not establish successful execution of
+those later checks. R01–R20 are resolved by the generated
 `results/v03/release_evidence/r01_r20_closure.json` and a separate post-upload
 publication-verification sidecar containing the actual commit, CI, tag,
 release/asset identities and downloaded-byte checksums. The sidecar must not
 be inserted into or change the archive whose hashes it verifies. Source
 documentation is finalized before the gate; later generated receipts record
-the actual outcomes without a source-hash cycle.
+the actual gate, synthesis QA, archive readback and publication outcomes
+without a source-hash cycle. R20 remains `pending_separate_publication_sidecar`
+until that separate publication authority has been produced and verified.
 
 The v0.2.x records below retain their original commits, test counts, numerical
 identities and download links. They are historical completed releases, not

@@ -22,10 +22,45 @@ studies and remaining gates as of 2026-11-04. The two history conditions, all
 three sensor conditions, strict tuning, revised development, six preselected
 calibration cases and all three paired stress arms are complete. The unchanged
 authority admitted the independent confirmation at 60 datasets per scenario,
-with `mcse_target_not_met_at_cap`; its execution remains in progress at this
-source-document update. Final synthesis and release gates remain pending.
-Historical receipts retain their original scope. The recipes below do not
-assert that a final synthesis or its QA has completed.
+below the uncapped planning request of 102, with
+`mcse_target_not_met_at_cap`. That planned shortfall remains distinct from
+actual qualification and achieved precision.
+
+Final confirmation execution and native integrity:
+The frozen campaign completed all 2,640 scheduled jobs over 240 independent
+fields, with 60 fields per scenario: 2,630 outcomes qualified and 10 used
+declared fallbacks (seven ESN and three basis-GRU outcomes). No jobs remain
+pending or incomplete. The [completed interpretation](../../results/v03/release_evidence/confirmation_result_interpretation.json)
+binds these counts and their statistical scope. The separate native integrity
+invocation used positive `--max-jobs 1`, exited zero and recorded zero submitted
+attempts; all 13,221 preexisting immutable files and their membership were
+unchanged. Its [postcheck](../../results/v03/confirmation/operational/integrity_000/postcheck.json)
+and [root exit observation](../../results/v03/confirmation/operational/integrity_exit_000/root_exit_observation.json)
+retain the actual native result and successful outer exit.
+
+Scientific disposition: Within the frozen four-scenario experiment, equal-quarter macro normalized
+native CRPS was higher for Bayes ESN than for separable GP or basis GRU in both
+tracks. All four ESN-minus-comparator pointwise 95% bootstrap intervals were
+positive. Track A has conditional ESN advantages over GP in G3 and G4 and over
+GRU in G4; all eight primary track-B scenario differences were positive.
+Realized macro MCSE was below 0.02 for both track-A comparisons and above 0.02
+for both track-B comparisons. These achieved values do not reclassify the
+frozen `mcse_target_not_met_at_cap` planning status at R=60 or its uncapped
+request of R=102.
+
+These native CRPS contrasts condition on each cell's common-qualified fits.
+Fallback point predictions remain in operational point-loss populations and
+are not substituted into distributional comparisons. The intervals are
+pointwise; they do not establish multiplicity-adjusted simultaneous superiority
+or generalization beyond this experiment.
+
+The three confirmation incidents have separately retained operational
+authorities. Interruptions 000/001 and filesystem-loss event 002 do not change
+native qualification or add independent replications. Their missing-cost and
+monitoring coverage is disclosed in the execution-cost companion below.
+Historical receipts retain their original scope. The final synthesis inventory,
+current gate, actual QA and publication sidecar are generated authorities;
+these recipes and their preparation do not establish successful execution.
 
 The recovered ordinary revised report is at `revised_media_complete/`.
 An [audited presentation-only correction](../../results/v03/rendering/revised_forecast_layout_correction.json)
@@ -38,7 +73,23 @@ first/middle/final MP4/GIF sample images, and every one of the 26 revised PDF
 pages with embedded fonts. Sixty unchanged samples reuse earlier actual
 review only after exact asset and decoded-image hash matches. These checks
 do not include continuous playback or wide/narrow browser review, which
-remains blocked. Confirmation and synthesis outputs require their own QA.
+remains blocked. These reviews do not cover final synthesis outputs;
+confirmation's separate completed review is recorded below.
+
+The separately selected confirmation report is `confirmation_media/`, paired
+with `results/v03/confirmation/frozen_run`. Its actual presentation and
+inspection scope is recorded separately: The [actual confirmation QA](../../results/v03/rendering/confirmation_visual_qa.json)
+records all 12 planned cases passing mechanical checks, actual review of 72
+first/middle/last MP4 and GIF images and all 26 PDF pages, embedded fonts and
+zero blocking visual findings. Static HTML checks cover 22 embedded PNGs and
+13 local references. Browser viewport review remains blocked and continuous
+playback remains unperformed. The preselected replication-0 cases are
+illustrations, not aggregate model rankings; this ordinary-report receipt does
+not establish final-synthesis QA or publication readiness.
+Final synthesis inspection is recorded in
+`results/v03/release_evidence/inspection_records/final_media_pdf_qa.json` after
+the actual checks. Static layout checks, sampled frames, continuous playback
+and browser review retain their individual measured or blocked status.
 
 ## 1. Validate the inputs first
 
@@ -173,6 +224,15 @@ documentation after the gate without rerunning it. These inputs establish the
 recorded local gate; exact remote commit, CI and published-asset verification
 remain separate.
 
+The generated `report/v03/rendered/report_manifest.json` binds the final
+synthesis, and
+`results/v03/release_evidence/inspection_records/final_media_pdf_qa.json`
+records the actual inspection scope. The acceptance authority is
+`results/v03/release_evidence/r01_r20_closure.json`; exact public commit, CI,
+tag, release assets and downloaded-byte checks belong to its separate
+post-upload publication sidecar. No future test totals, QA passes or public
+success are inferred from these paths or their prepared helpers.
+
 ### Execution-cost companion and incomplete timing
 
 Retain the sealed companion
@@ -183,6 +243,57 @@ are closed; it is not a new renderer input. The
 [delivery procedure](../../docs/release_v03.md) describes its retained helper
 and support inventories. Until closure, an interim preview remains an interim
 observation.
+
+The adopted producer is
+`results/v03/release_evidence/execution_helpers_legacy_preconfirmation_compatibility/summarize_execution_costs.py`,
+with its retained `confirmation_recovery_provenance.py`, unchanged
+`filesystem_loss_002_provenance.py`, `ROOT_ADOPTION.json` and
+`results/v03/release_evidence/execution_helpers_legacy_preconfirmation_compatibility_retention.json`.
+Its compatibility branch requires the two exact legacy pre-confirmation
+observations; cost arithmetic, native flags and confirmation 000/001/002
+provenance are preserved. Earlier helper inventories, including
+`execution_helpers_filesystem_loss_002/`, remain historical provenance.
+Use its `--require-closed` mode after the actual available windows close.
+Final execution-cost companion and scoped accounting:
+The [closed execution-cost companion](../../results/v03/release_evidence/execution_costs.json)
+and its [root completion review](../../results/v03/release_evidence/execution_costs_completion/ROOT_REVIEW.json)
+record a successful aggregation with all 38 required phase entries complete
+and no pending phases or available monitor windows. Of 3,453 core model/task
+accounting records, 3,443 have complete cost scopes; ten incomplete-cost scopes
+remain excluded, comprising six pre-confirmation and four confirmation scopes.
+These accounting exclusions are distinct from the ten confirmation fallback
+outcomes.
+
+The recorded disjoint scientific subtotal is 47,214.209 CPU seconds and
+47,911.382 summed scoped wall seconds, rounded to milliseconds. It combines
+complete core pipelines, separately measured ancillary/calibration work and
+G6 incremental generation/replay. Nested or reused components, guard envelopes,
+engineering smoke and delivery/render/test/upload work are excluded. Summed
+scoped wall time is not elapsed parallel campaign time. Both whole-campaign
+CPU and elapsed-time totals remain null.
+
+The receipt retains 125 unique measured command attempts, five start markers
+without terminal measurements and eight unfinished historical guard
+invocations. Closed available windows do not recover those missing costs or
+the event-002 loss and v10 coverage. Incomplete native accounting flags remain
+unchanged; the finish-only orphan remains outside complete guard/model totals.
+
+The original confirmation interruption/recovery records for events 000 and
+001 remain unchanged. Event 002's records under
+`results/v03/confirmation/operational/filesystem_loss_002/` bind restoration
+of the verified checkpoint 33 prefix of 1,895 jobs and its separate new native
+recovery. The original stdout observation at 1,917 remains unverified and
+cannot replace lost scientific artifacts. Empty `chunk_087`/`chunk_088`
+reservations are not completed invocations. Original lost post-checkpoint
+artifacts and measurements remain unavailable, including the original
+submission counts and costs; valid later recomputation has its own receipts.
+The unbound finish-only guard stays outside complete guard and model totals.
+Missing v10 raw/summary evidence leaves its time coverage, sample count,
+shared-cgroup memory and disk extrema null. That monitor did not sample CPU;
+lost-segment CPU is independently unavailable. Neither subsequent native
+progress nor a later monitor reconstructs those missing original scopes.
+Original native cost flags are preserved, so final scientific completion does
+not establish complete whole-campaign accounting.
 
 Complete-receipt pipeline subtotals, incomplete/estimated fields, inclusive
 command envelopes and sampled shared-resource windows have different scopes.
@@ -232,6 +343,29 @@ requests, planned MCSEs and the actual cap status. `mcse_target_not_met_at_cap`
 remains an explicit shortfall. **A completed assessment is not admission;
 admission is not confirmation execution or achieved precision.** A separately
 supplied completed confirmation run is recognized only against its exact freeze.
+
+For final synthesis, once the frozen confirmation and its native integrity
+check actually close, include the ordinary revised report and both the
+confirmation run and its separate ordinary media:
+
+```text
+--run revised=results/v03/development/revised_L1000
+--media revised=report/v03/revised_media_complete
+--confirmation-evidence results/v03/confirmation/assessment.json
+--run confirmation=results/v03/confirmation/frozen_run
+--media confirmation=report/v03/confirmation_media
+```
+
+These arguments supplement the other required study inputs and the current
+gate/XML arguments above. Use the exact named saved run and media inventories;
+do not discover the confirmation run through retained synthetic manifests.
+Retain the final native integrity check separately under
+`results/v03/confirmation/operational/integrity_000/`. Use a positive
+`--max-jobs 1` invocation and require its actual receipt to demonstrate zero
+submissions; a completed coordinator summary does not establish that result.
+Preserve the first actual exit and before/post scientific hashes; do not
+create an integrity execution window or infer a successful check from this
+recipe.
 
 The portable report exports `evidence/confirmation_assessment.json` and
 `evidence/confirmation_protocol.json`. It exports
@@ -466,6 +600,26 @@ scope, independently of argument order. Conflicting overlays at the same
 priority are rejected. Earlier scientific findings and their hashes remain
 unchanged.
 
+For final release synthesis, supply the actual reviewed overlay at
+`results/v03/release_evidence/extension_dispositions.json` with another
+`--extensions` argument, alongside the unchanged base findings. The earlier
+decision-row adoption remains recorded at
+`results/v03/release_evidence/extension_review/root_adoption.json`; that
+historical receipt does not claim that the later overlay was already sealed.
+
+The [sealed release overlay](../../results/v03/release_evidence/extension_dispositions.json)
+contains all 15 extension dispositions and binds 45 source inputs. It records
+the separate completion of six preselected calibration cases on one field,
+while preserving their original predictive samples and lack of a calibrated
+joint distribution. Completed baseline G5 stress does not promote either
+unfitted robust-t variant. Scalar ridge remains primary; complete-residual AR
+remains optional and unpromoted, with the G3 qualification failure retained
+without an invented native predictive comparison. Grouped ridge remains
+untriggered by the bounded training inspections. The other unrun variants
+retain their specific prior, identification, residual-evidence and matched
+validation requirements. Sealing this overlay changes no original P5 result,
+fit, qualification flag or independent-replication count.
+
 If an explicitly optional curve or extension path is absent, the report says
 `not available`. If it is omitted, the report says `not supplied`. Existing
 malformed or incompatible evidence is an error.
@@ -558,6 +712,15 @@ are copied without reforecasting or rerendering. The core animations use
 shared truth/forecast scales and symmetric signed-error scales, with unscored
 locations shown in gray. A displayed replication is an illustration, not
 aggregate evidence of superiority.
+
+For this recovered release, use the concrete revised/confirmation fragment
+above: `report/v03/revised_media_complete` and
+`report/v03/confirmation_media` each remain bound to their matching run label.
+The confirmation presentation must retain its twelve declared replication 0
+cases and record native diagnostic or unavailable outcomes. Do not replace an
+unavailable illustration with another replication chosen from its result.
+The final package must also retain the standalone confirmation run/report pair;
+copied synthesis media do not replace that ordinary-report authority.
 
 ## 5. Interpretation and verification
 

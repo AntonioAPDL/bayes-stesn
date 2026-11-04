@@ -13,7 +13,7 @@ status_policy: >-
   evidence is not replaced by an implementation claim.
 current_execution:
   recorded_date: '2026-11-04'
-  status: completed_development_calibration_stress_confirmation_running_release_pending
+  status: confirmation_complete_integrity_verified_delivery_receipts_pending
   scientific_source_fingerprint: 9f73b28a6ee6b8eec4bd21c3366b0c260c9433f798610be16697b2e44166d5ac
   findings: docs/results_v03.md
   previous_requirements_snapshot: results/v03/release_evidence/historical_source_snapshots/v03_requirements_pre_current_execution_20261103.yaml
@@ -24,6 +24,16 @@ current_execution:
     revised_development: results/v03/development/revised_L1000/summary.json
     confirmation_admission: results/v03/confirmation/assessment.json
     confirmation_freeze: results/v03/confirmation/freeze.json
+    independent_confirmation: results/v03/confirmation/frozen_run/summary.json
+    confirmation_native_integrity: results/v03/confirmation/operational/integrity_000/postcheck.json
+    confirmation_integrity_outer_exit: results/v03/confirmation/operational/integrity_exit_000/root_exit_observation.json
+    confirmation_arithmetic_review: results/v03/release_evidence/independent_reviews/final_confirmation/arithmetic_review.json
+    confirmation_result_interpretation: results/v03/release_evidence/confirmation_result_interpretation.json
+    extension_dispositions: results/v03/release_evidence/extension_dispositions.json
+    execution_costs: results/v03/release_evidence/execution_costs.json
+    execution_cost_review: results/v03/release_evidence/execution_costs_completion/ROOT_REVIEW.json
+    confirmation_ordinary_report: report/v03/confirmation_media/report_manifest.json
+    confirmation_ordinary_QA: results/v03/rendering/confirmation_visual_qa.json
     calibration_disposition: results/v03/release_evidence/calibration_disposition.json
     stress_summary: docs/evidence/v03/stress_summary.json
     corrected_stress_design: results/v03/stress/design_schema_fix/stress_design.json
@@ -32,10 +42,12 @@ current_execution:
     current_stress_strict_verification: results/v03/release_evidence/stress_serialization_current/stress_renderer_verification_compact.json
     historical_stress_interpretation_binding: results/v03/release_evidence/stress_serialization_current/interpretation_binding_compact.json
     revised_ordinary_and_comparison_qa: results/v03/rendering/revised_corrected_visual_qa.json
+    confirmation_recovery_000: results/v03/confirmation/operational/recovery_000.json
+    confirmation_recovery_001: results/v03/confirmation/operational/recovery_001.json
+    confirmation_filesystem_restoration_002: results/v03/confirmation/operational/filesystem_loss_002/restoration.json
+    confirmation_physical_relocation_002: results/v03/confirmation/operational/filesystem_loss_002/relocation_contract.json
+    confirmation_native_recovery_002: results/v03/confirmation/operational/filesystem_loss_002/recovery.json
   final_authorities_pending:
-    independent_confirmation: results/v03/confirmation/frozen_run/summary.json
-    extension_dispositions: results/v03/release_evidence/extension_dispositions.json
-    execution_costs: results/v03/release_evidence/execution_costs.json
     source_and_installed_wheel_gate: results/release_manifest.json
     visual_qa: results/v03/release_evidence/inspection_records/final_media_pdf_qa.json
     acceptance_closure: results/v03/release_evidence/r01_r20_closure.json
@@ -53,18 +65,37 @@ overall:
     complete. Strict tuning has 59/60 qualified outcomes and one declared
     fallback; revised development has 220/220 qualified outcomes. All six
     preselected calibration cases and all three paired stress arms are complete.
-    Confirmation is admitted at R=60 per scenario and in progress. Revised
-    ordinary/comparison saved-artifact QA is complete; final synthesis and
-    release gates remain pending.
+    Confirmation is admitted at R=60 per scenario, with 240 independent
+    datasets and 2640 scheduled model/task jobs.
+    All 2640 jobs are attempted and terminal: 2630 qualified and ten declared
+    fallbacks (seven ESN, three GRU), with no pending jobs or unresolved
+    infrastructure failures. The actual positive-max-jobs1 native integrity
+    invocation exits 0 with zero submissions and no additional fits/forecasts;
+    13221 prior immutable files remain byte-identical.
+    Revised ordinary/comparison saved-artifact QA is complete. Confirmation
+    ordinary-report QA is complete for all 12 mechanical cases, 72 actual
+    sampled images and 26 PDF pages, with no blocking findings. Browser
+    inspection is blocked and continuous playback unperformed. Final cost
+    reduction closes all 38 required phase entries while preserving unknown
+    whole-campaign totals. The 15-entry extension overlay is sealed.
+    Final synthesis and release outcomes are resolved by their separate
+    generated authorities after this covered-source snapshot.
   scientific_conclusion: >-
     The sealed exploratory rule retains history 1000: Track A meets the
     practical improvement bound, Track B fails it, and incomplete short-history
     accounting independently fails the cost gate. Sensors provide one-field
     descriptive evidence. Calibration shares one field and serial blocks;
     five-field stress contrasts are exploratory within-model effects. The
-    confirmation cap retains mcse_target_not_met_at_cap. No completed schema-4
-    confirmation, achieved precision or general predictive-improvement claim
-    is made.
+    confirmation plan retains mcse_target_not_met_at_cap, with uncapped R=102
+    and target normalized macro MCSE 0.02. Realized precision is separate.
+    All four ESN-minus-comparator normalized native-CRPS macro pointwise 95%
+    intervals are positive. Track A retains ESN-favoring cells against GP in
+    G3/G4 and against GRU in G4; all Track B primary cells favor the comparators.
+    Both realized Track A macro MCSEs are below 0.02 and both Track B values
+    exceed it. Each contrast conditions on its cell-specific common-qualified
+    native fits, retaining the original one-quarter scenario weights.
+    Pointwise comparisons and successful completion do not by themselves
+    establish simultaneous rankings or general predictive improvement.
 requirements:
   - id: P0
     title: Baseline, provenance, and bounded execution
@@ -85,7 +116,7 @@ requirements:
       - tests/test_runner_execution_v03.py
       - tests/test_runner_limits_v03.py
     executed:
-      status: baseline_recovery_and_six_training_only_timing_cases_recorded
+      status: baseline_timing_and_exact_source_runtime_restoration_recorded
       evidence:
         - docs/evidence/v03/baseline_environment.json
         - docs/evidence/v03/baseline_tests.xml
@@ -100,10 +131,22 @@ requirements:
         - results/v03/study_design/timing/sensors_100__B__spatial_persistence.json
         - results/v03/study_design/timing/sensors_100__B__basis_gru.json
         - results/v03/study_design/timing/sensors_100__B__bayes_esn_ridge.json
+        - results/v03/confirmation/operational/filesystem_loss_002/restoration.json
+        - results/v03/confirmation/operational/filesystem_loss_002/relocation_contract.json
+        - results/v03/confirmation/operational/filesystem_loss_002/recovery.json
+      scope: >-
+        After filesystem loss 002, the public source commit
+        8bfbb4b539746727958d25feb04340e6ffa637fe and declared CPython 3.12.14
+        environment with its exact locked dependencies were restored. Native
+        read-only verification established the unchanged source fingerprint,
+        full frozen runtime and 1895-job checkpoint prefix before continuation.
+        The physical relocation preserves relative artifact identities; it
+        does not change the scientific design, seeds or budgets.
       limitations:
         - Historical resource plans remain estimates under their recorded proxy assumptions.
         - The six largest-sensor-geometry training-only timings are bounded observed cases, not universal complexity bounds or whole-campaign costs.
         - New waves require admission against actual shared occupancy, completed payload bytes and available storage.
+        - The isolated execution root is temporary; no durability guarantee or cause of the earlier filesystem loss is inferred.
         - Final-source installed-wheel validation is a separate pending gate.
     scientific_conclusion:
       status: not_applicable_engineering
@@ -138,22 +181,66 @@ requirements:
       - tests/test_esn_phase_recovery.py
       - tests/test_benchmark_checkpoint_policy.py
     executed:
-      status: recovery_evidence_recorded_unknown_interrupted_cost_retained_final_gate_pending
+      status: three_confirmation_recoveries_and_final_cost_reduction_recorded_unknown_cost_retained
       evidence:
         - docs/evidence/v03/integrated_tests.xml
         - results/v03/recovery_preflight/session_interruption_20261103T2104Z.json
         - results/v03/recovery_preflight/session_interruption_20261103T2220Z.json
+        - results/v03/recovery_preflight/session_interruption_20261103T2334Z.json
         - results/v03/recovery_preflight/resource_samples_v2.summary.json
         - results/v03/recovery_preflight/resource_samples_v3.summary.json
         - results/v03/history/v03_fixed_history_history_1000/g3_excitable_field/rep_004/B/bayes_esn_ridge/receipt.json
         - results/v03/sensors/v03_sensor_sensitivity_sensors_100/g4_existing_fronts/rep_000/B/bayes_esn_ridge/receipt.json
+        - results/v03/confirmation/operational/interruption_000.json
+        - results/v03/confirmation/operational/recovery_000.json
+        - results/v03/confirmation/operational/interruption_001.json
+        - results/v03/confirmation/operational/recovery_001.json
+        - results/v03/confirmation/operational/filesystem_loss_002/observation.json
+        - results/v03/confirmation/operational/filesystem_loss_002/lost_window_reservation.json
+        - results/v03/confirmation/operational/filesystem_loss_002/restoration.json
+        - results/v03/confirmation/operational/filesystem_loss_002/relocation_contract.json
+        - results/v03/confirmation/operational/filesystem_loss_002/recovery.json
+        - results/v03/release_evidence/historical_confirmation_interruption_000/retention_mapping.json
+        - results/v03/release_evidence/historical_confirmation_interruption_001/retention_mapping.json
+        - results/v03/release_evidence/historical_confirmation_filesystem_loss_002/orphan_guard_finish.jsonl
+        - results/v03/release_evidence/execution_helpers_filesystem_loss_002/ROOT_ADOPTION.json
+        - results/v03/release_evidence/execution_helpers_filesystem_loss_002_retention.json
+        - results/v03/release_evidence/execution_helpers_legacy_preconfirmation_compatibility/ROOT_ADOPTION.json
+        - results/v03/release_evidence/execution_helpers_legacy_preconfirmation_compatibility_retention.json
+        - results/v03/release_evidence/execution_costs.json
+        - results/v03/release_evidence/execution_costs_completion/ROOT_REVIEW.json
+      scope: >-
+        Earlier pre-confirmation interruptions remain distinct from
+        confirmation incidents 000, 001 and 002. Event 002 restores the exact
+        1895-job checkpoint-33 prefix. The old stdout claim of 1917 is not
+        recovered scientific evidence; empty names 087/088 are reservations,
+        not fabricated closed windows. Actual new window 089 reaches 1917
+        with all 1895 prior receipt hashes and 8693 retained files unchanged.
+        Repeated recovered work adds no independent dataset. The adopted
+        cost supplement preserves earlier arithmetic and native flags while
+        binding the separately scoped loss-002 evidence. Its adopted strict
+        compatibility version additionally binds both exact legacy
+        pre-confirmation observations without changing any cost sum, native
+        flag or confirmation recovery rule; the initial parser failure is
+        retained separately. The final reduction closes all 38 required phase
+        entries, with no pending phase or monitor window. Of 3453 core receipts,
+        3443 have complete finite cost fields and ten are excluded under their
+        original native flags. The recorded disjoint subtotal is 47214.208981
+        CPU seconds and 47911.381886 summed scoped wall seconds, including
+        complete core, G6 incremental and measured ancillary/calibration
+        scopes. Delivery work is excluded. Complete campaign CPU and elapsed
+        totals remain null; summed wall time is not parallel campaign duration.
       limitations:
         - Missing original command envelopes and lost CPU work remain unavailable; a later terminal scientific result does not recover prior measurement.
         - Finite incomplete fields can include downtime and are not exact compute totals or guaranteed lower bounds.
         - Shared-cgroup monitor windows and process-lifetime fit RSS are not isolated per-model or per-fit memory peaks.
+        - Original lost post-checkpoint artifacts and measurements remain unavailable; their submissions and costs cannot be reconstructed, while later recomputation has its own valid native receipts. Whole-campaign accounting cannot be made complete by later scientific closure.
+        - The surviving exit-1 finish-only guard lacks its start, log and native-invocation binding; its null job/completion fields remain null and it is excluded from complete guard/model totals.
+        - Monitor v10 raw samples and summary are unavailable; its time coverage, sample count, shared-cgroup memory peaks and disk-space extrema remain unavailable rather than zero or a reconstructed estimate.
+        - The shared-resource monitor never sampled CPU; lost-segment CPU remains independently unavailable.
+        - The literal orphan duration is not a lost-segment or whole-campaign duration; original native cost-completeness flags remain unchanged.
       pending:
         - Final source and installed-wheel recovery/CLI receipts after documentation and source freeze.
-        - Closed disjoint-scope execution_costs.json after all mandatory phases and all actual monitor windows are sealed.
     scientific_conclusion:
       status: not_applicable_engineering
       statement: Recovery correctness does not establish diagnostic qualification or predictive superiority.
@@ -248,14 +335,16 @@ requirements:
         - results/v03/development/tuned_final/summary.json
         - results/v03/development/tuned_final/g3_excitable_field/rep_000/A/basis_lgssm/selection.json
         - results/v03/development/tuned_final/g3_excitable_field/rep_000/A/basis_lgssm/receipt.json
-      pending:
-        - Final per-method costs with actual interrupted-accounting flags and unavailable scopes retained.
+        - results/v03/release_evidence/execution_costs.json
+      pending: []
       scope: >-
         All declared jobs are terminal with retained candidate/recheck traces;
         the LGSSM selection failure is an explicit method outcome. Three
         tuning selection scopes have incomplete accounting. Their final-fit
         receipts do not mark resumed fits, and selection timing gaps remain
-        distinct from fit continuation or scientific incompleteness.
+        distinct from fit continuation or scientific incompleteness. The final
+        cost companion preserves those incomplete method scopes and excludes
+        them from complete-cost sums; no missing selection time is imputed.
     scientific_conclusion:
       status: not_established
       statement: More distinct candidates and stricter selection do not by themselves prove better forecasts.
@@ -329,7 +418,7 @@ requirements:
         - History500/4000 endpoints; curve shape outside 1000/2000 remains unresolved and additional endpoints do not restore missing timing or add independent fields.
         - Additional independent sensor fields, separately frozen encoder experiments and capacity/prior ablations.
       pending:
-        - Final reporting and requirement disposition using the complete sealed audits and their limitations.
+        - Generated R11/R12 acceptance disposition at results/v03/release_evidence/r01_r20_closure.json; the complete sealed history/sensor findings and limitations are recorded in docs/results_v03.md.
     scientific_conclusion:
       status: exploratory_history1000_choice_and_one_field_sensor_description
       statement: >-
@@ -371,6 +460,7 @@ requirements:
         - results/v03/release_evidence/calibration_disposition.json
         - docs/evidence/v03/stress_summary.json
         - results/v03/release_evidence/scientific_interpretation/paired_stress_calibration_review.json
+        - results/v03/release_evidence/extension_dispositions.json
       scope: >-
         Residual AR has one common-qualified G4 native comparison and an
         unqualified G3 fit at its maximum allowance; no primary promotion
@@ -381,8 +471,12 @@ requirements:
         autonomous prior validation, refit or demonstrated capacity gain.
         All six separate calibration cases and mandatory base-model G5/G6
         studies are complete; they do not promote richer model variants.
-      pending:
-        - Final immutable extension_dispositions.json overlay retaining specific technical deferrals and the original P5 findings.
+        The immutable overlay seals 15 dispositions against 45 inputs and
+        preserves the original base findings. Interval calibration is complete
+        for all six preselected one-field cases; fitted field-t/local-t,
+        latent dynamics, sparsity, covariance and structural alternatives keep
+        their individual unexecuted or optional technical requirements.
+      pending: []
     scientific_conclusion:
       status: scalar_ridge_primary_retained_no_automatic_extension_promotion
       statement: >-
@@ -426,7 +520,7 @@ requirements:
       - tests/test_benchmark_pipeline.py
       - tests/test_v03_stress_tools.py
     executed:
-      status: revised_pilot_calibration_stress_complete_frozen_confirmation_running
+      status: complete_confirmation_with_declared_fallbacks_and_native_integrity
       evidence:
         - docs/evidence/v03/integrated_tests.xml
         - docs/evidence/v03/stress_tool_tests.xml
@@ -437,6 +531,12 @@ requirements:
         - results/v03/confirmation/assessment.json
         - results/v03/confirmation/freeze.json
         - results/v03/confirmation/frozen.yaml
+        - results/v03/confirmation/frozen_run/manifest.json
+        - results/v03/confirmation/frozen_run/summary.json
+        - results/v03/confirmation/operational/integrity_000/postcheck.json
+        - results/v03/confirmation/operational/integrity_exit_000/root_exit_observation.json
+        - results/v03/release_evidence/independent_reviews/final_confirmation/arithmetic_review.json
+        - results/v03/release_evidence/confirmation_result_interpretation.json
         - results/v03/release_evidence/calibration_disposition.json
         - docs/evidence/v03/stress_summary.json
         - results/v03/stress/design_schema_fix/stress_design.json
@@ -452,11 +552,46 @@ requirements:
         validator correction 99b0f8d keeps G5 YAMLs and scientific settings
         unchanged. Six calibration cases share one field, 25 serial blocks,
         fixed parameter cutoff 1300 and later evaluation origin 3800.
-      pending:
-        - Complete the independent frozen confirmation and calculate realized common-qualified populations, paired uncertainty and achieved precision without changing its design.
+        Final frozen-run closure and observed positive-max-jobs1 zero-submission
+        integrity are recorded separately under operational/integrity_000:
+        all 2640 scheduled and attempted jobs are terminal, 2630 qualify and
+        ten use declared fallbacks. One native invocation with max_jobs=1 exits
+        0 with submitted_attempts=0 and preserves all 13221 prior immutable
+        files. No new fits or forecasts occur, and the outer exit is separately 0.
+        Final attempted, qualified, common-qualified and operational populations,
+        paired estimates, MCSEs and pointwise intervals:
+        ESN has 473/480 qualified outcomes and seven fallbacks; GRU has
+        477/480 and three; all other roster outcomes qualify. The primary
+        ESN-minus-GP common-qualified counts in G1/G2/G3/G4 are 57/60/60/60
+        for A and 56/60/60/60 for B; ESN-minus-GRU counts are 57/60/60/59
+        for A and 56/60/60/58 for B. Normalized macro differences (MCSE)
+        are GP A +0.123899 (0.014060), GP B +1.630846 (0.032908),
+        GRU A +0.235141 (0.013775), and GRU B +1.585536 (0.032034).
+        Native pointwise 95% intervals are respectively [0.098290, 0.152521],
+        [1.565067, 1.695414], [0.209288, 0.262424] and [1.523331, 1.650376].
+        All 16 required cells are represented; there are 240 independent
+        fields, not 2640 independent model/task replications. Decimal review
+        reports zero discrepancies in 2174 numeric and 642 exact checks.
+        Native bootstrap endpoints are byte-bound, not independently resampled.
+        Original scenario weights, normalization, qualification rules, seeds
+        and budgets remain unchanged; missing cells are not renormalized and
+        operational fallback losses do not become native losses.
+      pending: []
     scientific_conclusion:
-      status: not_established
-      statement: No completed schema-4 confirmation, achieved MCSE, or simultaneous ranking is claimed.
+      status: conditional_macro_comparators_favored_planned_cap_shortfall_retained
+      statement: >-
+        Both comparators have lower equal-quarter macro normalized native
+        CRPS than ESN on both tracks in this frozen experiment, with all four
+        ESN-minus-comparator pointwise intervals positive. Track A exceptions
+        favor ESN against GP in G3/G4 and against GRU in G4; every Track B
+        primary scenario contrast favors the comparator. Realized macro MCSE
+        is below 0.02 on both Track A comparisons and above it on both Track B
+        comparisons. Conditional qualification, historical interruptions and
+        partial operational outcome access remain explicit; no frozen seeds,
+        roster, budgets, comparisons or numerical rules were adapted.
+        The planned cap shortfall remains mcse_target_not_met_at_cap regardless
+        of observed MCSE. Pointwise intervals condition on their stated
+        common-qualified populations and are not simultaneous superiority claims.
 
   - id: P7
     title: Measured forecast-memory improvement within supported scope
@@ -522,7 +657,7 @@ requirements:
       - tests/test_release_tools.py
       - tests/test_benchmark_pipeline.py
     executed:
-      status: ordinary_report_saved_artifact_qa_complete_final_synthesis_and_release_pending
+      status: revised_and_confirmation_ordinary_QA_complete_generated_release_authorities_pending
       evidence:
         - docs/evidence/v03/baseline_tests.xml
         - docs/evidence/v03/integrated_tests.xml
@@ -537,6 +672,17 @@ requirements:
         - results/v03/rendering/revised_corrected_visual_qa.json
         - results/v03/rendering/revised_corrected_html_structural_checks.json
         - results/v03/rendering/browser_preview_policy_block.json
+        - results/v03/release_evidence/inspection_records/media_qa.json
+        - results/v03/release_evidence/confirmation_presentation_relocation_preparation/ROOT_ADOPTION.json
+        - results/v03/release_evidence/confirmation_presentation_relocation_retention.json
+        - results/v03/release_evidence/confirmation_capture_filesystem_loss_002_preparation/ROOT_ADOPTION.json
+        - results/v03/release_evidence/confirmation_capture_filesystem_loss_002_retention.json
+        - report/v03/confirmation_media/report_manifest.json
+        - results/v03/rendering/confirmation_visual_qa.json
+        - results/v03/rendering/confirmation_font_verification.json
+        - results/v03/release_evidence/inspection_records/confirmation_media_qa.json
+        - results/v03/release_evidence/inspection_records/confirmation_frame_visual_review.json
+        - results/v03/release_evidence/inspection_records/confirmation_pdf_html_qa.json
       scope: >-
         Retained tests/checkpoints validate their recorded bytes and limited
         scopes, not the final covered tree. All 14 revised ordinary/comparison
@@ -547,12 +693,28 @@ requirements:
         numeric artists, limits and scientific inputs, with original report
         and QA retained. Local wide/narrow browser review remains blocked;
         continuous playback was not performed. Neither is replaced by static
-        HTML checks or sampled frames. Final synthesis/confirmation outputs
-        require separate QA.
+        HTML checks or sampled frames. Final synthesis requires its own QA;
+        the separate completed confirmation scope follows.
+        The path-only confirmation presentation relocation and loss-002
+        capture helper are adopted preparations; adoption does not prove
+        later rendering or final QA. The confirmation inventory fixes 12
+        cases and retains diagnostic or unavailable native outcomes.
+        Actual confirmation ordinary-report and QA disposition:
+        all 12 cases pass mechanical checks with zero unavailable native cases;
+        all 72 MP4/GIF first/middle/last images and all 26 PDF pages have actual
+        source-bound review. All three used fonts are embedded; static HTML
+        checks cover 22 embedded PNGs and 13 local references. Zero blocking
+        findings remain. Browser viewport inspection is blocked and continuous
+        playback unperformed; publication_ready=false remains explicit in this
+        ordinary-report receipt. The fixed replication-0 examples are
+        illustrations, not aggregate rankings. Font embedding changes only
+        the PDF and manifest font inventory, preserving 71 other report payloads
+        and all scientific artifacts.
       pending:
         - Final source and installed-wheel full applicable suites after all covered edits, CLI checks and sealed distribution hashes.
-        - Final synthesis and any confirmation report/media rendering from completed saved results with their own visual/provenance QA and explicit unresolved browser/playback scope.
+        - Final synthesis rendering and its own visual/provenance QA, resolved by report/v03/rendered/report_manifest.json and the generated final_media_pdf_qa.json with actual browser/playback scope retained.
         - Verified exact public commit, remote CI, release assets, checksums and preserved history.
+        - R20 remains pending_separate_publication_sidecar until the separate actual post-upload publication verification exists; later delivery receipts do not alter covered source bytes.
     scientific_conclusion:
       status: no_new_scientific_claim_from_software_release
       statement: Documentation, passing tests and publication do not substitute for qualified scientific comparisons.

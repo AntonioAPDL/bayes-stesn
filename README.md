@@ -35,12 +35,50 @@ five paired fields and do not establish a robustness ranking.
 The unchanged confirmation authority admitted 60 datasets per scenario
 (240 datasets; 2640 model/task jobs). The frozen plan retains
 `mcse_target_not_met_at_cap`: its uncapped requirement is 102 per scenario.
-That independent campaign is in progress at this update; admission and planned
-precision are not completed confirmation or achieved precision. The revised
-ordinary report and two fixed comparisons have completed saved-artifact and
-sampled visual checks, including all 26 ordinary PDF pages. Browser review
-remains blocked and continuous animation playback was not performed. Final
-synthesis, source/wheel validation and public-delivery gates remain pending.
+The target normalized macro MCSE is 0.02; the frozen planning shortfall and
+realized precision are separate quantities.
+
+The [completed confirmation](results/v03/confirmation/frozen_run/summary.json)
+contains all 2640 scheduled and attempted jobs: 2630 qualified outcomes and
+10 declared fallbacks (seven ESN, three GRU). There are no pending jobs or
+unresolved infrastructure failures. The separate
+[native integrity check](results/v03/confirmation/operational/integrity_000/postcheck.json)
+exited successfully with positive `--max-jobs 1`, zero submitted jobs and no
+additional fits or forecasts; all prior immutable artifact bytes were preserved.
+
+The [reviewed primary results](docs/results_v03.md#independent-confirmation-results)
+show higher equal-weight macro normalized native CRPS for ESN than for either
+separable GP or basis GRU on both tracks; all four ESN-minus-comparator
+pointwise 95% bootstrap intervals are above zero. Track A remains heterogeneous:
+ESN has lower conditional CRPS than GP in G3/G4 and than GRU in G4. Both Track A
+macro MCSEs are below 0.02; both Track B MCSEs exceed it. The contrasts condition
+on each cell's common-qualified native fits, while fallback point predictions
+remain in the operational population. These pointwise comparisons do not
+establish simultaneous rankings or generalization beyond the frozen experiment.
+
+The [recovery and accounting record](docs/results_v03.md#confirmation-interruptions-and-filesystem-recovery)
+distinguishes three confirmation incidents from the earlier pre-confirmation
+interruptions. Recovery preserves the frozen design and independent dataset
+count. Original lost post-checkpoint artifacts and measurements remain
+unavailable; later recomputation has its own valid native receipts. Scientific
+completion cannot make whole-campaign accounting complete.
+
+The revised ordinary report and two fixed comparisons have completed
+saved-artifact and sampled visual checks: 14 cases, 84 sampled-image reviews
+and all 26 ordinary PDF pages. Browser review remains blocked and continuous
+animation playback was not performed. Confirmation presentation has its own
+fixed-case inventory and separate QA authority:
+[the completed confirmation review](results/v03/rendering/confirmation_visual_qa.json)
+records 12/12 mechanical passes, 72 actual first/middle/last MP4/GIF image
+reviews and all 26 PDF pages, with embedded fonts and no blocking visual
+findings. Browser viewport inspection remains blocked and continuous playback
+was not performed; the receipt retains `publication_ready=false` for that
+limited scope. The preselected replication-0 illustrations do not establish
+aggregate model rankings.
+
+This covered-source snapshot is dated 2026-11-04. Final synthesis, its QA,
+source/installed-wheel validation and public delivery are resolved by their
+generated receipts; this document does not preassert their success.
 
 Use the [ordered reproduction guide](docs/reproduction_v03.md),
 [saved-artifact synthesis guide](report/v03/README.md), and

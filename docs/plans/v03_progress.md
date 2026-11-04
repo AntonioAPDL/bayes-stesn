@@ -7,9 +7,11 @@ Starting source: `37d2d918aa2d03cb4f76477231df33c06ca448bd`.
 The recovery checkout starts at
 `51cb672b07d83d14ced663bf4bc2673128ef00b7`. Its numerical package and dependency
 locks are unchanged. The preceding session's untracked numerical workspace was
-not available, so the preserved v0.3 designs are being executed again with the
-same seeds, budgets and qualification rules. These re-executions do not add
-independent datasets to the historical experiments.
+not available. The recovered development, calibration and stress studies
+re-executed the preserved designs with the same seeds, budgets and qualification
+rules. These re-executions do not add independent datasets to the historical
+experiments. The separately frozen confirmation has the disposition recorded
+in the current update below.
 
 Completed phase archives retain the numerical arrays, checkpoints, manifests,
 receipts, logs, checksums and restoration instructions. Partial tuning archives
@@ -17,6 +19,16 @@ are explicitly labeled partial and are superseded for restoration when a
 complete snapshot of that same campaign becomes available. Historical
 documentation and test receipts remain historical; the new release requires
 its own completed evidence and final source/installed-wheel gate.
+
+On 2026-11-04, a later filesystem-loss event required a separate recovery from
+the verified checkpoint-33 confirmation prefix of 1895 terminal jobs. Exact
+public source commit `8bfbb4b539746727958d25feb04340e6ffa637fe` and the declared
+CPython 3.12.14 runtime with its locked dependencies were restored before
+native continuation. The [restoration proof](../../results/v03/confirmation/operational/filesystem_loss_002/restoration.json)
+and [explicit relocation contract](../../results/v03/confirmation/operational/filesystem_loss_002/relocation_contract.json)
+bind the unchanged scientific identities and relative artifacts. The original
+survivors remain preserved; the new execution root is temporary and carries no
+durability guarantee. The observed disappearance does not establish a cause.
 
 Use `docs/reproduction_v03.md` for the ordered procedure. The completed revised
 pilot now meets the unchanged authority's five-pair requirement in every
@@ -56,9 +68,11 @@ everything beginning at the next historical heading is retained verbatim.
   [Conditional prior moments](../../results/v03/conditional_prior_reproduced.json)
   and [the saved G3 decoder replay](../../results/v03/g3_saved_first_step_review_reproduced.json)
   add no independent field, autonomous prior validation or capacity gain.
-- The [first](../../results/v03/recovery_preflight/session_interruption_20261103T2104Z.json)
-  and [second](../../results/v03/recovery_preflight/session_interruption_20261103T2220Z.json)
-  session interruptions retain explicit unknown cost. History-1000 and
+- Earlier pre-confirmation interruptions include the retained
+  [21:04](../../results/v03/recovery_preflight/session_interruption_20261103T2104Z.json),
+  [22:20](../../results/v03/recovery_preflight/session_interruption_20261103T2220Z.json)
+  and [23:34](../../results/v03/recovery_preflight/session_interruption_20261103T2334Z.json)
+  records from 2026-11-03, with explicit missing-accounting scope. History-1000 and
   sensor-100 recovered ESN receipts have incomplete accounting; missing
   command envelopes remain unavailable. No cause is inferred. Incomplete
   elapsed estimates may include downtime and are not exact compute totals or
@@ -89,17 +103,78 @@ everything beginning at the next historical heading is retained verbatim.
 - The unchanged [confirmation assessment](../../results/v03/confirmation/assessment.json)
   admitted R=60 per scenario: 240 independent datasets and 2640 model/task jobs.
   The uncapped requirement is 102, so `mcse_target_not_met_at_cap` remains
-  explicit. The independent frozen campaign is in progress; planned MCSE is
-  not realized precision or completed confirmation.
+  explicit. The target normalized macro MCSE is 0.02. Planned precision and
+  realized precision remain separate. The completed run contains all 2640
+  scheduled and attempted jobs, 2630 qualified outcomes and ten declared
+  fallbacks (seven ESN, three GRU), with no pending jobs or unresolved
+  infrastructure failures. The
+  [actual native integrity check](../../results/v03/confirmation/operational/integrity_000/postcheck.json)
+  exited 0 after one positive-max-jobs1 invocation with zero submissions and
+  no new fits or forecasts; all 13221 prior immutable files were preserved.
+  The [independently reviewed results](../../results/v03/release_evidence/confirmation_result_interpretation.json)
+  give ESN-minus-GP normalized macro CRPS differences +0.123899 (A; MCSE
+  0.014060) and +1.630846 (B; 0.032908), and ESN-minus-GRU differences
+  +0.235141 (A; 0.013775) and +1.585536 (B; 0.032034). All four native
+  pointwise 95% macro intervals are positive. Track A retains ESN-favoring
+  cells against GP in G3/G4 and against GRU in G4; all Track B primary cells
+  favor the comparators. The primary contrasts condition on cell-specific
+  common-qualified native fits, with fixed one-quarter scenario weights.
+  Both Track A macro MCSEs meet 0.02 and both Track B values exceed it; the
+  original planning shortfall is unchanged. These pointwise results do not
+  establish simultaneous rankings or generalization beyond the frozen design.
+- Three confirmation incidents have separate preserved records:
+  [interruption 000](../../results/v03/confirmation/operational/interruption_000.json)
+  and [recovery 000](../../results/v03/confirmation/operational/recovery_000.json),
+  [interruption 001](../../results/v03/confirmation/operational/interruption_001.json)
+  and [recovery 001](../../results/v03/confirmation/operational/recovery_001.json),
+  and [filesystem loss 002](../../results/v03/confirmation/operational/filesystem_loss_002/observation.json).
+  Event 002 restored the verified 1895-job prefix. The old stdout count of 1917
+  is not recovered scientific evidence. Empty window names 087/088 are
+  [reserved observations](../../results/v03/confirmation/operational/filesystem_loss_002/lost_window_reservation.json),
+  not fabricated native closures. New recovery window 089 independently
+  reached 1917 with [verified prior-byte preservation](../../results/v03/confirmation/operational/filesystem_loss_002/recovery.json).
+  Repeated work adds no independent replication. The unbound finish-only guard
+  is excluded from complete totals. Original lost post-checkpoint artifacts
+  and measurements remain unavailable; later recomputation has its own valid
+  native receipts. Monitor v10 has no recoverable raw stream or summary, so
+  its time coverage, sample count, shared-cgroup memory peaks and disk-space
+  extrema remain unavailable. The monitor never sampled CPU; lost-segment CPU
+  is independently unavailable. The original native accounting flags remain
+  unchanged.
+- The adopted [final accounting helper](../../results/v03/release_evidence/execution_helpers_legacy_preconfirmation_compatibility/ROOT_ADOPTION.json)
+  retains those gaps separately from closed receipt subtotals. Its strict
+  legacy compatibility binds the exact 22:20/23:34 pre-confirmation records
+  without changing arithmetic, native flags or the three confirmation-event
+  provenance rules. Final accounting:
+  [the completed reduction](../../results/v03/release_evidence/execution_costs.json)
+  and [actual root review](../../results/v03/release_evidence/execution_costs_completion/ROOT_REVIEW.json)
+  close all 38 required phase entries with no pending phase/monitor window.
+  Of 3453 core receipts, 3443 enter complete-cost sums and ten remain excluded
+  with their original incomplete flags. The recorded disjoint scientific
+  subtotal is 47214.208981 CPU seconds and 47911.381886 summed scoped wall
+  seconds; complete campaign CPU and elapsed totals remain null. The latter
+  sum is not parallel campaign elapsed time, and delivery work is excluded.
+  Final immutable extension disposition:
+  [the sealed overlay](../../results/v03/release_evidence/extension_dispositions.json)
+  records 15 named dispositions and 45 bound inputs, preserving original P5
+  findings and each technical deferral. The six preselected one-field
+  calibration cases are complete; no optional fitted extension is promoted.
 - The revised ordinary report and two fixed comparisons have
   [complete saved-artifact QA](../../results/v03/rendering/revised_corrected_visual_qa.json):
   14 mechanical cases, 84 actual sampled-image reviews and every one of the
   26 ordinary PDF pages. Four observed legend contacts and one tick-label
   margin were corrected by an audited presentation-only helper, preserving
   scientific inputs and unaffected bytes. Browser review remains blocked and
-  continuous playback unperformed. Final synthesis, its QA, execution-cost
-  and extension closure, the final source/wheel gate and public delivery
-  remain pending.
+  continuous playback unperformed. The separate confirmation presentation
+  retains 12 declared cases and the adopted path-only preparation; its actual
+  rendered/diagnostic/unavailable inventory and QA are:
+  [the completed confirmation review](../../results/v03/rendering/confirmation_visual_qa.json)
+  records all 12 mechanical cases passed, 72 actual MP4/GIF sampled-image
+  reviews and all 26 PDF pages, with three embedded fonts and no blocker.
+  Static HTML checks cover 22 embedded PNGs and 13 local references. Browser
+  viewport inspection remains blocked and continuous playback unperformed;
+  the receipt retains publication_ready=false for that limited QA scope.
+  Neither set of ordinary-report checks stands for final synthesis QA.
 
 The optional 500/4000 history endpoints, extra independent sensor fields,
 frozen-encoder comparisons and capacity/prior ablations remain unexecuted.
@@ -107,7 +182,11 @@ The executed history choice does not establish saturation, no data benefit or
 absence of harm from older history. Existing implementation tests and public
 checkpoints remain evidence for their exact recorded scope. Final full
 source/wheel validation follows all covered factual edits; R01–R20 is not
-marked closed by this progress update.
+marked closed by this progress update. Final gate, synthesis QA, package
+readback, remote CI and publication outcomes are resolved by their generated
+authorities. R20 remains `pending_separate_publication_sidecar` until its
+separate publication verification exists; a later delivery receipt does not
+rewrite the historical snapshots below.
 
 ## Previous execution snapshot retained at the recovered commit
 

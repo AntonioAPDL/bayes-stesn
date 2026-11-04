@@ -32,10 +32,10 @@ what must be retained; it does not mark a row as passed.
 
 | ID | Evidence to retain and check |
 |---|---|
-| R01 | Starting commit/source, exact runtime/locks, recovery/baseline checks, and dated resource observations. |
+| R01 | Starting commit/source, exact runtime/locks, recovery/baseline checks, filesystem-loss restoration/relocation authorities, and dated resource observations. |
 | R02 | Design, computation and attempt identities; resume/invalidation tests; actual immutable campaign manifests. |
-| R03 | Worker-loss/retry tests, interruption traces and terminal-state accounting; no synthetic receipts for unattempted jobs. |
-| R04 | Phase-aware checkpoint/restart and continuation equivalence tests, with the declared runtime and preserved checkpoints. |
+| R03 | Worker-loss/retry tests, confirmation incidents 000/001/002 and their distinct recovery authorities, and terminal-state accounting; no synthetic receipts for unattempted or lost work. |
+| R04 | Phase-aware checkpoint/restart and continuation equivalence tests, with the declared runtime, preserved checkpoints and exact restored-prefix hash verification. |
 | R05 | Exact-coordinate mathematical/reference tests and all six bounded coordinate cases, including qualification and mixing/cost summaries. |
 | R06 | Optimizer continuation tests and actual fit/selection traces, including exhausted caps and nonqualified outcomes. |
 | R07 | Resolved candidate configurations, canonical uniqueness/exhaustion evidence and selection tests. |
@@ -46,8 +46,8 @@ what must be retained; it does not mark a row as passed.
 | R12 | Nested 25/50/100 sensor conditions, common targets/scales, representation audit and one-field uncertainty limitation. |
 | R13 | Actual bounded P5 outputs, prior assessment, calibration/stress evidence and an immutable final disposition overlay. Each deferred extension needs its specific technical rationale. |
 | R14 | Revised paired native and all-attempt operational summaries, exact common-qualified populations, MCSE/intervals and qualification attrition. |
-| R15 | Saved confirmation assessment, exact deficient cells or a valid freeze, source/runtime/seed/R bindings, and any actually completed independent confirmation. Admission is separate from execution and achieved precision. |
-| R16 | Admission plans, actual attempt resource/cost receipts and a sealed monitor summary with its measured time window and ownership scope. Shared cgroup usage is not isolated model memory. |
+| R15 | Saved confirmation assessment, exact deficient cells or a valid freeze, source/runtime/seed/R bindings, actual completed confirmation and its separate native integrity receipt. Admission, the retained planned cap shortfall, execution and achieved precision remain distinct. |
+| R16 | Admission plans, actual attempt resource/cost receipts and sealed available monitor windows with their measured ownership scope. Retain all three confirmation incident gaps, the unbound orphan exclusion and null missing-v10 coverage. Shared cgroup usage is not isolated model memory. |
 | R17 | Forecast-ownership/joint-path/score invariants and the measured allocation comparison; retain limits on full-fit/scoring-memory claims. |
 | R18 | Final current-source and installed-wheel gate, optional CPU-neural scope, CLI/serialization checks, complete validation inventory and distribution hashes. |
 | R19 | Verified synthesis, PNG/SVG figures, planned MP4/GIF/still assets, availability of every planned illustration, and recorded PDF/HTML/media QA. |
@@ -67,6 +67,68 @@ freeze with `power_status=mcse_target_not_met_at_cap` is not achieved precision.
 A scientific block supports a clearly labeled development-only release; it
 does not support a completed-confirmation or predictive-superiority claim.
 
+### Confirmation recovery and final native integrity
+
+The [completed confirmation interpretation](../results/v03/release_evidence/confirmation_result_interpretation.json)
+records 2,640 of 2,640 scheduled jobs completed across 240 independent fields:
+2,630 qualified outcomes and 10 declared fallbacks (seven ESN and three GRU).
+The actual positive-`--max-jobs 1` native integrity invocation exited zero with
+zero submitted attempts, preserved all 13,221 preexisting immutable files and
+left no pending or incomplete jobs. The [native postcheck](../results/v03/confirmation/operational/integrity_000/postcheck.json)
+and [root exit observation](../results/v03/confirmation/operational/integrity_exit_000/root_exit_observation.json)
+record that completed check. The retention and reproduction requirements below
+remain applicable; these scientific receipts do not establish a later release
+gate, media QA or publication result.
+
+Confirmation interruptions 000 and 001 retain their original
+`results/v03/confirmation/operational/interruption_000.json` and
+`interruption_001.json`, their corresponding `recovery_000.json` and
+`recovery_001.json`, and the historical retention mappings under
+`results/v03/release_evidence/historical_confirmation_interruption_000/` and
+`historical_confirmation_interruption_001/`. Their native cost flags and
+missing-cost statements remain unchanged.
+
+Filesystem-loss event 002 has its own observation, lost-window reservation,
+restoration, relocation contract and actual native recovery records under
+`results/v03/confirmation/operational/filesystem_loss_002/`. Its restoration
+basis was the verified checkpoint 33 prefix of 1,895 terminal jobs. The missing
+original stdout boundary at 1,917 is unverified historical output; the later
+native recovery has its own newly generated evidence. The exact empty
+`chunk_087` and `chunk_088` names are reservations, not closed execution windows.
+The cause remains unknown. Original lost post-checkpoint artifacts and
+measurements remain unavailable, including the original submission counts and
+costs; valid later recomputation has its own native receipts. The surviving
+finish-only guard is an unbound historical observation outside active guards
+and complete invocation/model totals. Missing v10 raw and summary evidence
+leaves its time coverage, sample count, shared-cgroup memory and disk extrema
+null. That monitor did not sample CPU; lost-segment CPU is independently
+unavailable. A later monitor cannot recover the missing coverage. These
+operational events do not establish scientific nonqualification or add
+independent datasets.
+
+At final scientific closure, preserve the original coordinator's
+`complete_pending_integrity` status bytes and its actual successful exit
+observation before root issues a separate `paused_closed_boundary` hold at
+2,640 terminal jobs, zero pending jobs and zero active model workers. Use the
+approved capturer's complete 240-shard verification, frozen source/runtime
+checks and saved-artifact inventory as the read-only completion authority.
+Do not weaken its hold requirements or overwrite the original coordinator
+record.
+
+The separate native integrity invocation uses the unchanged frozen
+configuration and a positive `--max-jobs 1`; its actual native receipt must
+then demonstrate zero submissions. Retain controller ownership around the
+before/native/after sequence, release the precheck native lock for the native
+child's own lock, and verify every preexisting immutable scientific file after
+the child. Preserve the first actual native exit before postchecking, including
+any failure; do not retry for a preferred label. Its closed envelope belongs
+at `results/v03/confirmation/operational/integrity_000/`, never under
+`execution_windows`. Bind the observed result in `integrity_000/postcheck.json`.
+A subsequent uniquely named capture can retain the whole sealed envelope and
+the actual zero-submission native attempt without fabricating a controller
+window. The first completed capture and all original native flags remain
+unchanged.
+
 ### Retained execution and validation support
 
 The generated `results/v03/release_evidence/execution_helpers/` tree retains
@@ -78,6 +140,20 @@ binds closed targeted XML snapshots, historical parity receipts, helper test
 stdout/stderr and preparation/review evidence. Preserve each inventory
 immutably; any later retained files need a new supplemental inventory. These
 snapshots are not the final current-source gate or final visual QA.
+
+The adopted final cost producer is
+`results/v03/release_evidence/execution_helpers_legacy_preconfirmation_compatibility/summarize_execution_costs.py`.
+Its retained `confirmation_recovery_provenance.py` accepts only the two exact,
+hash-bound legacy pre-confirmation observations from 2026-11-03 at 22:20 and
+23:34; its unchanged `filesystem_loss_002_provenance.py` binds actual event 002.
+The same tree's `ROOT_ADOPTION.json` and
+`results/v03/release_evidence/execution_helpers_legacy_preconfirmation_compatibility_retention.json`
+bind the reviewed helper bytes and their retention. The earlier
+`execution_helpers/`, `execution_helpers_confirmation_recovery/` and
+`execution_helpers_filesystem_loss_002/` inventories remain historical
+provenance. The adopted producer preserves the existing pipeline, guard and
+monitor arithmetic and native flags while reporting recovery provenance
+separately; accepting legacy observations does not recover their missing costs.
 
 The subsequent report correction has a separate immutable inventory at
 `results/v03/release_evidence/presentation_helpers/supplemental_retention_inventory_20261104T003300460251Z.json`.
@@ -99,7 +175,9 @@ and honestly scoped external command evidence separately.
 
 After all required scientific phases and actual monitor windows are closed,
 write `results/v03/release_evidence/execution_costs.json` using the retained
-aggregation helper's `--require-closed` mode. Its complete-scope subtotals,
+legacy-compatible, filesystem-loss-aware producer's `--require-closed` mode. This mode requires
+actual closure of the available evidence; it does not reconstruct lost
+consumption. Its complete-scope subtotals,
 incomplete observations, missing measurements and command/monitor scopes must
 remain distinct. Lost CPU or elapsed time stays unavailable, including after
 successful scientific recovery. Never add nested pipeline and command costs,
@@ -107,6 +185,30 @@ recount in-fit diagnostic time, or recharge reused control fits. Shared-cgroup
 observations and process-lifetime RSS do not establish isolated fit peaks. This
 companion closes the accounting disclosure; it does not manufacture a complete
 whole-campaign total.
+
+Final execution-cost companion and scoped accounting:
+The [closed execution-cost companion](../results/v03/release_evidence/execution_costs.json)
+and its [root completion review](../results/v03/release_evidence/execution_costs_completion/ROOT_REVIEW.json)
+record a successful aggregation with all 38 required phase entries complete
+and no pending phases or available monitor windows. Of 3,453 core model/task
+accounting records, 3,443 have complete cost scopes; ten incomplete-cost scopes
+remain excluded, comprising six pre-confirmation and four confirmation scopes.
+These accounting exclusions are distinct from the ten confirmation fallback
+outcomes.
+
+The recorded disjoint scientific subtotal is 47,214.209 CPU seconds and
+47,911.382 summed scoped wall seconds, rounded to milliseconds. It combines
+complete core pipelines, separately measured ancillary/calibration work and
+G6 incremental generation/replay. Nested or reused components, guard envelopes,
+engineering smoke and delivery/render/test/upload work are excluded. Summed
+scoped wall time is not elapsed parallel campaign time. Both whole-campaign
+CPU and elapsed-time totals remain null.
+
+The receipt retains 125 unique measured command attempts, five start markers
+without terminal measurements and eight unfinished historical guard
+invocations. Closed available windows do not recover those missing costs or
+the event-002 loss and v10 coverage. Incomplete native accounting flags remain
+unchanged; the finish-only orphan remains outside complete guard/model totals.
 
 ## 2. Avoid source-hash cycles
 
@@ -150,6 +252,25 @@ whole-campaign total.
    commands above describe fresh generation; do not use them to overwrite the
    sealed restored report. Preserve the exact retained helper/plan and both
    report versions when reproducing or auditing the correction.
+
+   After the frozen confirmation run and its native integrity check actually
+   close, generate its separate ordinary report at
+   `report/v03/confirmation_media`. The adopted presentation recipe is bound by
+   `results/v03/release_evidence/confirmation_presentation_relocation_preparation/ROOT_ADOPTION.json`
+   and `results/v03/release_evidence/confirmation_presentation_relocation_retention.json`.
+   Its twelve declared illustration cases retain the fixed replication 0
+   choices and any diagnostic or unavailable native outcomes. Complete its
+   own mechanical checks and actual frame/PDF inspection; the revised report's
+   earlier review does not cover these outputs. Preserve the actual browser
+   and continuous-playback scope in the generated inspection record.
+
+   The actual ordinary confirmation review is now retained in
+   `results/v03/rendering/confirmation_visual_qa.json`: 12 of 12 mechanical
+   cases passed, all 72 first/middle/last MP4/GIF images and all 26 PDF pages
+   were viewed, fonts are embedded and no blocking visual finding remains.
+   Static HTML checks do not replace browser viewport inspection. Browser QA
+   is blocked and continuous playback is unperformed; these scope limits and
+   the separate future synthesis QA remain explicit.
 3. If an older synthesis exported Markdown copies, rerender it with the current
    renderer before the final gate. Current copies use `.md.txt`; their bytes
    are unchanged but they no longer enter the covered report-source set.
@@ -160,7 +281,25 @@ whole-campaign total.
 5. Render the final synthesis with `--release-evidence
    results/release_manifest.json`, both bound `--test-evidence` XML files and
    the actual scientific receipts. Complete PDF/HTML/media QA and save its
-   generated receipt under `results/v03/release_evidence/`. If QA requires a
+   generated receipt at
+   `results/v03/release_evidence/inspection_records/final_media_pdf_qa.json`.
+   The completed-release input recipe includes all of the following, alongside
+   the other required study inputs:
+
+   ```text
+   --run revised=results/v03/development/revised_L1000
+   --media revised=report/v03/revised_media_complete
+   --confirmation-evidence results/v03/confirmation/assessment.json
+   --run confirmation=results/v03/confirmation/frozen_run
+   --media confirmation=report/v03/confirmation_media
+   --release-evidence results/release_manifest.json
+   --test-evidence results/validation/source_pytest.xml
+   --test-evidence results/validation/installed_pytest.xml
+   ```
+
+   Both confirmation run and media inputs are required for this final recipe.
+   Validate their exact frozen-run/report bindings; do not substitute a retained
+   synthetic fixture or select a different replication. If QA requires a
    renderer or covered-doc edit, rerun the applicable final gate for that source.
 6. Package the closed artifacts. Upload and read back the exact immutable
    assets. The post-upload R20 receipt is a separate additional release asset,
@@ -283,6 +422,8 @@ from bayes_stesn.io import content_hash
 root = Path.cwd()
 primary_report = root / "report/v03/revised_media_complete"
 synthesis = root / "report/v03/rendered"
+confirmation_run = root / "results/v03/confirmation/frozen_run"
+confirmation_report = root / "report/v03/confirmation_media"
 primary_manifest = json.loads((primary_report / "run_manifest.json").read_text())
 candidates = [path for path in (root / "results/v03/development").glob("revised_L*")
               if (path / "manifest.json").is_file()
@@ -331,6 +472,7 @@ command = [sys.executable, "tools/package_release.py",
     "--supplemental-max-files", str(max(1, len(files))),
     "--archive-volume-bytes", str(240 * 1024**2),
     "--archive-reserve-bytes", str(4 * 1024**3), "--output", str(output)]
+command += ["--additional-benchmark", str(confirmation_run), str(confirmation_report)]
 for directory in supplements:
     command += ["--supplemental-evidence", str(directory)]
 print(json.dumps({"output": str(output), "supplemental_files": len(files),
@@ -347,10 +489,16 @@ distributions, committed source and verified Git history bundle. Its rejection
 of excluded staging/interim files is intentional; inspect any failure instead
 of silently narrowing the evidence selection.
 
-If independent confirmation actually completed, retain its complete run and
-ordinary saved report and add their pair with `--additional-benchmark RUN
-REPORT`; retain the corresponding `--run confirmation=RUN` in the synthesis.
-Do not add this pair for an admitted-but-unexecuted or blocked assessment.
+The concrete recipe above requires the actually completed frozen confirmation
+run and its verified ordinary report. Their `--additional-benchmark` pair
+retains the standalone report as well as the run; copied synthesis media do
+not replace it. The synthesis must contain both `--run confirmation=RUN` and
+`--media confirmation=REPORT`. Do not execute this full-confirmation recipe for
+an admitted-but-unexecuted or blocked assessment; retain a separately labeled
+development-only delivery in that case. Actual run selection remains confined
+to the named confirmation path and the revised report's matching development
+manifest, without recursive discovery across retained synthetic or historical
+manifests.
 
 ## 5. Readback and public completion
 
@@ -359,11 +507,22 @@ and verify the logical payload mapping against the extracted files. Validate
 the Git bundle and its intended commit. Retain the measured file/byte counts,
 volume count and checks in the release closure.
 
+Use the approved full-readback procedure retained at
+`results/v03/release_evidence/release_readback_preparation/verify_release_readback.py`
+with its adopted inputs. Its preparation and review do not establish that the
+final volumes have been read back. The actual generated verification must bind
+the completed archive set, extracted payload, source and Git bundle. Keep
+its measured results in the generated release evidence and
+`results/v03/release_evidence/r01_r20_closure.json`; do not edit covered source
+after the final gate merely to insert those later outcomes.
+
 Publish only through the authorized repository connection, with a checked
 expected parent and no forced history changes. Verify the public HEAD/CI on the
 exact commit, the tag target, release visibility and every uploaded asset's
 downloaded bytes/SHA256. Provider metadata alone must be labeled as such if
 full byte readback is unavailable. A local package is not a public release.
+Preserve the existing historical tag targets; a new release does not replace
+the v0.2.x source or evidence.
 
 After readback, emit a separate publication-verification receipt with the
 exact commit, CI run/jobs, tag/release/asset identifiers, local/remote hashes,

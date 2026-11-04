@@ -2,10 +2,15 @@
 
 This is the **2026-11-04 current-execution record**. Strict tuning, revised
 development, all six preselected calibration cases and all three paired stress
-arms are complete. The admitted independent confirmation is in progress. This
-record keeps its outcome, final accounting/disposition and release gates
-pending; it does not close R01–R20 or replace the final generated acceptance
-receipt.
+arms are complete. The frozen confirmation design, actual confirmation
+evidence, accounting and later delivery gates have separate authorities.
+Confirmation has all 2640 terminal jobs, 2630 qualified outcomes and ten
+declared fallbacks, with complete zero-submission native integrity and an
+independently reviewed arithmetic reduction. The
+[completed-result interpretation](../results/v03/release_evidence/confirmation_result_interpretation.json)
+binds these findings to their exact native evidence.
+This source document does not close R01–R20 or replace the final generated
+acceptance receipt.
 
 The numerical package and dependency locks remain frozen at scientific source
 fingerprint
@@ -33,7 +38,8 @@ large numerical artifacts are tracked in Git.
 | Revised development | 220/220 qualified outcomes, zero fallback, complete native integrity checks | [Revised summary](../results/v03/development/revised_L1000/summary.json) |
 | Separate calibration | All six preselected G4 replication-0 cases completed and sealed | [Calibration disposition](../results/v03/release_evidence/calibration_disposition.json) |
 | Paired stress | Both G5 arms complete with 55/55 qualified outcomes each; corrected G6 complete with 55 replay jobs and zero parameter refits | [Paired stress summary](evidence/v03/stress_summary.json), [G6 correction equivalence](../results/v03/release_evidence/g6_schema_validation/correction_equivalence.json) |
-| Confirmation admission | Valid frozen R=60 per scenario; uncapped R=102; cap shortfall retained; independent execution in progress | [Assessment](../results/v03/confirmation/assessment.json), [freeze](../results/v03/confirmation/freeze.json) |
+| Confirmation admission | Valid frozen R=60 per scenario; 240 independent datasets and 2640 scheduled jobs; uncapped R=102; planning cap shortfall retained | [Assessment](../results/v03/confirmation/assessment.json), [freeze](../results/v03/confirmation/freeze.json) |
+| Confirmation execution | 2640/2640 terminal; 2630 qualified and ten declared fallbacks; native integrity exit 0 with zero submissions | [Summary](../results/v03/confirmation/frozen_run/summary.json), [native integrity](../results/v03/confirmation/operational/integrity_000/postcheck.json), [independent arithmetic](../results/v03/release_evidence/independent_reviews/final_confirmation/arithmetic_review.json) |
 | Revised ordinary report and fixed comparisons | All 14 cases mechanically verified; 84 sampled MP4/GIF images have actual source-bound review; all 26 ordinary PDF pages viewed | [Corrected report QA](../results/v03/rendering/revised_corrected_visual_qa.json); browser blocked, continuous playback unperformed |
 
 The coordinate comparison concerns the same original posterior targets and
@@ -44,7 +50,7 @@ parameters but the same permitted noisy observation history; it is separately
 labeled from fitted comparators. Neither result establishes overall predictive
 superiority.
 
-## Strict tuning, revised pilot and admitted confirmation
+## Strict tuning, revised pilot and completed confirmation
 
 The [strict-tuning campaign](../results/v03/development/tuned_final/summary.json)
 has all 60 declared outcomes, 59 qualified fits and one declared point fallback.
@@ -90,8 +96,138 @@ request is 102 per scenario, so `mcse_target_not_met_at_cap` remains explicit.
 The planned Track B MCSEs exceed the target 0.02. These are approximate
 qualification-adjusted MCSE projections, not hypothesis-test power or a
 promise of realized precision. The independent campaign at
-`results/v03/confirmation/frozen_run` is in progress; no completed confirmation
-outcome or achieved MCSE is claimed at this update.
+`results/v03/confirmation/frozen_run` retains that exact design and its
+predeclared comparison family. Its actual result is reported separately from
+the development estimates above.
+
+### Independent confirmation results
+
+The [completed native summary](../results/v03/confirmation/frozen_run/summary.json)
+contains all **2640 scheduled, attempted and completed model/task jobs** on
+**240 independent DGP fields**, 60 in each of G1–G4. There are **2630 qualified
+outcomes and ten declared fallbacks**: seven ESN and three GRU. No scientific
+terminal receipts are incomplete, no jobs remain pending, and no unresolved
+infrastructure failures remain. The qualification counts describe the roster;
+2640 model/task outcomes are not 2640 independent statistical replications.
+
+The separate [native integrity invocation](../results/v03/confirmation/operational/integrity_000/postcheck.json)
+used the frozen positive `--max-jobs 1` command once and exited 0 with
+`submitted_attempts=0`. It verified all 240 complete shards and 2640 terminal
+receipts before invocation, then preserved the bytes and membership of all
+13221 prior immutable files. It performed no additional fits or forecasts.
+The [root exit observation](../results/v03/confirmation/operational/integrity_exit_000/root_exit_observation.json)
+separately records the actual outer exit 0; the earlier outer filename precheck
+failed before any native call and was not a scientific retry.
+
+Per-method counts aggregate each method's supported tracks:
+
+| Method | Scheduled / attempted / completed | Qualified | Declared fallback |
+|---|---:|---:|---:|
+| Basis GRU | 480 / 480 / 480 | 477 | 3 |
+| Basis KRR | 480 / 480 / 480 | 480 | 0 |
+| Bayes ESN | 480 / 480 / 480 | 473 | 7 |
+| EQESN rollout | 240 / 240 / 240 | 240 | 0 |
+| Persistence | 240 / 240 / 240 | 240 | 0 |
+| Separable GP | 480 / 480 / 480 | 480 | 0 |
+| Spatial persistence | 240 / 240 / 240 | 240 | 0 |
+
+#### Conditional paired native-CRPS contrasts
+
+The primary contrast is **ESN minus comparator**, divided by the identical
+saved training scale for the paired field. Negative values favor ESN. Each
+scenario/track/comparator cell uses its own common-qualified native-fit
+population; the ten fallback point predictions remain in operational point-loss
+populations and are not substituted into native distributional comparisons.
+All 16 required primary cells are represented, with the sample sizes shown
+below. Different comparators and tracks exclude different datasets.
+
+For a cell's paired differences \(d_{sr}\), let \(\bar d_s\) and \(s_s^2\) denote
+the sample mean and unbiased variance over its \(n_s\) common-qualified fields.
+The frozen equal-quarter macro and its Monte Carlo standard error are
+
+\[
+\widehat\Delta=\frac14\sum_{s=1}^{4}\bar d_s,
+\qquad
+\widehat{\mathrm{MCSE}}(\widehat\Delta)
+=\sqrt{\frac1{16}\sum_{s=1}^{4}\frac{s_s^2}{n_s}}.
+\]
+
+The scenario strata are independent by the frozen DGP design. Sites, forecast
+steps, model fits, tracks and predictive paths do not add independent fields.
+The macro retains weight one-quarter per scenario despite different
+common-qualified counts; no stratum is dropped or renormalized.
+
+The [independent arithmetic review](../results/v03/release_evidence/independent_reviews/final_confirmation/arithmetic_review.json)
+used direct Decimal reductions of the saved scalar inputs. Its 2174 numeric
+checks and 642 exact checks had zero discrepancies at absolute and relative
+tolerances of 1e-12. It independently checked the paired moments and macro
+arithmetic; the native pointwise bootstrap interval endpoints were byte-bound,
+not regenerated with new resamples. The
+[reviewed interpretation](../results/v03/release_evidence/confirmation_result_interpretation.json)
+records the exact input bindings and the scope of these conclusions.
+
+All differences, MCSEs and interval endpoints below are dimensionless normalized
+native-CRPS quantities, rounded to six decimal places for display.
+
+| Comparator | Track | Common-qualified pairs, G1/G2/G3/G4 | ESN − comparator | MCSE | Native pointwise 95% interval | Realized MCSE ≤0.02 |
+|---|---|---|---:|---:|---|---|
+| Separable GP | A | 57 / 60 / 60 / 60 | +0.123899 | 0.014060 | [0.098290, 0.152521] | Yes |
+| Separable GP | B | 56 / 60 / 60 / 60 | +1.630846 | 0.032908 | [1.565067, 1.695414] | No |
+| Basis GRU | A | 57 / 60 / 60 / 59 | +0.235141 | 0.013775 | [0.209288, 0.262424] | Yes |
+| Basis GRU | B | 56 / 60 / 60 / 58 | +1.585536 | 0.032034 | [1.523331, 1.650376] | No |
+
+The scenario results retain the heterogeneity behind those macros:
+
+| Comparator | Track | Scenario | Common-qualified pairs | ESN − comparator | MCSE | Native pointwise 95% interval |
+|---|---|---|---:|---:|---:|---|
+| Separable GP | A | G1 | 57 | +0.591609 | 0.042505 | [0.514107, 0.686376] |
+| Separable GP | A | G2 | 60 | +0.231350 | 0.034129 | [0.168631, 0.301280] |
+| Separable GP | A | G3 | 60 | -0.167796 | 0.005713 | [-0.177794, -0.156664] |
+| Separable GP | A | G4 | 60 | -0.159566 | 0.012612 | [-0.183064, -0.134675] |
+| Separable GP | B | G1 | 56 | +1.578736 | 0.078560 | [1.437721, 1.740329] |
+| Separable GP | B | G2 | 60 | +0.259284 | 0.035046 | [0.195356, 0.332360] |
+| Separable GP | B | G3 | 60 | +4.280982 | 0.099104 | [4.098511, 4.474170] |
+| Separable GP | B | G4 | 60 | +0.404380 | 0.010284 | [0.383543, 0.424732] |
+| Basis GRU | A | G1 | 57 | +0.524230 | 0.042175 | [0.445854, 0.618717] |
+| Basis GRU | A | G2 | 60 | +0.215508 | 0.032633 | [0.155015, 0.281380] |
+| Basis GRU | A | G3 | 60 | +0.259329 | 0.004759 | [0.250772, 0.268770] |
+| Basis GRU | A | G4 | 59 | -0.058504 | 0.013024 | [-0.082324, -0.032443] |
+| Basis GRU | B | G1 | 56 | +1.532335 | 0.076798 | [1.396509, 1.690234] |
+| Basis GRU | B | G2 | 60 | +0.279450 | 0.035054 | [0.214582, 0.353183] |
+| Basis GRU | B | G3 | 60 | +4.068154 | 0.095753 | [3.890943, 4.254743] |
+| Basis GRU | B | G4 | 58 | +0.462204 | 0.011134 | [0.441740, 0.482554] |
+
+These estimates condition on successful joint qualification within each cell.
+They do not estimate an unconditional native-loss contrast over failed fits,
+and qualification is not an independent-binomial sample over model/task jobs.
+Repeated execution of a recovered field does not increase the independent
+sample size. Operational point losses, including declared fallbacks, remain a
+separate population in the native output. The intervals are pointwise;
+no multiplicity-adjusted simultaneous superiority, equivalence or extrapolation
+beyond this frozen four-scenario experiment is established.
+
+**The completed primary comparison supports larger conditional macro native
+CRPS for ESN than for either comparator in both tracks.** All four
+ESN-minus-comparator macro pointwise 95% bootstrap intervals are positive.
+Track A contains clear scenario exceptions in the saved pointwise comparisons:
+ESN has lower conditional CRPS than GP for G3 and G4, and lower than GRU for
+G4. The other Track A differences are positive. Every Track B primary cell has
+a positive difference, with the largest normalized deficits in G3. These
+comparisons do not isolate a causal mechanism for the differences.
+
+Realized macro MCSE is **0.014060 and 0.013775 on Track A**, below the target
+0.02, and **0.032908 and 0.032034 on Track B**, above it (GP and GRU comparisons,
+respectively). The frozen planning status remains
+`mcse_target_not_met_at_cap`, with capped R=60 and the original uncapped R=102.
+The achieved Track A precision does not retrospectively change that planning
+receipt, and no new required-R calculation or adaptive extension was made.
+
+The [interpretation](../results/v03/release_evidence/confirmation_result_interpretation.json)
+also records the historical interruptions and partial operational outcome
+access. Frozen seeds, replication count, model roster, budgets, primary
+comparisons and numerical implementation were not adapted. Original lost
+post-checkpoint artifacts remain unavailable; completed recomputation has its
+own verified native receipts and does not create additional independent data.
 
 ## History choice: retain 1000
 
@@ -248,9 +384,38 @@ their individual P5 rationales. No extension is promoted from implementation
 availability or descriptive residual summaries. The separate base-model G5/G6
 stress and all eligible preselected calibration cases are now complete, as
 described below. Their completion does not promote richer variants. A final
-disposition overlay is pending at
-`results/v03/release_evidence/extension_dispositions.json`; it must retain the
-immutable P5 findings and bind the actual later evidence.
+immutable disposition overlay has the separate authority
+`results/v03/release_evidence/extension_dispositions.json`; its reviewed
+disposition and evidence binding are:
+The [sealed overlay](../results/v03/release_evidence/extension_dispositions.json),
+identity `7addd22a430a381b37191ee7b8c2305eb71c6e2bbf0650f044770cc0e40e3f16`,
+records **15 named dispositions and 45 bound inputs**. It preserves the
+original findings identity
+`798c372dd9d15c738f9db8a2a72eea02954262fed6e3934ffefb01bf4e6f0e8d`.
+The six-case interval-calibration exercise is completed within its stated
+one-field scope; no optional fitted extension is promoted. The remaining
+requirements are specific to each proposed model or prior:
+
+| Extension | Final disposition | Evidence and remaining requirement |
+|---|---|---|
+| `grouped_ridge` | Optional, not triggered | Both training group-amplitude ratios are below the predeclared descriptive threshold; no grouped-versus-scalar fit comparison. |
+| `group_column_rhs` | Deferred | Requires sparsity evidence, global-scale/slab elicitation and a compatible ablation. |
+| `full_residual_ar` | Optional, unpromoted | Retain scalar ridge; one qualified G4 pair and unqualified G3 AR do not establish a general ranking. |
+| `latent_spatial_ar` | Deferred | Separate process and measurement dynamics must first be identified. |
+| `field_t` | Fitted variant deferred | Whole-field-t baseline stress is complete; a fitted robust innovation model still needs a declared prior/inference comparison. |
+| `local_measurement_t` | Fitted variant deferred | Local-t baseline stress is complete; a robust likelihood needs its own contamination model and matched study. |
+| `anisotropy` | Optional | Requires directional spatial residual evidence and a bounded comparison. |
+| `range_prior_alternatives` | Optional | Requires explicit spatial units, reference-scale elicitation and declared prior sensitivity. |
+| `nonstationarity` | Deferred | Requires persistent spatial inadequacy after simpler temporal and representation explanations. |
+| `heteroskedasticity` | Deferred | Requires variance predictors available at the forecast origin and compatible inference. |
+| `eqesn_residual_innovations` | Deferred | Requires E-QESN-specific residual evidence, a coherent innovation law and separate validation. |
+| `interval_calibration` | Completed within declared scope | Six sealed preselected cases on one field; maps preserve raw samples and add no predictive distribution. |
+| `periodic_gp` | Deferred | Requires GP-specific temporal validation and a declared kernel/prior comparison. |
+| `structured_lgssm` | Deferred | Requires an adequacy analysis of a reliably converged baseline within its norm constraint. |
+| `multistep_neural_training` | Optional | Requires horizon-matched validation, identical stopping/tuning budgets and complete training-cost accounting. |
+
+The original P5 findings and each technical deferral remain intact. Core
+confirmation does not itself authorize an extension or a larger ablation.
 
 ## Separate calibration: six cases on one field
 
@@ -367,9 +532,12 @@ for the distinction between these completed inputs and fresh-run recipes.
 
 ## Compute and memory scope
 
-The [first interruption](../results/v03/recovery_preflight/session_interruption_20261103T2104Z.json)
-and [second interruption](../results/v03/recovery_preflight/session_interruption_20261103T2220Z.json)
-record lost execution sessions without assigning an unverified cause. The
+Earlier pre-confirmation interruptions include the preserved
+[21:04 record](../results/v03/recovery_preflight/session_interruption_20261103T2104Z.json),
+[22:20 record](../results/v03/recovery_preflight/session_interruption_20261103T2220Z.json)
+and [23:34 record](../results/v03/recovery_preflight/session_interruption_20261103T2334Z.json)
+from 2026-11-03. These records describe observed losses without assigning an
+unverified cause. The
 history-1000 G3/rep004/B ESN and sensor-100 G4/rep000/B ESN receipts explicitly
 flag incomplete accounting. The original outer history-1000 measurement and
 the first sensor-100 chunk's terminal envelope were not recovered. Interrupted
@@ -382,6 +550,54 @@ fits resumed; the missing scope is selection accounting. Revised development
 has 220 complete cost receipts, and local-t G5 has 55. A successful final
 scientific receipt does not repair an earlier lost measurement envelope.
 
+### Confirmation interruptions and filesystem recovery
+
+Three separately retained incidents affected confirmation. The first two have
+sealed [interruption 000](../results/v03/confirmation/operational/interruption_000.json)
+and [recovery 000](../results/v03/confirmation/operational/recovery_000.json), and
+[interruption 001](../results/v03/confirmation/operational/interruption_001.json)
+and [recovery 001](../results/v03/confirmation/operational/recovery_001.json)
+records. Their original records and native cost-completeness flags remain
+unchanged. The later filesystem-loss event is a separate incident, 002.
+
+The [event-002 observation](../results/v03/confirmation/operational/filesystem_loss_002/observation.json)
+records broad loss of the active workspace and missing coordinator/monitor
+paths, without establishing a cause. Recovery used the verified checkpoint-33
+prefix of **1895 terminal jobs**. The
+[restoration proof](../results/v03/confirmation/operational/filesystem_loss_002/restoration.json)
+binds the restored artifacts, exact public source commit
+`8bfbb4b539746727958d25feb04340e6ffa637fe`, frozen source fingerprint and full
+declared runtime. The [relocation contract](../results/v03/confirmation/operational/filesystem_loss_002/relocation_contract.json)
+maps the preserved relative artifacts into an isolated temporary execution
+root. This location is not a durability guarantee.
+
+The old stdout reported 1917 terminal jobs before starting window 088, but
+those post-checkpoint scientific artifacts were not recovered. That historical
+stdout count is not accepted as recovered scientific evidence. Windows 087
+and 088 were observed empty and their names are
+[reserved explicitly](../results/v03/confirmation/operational/filesystem_loss_002/lost_window_reservation.json);
+they are not reconstructed closed native windows. The first actual recovery
+window, 089, independently reached 1917 terminal jobs. Its
+[new native recovery proof](../results/v03/confirmation/operational/filesystem_loss_002/recovery.json)
+verified all 1895 prior terminal-receipt hashes and 8693 previously retained
+files unchanged. Repeated execution adds no independent fields or seeds.
+
+Original lost post-checkpoint artifacts and measurements remain unavailable.
+Their submissions and costs cannot be reconstructed; later recomputation has
+its own valid native receipts. The
+[surviving finish-only guard](../results/v03/release_evidence/historical_confirmation_filesystem_loss_002/orphan_guard_finish.jsonl)
+has an exit-1 observation and literal duration, but lacks its start, log and
+native-invocation binding; its job count and completion fields are null. It
+is excluded from complete guard and model totals. Its duration does not
+measure the lost segment or the campaign. Monitor v10's raw stream and summary
+are unavailable, so its time coverage, sample count, shared-cgroup memory
+peaks and disk-space extrema remain unavailable. That monitor never sampled
+CPU; lost-segment CPU is independently unavailable. A later retained monitor
+does not reconstruct the missing coverage. Native cost flags have not been
+relabeled, and no additional failure cause is inferred.
+
+### Retained accounting and memory measurements
+
 The [initial ordinary-report rendering attempt](../results/v03/rendering/revised_render_interruption_20261103T2334Z.json)
 also lacks its terminal measurement envelope. Its partial output, log and plan
 remain preserved separately from the successful continuation into the fresh
@@ -391,12 +607,65 @@ successful rerender's measurements, and no interruption cause is inferred.
 
 Finite fields on an incomplete receipt can be partial timings or elapsed
 estimates that include downtime. They are neither exact compute totals nor
-necessarily lower bounds. A final companion at
-`results/v03/release_evidence/execution_costs.json` is pending until all required
-phases and monitor windows are closed. It must retain complete-receipt subtotals,
-partial/estimated fields and unavailable totals separately. Its role is to
-account for the evidence that exists; lost work does not become measured merely
-because the scientific outcomes later finish.
+necessarily lower bounds. The final companion's authority is
+`results/v03/release_evidence/execution_costs.json`, produced after all required
+phases and retained monitor windows close by the
+[adopted final accounting helper](../results/v03/release_evidence/execution_helpers_legacy_preconfirmation_compatibility/summarize_execution_costs.py).
+Its strict compatibility branch binds the exact retained 22:20 and 23:34
+pre-confirmation interruption observations, preserving their raw records and
+unavailable costs. The earlier parser failure is retained under
+`results/v03/release_evidence/cost_aggregation_failures/legacy_schema_initial`;
+the correction changes no cost sum, native flag or confirmation recovery rule.
+The [adoption](../results/v03/release_evidence/execution_helpers_legacy_preconfirmation_compatibility/ROOT_ADOPTION.json)
+and [retention mapping](../results/v03/release_evidence/execution_helpers_legacy_preconfirmation_compatibility_retention.json)
+bind the final helper. Its final retained-scope accounting is:
+The [completed cost reduction](../results/v03/release_evidence/execution_costs.json)
+and its [root review](../results/v03/release_evidence/execution_costs_completion/ROOT_REVIEW.json)
+record actual exit 0, all **38 required phase entries complete**, and no pending
+phase or available monitor window. Across the core studies there are **3453
+terminal receipts**: **3443** have complete finite pipeline CPU/wall accounting,
+while **ten cost-incomplete receipts are excluded from complete-scope sums**.
+Their original native flags remain unchanged. Cost completeness is separate
+from scientific qualification; these exclusions span the completed studies.
+
+| Recorded disjoint scope | CPU seconds | Sum of scoped wall seconds |
+|---|---:|---:|
+| Complete core pipeline receipts | 46068.600604 | 46760.028151 |
+| Complete G6 incremental generation/replay | 108.625010 | 109.154069 |
+| Measured ancillary/calibration commands | 1036.983367 | 1042.199667 |
+| Recorded scientific subtotal | **47214.208981** | **47911.381886** |
+
+The table is rounded to six decimals; the receipt retains full recorded
+precision. These are sums over the listed disjoint recorded scopes.
+**Complete campaign CPU and elapsed-time totals remain null**, and
+`whole_campaign_accounting_complete=false`. The summed wall durations are not
+the elapsed time of the parallel campaign. Shared generation/controller work
+is not uniformly isolated, and interrupted or unmeasured work remains unknown.
+Engineering probes, nested timing/diagnostic/coordinate/P5/cache components,
+reused controls, overlapping command/guard envelopes and delivery work are
+excluded from this scientific subtotal. Rendering, tests, archival uploads and
+publication belong to delivery accounting.
+
+The companion also retains **125 uniquely measured command attempts**, **five
+start markers without terminal measurements** and **eight unfinished guard
+invocations**. Those historical missing measurements remain unavailable even
+though all required scientific phase entries are closed. The event-002 orphan
+finish is excluded from complete guard/model totals; its literal duration
+cannot reconstruct the lost interval, and the unavailable v10 monitor window
+remains null. Original lost post-checkpoint artifacts and measurements remain
+unavailable despite valid later recomputation.
+
+The maximum reported core process-lifetime RSS is **819769344 bytes**. The
+largest retained shared-cgroup sample is **8589934592 bytes**, including shared
+activity and cache; it is an observed sample maximum. Neither quantity is an
+isolated model increment or a verified whole-campaign peak, and the two memory
+measures are not added together.
+
+Complete-receipt subtotals, partial or estimated fields, unbound observations
+and unavailable whole-campaign totals remain separate. The helper's separate
+filesystem-loss provenance does not change the prior pipeline, guard or
+monitor arithmetic. Lost work does not become measured merely because the
+scientific outcomes finish.
 
 Inclusive command/chunk envelopes and nested model pipelines are overlapping
 views and must not be added. Diagnostic time already charged inside a fit must
@@ -448,23 +717,61 @@ playback was not performed; wide/narrow browser review remains
 Static checks do not replace either activity, and this ordinary-report receipt
 does not claim final synthesis or confirmation-report QA.
 
+### Confirmation presentation and its own QA
+
+The confirmation presentation uses the fixed 12 declared cases and the
+[adopted path-only relocation preparation](../results/v03/release_evidence/confirmation_presentation_relocation_preparation/ROOT_ADOPTION.json).
+The preparation preserves the original cases, scientific artists and QA
+driver; preparation is not evidence that a case rendered or passed review.
+Actual native diagnostic or unavailable cases must remain visible, with no
+replacement replication chosen after outcomes. The separate report manifest
+at `report/v03/confirmation_media/report_manifest.json` and its actual QA give
+the final scope:
+The [closed confirmation QA](../results/v03/rendering/confirmation_visual_qa.json)
+records **12/12 mechanical passes**, no unavailable native case and no blocking
+visual findings. The [frame review](../results/v03/release_evidence/inspection_records/confirmation_frame_visual_review.json)
+actually viewed **72 first/middle/last MP4/GIF images** at indices 0, 50 and 99
+across the twelve cases. The separate
+[PDF/static-HTML review](../results/v03/release_evidence/inspection_records/confirmation_pdf_html_qa.json)
+viewed **all 26 PDF pages** and checked **22 embedded PNGs and 13 local HTML
+references**. All three used fonts are embedded. Font embedding changed only
+the PDF and its manifest font inventory; 71 other report payloads and all
+scientific artifacts remain unchanged.
+
+The actual review status is `passed_with_disclosed_browser_playback_limits`.
+Wide/narrow browser inspection remains blocked by environment policy and
+continuous playback was not performed; `publication_ready=false` remains
+explicit in this ordinary-report receipt. Static HTML and sampled images do
+not replace those missing inspection modes. Fixed quantile scales may saturate
+extremes, and G3-B retains its large forecast range and compressed truth
+contrast. The fixed preselected replication-0 cases are illustrations, not
+aggregate model rankings.
+
+The revised report's 14-case and 26-page counts are not transferred to the
+confirmation report or final synthesis. Browser and continuous-playback scope
+must be stated by each actual review.
+
 ## Remaining decisions and delivery gates
 
-The following remaining destinations are authoritative only when their own
-completed, validated receipts exist. An input directory or configured workflow
-does not establish a passed gate.
+The following destinations are authoritative only when their own completed,
+validated receipts exist. An input directory or configured workflow does not
+establish a passed gate. Later generated receipts resolve the delivery state
+of this dated covered-source snapshot without changing the source they bind.
 
-| Pending scope at this update | Canonical authority |
+| Scope and recorded disposition | Canonical authority |
 |---|---|
-| Independent confirmation completion and realized common-qualified precision | `results/v03/confirmation/frozen_run/summary.json`, its per-job receipts and completed final comparison; bound to the existing assessment/freeze |
-| Closed execution-cost and extension dispositions | `results/v03/release_evidence/execution_costs.json`, `results/v03/release_evidence/extension_dispositions.json` |
-| Final covered-source/installed-wheel gate | `results/release_manifest.json`, `results/validation/source_pytest.xml`, `results/validation/installed_pytest.xml` bound to the final covered bytes |
-| Final saved-artifact synthesis, any confirmation report and their actual QA | `report/v03/rendered/report_manifest.json`, `results/v03/release_evidence/inspection_records/final_media_pdf_qa.json` |
-| R01–R20 closure and verified public delivery | `results/v03/release_evidence/r01_r20_closure.json` and the separate post-upload publication-verification sidecar |
+| Confirmation execution and interpretation complete: 2640 terminal jobs, zero-submission native integrity, independently checked arithmetic; conditional pointwise conclusions retain their limits | `results/v03/confirmation/frozen_run/summary.json`, `results/v03/confirmation/operational/integrity_000/postcheck.json`, `results/v03/release_evidence/confirmation_result_interpretation.json` and its bound independent review |
+| Recorded cost reduction complete: 38 required phase entries closed; 3443 complete-cost core receipts and ten excluded cost-incomplete receipts; whole-campaign totals unavailable | `results/v03/release_evidence/execution_costs.json` and `execution_costs_completion/ROOT_REVIEW.json` |
+| Immutable extension overlay sealed: 15 dispositions and 45 bound inputs; specific deferrals and original P5 findings preserved | `results/v03/release_evidence/extension_dispositions.json`, alongside unchanged base P5 findings |
+| Confirmation ordinary-report QA complete within disclosed scope: 12 cases, 72 sampled images, 26 PDF pages; browser blocked and continuous playback unperformed | `report/v03/confirmation_media/report_manifest.json` and `results/v03/rendering/confirmation_visual_qa.json` |
+| Final covered-source/installed-wheel gate; outcome resolved by generated evidence | `results/release_manifest.json`, `results/validation/source_pytest.xml`, `results/validation/installed_pytest.xml` bound to the final covered bytes |
+| Final saved-artifact synthesis and its actual QA; outcome resolved by generated evidence | `report/v03/rendered/report_manifest.json`, `results/v03/release_evidence/inspection_records/final_media_pdf_qa.json` |
+| R01–R20 closure and verified public delivery; outcome resolved by generated evidence | `results/v03/release_evidence/r01_r20_closure.json`; R20 remains `pending_separate_publication_sidecar` until its separate verified post-upload publication sidecar exists |
 
 An admitted freeze, a completed confirmation and achieved precision remain
-different outcomes. No confirmation result, achieved MCSE target or
-simultaneous model ranking is claimed here. The long-history
+different outcomes. The frozen planning shortfall is not rewritten by a
+realized MCSE, and pointwise comparisons do not establish simultaneous model
+rankings. The long-history
 [G3 numerical validation](evidence/v03/generator_validation_long_history_grid64.json)
 supports the declared finite semidiscrete time/activity checks; its failed mesh
 refinement does not support a continuum claim.
