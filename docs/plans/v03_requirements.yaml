@@ -2,7 +2,7 @@ schema: bayes-stesn-requirements-1.0
 plan: docs/plans/PRO_IMPLEMENTATION_PLAN.md
 audit: docs/audits/post_release_2026_11_03/README.md
 starting_commit: 37d2d918aa2d03cb4f76477231df33c06ca448bd
-snapshot_date: '2026-11-03'
+snapshot_date: '2026-11-04'
 path_policy: All paths are relative to the repository root.
 status_policy: >-
   Implementation, executed evidence, and scientific conclusions are separate
@@ -11,10 +11,60 @@ status_policy: >-
   publication, and scientific receipts must bind their exact source/runtime.
   The coordinator updates pending evidence after those gates run. Missing
   evidence is not replaced by an implementation claim.
+current_execution:
+  recorded_date: '2026-11-04'
+  status: completed_development_calibration_stress_confirmation_running_release_pending
+  scientific_source_fingerprint: 9f73b28a6ee6b8eec4bd21c3366b0c260c9433f798610be16697b2e44166d5ac
+  findings: docs/results_v03.md
+  previous_requirements_snapshot: results/v03/release_evidence/historical_source_snapshots/v03_requirements_pre_current_execution_20261103.yaml
+  previous_snapshot_inventory: results/v03/release_evidence/historical_source_snapshots/v03_requirements_pre_current_execution_20261103_inventory.json
+  historical_progress_policy: Preserve the previous-execution section and all following historical snapshots verbatim.
+  completed_authorities:
+    strict_tuning: results/v03/development/tuned_final/summary.json
+    revised_development: results/v03/development/revised_L1000/summary.json
+    confirmation_admission: results/v03/confirmation/assessment.json
+    confirmation_freeze: results/v03/confirmation/freeze.json
+    calibration_disposition: results/v03/release_evidence/calibration_disposition.json
+    stress_summary: docs/evidence/v03/stress_summary.json
+    corrected_stress_design: results/v03/stress/design_schema_fix/stress_design.json
+    corrected_g6_replay: results/v03/stress/g6_velocity_shift_schema_fix/replay_summary.json
+    g6_correction_equivalence: results/v03/release_evidence/g6_schema_validation/correction_equivalence.json
+    current_stress_strict_verification: results/v03/release_evidence/stress_serialization_current/stress_renderer_verification_compact.json
+    historical_stress_interpretation_binding: results/v03/release_evidence/stress_serialization_current/interpretation_binding_compact.json
+    revised_ordinary_and_comparison_qa: results/v03/rendering/revised_corrected_visual_qa.json
+  final_authorities_pending:
+    independent_confirmation: results/v03/confirmation/frozen_run/summary.json
+    extension_dispositions: results/v03/release_evidence/extension_dispositions.json
+    execution_costs: results/v03/release_evidence/execution_costs.json
+    source_and_installed_wheel_gate: results/release_manifest.json
+    visual_qa: results/v03/release_evidence/inspection_records/final_media_pdf_qa.json
+    acceptance_closure: results/v03/release_evidence/r01_r20_closure.json
+    publication: Separately checksummed post-upload publication-verification sidecar; no current success claim.
+  final_gate_policy: >-
+    Finish covered factual edits before the final source/wheel gate. Later
+    generated closure, QA and publication receipts resolve the dated pending
+    entries without changing the covered source they validate. An existing
+    historical receipt at a canonical path is not current validation.
 overall:
   implemented: Staged engineering and study interfaces available; conditional extensions remain gated.
-  executed: Baseline and integration snapshots and a bounded ownership probe recorded; final gates pending.
-  scientific_conclusion: No completed schema-4 confirmation or general predictive-improvement claim.
+  executed: >-
+    Recovered reference, six coordinate cases, bounded P5 and saved diagnostics,
+    both initial history conditions, and all three sensor conditions are
+    complete. Strict tuning has 59/60 qualified outcomes and one declared
+    fallback; revised development has 220/220 qualified outcomes. All six
+    preselected calibration cases and all three paired stress arms are complete.
+    Confirmation is admitted at R=60 per scenario and in progress. Revised
+    ordinary/comparison saved-artifact QA is complete; final synthesis and
+    release gates remain pending.
+  scientific_conclusion: >-
+    The sealed exploratory rule retains history 1000: Track A meets the
+    practical improvement bound, Track B fails it, and incomplete short-history
+    accounting independently fails the cost gate. Sensors provide one-field
+    descriptive evidence. Calibration shares one field and serial blocks;
+    five-field stress contrasts are exploratory within-model effects. The
+    confirmation cap retains mcse_target_not_met_at_cap. No completed schema-4
+    confirmation, achieved precision or general predictive-improvement claim
+    is made.
 requirements:
   - id: P0
     title: Baseline, provenance, and bounded execution
@@ -35,7 +85,7 @@ requirements:
       - tests/test_runner_execution_v03.py
       - tests/test_runner_limits_v03.py
     executed:
-      status: baseline_and_integration_snapshots_recorded
+      status: baseline_recovery_and_six_training_only_timing_cases_recorded
       evidence:
         - docs/evidence/v03/baseline_environment.json
         - docs/evidence/v03/baseline_tests.xml
@@ -43,9 +93,17 @@ requirements:
         - docs/evidence/v03/pilot_resource_plan.json
         - docs/evidence/v03/remaining_studies_preflight/resource_plans.json
         - docs/evidence/v03/remaining_studies_preflight/study_provenance.json
+        - results/v03/recovery_preflight/environment.json
+        - results/v03/study_design/timing/sensors_100__A__eqesn_rollout.json
+        - results/v03/study_design/timing/sensors_100__A__basis_krr.json
+        - results/v03/study_design/timing/sensors_100__A__separable_stgp.json
+        - results/v03/study_design/timing/sensors_100__B__spatial_persistence.json
+        - results/v03/study_design/timing/sensors_100__B__basis_gru.json
+        - results/v03/study_design/timing/sensors_100__B__bayes_esn_ridge.json
       limitations:
-        - The resource plan is an estimate, not an executed development campaign.
-        - Remaining-study estimates use conservative reference proxies until G4 selections and six target-size training-only timing receipts are complete.
+        - Historical resource plans remain estimates under their recorded proxy assumptions.
+        - The six largest-sensor-geometry training-only timings are bounded observed cases, not universal complexity bounds or whole-campaign costs.
+        - New waves require admission against actual shared occupancy, completed payload bytes and available storage.
         - Final-source installed-wheel validation is a separate pending gate.
     scientific_conclusion:
       status: not_applicable_engineering
@@ -80,11 +138,22 @@ requirements:
       - tests/test_esn_phase_recovery.py
       - tests/test_benchmark_checkpoint_policy.py
     executed:
-      status: integration_snapshot_recorded_final_gate_pending
+      status: recovery_evidence_recorded_unknown_interrupted_cost_retained_final_gate_pending
       evidence:
         - docs/evidence/v03/integrated_tests.xml
+        - results/v03/recovery_preflight/session_interruption_20261103T2104Z.json
+        - results/v03/recovery_preflight/session_interruption_20261103T2220Z.json
+        - results/v03/recovery_preflight/resource_samples_v2.summary.json
+        - results/v03/recovery_preflight/resource_samples_v3.summary.json
+        - results/v03/history/v03_fixed_history_history_1000/g3_excitable_field/rep_004/B/bayes_esn_ridge/receipt.json
+        - results/v03/sensors/v03_sensor_sensitivity_sensors_100/g4_existing_fronts/rep_000/B/bayes_esn_ridge/receipt.json
+      limitations:
+        - Missing original command envelopes and lost CPU work remain unavailable; a later terminal scientific result does not recover prior measurement.
+        - Finite incomplete fields can include downtime and are not exact compute totals or guaranteed lower bounds.
+        - Shared-cgroup monitor windows and process-lifetime fit RSS are not isolated per-model or per-fit memory peaks.
       pending:
         - Final source and installed-wheel recovery/CLI receipts after documentation and source freeze.
+        - Closed disjoint-scope execution_costs.json after all mandatory phases and all actual monitor windows are sealed.
     scientific_conclusion:
       status: not_applicable_engineering
       statement: Recovery correctness does not establish diagnostic qualification or predictive superiority.
@@ -117,12 +186,25 @@ requirements:
       - tests/test_esn_phase_recovery.py
       - tests/test_benchmark_optimizer_policy.py
     executed:
-      status: correctness_snapshot_recorded_development_evidence_to_seal
+      status: coordinate_reference_and_strict_tuning_populations_complete
       evidence:
         - docs/evidence/v03/integrated_tests.xml
-      pending:
-        - Bind the bounded coordinate-comparison receipts to the final scientific source identity.
-        - Record any optimizer development rescue rates separately from correctness fixtures.
+        - results/v03/coordinate-final/manifest.json
+        - results/v03/coordinate-final/summary.json
+        - results/v03/development/reference_final/summary.json
+        - results/v03/development/tuned_final/summary.json
+        - results/v03/development/tuned_final/g3_excitable_field/rep_000/A/basis_lgssm/selection.json
+        - results/v03/development/tuned_final/g3_excitable_field/rep_000/A/basis_lgssm/receipt.json
+      scope: >-
+        The paired coordinate cases use one field each from G1/G3/G4 and the
+        same original posterior targets; legacy qualifies 2/3 and transformed
+        coordinates 3/3. The reference panel has 60/60 qualified outcomes.
+        The complete tuning population has 59/60 qualified outcomes. Its
+        G3/A LGSSM outcome has no eligible finalist:
+        all four finite rechecks reach 200 EM iterations without the fixed
+        relative-likelihood convergence criterion. Its declared point fallback
+        is retained as a method failure, not an infrastructure interruption.
+      pending: []
     scientific_conclusion:
       status: development_only_no_general_promotion
       statement: >-
@@ -158,12 +240,22 @@ requirements:
       - tests/test_benchmark_neural.py
       - tests/test_benchmark_basis_gru.py
     executed:
-      status: integration_snapshot_recorded_development_campaign_pending
+      status: all_60_strict_tuning_outcomes_complete_59_qualified_one_fallback
       evidence:
         - docs/evidence/v03/integrated_tests.xml
         - docs/evidence/v03/pilot_resource_plan.json
+        - results/v03/development/tuned_final/manifest.json
+        - results/v03/development/tuned_final/summary.json
+        - results/v03/development/tuned_final/g3_excitable_field/rep_000/A/basis_lgssm/selection.json
+        - results/v03/development/tuned_final/g3_excitable_field/rep_000/A/basis_lgssm/receipt.json
       pending:
-        - Completed matched-dimension retuned development results and per-method measured costs.
+        - Final per-method costs with actual interrupted-accounting flags and unavailable scopes retained.
+      scope: >-
+        All declared jobs are terminal with retained candidate/recheck traces;
+        the LGSSM selection failure is an explicit method outcome. Three
+        tuning selection scopes have incomplete accounting. Their final-fit
+        receipts do not mark resumed fits, and selection timing gaps remain
+        distinct from fit continuation or scientific incompleteness.
     scientific_conclusion:
       status: not_established
       statement: More distinct candidates and stricter selection do not by themselves prove better forecasts.
@@ -200,24 +292,52 @@ requirements:
       - tests/test_benchmark_pipeline.py
       - tests/test_v03_study_tools.py
     executed:
-      status: interface_invariants_recorded_scientific_curves_pending
+      status: both_initial_history_conditions_and_all_sensor_conditions_complete
       evidence:
         - docs/evidence/v03/integrated_tests.xml
         - docs/evidence/v03/study_tool_tests.xml
         - docs/evidence/v03/generator_validation_long_history_grid64.json
         - docs/evidence/v03/scientific_review.json
+        - results/v03/history/curve_design.json
+        - results/v03/history/v03_fixed_history_history_1000/summary.json
+        - results/v03/history/v03_fixed_history_history_2000/summary.json
+        - docs/evidence/v03/history_choice.json
+        - results/v03/sensors/curve_design.json
+        - results/v03/sensors/v03_sensor_sensitivity_sensors_25/summary.json
+        - results/v03/sensors/v03_sensor_sensitivity_sensors_50/summary.json
+        - results/v03/sensors/v03_sensor_sensitivity_sensors_100/summary.json
+        - docs/evidence/v03/sensor_representation.json
       scope: >-
+        The 1000/2000 history conditions each have 165 terminal outcomes,
+        respectively 163 and 164 qualified. The sealed exploratory rule selects
+        1000. Track A passes the practical gain bound; Track B fails it despite
+        a positive macro mean and has heterogeneous scenario effects. Each
+        track has 4/5/5 common-qualified G1/G3/G4 pairs. Long-history
+        qualification is not worse; incomplete short-history compute accounting
+        independently fails the cost gate. Small-sample dataset-bootstrap
+        intervals are pointwise, without a formal-coverage or simultaneity claim.
+        All 33 sensor outcomes qualify on one G4 field at separately fixed
+        initial history 2000. The representation audit is descriptive and
+        has no across-field MCSE; its fixed-reference noise-amplification
+        diagnostic does not change fitted bases, priors or forecasts.
         The long independent G3 numerical pilot passes the declared finite-grid
         time and nontrivial-activity checks over the full planned history span;
         mesh refinement fails and no continuum or all-initial-condition
         guarantee is inferred. Study-tool unit tests establish only the
         selection-rule arithmetic, algebra and integrity checks.
+      unexecuted_optional_scope:
+        - History500/4000 endpoints; curve shape outside 1000/2000 remains unresolved and additional endpoints do not restore missing timing or add independent fields.
+        - Additional independent sensor fields, separately frozen encoder experiments and capacity/prior ablations.
       pending:
-        - Same-source paired learning-curve outcomes, diagnostic qualification and uncertainty summaries.
-        - Source-bound history_choice.json and sensor_representation.json from complete saved studies; no such outcomes are assumed by the planning files.
+        - Final reporting and requirement disposition using the complete sealed audits and their limitations.
     scientific_conclusion:
-      status: not_established
-      statement: The new curves can estimate the value of more data; no such value is assumed from code alone.
+      status: exploratory_history1000_choice_and_one_field_sensor_description
+      statement: >-
+        Retaining 1000 is the specified response to failed promotion gates,
+        not evidence of no data benefit, saturation or no harm from older
+        history. Recorded partial timing ratios do not establish complete
+        measured speedups. Sensor geometry results do not establish a
+        replicated sensor-benefit or forecast-accuracy claim.
 
   - id: P5
     title: Evidence-gated model and uncertainty extensions
@@ -242,14 +362,33 @@ requirements:
       - tests/test_registry_identity_v03.py
       - tests/test_benchmark_pipeline.py
     executed:
-      status: scope_guards_checked_conditional_experiments_pending
+      status: bounded_ar_path_studies_and_saved_prior_decoder_checks_complete
       evidence:
         - docs/evidence/v03/integrated_tests.xml
+        - results/v03/extension_findings_reproduced.json
+        - results/v03/conditional_prior_reproduced.json
+        - results/v03/g3_saved_first_step_review_reproduced.json
+        - results/v03/release_evidence/calibration_disposition.json
+        - docs/evidence/v03/stress_summary.json
+        - results/v03/release_evidence/scientific_interpretation/paired_stress_calibration_review.json
+      scope: >-
+        Residual AR has one common-qualified G4 native comparison and an
+        unqualified G3 fit at its maximum allowance; no primary promotion
+        follows. The prespecified path-sensitivity rule selects 512 as its
+        finite reference ceiling, without negligible-Monte-Carlo-error or
+        model-adequacy certification. Conditional fixed-design prior moments
+        and the exact saved G3 first-step replay add no independent dataset,
+        autonomous prior validation, refit or demonstrated capacity gain.
+        All six separate calibration cases and mandatory base-model G5/G6
+        studies are complete; they do not promote richer model variants.
       pending:
-        - Evidence supporting a specific richer model beyond simpler qualified baselines.
+        - Final immutable extension_dispositions.json overlay retaining specific technical deferrals and the original P5 findings.
     scientific_conclusion:
-      status: deferred_without_promotional_claim
-      statement: No universal prior, covariance or dynamics upgrade is inferred; promotion requires compatible evidence.
+      status: scalar_ridge_primary_retained_no_automatic_extension_promotion
+      statement: >-
+        Failed inference has no native loss. One qualified AR comparison,
+        descriptive residual/group summaries and fixed-design mathematical
+        checks do not establish a universal prior, covariance or dynamics upgrade.
 
   - id: P6
     title: Fair populations, paired macro precision, and confirmation freeze
@@ -287,14 +426,34 @@ requirements:
       - tests/test_benchmark_pipeline.py
       - tests/test_v03_stress_tools.py
     executed:
-      status: formula_and_integrity_checks_recorded_confirmation_pending
+      status: revised_pilot_calibration_stress_complete_frozen_confirmation_running
       evidence:
         - docs/evidence/v03/integrated_tests.xml
         - docs/evidence/v03/stress_tool_tests.xml
+        - docs/evidence/v03/history_choice.json
+        - docs/evidence/v03/generator_validation_long_history_grid64.json
+        - results/v03/development/revised_L1000/manifest.json
+        - results/v03/development/revised_L1000/summary.json
+        - results/v03/confirmation/assessment.json
+        - results/v03/confirmation/freeze.json
+        - results/v03/confirmation/frozen.yaml
+        - results/v03/release_evidence/calibration_disposition.json
+        - docs/evidence/v03/stress_summary.json
+        - results/v03/stress/design_schema_fix/stress_design.json
+        - results/v03/stress/g6_velocity_shift_schema_fix/replay_summary.json
+        - results/v03/release_evidence/g6_schema_validation/correction_equivalence.json
+      scope: >-
+        Revised development is 220/220 qualified, with five common-qualified
+        pairs in each of 16 primary cells. The unchanged authority admits
+        60 datasets per scenario, 240 datasets and 2640 jobs; the uncapped
+        maximum is 102 and mcse_target_not_met_at_cap is retained. Both G5
+        arms are 55/55 qualified and corrected G6 has 55 replay jobs with
+        zero parameter refits. Original G6 design/failed attempt are preserved;
+        validator correction 99b0f8d keeps G5 YAMLs and scientific settings
+        unchanged. Six calibration cases share one field, 25 serial blocks,
+        fixed parameter cutoff 1300 and later evaluation origin 3800.
       pending:
-        - Qualified matched-dimension development cells and generator evidence required by the frozen roster.
-        - A valid schema-4 confirmation freeze and completed independent final campaign.
-        - Completed G5/G6 paired stress outcomes and eligible calibration cases; tool tests alone establish no stress or calibration result.
+        - Complete the independent frozen confirmation and calculate realized common-qualified populations, paired uncertainty and achieved precision without changing its design.
     scientific_conclusion:
       status: not_established
       statement: No completed schema-4 confirmation, achieved MCSE, or simultaneous ranking is claimed.
@@ -363,13 +522,36 @@ requirements:
       - tests/test_release_tools.py
       - tests/test_benchmark_pipeline.py
     executed:
-      status: integration_snapshot_recorded_final_release_and_reports_pending
+      status: ordinary_report_saved_artifact_qa_complete_final_synthesis_and_release_pending
       evidence:
         - docs/evidence/v03/baseline_tests.xml
         - docs/evidence/v03/integrated_tests.xml
+        - results/v03/recovery_preflight/tooling_checkpoint.json
+        - results/v03/recovery_preflight/report_timing_checkpoint.json
+        - results/v03/release_evidence/execution_helpers/retention_inventory.json
+        - results/v03/release_evidence/validation_support/supplemental_retention_inventory.json
+        - report/v03/sensor100_comparison/manifest.json
+        - report/v03/revised_comparison/manifest.json
+        - report/v03/revised_media_complete/report_manifest.json
+        - results/v03/rendering/revised_forecast_layout_correction.json
+        - results/v03/rendering/revised_corrected_visual_qa.json
+        - results/v03/rendering/revised_corrected_html_structural_checks.json
+        - results/v03/rendering/browser_preview_policy_block.json
+      scope: >-
+        Retained tests/checkpoints validate their recorded bytes and limited
+        scopes, not the final covered tree. All 14 revised ordinary/comparison
+        cases pass mechanical checks. All 84 sampled MP4/GIF images have actual
+        source-bound review: 24 new corrected images and 60 identical-hash
+        earlier reviews. Every corrected ordinary PDF page was viewed (26),
+        and all used fonts are embedded. The presentation correction preserves
+        numeric artists, limits and scientific inputs, with original report
+        and QA retained. Local wide/narrow browser review remains blocked;
+        continuous playback was not performed. Neither is replaced by static
+        HTML checks or sampled frames. Final synthesis/confirmation outputs
+        require separate QA.
       pending:
-        - Final source and installed-wheel full applicable suites, CLI checks and sealed distribution hashes.
-        - New scientific report/media rendering from completed saved results with visual/provenance QA.
+        - Final source and installed-wheel full applicable suites after all covered edits, CLI checks and sealed distribution hashes.
+        - Final synthesis and any confirmation report/media rendering from completed saved results with their own visual/provenance QA and explicit unresolved browser/playback scope.
         - Verified exact public commit, remote CI, release assets, checksums and preserved history.
     scientific_conclusion:
       status: no_new_scientific_claim_from_software_release

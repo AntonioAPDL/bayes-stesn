@@ -8,13 +8,37 @@ fit models, tune candidates, forecast, or select a favorable illustration.
 The PDF and HTML explain the model hierarchy, exact unit-Jacobian sampler
 change, study designs, selected configurations and candidate/recheck counts,
 qualification, operational and conditional-native populations, paired and
-joint scores, error evolution, measured wall/CPU cost, accuracy versus time,
-learning curves, the saved G1 privileged-parameter reference, separate
+joint scores, error evolution, recorded wall/CPU cost with completeness labels,
+accuracy versus time, learning curves, the saved G1 privileged-parameter
+reference, separate
 raw-versus-calibrated intervals, bounded extension/path results, memory
 ownership evidence, an explicitly supplied conditional prior assessment,
 separate paired G5/G6 stress comparisons, tests, and research limits.
 Numerical conclusions come from the supplied artifacts; missing optional
 studies remain visibly unexecuted.
+
+The [current findings](../../docs/results_v03.md) record the completed recovery
+studies and remaining gates as of 2026-11-04. The two history conditions, all
+three sensor conditions, strict tuning, revised development, six preselected
+calibration cases and all three paired stress arms are complete. The unchanged
+authority admitted the independent confirmation at 60 datasets per scenario,
+with `mcse_target_not_met_at_cap`; its execution remains in progress at this
+source-document update. Final synthesis and release gates remain pending.
+Historical receipts retain their original scope. The recipes below do not
+assert that a final synthesis or its QA has completed.
+
+The recovered ordinary revised report is at `revised_media_complete/`.
+An [audited presentation-only correction](../../results/v03/rendering/revised_forecast_layout_correction.json)
+relocates four trace legends and fixes the G4/A right tick-label margin. It
+preserves numerical artists, axis limits, scientific inputs and all 54
+unaffected payloads; the whole earlier report remains preserved separately.
+The [completed saved-artifact QA](../../results/v03/rendering/revised_corrected_visual_qa.json)
+covers all twelve ordinary movies and the two fixed G4 comparisons, all 84
+first/middle/final MP4/GIF sample images, and every one of the 26 revised PDF
+pages with embedded fonts. Sixty unchanged samples reuse earlier actual
+review only after exact asset and decoded-image hash matches. These checks
+do not include continuous playback or wide/narrow browser review, which
+remains blocked. Confirmation and synthesis outputs require their own QA.
 
 ## 1. Validate the inputs first
 
@@ -149,6 +173,28 @@ documentation after the gate without rerunning it. These inputs establish the
 recorded local gate; exact remote commit, CI and published-asset verification
 remain separate.
 
+### Execution-cost companion and incomplete timing
+
+Retain the sealed companion
+`results/v03/release_evidence/execution_costs.json` alongside the final
+synthesis and acceptance closure. It is generated separately from retained
+measurement helpers after the required phases and all actual monitor windows
+are closed; it is not a new renderer input. The
+[delivery procedure](../../docs/release_v03.md) describes its retained helper
+and support inventories. Until closure, an interim preview remains an interim
+observation.
+
+Complete-receipt pipeline subtotals, incomplete/estimated fields, inclusive
+command envelopes and sampled shared-resource windows have different scopes.
+The report marks timing values affected by incomplete accounting and uses only
+complete-accounting receipts for its complete CPU subtotal. Finite partial
+fields may include elapsed downtime; they are not exact compute totals or
+necessarily lower bounds. Missing work remains unavailable. Do not add fit
+diagnostics already charged inside a fit, command envelopes to their nested
+pipelines, or reused controls a second time. Job-wall sums are not elapsed
+parallel-campaign time. Process-lifetime RSS and shared-cgroup peaks are not
+isolated per-fit memory measurements.
+
 ### Explicit confirmation admission or scientific block
 
 Pass the saved assessment produced by `tools/assess_confirmation_v03.py`, along
@@ -227,8 +273,14 @@ decision gates. The frozen history rule defaults to 1000 rows, promoting
 bound, common-qualified-pair minimum, qualification and all-roster cost
 conditions. Every comparator's native CRPS, native RMSE and operational RMSE
 effects remain visible; failure of this exploratory gate is not evidence
-that more data have no benefit. The sensor audit displays saved spatial/temporal ranks and
-geometry-only unit-iid-noise amplification, with fit qualification visible.
+that more data have no benefit. The completed decision retains 1000: Track A
+passes the practical gain bound, Track B fails it, and incomplete shorter-history
+accounting independently fails the cost gate. Its recorded time ratio and saving
+fraction remain partial and do not establish a complete measured speedup.
+The small-sample dataset-bootstrap intervals are pointwise, with no formal
+coverage or simultaneous-superiority claim. The sensor audit displays saved
+spatial/temporal ranks and geometry-only unit-iid-noise amplification, with fit
+qualification visible.
 Its fixed 100-sensor reference basis is a diagnostic choice; it does not
 change a fitted basis, prior or forecast, and it is not actual correlated
 forecast variance. The one-field sensor study has no replication MCSE.
@@ -242,6 +294,24 @@ revised control run:
 --run revised=/path/to/completed/revised-development
 --stress-audit /path/to/sealed/stress_summary.json
 ```
+
+For this recovered release, the completed audit is
+`docs/evidence/v03/stress_summary.json`. It binds the corrected design at
+`results/v03/stress/design_schema_fix/stress_design.json` and the complete
+55-job G6 replay at `results/v03/stress/g6_velocity_shift_schema_fix/`.
+The original design and failed five-job replay attempt remain at their original
+paths. The [equivalence receipt](../../results/v03/release_evidence/g6_schema_validation/correction_equivalence.json)
+records the validator correction in commit `99b0f8d`, byte-identical G5 YAMLs,
+the same saved fits and scientific settings, and zero G6 parameter refits.
+Use these completed corrected inputs when restoring this release; replayed
+work on the same five fields adds no independent replication.
+
+The current stress audit uses compact JSON whitespace with unchanged parsed
+values and scientific identity. The
+[current strict-loader receipt](../../results/v03/release_evidence/stress_serialization_current/stress_renderer_verification_compact.json)
+and [historical interpretation binding](../../results/v03/release_evidence/stress_serialization_current/interpretation_binding_compact.json)
+verify its current hashes while preserving the exact original audit bytes and
+earlier evidence. This serialization change reruns no scoring or bootstrap.
 
 The stress audit is a separate experiment. It binds the immutable stress design,
 recipe/tool inputs, original control manifest, complete G5 arm manifests, G6
@@ -267,9 +337,12 @@ generation/controller overhead that the original dataset receipts do not itemize
 G6 separately records generation, forecast reuse/replay, all-score verification,
 scoring and serialization. Unknown CPU work remains unavailable and interrupted
 accounting remains incomplete. Reused G4/G2 control costs are deduplicated and
-shown separately from incremental work. These are measured sums, not elapsed
-parallel-campaign time. Coupled controls and stress arms are not pooled as
-independent strata in the core macro comparison. Five paired fields support
+shown separately from incremental work. Complete recorded scopes may be
+summed within their declared boundaries; partial/elapsed estimates may include
+downtime and are not exact compute totals or guaranteed lower bounds. None of
+these job-wall sums is elapsed parallel-campaign time. Coupled controls and
+stress arms are not pooled as independent strata in the core macro comparison.
+Five paired fields support
 exploratory pointwise uncertainty, not a precise universal robustness claim.
 
 ### G1 known-parameter reference
@@ -354,11 +427,11 @@ For example, add each available actual study explicitly:
 
 ```text
 --extensions docs/evidence/v03/extension_scope.json
---extensions docs/evidence/v03/extension_findings.json
---extensions results/v03/extensions/release_ar_g4_existing_fronts
---extensions results/v03/extensions/release_ar_g3_excitable_field
---extensions results/v03/extensions/release_paths_g4_existing_fronts
---extensions results/v03/extensions/release_paths_g3_excitable_field
+--extensions results/v03/extension_findings_reproduced.json
+--extensions results/v03/extensions/final_ar_g4_existing_fronts
+--extensions results/v03/extensions/final_ar_g3_excitable_field
+--extensions results/v03/extensions/final_paths_g4_existing_fronts
+--extensions results/v03/extensions/final_paths_g3_excitable_field
 ```
 
 Disposition documents can bind terminal inventories using
@@ -399,7 +472,7 @@ malformed or incompatible evidence is an error.
 
 ### Saved first-step diagnostic
 
-Add `--diagnostic docs/evidence/v03/g3_saved_first_step_review.json` to include
+Add `--diagnostic results/v03/g3_saved_first_step_review_reproduced.json` to include
 the separate G3 alignment, decoder and saved-path review. The input hashes
 must bind a supplied benchmark model and the matching complete fixed-posterior
 path-study inventory. The report checks the scalar orthogonal MSE decomposition
@@ -418,7 +491,7 @@ completed P5 ablations:
 ```text
 --extensions results/v03/extensions/final_ar_g4_existing_fronts
 --extensions results/v03/extensions/final_ar_g3_excitable_field
---prior-check docs/evidence/v03/conditional_prior_check_final.json
+--prior-check results/v03/conditional_prior_reproduced.json
 ```
 
 The typed `conditional-fixed-design-prior-check-1.0` input binds the scientific

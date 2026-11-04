@@ -7,6 +7,15 @@ Keep the package source fingerprint frozen throughout the scientific campaign.
 Reporting tools, documentation, and packaging changes must be finalized before
 the final local source/installed-wheel gate.
 
+The [current findings](results_v03.md) and
+[requirements ledger](plans/v03_requirements.yaml) give the dated execution
+status. Their pending release entries are resolved by the actual generated
+closure and publication receipts, not by editing covered source after the gate.
+The previous requirements YAML is preserved exactly under
+`results/v03/release_evidence/historical_source_snapshots/`, with its own
+retention inventory; historical progress and public-release records keep their
+original meaning.
+
 ## 1. Close the evidence before packaging
 
 Retain every terminal scientific outcome, failed qualification, declared
@@ -58,11 +67,55 @@ freeze with `power_status=mcse_target_not_met_at_cap` is not achieved precision.
 A scientific block supports a clearly labeled development-only release; it
 does not support a completed-confirmation or predictive-superiority claim.
 
+### Retained execution and validation support
+
+The generated `results/v03/release_evidence/execution_helpers/` tree retains
+the exact reviewed operational helper bytes with `retention_inventory.json`.
+These include the one-worker measurement helpers, simulation-cache reuse,
+execution-cost aggregation and saved-media QA helper/plan. The separate
+`results/v03/release_evidence/validation_support/supplemental_retention_inventory.json`
+binds closed targeted XML snapshots, historical parity receipts, helper test
+stdout/stderr and preparation/review evidence. Preserve each inventory
+immutably; any later retained files need a new supplemental inventory. These
+snapshots are not the final current-source gate or final visual QA.
+
+The subsequent report correction has a separate immutable inventory at
+`results/v03/release_evidence/presentation_helpers/supplemental_retention_inventory_20261104T003300460251Z.json`.
+It retains the presentation-only helper, approved input plan, original whole
+report, corrected report, both fixed comparisons, preview and final QA evidence,
+and every measured correction/check attempt. The
+`results/v03/rendering/revised_corrected_visual_qa.json` receipt closes the
+14-case saved-artifact/sample review and all 26 ordinary PDF pages. Its
+explicit browser block and unperformed continuous playback remain part of R19;
+do not turn them into successful checks or infer final-synthesis QA from this
+ordinary-report receipt.
+
+Set `PYTHONDONTWRITEBYTECODE=1` when importing retained helpers so the selected
+evidence tree does not acquire import caches. Bind helper calls to explicit
+repo-relative paths and actual inputs. The one-worker measurement helpers must
+not label a two-worker child as a one-worker measurement. If confirmation is
+admitted with another execution scope, retain the native execution receipts
+and honestly scoped external command evidence separately.
+
+After all required scientific phases and actual monitor windows are closed,
+write `results/v03/release_evidence/execution_costs.json` using the retained
+aggregation helper's `--require-closed` mode. Its complete-scope subtotals,
+incomplete observations, missing measurements and command/monitor scopes must
+remain distinct. Lost CPU or elapsed time stays unavailable, including after
+successful scientific recovery. Never add nested pipeline and command costs,
+recount in-fit diagnostic time, or recharge reused control fits. Shared-cgroup
+observations and process-lifetime RSS do not establish isolated fit peaks. This
+companion closes the accounting disclosure; it does not manufacture a complete
+whole-campaign total.
+
 ## 2. Avoid source-hash cycles
 
-1. Finish scientific reducers, final disposition/assessment records and all
-   covered code/documentation edits. Stop the resource monitor and seal its
-   actual observed window. Include its mid-campaign/shared-cgroup limitations.
+1. Finish the required scientific outcomes and assessment, stop all actual
+   monitor windows and seal their observed scope, then complete execution-cost,
+   calibration-disposition and extension-overlay records. Preserve interrupted
+   monitor windows and missing costs. These records must not depend on a future
+   synthesis, QA, release manifest, archive or publication sidecar. Finish all
+   covered code/documentation edits before the gate.
 2. Generate and inspect the ordinary benchmark report and the predeclared
    model-comparison media. Read [the report guide](../report/v03/README.md) for
    source checks, fixed replication0 selection, unavailable native artifacts,
@@ -72,17 +125,31 @@ does not support a completed-confirmation or predictive-superiority claim.
 
    ```bash
    "$STESN_PY" tools/render_benchmark_layout.py "$STESN_REVISED_RUN" \
-     --output report/v03/revised_media \
+     --output report/v03/revised_media_complete \
      --evidence results/v03/rendering/revised_layout.json
-   "$STESN_PY" tools/embed_report_fonts.py report/v03/revised_media
+   "$STESN_PY" tools/embed_report_fonts.py report/v03/revised_media_complete
    ```
 
-   Here `STESN_REVISED_RUN` is the history-rule-selected revised directory.
+   The recovered execution selects `report/v03/revised_media_complete` after
+   preserving an interrupted, unsealed output separately. The
+   `results/v03/rendering/revised_output_path_decision.json` receipt binds the
+   original and continuation recipes; neither partial output is a completed
+   report input. Here `STESN_REVISED_RUN` is the history-rule-selected revised directory.
    The wrapper retains its numerical-artist checks around the recorded display
    corrections. It generates the twelve planned core movies; the two explicit
    G4 comparison-tool invocations supply the remaining planned movies when
    their requested native artifacts are available. Keep availability and QA
    scope explicit.
+
+   The restored release additionally includes an audited correction of four
+   ordinary forecast legends and the G4/A tick-label margin. Its authority is
+   `results/v03/rendering/revised_forecast_layout_correction.json`; numerical
+   artists, limits, scientific inputs and all unaffected payload bytes remain
+   unchanged. The original report is preserved whole, and the corrected
+   `report_manifest.json` explicitly lists the presentation supplement. The
+   commands above describe fresh generation; do not use them to overwrite the
+   sealed restored report. Preserve the exact retained helper/plan and both
+   report versions when reproducing or auditing the correction.
 3. If an older synthesis exported Markdown copies, rerender it with the current
    renderer before the final gate. Current copies use `.md.txt`; their bytes
    are unchanged but they no longer enter the covered report-source set.
@@ -177,6 +244,32 @@ manifest and does not select a history by its outcome. Keep QA rasters outside
 these delivery subtrees. Missing planned comparison movies require a recorded
 availability reason, without substituting another replication.
 
+Before measuring the final payload, require quiescent writers and inspect all
+excluded atomic-staging candidates. A candidate may be moved only after proving
+that it is absent from every sealed artifact/input inventory: job/selection/data
+receipts, coordinate checkpoint bindings, P5 inventories, reducer inputs,
+media/report inputs and the cost summary's immutable input set. Search retained
+JSON/JSONL/YAML and NPZ state manifests for its relative and absolute paths,
+unique basename and SHA256; classify every hit. An identical digest at another
+canonical path is a hit to investigate, not automatic proof of a reference to
+the staging path. Any reference or unresolved uncertainty stops movement.
+
+For a verified orphan, preserve its original path, bytes and hash in a reviewed
+external quarantine, check the bytes immediately before and after movement,
+and retain restoration instructions. Preserve actual checkpoints. Keep the
+small finalized quarantine receipt with the release evidence; do not delete
+staging files to make the packager pass or move anything in an active scope.
+Remeasure the exact selected payload after this review.
+
+Measure packaging with its plan, growing log and terminal resource receipt in
+an **external directory outside every selected payload tree and outside the
+new archive output**. A package cannot inventory its own active log or a
+receipt that is written only after packaging finishes. Deliver that completed
+measurement with the separately checksummed packaging/publication sidecar.
+The complete `results/v03` selection below includes the retained support;
+standalone files elsewhere under `results/validation` are not automatically
+selected unless bound by the final gate's validation inventory.
+
 ```bash
 export PYTHONPATH=src
 "$STESN_PY" - <<'PY'
@@ -188,7 +281,7 @@ import sys
 from bayes_stesn.io import content_hash
 
 root = Path.cwd()
-primary_report = root / "report/v03/revised_media"
+primary_report = root / "report/v03/revised_media_complete"
 synthesis = root / "report/v03/rendered"
 primary_manifest = json.loads((primary_report / "run_manifest.json").read_text())
 candidates = [path for path in (root / "results/v03/development").glob("revised_L*")

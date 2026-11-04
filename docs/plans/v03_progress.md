@@ -18,11 +18,96 @@ complete snapshot of that same campaign becomes available. Historical
 documentation and test receipts remain historical; the new release requires
 its own completed evidence and final source/installed-wheel gate.
 
-Use `docs/reproduction_v03.md` for the ordered procedure. The confirmation
-assessment now records the unchanged factory's specific insufficient-pair
-rejection without manufacturing a valid freeze. Successful gate assessment,
-scientific admission, completed confirmation and achieved precision remain
-separate outcomes.
+Use `docs/reproduction_v03.md` for the ordered procedure. The completed revised
+pilot now meets the unchanged authority's five-pair requirement in every
+primary cell, and its valid freeze admits 60 datasets per scenario while
+retaining the MCSE shortfall at the cap. Successful assessment, admission,
+completed confirmation and achieved precision remain separate outcomes.
+
+## Current execution update — 2026-11-04
+
+The numerical fingerprint remains
+`9f73b28a6ee6b8eec4bd21c3366b0c260c9433f798610be16697b2e44166d5ac`.
+The [current results record](../results_v03.md) gives the quantitative findings,
+exact populations and limits. This section is the current factual update;
+everything beginning at the next historical heading is retained verbatim.
+
+- Both history conditions are complete: 165 terminal outcomes each, with
+  163 qualified at 1000 and 164 at 2000. The
+  [sealed history decision](../evidence/v03/history_choice.json) selects 1000.
+  The ESN Track A macro gain passes the practical lower-bound threshold;
+  Track B fails it and has heterogeneous scenario effects. Missing
+  short-history accounting independently fails the cost gate. The recorded
+  time ratio is partial, and no complete measured speedup is claimed.
+- All 33 outcomes in the nested 25/50/100-sensor study qualify. Its
+  [representation audit](../evidence/v03/sensor_representation.json) uses one
+  G4 field and fixed initial history 2000, separately from the chosen revised
+  history 1000. Spatial rank and noise-amplification summaries are descriptive
+  diagnostics, not replicated forecast-benefit evidence.
+- The recovered reference panel is 60/60 qualified. The six coordinate cases
+  give legacy 2/3 and transformed 3/3 qualification, with one field per
+  mechanism and no general default-promotion claim. Their authorities are
+  [the reference summary](../../results/v03/development/reference_final/summary.json)
+  and [coordinate summary](../../results/v03/coordinate-final/summary.json).
+- The [current P5 findings](../../results/v03/extension_findings_reproduced.json)
+  retain residual AR as optional, without primary promotion. The G3 AR fit
+  fails qualification; the one G4 native comparison does not establish
+  improvement. The 512-path choice is a finite sensitivity ceiling.
+  [Conditional prior moments](../../results/v03/conditional_prior_reproduced.json)
+  and [the saved G3 decoder replay](../../results/v03/g3_saved_first_step_review_reproduced.json)
+  add no independent field, autonomous prior validation or capacity gain.
+- The [first](../../results/v03/recovery_preflight/session_interruption_20261103T2104Z.json)
+  and [second](../../results/v03/recovery_preflight/session_interruption_20261103T2220Z.json)
+  session interruptions retain explicit unknown cost. History-1000 and
+  sensor-100 recovered ESN receipts have incomplete accounting; missing
+  command envelopes remain unavailable. No cause is inferred. Incomplete
+  elapsed estimates may include downtime and are not exact compute totals or
+  guaranteed lower bounds. Shared-resource monitor windows remain separately
+  scoped.
+- Strict tuning at `results/v03/development/tuned_final` is complete:
+  59/60 outcomes qualify, and G3/rep000/A LGSSM retains its declared fallback
+  after all four finalist rechecks exhaust 200 EM iterations. Three interrupted
+  selection scopes have incomplete cost accounting. The selected revised
+  pilot at `results/v03/development/revised_L1000` is 220/220 qualified with
+  complete terminal cost receipts, initial history 1000 and forecast origin
+  1300. Its actual primary cells all contain five common-qualified pairs.
+- The [six-case calibration disposition](../../results/v03/release_evidence/calibration_disposition.json)
+  verifies completed seals for ESN/GP/GRU on both tracks. All share one G4
+  field, 25 serial blocks and a later evaluation at origin 3800; raw samples
+  remain unchanged. Coverage and C-to-U transfer are empirical demonstrations,
+  with no cross-field coverage estimate or distribution-free guarantee.
+- Both G5 arms have 55/55 qualified outcomes. The complete corrected G6 replay
+  has 55 jobs and zero parameter refits, under
+  `results/v03/stress/design_schema_fix/stress_design.json` and
+  `results/v03/stress/g6_velocity_shift_schema_fix`. Commit `99b0f8d` corrects
+  strict saved-state validation; original design and failed five-job attempt
+  remain preserved, and G5 YAMLs are byte-identical. The
+  [paired stress audit](../evidence/v03/stress_summary.json) and
+  [interpretation review](../../results/v03/release_evidence/scientific_interpretation/paired_stress_calibration_review.json)
+  retain five paired fields per arm and pointwise intervals. G6 Track B loss
+  increases do not establish a between-model robustness ranking.
+- The unchanged [confirmation assessment](../../results/v03/confirmation/assessment.json)
+  admitted R=60 per scenario: 240 independent datasets and 2640 model/task jobs.
+  The uncapped requirement is 102, so `mcse_target_not_met_at_cap` remains
+  explicit. The independent frozen campaign is in progress; planned MCSE is
+  not realized precision or completed confirmation.
+- The revised ordinary report and two fixed comparisons have
+  [complete saved-artifact QA](../../results/v03/rendering/revised_corrected_visual_qa.json):
+  14 mechanical cases, 84 actual sampled-image reviews and every one of the
+  26 ordinary PDF pages. Four observed legend contacts and one tick-label
+  margin were corrected by an audited presentation-only helper, preserving
+  scientific inputs and unaffected bytes. Browser review remains blocked and
+  continuous playback unperformed. Final synthesis, its QA, execution-cost
+  and extension closure, the final source/wheel gate and public delivery
+  remain pending.
+
+The optional 500/4000 history endpoints, extra independent sensor fields,
+frozen-encoder comparisons and capacity/prior ablations remain unexecuted.
+The executed history choice does not establish saturation, no data benefit or
+absence of harm from older history. Existing implementation tests and public
+checkpoints remain evidence for their exact recorded scope. Final full
+source/wheel validation follows all covered factual edits; R01–R20 is not
+marked closed by this progress update.
 
 ## Previous execution snapshot retained at the recovered commit
 

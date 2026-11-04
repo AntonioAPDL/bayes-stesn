@@ -20,3 +20,11 @@ report/benchmark_*/
 report/*.pdf
 report/*.html
 report/*manifest.json
+
+# Generated v0.3 reports and media are delivered with the numerical archives.
+report/v03/rendered/
+report/v03/revised_media/
+report/v03/revised_media_complete/
+report/v03/revised_comparison/
+report/v03/sensor100_comparison/
+report/v03/confirmation_media/

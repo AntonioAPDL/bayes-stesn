@@ -28,6 +28,33 @@ original seed and exact pre-origin observed history. This is a forecast replay,
 not an adaptation experiment. Its generation, replay, verification, scoring,
 and output costs are measured and charged.
 
+## Recovered v0.3 release artifacts
+
+The recovered run preserves the original
+`results/v03/stress/design/stress_design.json` and the initial five completed
+G6 replay receipts plus the failed attempt at
+`results/v03/stress/g6_velocity_shift`. A saved-model training-state validation
+compatibility fix was committed as `99b0f8d`; the completed 55-job replay uses
+these separately sealed artifacts:
+
+| Artifact | Path from the repository root |
+|---|---|
+| Corrected implementation-bound design | `results/v03/stress/design_schema_fix/stress_design.json` |
+| Complete G6 replay, with zero new parameter fits | `results/v03/stress/g6_velocity_shift_schema_fix/replay_summary.json` |
+| Exact scientific-equivalence and original-attempt preservation checks | `results/v03/release_evidence/g6_schema_validation/correction_equivalence.json` |
+| Paired stress results | `docs/evidence/v03/stress_summary.json` |
+
+Both G5 YAML profiles are byte-identical to their original sealed profiles.
+The corrected replay uses the same saved G2 fits, fields, seeds, information
+cutoff and qualification rules. No model is refitted, and repeating the
+original five fields does not add independent replication. The equivalence
+receipt also retains the original helper source hash and verifies that the
+scientific package, confirmation assessor and synthesis renderer are unchanged.
+
+For a restored release, use the saved corrected design and completed replay
+above. The general workflow below requires fresh output directories when its
+example paths already contain sealed release artifacts.
+
 ## Runtime and prerequisites
 
 Run from the repository root in the locked environment from

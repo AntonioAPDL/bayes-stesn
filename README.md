@@ -11,7 +11,44 @@ latent/robust models use documented conditional samplers, with explicit numerica
 and resource limits. Successful unit tests are distinct from passing an MCMC
 diagnostic gate or demonstrating improved forecasting performance.
 
-## Release and reports
+## v0.3 recovered study: current evidence
+
+The [current findings](docs/results_v03.md) record completed recovery evidence
+as of 2026-11-04. Both paired history conditions are complete: 163/165 outcomes
+qualified at history 1000 and 164/165 at history 2000. The
+[sealed rule](docs/evidence/v03/history_choice.json) retains 1000 for revised
+development. Track A meets the declared native-CRPS improvement bound, but
+Track B does not; incomplete shorter-history timing independently fails the
+cost gate. This is an exploratory specification decision, not evidence of no
+benefit from longer history.
+
+The 25/50/100-sensor study has 33/33 qualified outcomes on one G4 field. Its
+[representation audit](docs/evidence/v03/sensor_representation.json) is
+descriptive and has no across-field MCSE. Bounded residual-AR, path-count,
+conditional-prior and saved-decoder findings retain their qualification and
+scope limits. Strict tuning is complete with 59/60 qualified outcomes and one
+declared LGSSM fallback; the revised development pilot is 220/220 qualified.
+All six preselected calibration cases and the two G5 arms plus corrected blind
+G6 replay are complete. Calibration uses one field; stress comparisons use
+five paired fields and do not establish a robustness ranking.
+
+The unchanged confirmation authority admitted 60 datasets per scenario
+(240 datasets; 2640 model/task jobs). The frozen plan retains
+`mcse_target_not_met_at_cap`: its uncapped requirement is 102 per scenario.
+That independent campaign is in progress at this update; admission and planned
+precision are not completed confirmation or achieved precision. The revised
+ordinary report and two fixed comparisons have completed saved-artifact and
+sampled visual checks, including all 26 ordinary PDF pages. Browser review
+remains blocked and continuous animation playback was not performed. Final
+synthesis, source/wheel validation and public-delivery gates remain pending.
+
+Use the [ordered reproduction guide](docs/reproduction_v03.md),
+[saved-artifact synthesis guide](report/v03/README.md), and
+[release procedure](docs/release_v03.md). The final generated R01–R20 closure
+and separate publication readback receipt will record the actual release gates
+without relabeling older test or public-release records as current evidence.
+
+## Historical public releases and reports
 
 [Version 0.2.1](https://github.com/AntonioAPDL/bayes-stesn/releases/tag/v0.2.1)
 includes the checkpoint-continuation correction verified by the
@@ -59,7 +96,7 @@ software tests and completed confirmation are separate claims. See the
 [requirements and evidence status](docs/plans/v03_requirements.yaml),
 [study design](docs/study_design_v03.md), and
 [sampler/recovery derivation](docs/derivations/07_sampler_coordinates_recovery.md).
-The historical release reports below keep their original source identities;
+The historical release reports keep their original source identities;
 the new workflow alone does not demonstrate better forecasts or a completed
 confirmatory comparison.
 
@@ -107,7 +144,7 @@ response units. A parameter draw stays fixed throughout a trajectory; its own
 simulated observations drive its future reservoir inputs. Readout means, latent
 fields and conditional observation means are labeled separately.
 
-## Version 0.2: model comparison framework
+## Historical version 0.2: model comparison framework
 
 The package now includes shared G1-G6 simulators, eight core observed-site
 comparators, native new-site comparators, and an optional probabilistic
@@ -150,6 +187,8 @@ forecast constructors retain defensive-copy semantics.
 
 ## Documentation
 
+- [v0.3 current findings](docs/results_v03.md): completed scientific evidence, exact populations and uncertainty, timing gaps, and pending gates.
+- [v0.3 reproduction](docs/reproduction_v03.md), [report synthesis](report/v03/README.md), and [delivery](docs/release_v03.md): ordered saved-evidence commands and source-bound verification.
 - [PRO implementation plan and execution prompt](docs/plans/PRO_IMPLEMENTATION_PLAN.md): staged improvements, resource budgets, acceptance gates, experiments, and publication requirements; implementation and evidence status are tracked separately in the [P0–P8 requirements map](docs/plans/v03_requirements.yaml).
 - [Post-release audit](docs/audits/post_release_2026_11_03/README.md): reproducible findings that motivate the next implementation phase.
 - `docs/api.md`: objects, workflows, serialization and supported combinations.
