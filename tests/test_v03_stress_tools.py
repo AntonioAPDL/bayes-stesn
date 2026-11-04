@@ -27,6 +27,67 @@ def toy_simulation():
                       np.arange(20.), np.array([0, 1]), np.array([2]), np.array([3]), np.array([], int), {})
 
 
+def native_reservoir_state():
+    """Exercise the native serializer without fitting or generating study data."""
+    from bayes_stesn.benchmark.reservoir import DEFAULT_CONFIG, QuadraticReservoirEnsemble
+    training = toy_simulation().observed_panel(10)
+    config = {**DEFAULT_CONFIG, "width": 2, "lags": 1, "modes": 2, "members": 1, "washout": 0}
+    member = {"recurrent": np.zeros((2, 2)), "input_weights": np.zeros((2, 2)),
+              "bias": np.zeros(2), "feature_center": np.zeros(5),
+              "feature_scale": np.ones(5), "readout": np.zeros((5, 2))}
+    model = QuadraticReservoirEnsemble(training, config, np.zeros(2), np.ones(2),
+                                      np.eye(2), np.ones(2), [member], {})
+    return training, model.to_state()
+
+
+def test_saved_model_training_accepts_native_reservoir_serializer(tmp_path):
+    from bayes_stesn.io import save_state
+    training, state = native_reservoir_state()
+    path = tmp_path/"model.npz"
+    save_state(path, state, kind="benchmark_model")
+    expected = content_hash({"y": training.y, "coordinates": training.coordinates,
+                             "times": training.times, "site_ids": training.site_ids})
+    assert tool().verify_model_training(path, training, "eqesn_rollout") == expected
+
+
+@pytest.mark.parametrize("field", ["y", "coordinates", "times", "site_ids"])
+def test_saved_model_training_rejects_changed_reservoir_panel_with_matching_decoy(tmp_path, field):
+    from copy import deepcopy
+    from bayes_stesn.io import save_state
+    training, state = native_reservoir_state()
+    state = deepcopy(state)
+    # A matching generic alias must never hide corruption of the actual panel.
+    state["data"] = deepcopy(state["training"])
+    if field == "site_ids":
+        state["training"][field] = ("U-contaminated", *training.site_ids[1:])
+    else:
+        state["training"][field].flat[-1] += .25
+    path = tmp_path/"model.npz"
+    save_state(path, state, kind="benchmark_model")
+    with pytest.raises(ValueError, match="Saved model"):
+        tool().verify_model_training(path, training, "eqesn_rollout")
+
+
+def test_saved_model_training_does_not_accept_a_generic_alias_for_missing_reservoir_panel(tmp_path):
+    from bayes_stesn.io import save_state
+    training, state = native_reservoir_state()
+    state["data"] = state.pop("training")
+    path = tmp_path/"model.npz"
+    save_state(path, state, kind="benchmark_model")
+    with pytest.raises(KeyError, match="training"):
+        tool().verify_model_training(path, training, "eqesn_rollout")
+
+
+def test_saved_model_training_rejects_a_different_model_identity(tmp_path):
+    from bayes_stesn.io import save_state
+    training, state = native_reservoir_state()
+    state["model_id"] = "persistence"
+    path = tmp_path/"model.npz"
+    save_state(path, state, kind="benchmark_model")
+    with pytest.raises(ValueError, match="model identity"):
+        tool().verify_model_training(path, training, "eqesn_rollout")
+
+
 def test_stress_uses_common_control_sd_and_exact_qualified_intersection():
     module = tool()
     pairs = []

@@ -220,7 +220,12 @@ def verify_model_training(path, training, model_id):
                 "Saved model exceeds bounded replay-state size")
     state = load_state(path, kind="benchmark_model")
     require(state["model_id"] == model_id, "Saved model identity differs")
-    data = state["fitted"]["prepared"]["data"] if model_id == "bayes_esn_ridge" else state["data"]
+    if model_id == "bayes_esn_ridge":
+        data = state["fitted"]["prepared"]["data"]
+    elif model_id == "eqesn_rollout":
+        data = state["training"]
+    else:
+        data = state["data"]
     for name in ("y", "coordinates", "times"):
         require(np.array_equal(data[name], getattr(training, name)), f"Saved model saw different {name}")
     require(tuple(data["site_ids"]) == tuple(training.site_ids), "Saved model contains different site roles")
