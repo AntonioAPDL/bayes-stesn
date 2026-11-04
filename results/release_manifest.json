@@ -42,16 +42,16 @@
     {
       "bytes": 241241,
       "file": "dist/bayes_stesn-0.3.0-py3-none-any.whl",
-      "sha256": "065e3a4623c4b11d58606f953065987345732cc627891a5012f50e7ad5554d3d"
+      "sha256": "ea8a9ae5f0a8be5aa4083dfd128993d6e190f8913af81e4a23378862d3903d92"
     },
     {
-      "bytes": 4093122,
+      "bytes": 4093012,
       "file": "dist/bayes_stesn-0.3.0.tar.gz",
-      "sha256": "a64e18645ac22255295204c9a0f2d35c33d00dbaff11db2e06dcc96be7296bfb"
+      "sha256": "1c254b7ae71302b8dc09bf6e1c2c926a9c9fc3c1ce201f075adec973e7db80ab"
     }
   ],
   "benchmark_smoke": {
-    "artifact_directory": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7",
+    "artifact_directory": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma",
     "comparison_status": "execution only",
     "jobs": 13,
     "passed": true,
@@ -105,13 +105,13 @@
   },
   "claim_scope": "Local tests, built artifacts and isolated installation; no public publication or remote CI claim.",
   "cli_smoke": {
-    "artifact_directory": "results/validation/installed_smoke/bstesn-release-work-_1euk2g7",
+    "artifact_directory": "results/validation/installed_smoke/bstesn-release-work-nfg9edma",
     "diagnostic_gate_passed": false,
     "passed": true,
     "scope": "Execution test; short-chain diagnostic failure is expected and is not convergence.",
     "smoke_only": true
   },
-  "completed_utc": "2026-11-04T09:30:58.641552+00:00",
+  "completed_utc": "2026-11-04T23:49:30.370242+00:00",
   "dependency_install_receipts": [
     {
       "file": "results/validation/fresh_install_report.json",
@@ -126,7 +126,7 @@
       "sha256": "e34af97c4a663ce3b5971b55dd23bf290c4559b0bafc6239f3f82f0ec2e66cf3"
     }
   ],
-  "elapsed_seconds": 320.2975514080026,
+  "elapsed_seconds": 211.5275619260001,
   "fresh_environment": {
     "base_prefix": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python",
     "blas_threads": {
@@ -134,14 +134,14 @@
       "OMP_NUM_THREADS": "1",
       "OPENBLAS_NUM_THREADS": "1"
     },
-    "executable": "/tmp/bstesn-v03-final-release/bin/python",
+    "executable": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/bin/python",
     "external_distribution_locations": {},
     "neural": {
       "cpu_only": true,
       "cuda_build": null,
       "torch": "2.15.0+cpu"
     },
-    "package_origin": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/__init__.py",
+    "package_origin": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/__init__.py",
     "packages": {
       "Jinja2": "3.1.6",
       "MarkupSafe": "3.0.3",
@@ -180,18 +180,18 @@
       "wheel": "0.48.0"
     },
     "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
-    "prefix": "/tmp/bstesn-v03-final-release",
+    "prefix": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000",
     "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
-    "pyvenv_cfg": "home = /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin\ninclude-system-site-packages = false\nversion = 3.12.14\nexecutable = /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\ncommand = /tmp/bayes_stesn_continuation_20261104_d3bbx7jm/recovery/bayes-stesn/.venv/bin/python -m venv --copies /tmp/bstesn-v03-final-release\n",
+    "pyvenv_cfg": "home = /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin\ninclude-system-site-packages = false\nversion = 3.12.14\nexecutable = /tmp/bayes_stesn_continuation_20261104_d3bbx7jm/recovery/bayes-stesn/.venv/bin/python\ncommand = /tmp/bayes_stesn_continuation_20261104_d3bbx7jm/recovery/bayes-stesn/.venv/bin/python -m venv --copies /workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000\n",
     "sys_path": [
       "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python312.zip",
       "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12",
       "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/lib-dynload",
-      "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages"
+      "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages"
     ],
     "user_site_enabled": false
   },
-  "fresh_venv": "/tmp/bstesn-v03-final-release",
+  "fresh_venv": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000",
   "github_ci_configured": true,
   "github_ci_executed": false,
   "installed_tests": {
@@ -199,54 +199,54 @@
     "failures": 0,
     "feature_scope": "neural",
     "module_origins": {
-      "bayes_stesn": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/__init__.py",
-      "bayes_stesn._reservoir": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/_reservoir.py",
-      "bayes_stesn.assessment": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/assessment.py",
-      "bayes_stesn.basis": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/basis.py",
-      "bayes_stesn.benchmark": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/__init__.py",
-      "bayes_stesn.benchmark.basis_gru": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/basis_gru.py",
-      "bayes_stesn.benchmark.calibration": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/calibration.py",
-      "bayes_stesn.benchmark.classical": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/classical.py",
-      "bayes_stesn.benchmark.cli": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/cli.py",
-      "bayes_stesn.benchmark.contracts": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/contracts.py",
-      "bayes_stesn.benchmark.esn": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/esn.py",
-      "bayes_stesn.benchmark.execution": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/execution.py",
-      "bayes_stesn.benchmark.gaussian_gp": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/gaussian_gp.py",
-      "bayes_stesn.benchmark.generators": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/generators.py",
-      "bayes_stesn.benchmark.linear_state": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/linear_state.py",
-      "bayes_stesn.benchmark.metrics": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/metrics.py",
-      "bayes_stesn.benchmark.neural": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/neural.py",
-      "bayes_stesn.benchmark.optimization": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/optimization.py",
-      "bayes_stesn.benchmark.protocol": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/protocol.py",
-      "bayes_stesn.benchmark.registry": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/registry.py",
-      "bayes_stesn.benchmark.reservoir": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/reservoir.py",
-      "bayes_stesn.benchmark.runner": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/runner.py",
-      "bayes_stesn.benchmark.studies": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/benchmark/studies.py",
-      "bayes_stesn.calibration": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/calibration.py",
-      "bayes_stesn.cli": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/cli.py",
-      "bayes_stesn.data": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/data.py",
-      "bayes_stesn.diagnostics": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/diagnostics.py",
-      "bayes_stesn.dynamics": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/dynamics.py",
-      "bayes_stesn.ensemble": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/ensemble.py",
-      "bayes_stesn.features": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/features.py",
-      "bayes_stesn.gaussian": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/gaussian.py",
-      "bayes_stesn.index_model": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/index_model.py",
-      "bayes_stesn.io": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/io.py",
-      "bayes_stesn.model": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/model.py",
-      "bayes_stesn.prediction": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/prediction.py",
-      "bayes_stesn.priors": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/priors.py",
-      "bayes_stesn.sampling": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/sampling.py",
-      "bayes_stesn.scoring": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/scoring.py",
-      "bayes_stesn.simulation": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/simulation.py",
-      "bayes_stesn.spatial": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/spatial.py",
-      "bayes_stesn.workflow": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/workflow.py"
+      "bayes_stesn": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/__init__.py",
+      "bayes_stesn._reservoir": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/_reservoir.py",
+      "bayes_stesn.assessment": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/assessment.py",
+      "bayes_stesn.basis": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/basis.py",
+      "bayes_stesn.benchmark": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/__init__.py",
+      "bayes_stesn.benchmark.basis_gru": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/basis_gru.py",
+      "bayes_stesn.benchmark.calibration": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/calibration.py",
+      "bayes_stesn.benchmark.classical": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/classical.py",
+      "bayes_stesn.benchmark.cli": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/cli.py",
+      "bayes_stesn.benchmark.contracts": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/contracts.py",
+      "bayes_stesn.benchmark.esn": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/esn.py",
+      "bayes_stesn.benchmark.execution": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/execution.py",
+      "bayes_stesn.benchmark.gaussian_gp": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/gaussian_gp.py",
+      "bayes_stesn.benchmark.generators": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/generators.py",
+      "bayes_stesn.benchmark.linear_state": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/linear_state.py",
+      "bayes_stesn.benchmark.metrics": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/metrics.py",
+      "bayes_stesn.benchmark.neural": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/neural.py",
+      "bayes_stesn.benchmark.optimization": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/optimization.py",
+      "bayes_stesn.benchmark.protocol": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/protocol.py",
+      "bayes_stesn.benchmark.registry": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/registry.py",
+      "bayes_stesn.benchmark.reservoir": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/reservoir.py",
+      "bayes_stesn.benchmark.runner": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/runner.py",
+      "bayes_stesn.benchmark.studies": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/benchmark/studies.py",
+      "bayes_stesn.calibration": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/calibration.py",
+      "bayes_stesn.cli": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/cli.py",
+      "bayes_stesn.data": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/data.py",
+      "bayes_stesn.diagnostics": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/diagnostics.py",
+      "bayes_stesn.dynamics": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/dynamics.py",
+      "bayes_stesn.ensemble": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/ensemble.py",
+      "bayes_stesn.features": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/features.py",
+      "bayes_stesn.gaussian": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/gaussian.py",
+      "bayes_stesn.index_model": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/index_model.py",
+      "bayes_stesn.io": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/io.py",
+      "bayes_stesn.model": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/model.py",
+      "bayes_stesn.prediction": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/prediction.py",
+      "bayes_stesn.priors": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/priors.py",
+      "bayes_stesn.sampling": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/sampling.py",
+      "bayes_stesn.scoring": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/scoring.py",
+      "bayes_stesn.simulation": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/simulation.py",
+      "bayes_stesn.spatial": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/spatial.py",
+      "bayes_stesn.workflow": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/workflow.py"
     },
     "optional_deselected": [],
-    "package_origin": "/tmp/bstesn-v03-final-release/lib/python3.12/site-packages/bayes_stesn/__init__.py",
+    "package_origin": "/workspace/scratch/e91f581ad3cd/recovery_release_20261104/fresh_release_gate_000/lib/python3.12/site-packages/bayes_stesn/__init__.py",
     "package_version": "0.3.0",
     "passed": 602,
     "pytest_exit_code": 0,
-    "seconds": 90.977,
+    "seconds": 50.627,
     "skipped": 0,
     "source_imports_detected": {},
     "tests": 602,
@@ -617,7 +617,7 @@
     "package_version": "0.3.0",
     "passed": 602,
     "pytest_exit_code": 0,
-    "seconds": 94.821,
+    "seconds": 51.477,
     "skipped": 0,
     "source_imports_detected": {},
     "tests": 602,
@@ -625,91 +625,91 @@
     "warning_count": 0,
     "warnings": []
   },
-  "started_utc": "2026-11-04T09:25:38.343972+00:00",
+  "started_utc": "2026-11-04T23:45:58.842679+00:00",
   "steps": [
     {
       "exit_code": 0,
       "log": "results/validation/build.log",
-      "log_sha256": "bc9ee8b56fd8e1263a43c984b2bada1c8a616637c8184a05d13c07ba79c6855d",
+      "log_sha256": "751132fbbf61825db467ec0375ebfd1214ac1e966151dbe71398eb595ff251a8",
       "name": "build",
-      "seconds": 4.994222721994447
+      "seconds": 2.52662651799983
     },
     {
       "exit_code": 0,
       "log": "results/validation/fresh_dependencies.log",
-      "log_sha256": "c06036ee24e83d8b649e0af6f1c3134dc977261c9edbb420ffe19ea0545e5df3",
+      "log_sha256": "9c7cec6cec8f7bfafbc103abe14b5b8b9ffbceee34ca2531fbbe34fe57d53d0e",
       "name": "fresh_dependencies",
-      "seconds": 36.90782552699966
+      "seconds": 34.303637406000234
     },
     {
       "exit_code": 0,
       "log": "results/validation/neural_support_dependencies.log",
-      "log_sha256": "5b9f6097973dc89c85df727a3196ad0da2887d227fb4698c5da37134901ed3c5",
+      "log_sha256": "e06d5749bd8fb65558e366364f072fd347f4606351abf7fbd907950f96ac490c",
       "name": "neural_support_dependencies",
-      "seconds": 24.75648415499745
+      "seconds": 17.954134541999792
     },
     {
       "exit_code": 0,
       "log": "results/validation/neural_dependencies.log",
-      "log_sha256": "15a781fe478307ff684528c3a8c71760d7e207e2e36ec81267cef88ac10e71aa",
+      "log_sha256": "bc59592ec37bdc193b9d24d0574c20f0181dc234d915f243f62654a4ba964618",
       "name": "neural_dependencies",
-      "seconds": 36.1349628320022
+      "seconds": 33.57014649099983
     },
     {
       "exit_code": 0,
       "log": "results/validation/wheel_install.log",
-      "log_sha256": "50b7c783b7a6de407dd34c9e3369b3db1d896d031640e33562cb8e9dbb23b893",
+      "log_sha256": "0029b1e2507fdc108dfc2f6d9babaf051d808131c1e89054fb7c6b65b6923de1",
       "name": "wheel_install",
-      "seconds": 0.9244222489942331
+      "seconds": 0.621770634999848
     },
     {
       "exit_code": 0,
       "log": "results/validation/pip_check.log",
-      "log_sha256": "c4ad0cb133ec1e8c9d484f10372abeb673b4d75c9f4c9968bcc93c3785ad56e5",
+      "log_sha256": "71e3a2874035eb6ac627c10cf8e649bd323df79b0ecbbdf8d68ebbe46ef393f6",
       "name": "pip_check",
-      "seconds": 0.41662492300383747
+      "seconds": 0.31488604000014675
     },
     {
       "exit_code": 0,
       "log": "results/validation/fresh_environment.log",
-      "log_sha256": "b0d274e32faf3dc8e769f924eb9576108bf29cf9157dfdcaf2c6dd36ef72e7b6",
+      "log_sha256": "2362608b93010162a4658dff6bb6626a5e29d8d2bb4f261d07fdb3b574880c3a",
       "name": "fresh_environment",
-      "seconds": 4.9511899200006155
+      "seconds": 3.4339578019998953
     },
     {
       "exit_code": 0,
       "log": "results/validation/source_pytest.log",
-      "log_sha256": "dff9af731312bd44df46aee8cdbe8df068816cc73f52f10183a6544cd667e8b7",
+      "log_sha256": "960504910c11cf549ba685eb7f5f76066120d10583a368eaf638149b861e1e45",
       "name": "source_pytest",
-      "seconds": 99.23727216100087
+      "seconds": 54.320981379000386
     },
     {
       "exit_code": 0,
       "log": "results/validation/installed_pytest.log",
-      "log_sha256": "b5ef8be46d725e2af49a759f637a713e0de8ee5bab9f4ff4531a35b690473e70",
+      "log_sha256": "58097e0f967e98613c11b0a3fc8a3425bd6264a3497f20ab9a9bb9d808f46381",
       "name": "installed_pytest",
-      "seconds": 94.35875799299538
+      "seconds": 53.53438610100011
     },
     {
       "exit_code": 0,
       "log": "results/validation/installed_cli_smoke.log",
-      "log_sha256": "57f5e1679cce1c56a3562ed2f868e8fb84f0db66c5a2cf343d4d41cbdfa201a9",
+      "log_sha256": "272e5abad474d128edf911e5dc8170cc8bba17fa62284553a55b9f5a53c0aadd",
       "name": "installed_cli_smoke",
-      "seconds": 1.7729079819982871
+      "seconds": 1.069621902000108
     },
     {
       "exit_code": 0,
       "log": "results/validation/installed_roundtrip.log",
-      "log_sha256": "63d54daec27a9d8794773f40d16df437df0de473c074bfebec039851bb993b08",
+      "log_sha256": "ec8f9bb52aec48c9e0da7e1b6cc558045198f02781fde90684a152a1276e1d03",
       "name": "installed_roundtrip",
-      "seconds": 1.4708794980033417
+      "seconds": 0.9170672619998186
     },
     {
       "exit_code": 0,
       "log": "results/validation/installed_benchmark_smoke.log",
-      "log_sha256": "67c3f8655fea4b06ea2a26a51857be89edd9660602ea5c9fbb7c7281f91f7b0d",
+      "log_sha256": "ed8c6bb2cf097c4e94b5826a85e48af4c9bd82c2fd226028a6b31e28641fa939",
       "name": "installed_benchmark_smoke",
-      "seconds": 9.184364177999669
+      "seconds": 6.487907350999649
     }
   ],
   "test_policy": "All optional tests; zero skips or pytest warnings",
@@ -719,22 +719,22 @@
     {
       "bytes": 34962,
       "file": "results/validation/build.log",
-      "sha256": "bc9ee8b56fd8e1263a43c984b2bada1c8a616637c8184a05d13c07ba79c6855d"
+      "sha256": "751132fbbf61825db467ec0375ebfd1214ac1e966151dbe71398eb595ff251a8"
     },
     {
-      "bytes": 8861,
+      "bytes": 10546,
       "file": "results/validation/fresh_dependencies.log",
-      "sha256": "c06036ee24e83d8b649e0af6f1c3134dc977261c9edbb420ffe19ea0545e5df3"
+      "sha256": "9c7cec6cec8f7bfafbc103abe14b5b8b9ffbceee34ca2531fbbe34fe57d53d0e"
     },
     {
-      "bytes": 2361,
+      "bytes": 2625,
       "file": "results/validation/fresh_environment.json",
-      "sha256": "cded14116e8c903ed557c6a258a10d3845631e7a4106c2e37641a5c351035236"
+      "sha256": "ab8394e46c4aa5415d45dd5649096feb449f1c43c410d9d23a072be8538732d8"
     },
     {
-      "bytes": 381,
+      "bytes": 483,
       "file": "results/validation/fresh_environment.log",
-      "sha256": "b0d274e32faf3dc8e769f924eb9576108bf29cf9157dfdcaf2c6dd36ef72e7b6"
+      "sha256": "2362608b93010162a4658dff6bb6626a5e29d8d2bb4f261d07fdb3b574880c3a"
     },
     {
       "bytes": 441185,
@@ -742,524 +742,524 @@
       "sha256": "52e2fbd893f31f14ae3c886b3341ef1344b358efc761c8bdb5e01bb1a3e52626"
     },
     {
-      "bytes": 13867,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/execution_attempts/1793784650432783726_260.json",
-      "sha256": "4edcc4af1526b0ec7c3f170b304e8866898960c5c32c1dd3612499af1abe2f85"
+      "bytes": 13841,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/execution_attempts/1793836164641672703_274.json",
+      "sha256": "f7f7f262bec34385d231b41d88e95ab550ce71cfecba32eca1dc31ffd6b708cb"
     },
     {
-      "bytes": 11355,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/execution_plan.json",
-      "sha256": "7b5b71e32addfbfe536fd0efc8c3c5f3a0318cfa17df568bf55c549d1446a970"
+      "bytes": 11341,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/execution_plan.json",
+      "sha256": "b60de881547a955b98c2074436bf30502fda395f192a1dcfc480d6c57c8bf8ff"
     },
     {
-      "bytes": 11956,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_gru/forecast.npz",
-      "sha256": "22e3aa0234d127c442724b04e7d4c5ebe74d46261d7cae1bf08aa4712033f64a"
+      "bytes": 11955,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_gru/forecast.npz",
+      "sha256": "13a63780464d414c543bc9e7e859c394a59f42b10b391c75d5e247e2eadc16e9"
     },
     {
-      "bytes": 32513,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_gru/model.npz",
-      "sha256": "236e80237c9d216a0db39ddcd351403f101accabbd729bfdd6c67f2cc478514b"
+      "bytes": 32542,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_gru/model.npz",
+      "sha256": "0405c9141515f3ab06a505f8a7e21ee6bac4b3661a3648be564048fdc3a39a4b"
     },
     {
-      "bytes": 1056,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_gru/operational_point.npz",
-      "sha256": "49d1d6d36385abc1f10fcae81dfaf8479d037e7ee257f9d0c4c2cc7d3fd289ce"
+      "bytes": 1629,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_gru/operational_point.npz",
+      "sha256": "e0d19f86c92ef648e085864719ce13f0667bad971481c40013640e75fd57830a"
     },
     {
-      "bytes": 15763,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_gru/receipt.json",
-      "sha256": "5ba4a45c73e5e9467219af54c63d6d41f232cf5f1b59f54af2ff8b72180ef0d8"
+      "bytes": 21864,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_gru/receipt.json",
+      "sha256": "2e401c8dfa9af3575e7809453996b8f0ad9f1c7d3761bb4204281bef33c41900"
     },
     {
-      "bytes": 9812,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_gru/selection.json",
-      "sha256": "1f0cd3ca9e77d9d4851ef042fc0ac03f5dfdef8d5eb785a36bba925f020a3da4"
+      "bytes": 9810,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_gru/selection.json",
+      "sha256": "3808d441ab26f3bc5f0ddb212b1165004915b85cf7ca11bf604233ad2f3a1e9a"
     },
     {
-      "bytes": 783,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_gru/state.json",
-      "sha256": "1e45b513080274c767c8f3717e5b489f2e45e1e8752bf7c935d26fb2951bc16a"
+      "bytes": 779,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_gru/state.json",
+      "sha256": "3be1b4c6d7723b15d45fe6eee08f9211ca05674e31c720b607881f3f43bf31f9"
     },
     {
-      "bytes": 8170,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_gru/tuning/trial_00.json",
-      "sha256": "c2c304550da114eebfa92c0bfaa025bb5ea65a8caab64bc74d3aaabab3584a1d"
+      "bytes": 8169,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_gru/tuning/trial_00.json",
+      "sha256": "6cf61a931c1430283c00f27e7ac585504959233980f9527913f3a06f02f289d0"
     },
     {
       "bytes": 1772,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_krr/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_krr/forecast.npz",
       "sha256": "8c0d289334d175ee19aa604d7af886d0fca65b3062d8b0682de05396d0c264c3"
     },
     {
       "bytes": 66241,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_krr/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_krr/model.npz",
       "sha256": "5b8a43d1b593d3acda6dd42295de1d92889342a77227454e154a57d09fd9e623"
     },
     {
       "bytes": 1630,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_krr/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_krr/operational_point.npz",
       "sha256": "8625689474d096f245de41262db2e9dec45dda407f81e6266a1b472d76d5a303"
     },
     {
       "bytes": 6741,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_krr/receipt.json",
-      "sha256": "7e89a7eb68aa97f0e090798d15713d658c0a8f22b65cfb718b34199b520fde41"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_krr/receipt.json",
+      "sha256": "5f560b4d92387748d8f770038e92b6a339c897c071151ad81b59826bdce7dd80"
     },
     {
-      "bytes": 3853,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_krr/selection.json",
-      "sha256": "29d6ee53722e104e23650ed4dd59410b13dcc1e242051a628cbefbffad31b375"
+      "bytes": 3855,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_krr/selection.json",
+      "sha256": "970d6afd2eedd54f4644699760721b17ed677c2e27931b7ebccd397c51421ceb"
     },
     {
       "bytes": 782,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_krr/state.json",
-      "sha256": "2e041cd2d6748491cadfb489d6145c82a330ecee028fd4af9b11bf5531f722ff"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_krr/state.json",
+      "sha256": "55a78207e306dc5415e23641f5f090e4c564f7c5dac74f3335162a60771969c4"
     },
     {
-      "bytes": 2737,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_krr/tuning/trial_00.json",
-      "sha256": "d255a8f9aa758ba1cfa0c010516284d469beaad23ef353611089bf004802e793"
+      "bytes": 2738,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_krr/tuning/trial_00.json",
+      "sha256": "f30a3b41ad4dc8b50a436dfbae71b95962f4ccde0f554c85474062335c5a8403"
     },
     {
       "bytes": 11861,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_lgssm/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_lgssm/forecast.npz",
       "sha256": "0be0b16c79aa9186dfcd72af8dd352ed6ee5ee28081c97078aae46ee912e0ab3"
     },
     {
       "bytes": 15787,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_lgssm/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_lgssm/model.npz",
       "sha256": "b224604a6666cb81e008b963a88afda1d033403f821a0f9bf6e8b1b1dc9dd7cc"
     },
     {
       "bytes": 1056,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_lgssm/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_lgssm/operational_point.npz",
       "sha256": "49d1d6d36385abc1f10fcae81dfaf8479d037e7ee257f9d0c4c2cc7d3fd289ce"
     },
     {
-      "bytes": 13713,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_lgssm/receipt.json",
-      "sha256": "74268f25d87a451ea80c0de86952fd2046c34a92ab7c9489330b98c259f38fc4"
+      "bytes": 13717,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_lgssm/receipt.json",
+      "sha256": "59282fba00f9f78b3a2602e2f53337a01d9aeb413bbaa81eedb01235f1bfee32"
     },
     {
-      "bytes": 5438,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_lgssm/selection.json",
-      "sha256": "9ba664532d5d6c29f4aaf5f814567b076a94f00f148ff476e7bc7c06b7ee8db5"
+      "bytes": 5440,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_lgssm/selection.json",
+      "sha256": "aabaad78ecff705cf6d40472a5e139bffb8b4a66097de62002e51a63ec80686c"
     },
     {
-      "bytes": 781,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_lgssm/state.json",
-      "sha256": "1cc62d052b83026f938e1417c37787fa1a31cc98a19da03d9a1f7bf7b86432c2"
+      "bytes": 782,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_lgssm/state.json",
+      "sha256": "6fb41155d14896700ff748a1d391214fb7df084b3bc4194fe649bc17989aae63"
     },
     {
-      "bytes": 4212,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/basis_lgssm/tuning/trial_00.json",
-      "sha256": "7ff89fa0b46d7f042939c7799b6d586d88d3ad1eadf79c617c4d1be720e70695"
+      "bytes": 4214,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/basis_lgssm/tuning/trial_00.json",
+      "sha256": "0414255433eda19657ff59e5ffe13ae84866f28cb0df7f2b51ee8dca6d31136b"
     },
     {
       "bytes": 1839,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/dcrnn/forecast.npz",
-      "sha256": "f04d18c8512f0b0f832bbc32a745e16abe362db83b6b31fb80f2d9fb22c87f6f"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/dcrnn/forecast.npz",
+      "sha256": "8993c2a9d6d3debc3e87c6d8899bb234be31586ff14aec73ab7549b9713a1741"
     },
     {
-      "bytes": 51386,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/dcrnn/model.npz",
-      "sha256": "94b22b578031319aca7b74f9f1fd78653a38945ce12640af1fbaadbac154a5eb"
+      "bytes": 51392,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/dcrnn/model.npz",
+      "sha256": "000e172af0bb0c71d8c1fdc41bced94fa824d31b1bb9d18b3d120854f0d14c62"
     },
     {
-      "bytes": 1608,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/dcrnn/operational_point.npz",
-      "sha256": "7a3ffd626103e71811b97cfaa8cdc90e0e2ef28f4134c5f61244c51c38918919"
+      "bytes": 1603,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/dcrnn/operational_point.npz",
+      "sha256": "14db314494d9b28d68fb06da5c21db40e531ecfaae2ce9314d50b44ff4551df2"
     },
     {
-      "bytes": 8309,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/dcrnn/receipt.json",
-      "sha256": "dd8774bf22a8642af7b0ce435a261c99009049888496c77d4e20ad5f719dba3e"
+      "bytes": 8308,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/dcrnn/receipt.json",
+      "sha256": "2f6867a3769e626d583c44bea79cc92e859398b450f3b61c37f4ae68751d5259"
     },
     {
-      "bytes": 7014,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/dcrnn/selection.json",
-      "sha256": "c4fce3a2cb05cab2ebf27438c0107fd67a2e74f5da02a412d8dccbe12eb28c8f"
+      "bytes": 7021,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/dcrnn/selection.json",
+      "sha256": "ec2a08c2cf385e47de19c383536ae5df1c12b164aa2f875a7b6af3962d180d1b"
     },
     {
       "bytes": 759,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/dcrnn/state.json",
-      "sha256": "4ad05c58ceeb1c3b2c2c99cd9740948fee9e8189856d80e99cf857e629dd7a67"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/dcrnn/state.json",
+      "sha256": "4d514a2939c38d00354ca2c1a1d5c34ab7cc25feb91818d49cfe7ad897e53089"
     },
     {
-      "bytes": 5495,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/dcrnn/tuning/trial_00.json",
-      "sha256": "7824e54cb1fb8e64e73538366b33c75fa87131d08fb1bf78ac37ccab309f1566"
+      "bytes": 5502,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/dcrnn/tuning/trial_00.json",
+      "sha256": "712fa4d15c02a9e2ce4b9c721c6071790d2719f5d8a3d0e4d55cbe92c965e814"
     },
     {
       "bytes": 4004,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/eqesn_rollout/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/eqesn_rollout/forecast.npz",
       "sha256": "195a388eadf3abc11686cb615b06ce45b68a4a7d8f1dea0774f5d6dc7b4d4d0c"
     },
     {
       "bytes": 100095,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/eqesn_rollout/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/eqesn_rollout/model.npz",
       "sha256": "22b6a86d8f611b774650d1659a0cf735da1b0f6778eb038a6f3dcab291a46287"
     },
     {
       "bytes": 1632,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/eqesn_rollout/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/eqesn_rollout/operational_point.npz",
       "sha256": "f4c57d114fee06b389f4d4d45b9df0727ad470f4f2bc5438eae46e6b1e38a389"
     },
     {
-      "bytes": 19605,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/eqesn_rollout/receipt.json",
-      "sha256": "b99df64bb61ae66806cc8eb39602ea1f68db7964abdbcfa5e426344c3f4b77f4"
+      "bytes": 19610,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/eqesn_rollout/receipt.json",
+      "sha256": "e597e65cb9e4006a571aae7009ff44949adc4d4b1a600f147760028120cece4c"
     },
     {
-      "bytes": 4716,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/eqesn_rollout/selection.json",
-      "sha256": "ad1cddfbf2c10377ca3988df5e823b262e1e5ef57753c8373350a7fcf38913b7"
+      "bytes": 4717,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/eqesn_rollout/selection.json",
+      "sha256": "18d0d6536e619f3d624a04d47d7ce94753dc8ee06af5e35766ff3833149e0dd8"
     },
     {
       "bytes": 712,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/eqesn_rollout/state.json",
-      "sha256": "308742a5a706bfcb316a3944896a9c85e7f5b6151d269c0c7a7cb1618a93754a"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/eqesn_rollout/state.json",
+      "sha256": "3a553818bee8e008e1c28ad18d75e0fa51137aaa344c08b3b8572fa3ab4ad857"
     },
     {
-      "bytes": 3516,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/eqesn_rollout/tuning/trial_00.json",
-      "sha256": "af806ae9fb16c219f58d247f36ebc20f72384f42c50fe8136a86f7701327a6c3"
+      "bytes": 3518,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/eqesn_rollout/tuning/trial_00.json",
+      "sha256": "bb9b13306ae55cd1a2a3bf636aedd2c6aa2283b547104a0c708cf964260b97ca"
     },
     {
       "bytes": 1178,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/persistence/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/persistence/forecast.npz",
       "sha256": "df716fd86df83d28b5fbbd3a8aada43b18c2e8a03c0743991cdac646d8b856c2"
     },
     {
       "bytes": 12068,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/persistence/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/persistence/model.npz",
       "sha256": "f5bf06a12ce94138d95c86ada8d84d4450dcc72a56e31a8f69a908ab54cc984f"
     },
     {
       "bytes": 1056,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/persistence/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/persistence/operational_point.npz",
       "sha256": "562cf52bbd6ce4d26c6ed4154db1a7f1b1d8170cde1a5e994d9d5f7c1d3c76d3"
     },
     {
-      "bytes": 6443,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/persistence/receipt.json",
-      "sha256": "2645ff90053b94285399a93cce948471c78bc486605cd107a7348a319cb20b4b"
+      "bytes": 6442,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/persistence/receipt.json",
+      "sha256": "7d42e1b0820d7bc9ab8ab7d50a20ffc5526757f714e559135d59785d9c5b1d3a"
     },
     {
-      "bytes": 3183,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/persistence/selection.json",
-      "sha256": "d38c86f6692185feb99fdd16d114f0e18cd197adac8833fd4b0e955f83dfef26"
+      "bytes": 3186,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/persistence/selection.json",
+      "sha256": "93a2022d705fcd3f94930c1f0b2a330a6fb1b01dfb8f46331685a9c05b7f515d"
     },
     {
       "bytes": 712,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/persistence/state.json",
-      "sha256": "90dda7e604d3205d71fe7e695f35e0ab573818248ac5539054d260314c90d134"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/persistence/state.json",
+      "sha256": "7e01f8cfbcde7fe9c0ec7f5d21c916ed821b9500795f0b52d15e879e62064602"
     },
     {
-      "bytes": 2240,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/persistence/tuning/trial_00.json",
-      "sha256": "3d94662041ec28ca6d4d2908bbe437660474083f91711712482cf5f14f73c082"
+      "bytes": 2243,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/persistence/tuning/trial_00.json",
+      "sha256": "e8403e8b9d8cabc6fe8cc1d13266f2637452837c49771446b8b83dd2d9d8cb27"
     },
     {
       "bytes": 1771,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/seasonal_naive/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/seasonal_naive/forecast.npz",
       "sha256": "8779a79e23149112be8f68d309714158de4604d8220d4822f685dc3dcb31ae7b"
     },
     {
       "bytes": 12145,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/seasonal_naive/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/seasonal_naive/model.npz",
       "sha256": "860c70b5bf064e8608afa4f639f93068f976dbf15c945cdfb95142b193fd6930"
     },
     {
       "bytes": 1627,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/seasonal_naive/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/seasonal_naive/operational_point.npz",
       "sha256": "d76eb36a73db0d8d305b5f9052f1452f3d80875dd1d5334e37dac64a4b8e5ec9"
     },
     {
-      "bytes": 6511,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/seasonal_naive/receipt.json",
-      "sha256": "c22bb81c025f2e7e0d40c91b8e8f88113d4886cf0c04bd8e764e08426639c2b8"
+      "bytes": 6512,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/seasonal_naive/receipt.json",
+      "sha256": "949583137b45e01e67dd32483702420d6888934f25c04e70454bd46d083bcd7f"
     },
     {
-      "bytes": 3435,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/seasonal_naive/selection.json",
-      "sha256": "724afa837c4fc63ac71f23e717ca75884164bde4cc2ec9f48221a4395cc0c3bf"
+      "bytes": 3438,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/seasonal_naive/selection.json",
+      "sha256": "de84562287f31b6edcdcf217f9da86acb0bb94b740254d0ff574532a0d44a683"
     },
     {
-      "bytes": 712,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/seasonal_naive/state.json",
-      "sha256": "8d6c51fab75bc48d01445d8be35fda5cf603eaca72b093c508d8316d8eced045"
+      "bytes": 711,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/seasonal_naive/state.json",
+      "sha256": "b20ad5369eb80dbac5e113add1348d9eb9dbbf4581cbcaaddf1a0f4c86847730"
     },
     {
-      "bytes": 2447,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/seasonal_naive/tuning/trial_00.json",
-      "sha256": "50256ded791ee09eccd7ae3a3eb2b99b02914e9a74a7934990b95f78eab845af"
+      "bytes": 2450,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/seasonal_naive/tuning/trial_00.json",
+      "sha256": "ab8c5965dba96e304aa8712a55c341310d460604496ee331c2800499c2cddb49"
     },
     {
       "bytes": 11936,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/separable_stgp/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/separable_stgp/forecast.npz",
       "sha256": "6f13177c894afd559b6a4b0866afbb1b645d8c2aba9e1d30e92795edfb99b751"
     },
     {
       "bytes": 13708,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/separable_stgp/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/separable_stgp/model.npz",
       "sha256": "729ae27feeccb595ba44280375f5c44d7109a73bea481aa0da55b3e7aff704e3"
     },
     {
       "bytes": 1056,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/separable_stgp/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/separable_stgp/operational_point.npz",
       "sha256": "49d1d6d36385abc1f10fcae81dfaf8479d037e7ee257f9d0c4c2cc7d3fd289ce"
     },
     {
-      "bytes": 14353,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/separable_stgp/receipt.json",
-      "sha256": "3e37a458e72bb4e5f8e73ea62fc1fc66a642ad7970d4b87cac2be5bcd0664cd1"
+      "bytes": 14357,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/separable_stgp/receipt.json",
+      "sha256": "73e345a7ec2cdfb423c7469f4aef74d799251546aad52f0f37033d7288f17d39"
     },
     {
-      "bytes": 6700,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/separable_stgp/selection.json",
-      "sha256": "c3d2ac478de778f0b207feb7779d259a2cca0f2b57f8f234ed56b9af763adfc4"
+      "bytes": 6706,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/separable_stgp/selection.json",
+      "sha256": "8956a8e4cb658d6f44c4cf4a0101819938376613d40836744037c10ea1eafa69"
     },
     {
-      "bytes": 712,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/separable_stgp/state.json",
-      "sha256": "5252d99c0110db267ab88f81707dbd3fc83d553cf2f6c4b669a5c62e89a8a2bc"
+      "bytes": 714,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/separable_stgp/state.json",
+      "sha256": "bb1925645c74f0299a453bd68a141cef37dbc41b7bf34ff640163cb74231f516"
     },
     {
-      "bytes": 5307,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/A/separable_stgp/tuning/trial_00.json",
-      "sha256": "88f2d540f4cfa4a8e43a4453d692df50f4ee3842533ae2a25629a05dc1b0a12a"
+      "bytes": 5312,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/A/separable_stgp/tuning/trial_00.json",
+      "sha256": "ef20a58b884028ff61adebb79034bf24c6c9eb81e95a70bb157b0c0d2d81be0f"
     },
     {
-      "bytes": 14078,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_gru/forecast.npz",
-      "sha256": "bca20dee8eb6983e96cf3d1778bba5fd0c08bedfcf6e7b17f8b3b84683a1d844"
+      "bytes": 14084,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_gru/forecast.npz",
+      "sha256": "a1e7d4fc295c43f0924d7fc7241c2e98e3e7737957e8808d21b1bd5b5ebfa090"
     },
     {
-      "bytes": 32538,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_gru/model.npz",
-      "sha256": "2306f7e50274ae7f5d9d9125ecb43fa58075af4c78e8c687847f862ef8baae27"
+      "bytes": 32539,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_gru/model.npz",
+      "sha256": "47b8a816933310a8588ca52e64c1416ee03afd14b59f1d0888362e60dbed691e"
     },
     {
-      "bytes": 1761,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_gru/operational_point.npz",
-      "sha256": "e2e7df67081f64fbea921a6fd22cc5522bf13f672efb9e4f743aebc0b3957aa5"
+      "bytes": 1762,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_gru/operational_point.npz",
+      "sha256": "f4337a7dd3811ad465ea30c395318b4e7db4886a758642d68c9ced068297c3f1"
     },
     {
-      "bytes": 25384,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_gru/receipt.json",
-      "sha256": "54ff60f34cedcf1bbb9b65b36e1a7b2ecee238732955d38740d3417f48d57370"
+      "bytes": 25251,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_gru/receipt.json",
+      "sha256": "aed66d265160bb6a33e51e7a0417cf442479961741416f0f778eeca839a0999f"
     },
     {
-      "bytes": 9308,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_gru/selection.json",
-      "sha256": "6d2d56df480cf77fd3df0083b29fa09e45de9a50e6d86d749201084a56255b6b"
+      "bytes": 9324,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_gru/selection.json",
+      "sha256": "1b14e590bd8275da2cae07793360f0e5dfdbb37fa9805a3ab773733b757fe1ff"
     },
     {
-      "bytes": 780,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_gru/state.json",
-      "sha256": "2584d9b705f017f463021dc39e4f5cfce355de591fab89481b37c37fb6a4c377"
+      "bytes": 781,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_gru/state.json",
+      "sha256": "e210a5f3c8a281d37ebf1a5ca63ced76c89a8e11cc3550f1a14e4051b4e9fd49"
     },
     {
-      "bytes": 7746,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_gru/tuning/trial_00.json",
-      "sha256": "99f1573e4a78bfd6ea35b4c6dafcfa6ca2f85f7012790c97651ce00edbdab768"
+      "bytes": 7763,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_gru/tuning/trial_00.json",
+      "sha256": "cb32c94cbbb349b7f4d7210d47a16303eae31d721115028639d0fb580a54fb5c"
     },
     {
       "bytes": 1916,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_krr/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_krr/forecast.npz",
       "sha256": "534330bd5a65bd81fccd4e1ee2c2bda2980204affcb30832c9e4424ac892c21d"
     },
     {
       "bytes": 66250,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_krr/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_krr/model.npz",
       "sha256": "4374d1911de9bd44157c95bf8a667934d065c543b44c3c9da6117cea6a8a5499"
     },
     {
       "bytes": 1774,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_krr/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_krr/operational_point.npz",
       "sha256": "41ff1a1cdd3896936196945690ccc7320156813cc5a18d4e577d022e16d185e2"
     },
     {
-      "bytes": 6756,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_krr/receipt.json",
-      "sha256": "913174e94d776911da4c51d89ffa2bc0b0d52524edb56d22415965766ffd3f40"
+      "bytes": 6757,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_krr/receipt.json",
+      "sha256": "92d65c7b46dfb31811a183ff6fcc91d9a81b3bb61609c3f7bfb8bf87c25bf786"
     },
     {
-      "bytes": 3379,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_krr/selection.json",
-      "sha256": "e5f4bad1ccb68dec0541b30b026b77dcd9c3cc05465ea3c62b42ba23ab55b742"
+      "bytes": 3378,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_krr/selection.json",
+      "sha256": "1b12066324acab0dffe1aca720e73b5c570ef2bb7651e6b0fcce0a2b6177711b"
     },
     {
       "bytes": 782,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_krr/state.json",
-      "sha256": "56390adfd8a4cdeaf859c88f3cdf00991b0f3099f7afeb4bfb4a2995499ea89c"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_krr/state.json",
+      "sha256": "a14f70a7f9788955dab27422988701d2f3b7dd124e45c1a6cbef5c9e454a37a3"
     },
     {
       "bytes": 2341,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_krr/tuning/trial_00.json",
-      "sha256": "2368f2833c108d5f3637dfa3dee8966a8bef34b4a7e6d182fb2db731c715f734"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_krr/tuning/trial_00.json",
+      "sha256": "2032db4818671560f25ba7b5b6973d38c114620603cb62d127c6dc823f874288"
     },
     {
       "bytes": 13913,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_lgssm/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_lgssm/forecast.npz",
       "sha256": "5c4d65d60268d5e79f5edc7557bb9d7f54621321ff86d0e9eb80e51336c96163"
     },
     {
       "bytes": 15787,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_lgssm/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_lgssm/model.npz",
       "sha256": "bba397b6afc92eba7bddfc973d3e65a313b28fb6816a7df389c269678ac1e142"
     },
     {
       "bytes": 1086,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_lgssm/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_lgssm/operational_point.npz",
       "sha256": "a20bb2ef33016d46420c8e95836c36037fc2ca5319788039c6b3dc5cea9a8513"
     },
     {
-      "bytes": 15441,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_lgssm/receipt.json",
-      "sha256": "d9627af628b2f9fcb7daebab64f9af4ca56b4aa774348bda2e5ecdeb2de20ae6"
+      "bytes": 15445,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_lgssm/receipt.json",
+      "sha256": "7c119b91a10bc9c8006b161720d402dd8b00922e36c475e0b14573732fa78261"
     },
     {
-      "bytes": 4949,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_lgssm/selection.json",
-      "sha256": "cf5d0ec0751b3d1a054b41907fd4d382b8cc794c504da7a0ae6f12ef3628943a"
+      "bytes": 4946,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_lgssm/selection.json",
+      "sha256": "617437a252662556fdf9c0fdfdf4768db667dec11689732ef67b8246e360b6d8"
     },
     {
       "bytes": 782,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_lgssm/state.json",
-      "sha256": "6060a73143f7f22444f52b42b305f74ca35ea899c0d1d8be54eac4c3297d6f9e"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_lgssm/state.json",
+      "sha256": "f20f268fd441d2cffb63bc2f24a82e88d4a36c907b749266cee94979ebacfa4f"
     },
     {
-      "bytes": 3805,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/basis_lgssm/tuning/trial_00.json",
-      "sha256": "0c5d315a09ed2572c627d5749e8e68c11f18f57d24cd0b7e2df9d2b23b2fdad2"
+      "bytes": 3800,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/basis_lgssm/tuning/trial_00.json",
+      "sha256": "7f4c5780a0af770a750e5bcd8c78289e37e64abca424b7a07859678c4129316a"
     },
     {
       "bytes": 14007,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/separable_stgp/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/separable_stgp/forecast.npz",
       "sha256": "e68efce4327b96742386f000a63a8a851c5474bb2632f914f2a6f094af7c6a7e"
     },
     {
       "bytes": 13719,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/separable_stgp/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/separable_stgp/model.npz",
       "sha256": "c871c575edf6a733523f334681525c155f7aeb4c1133ee0f977d6e022b6d3536"
     },
     {
       "bytes": 1086,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/separable_stgp/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/separable_stgp/operational_point.npz",
       "sha256": "a20bb2ef33016d46420c8e95836c36037fc2ca5319788039c6b3dc5cea9a8513"
     },
     {
-      "bytes": 16176,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/separable_stgp/receipt.json",
-      "sha256": "cb570ac88d972855292ede8cb4e97c50c9f422a2c79f94efb937fe4627917549"
+      "bytes": 16173,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/separable_stgp/receipt.json",
+      "sha256": "846778ef45f3e7ceec1fa154963e99cb86cfd7ca7ff7f47e4e525d5d2cb9c3f5"
     },
     {
-      "bytes": 6228,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/separable_stgp/selection.json",
-      "sha256": "eed886a1eda5a2f47e6f2b5811dde1800bbd7a970d717efb5776c824da595c89"
+      "bytes": 6232,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/separable_stgp/selection.json",
+      "sha256": "2b9c3a7e1cb2e230e8f86c26f85e7c6eebb691dd5575a6861051d8dc8596459c"
     },
     {
-      "bytes": 714,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/separable_stgp/state.json",
-      "sha256": "7745be81980d223bd900af053a6fc506df4dd7c3b02fd50780ee02685a7a069b"
+      "bytes": 713,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/separable_stgp/state.json",
+      "sha256": "ac1d006af1592d59965398f70685774722ebe5c20d4afb3115a50f5a58ee91ac"
     },
     {
-      "bytes": 4914,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/separable_stgp/tuning/trial_00.json",
-      "sha256": "f11b62018c81dde921d29e60125a6238f1ba5675bcac270852c448878e3c3c25"
+      "bytes": 4918,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/separable_stgp/tuning/trial_00.json",
+      "sha256": "5623594d2a6308df04366e20045b22320327d6aa0e83cc7359f1a1cb5dcd2def"
     },
     {
       "bytes": 1228,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/spatial_persistence/forecast.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/spatial_persistence/forecast.npz",
       "sha256": "c5197f1e4159f4595dfd6a24d9a6ca879e6d2538456b80e97606981d9af3f8e4"
     },
     {
       "bytes": 12359,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/spatial_persistence/model.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/spatial_persistence/model.npz",
       "sha256": "c3af24d6c479957596670cf128a98b9a11415a1140fcead5ccade249d29b4592"
     },
     {
       "bytes": 1088,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/spatial_persistence/operational_point.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/spatial_persistence/operational_point.npz",
       "sha256": "0f71c14c238c33223fb987591c93445037b62a57a936134ebd051e5a3ff78594"
     },
     {
-      "bytes": 6553,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/spatial_persistence/receipt.json",
-      "sha256": "fa597d02b3b5e47bd349c5d3c872139954bb0c9aa81a37b6b7b44bd49d70478f"
+      "bytes": 6557,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/spatial_persistence/receipt.json",
+      "sha256": "d224f6cc48810435cf6b97f3a0838b3143f293822f680e9cef8f94973189ce8b"
     },
     {
-      "bytes": 2834,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/spatial_persistence/selection.json",
-      "sha256": "299b8d5e38576ce7d3f4abad624272690b71ccbd90aadf750cb8b3a54b15635b"
+      "bytes": 2832,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/spatial_persistence/selection.json",
+      "sha256": "135152d75d51f91a8625119346b63d990cc28023aa89e07e922a1b010f599c80"
     },
     {
-      "bytes": 712,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/spatial_persistence/state.json",
-      "sha256": "ea8861ad029f44c35bbf98a6c443f29786905e7c879534ba1475cff944af2b59"
+      "bytes": 711,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/spatial_persistence/state.json",
+      "sha256": "12e18aeee955f532b8df7c865f8e5f63faaf0ea1dcec4da425afe66d3790b335"
     },
     {
-      "bytes": 1910,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/B/spatial_persistence/tuning/trial_00.json",
-      "sha256": "7bfb12d544cff556cbceb831191c487643e1ab7b02cb646d464bdf8f9cf7e55f"
+      "bytes": 1908,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/B/spatial_persistence/tuning/trial_00.json",
+      "sha256": "ea462ebdacab4eca8cb38c684ed47ef10a8786bd9bf53518cb3a6d55895096fe"
     },
     {
       "bytes": 946,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/data_receipt.json",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/data_receipt.json",
       "sha256": "ff65c0683781b3d79b6e1e6484d477f7f77063ca169e2f7effed7331ed31ced4"
     },
     {
       "bytes": 58386,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/g1_gaussian_ar/rep_000/simulation.npz",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/g1_gaussian_ar/rep_000/simulation.npz",
       "sha256": "5ccce0832708737ccef421e5d7c6eb33298495570aecb40542834e65901b985e"
     },
     {
       "bytes": 2552,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/manifest.json",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/manifest.json",
       "sha256": "c39e2050b2dc552d9138204c4e41e1c376d95fc31521aeda0e1402a5b0f9e157"
     },
     {
       "bytes": 797,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/resolved_protocol.yaml",
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/resolved_protocol.yaml",
       "sha256": "5ecee08bf3d6d8fd1857e2cf766b2f93596c033deaf81adf45406d2484fc46ea"
     },
     {
       "bytes": 49,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/run.lock",
-      "sha256": "cd9291cc52a2e22567ccc7077130516a3536de10c9e31ff1daa8301a20c01049"
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/run.lock",
+      "sha256": "f12b5ffdd94ba56029100ddf790969a9303957f3600db5b26e2c68352950ec08"
     },
     {
-      "bytes": 17782,
-      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-_1euk2g7/summary.json",
-      "sha256": "e5514b0e9489fcf626460a23487278abd329f470b41f08d862449c89a5d152ea"
+      "bytes": 17855,
+      "file": "results/validation/installed_benchmark_smoke/bstesn-release-work-nfg9edma/summary.json",
+      "sha256": "34e98ab874ef04be38eb0495a746e178d555493be9667b0b44c2cd56d772ae52"
     },
     {
-      "bytes": 5071,
+      "bytes": 5125,
       "file": "results/validation/installed_benchmark_smoke.log",
-      "sha256": "67c3f8655fea4b06ea2a26a51857be89edd9660602ea5c9fbb7c7281f91f7b0d"
+      "sha256": "ed8c6bb2cf097c4e94b5826a85e48af4c9bd82c2fd226028a6b31e28641fa939"
     },
     {
-      "bytes": 490,
+      "bytes": 541,
       "file": "results/validation/installed_cli_smoke.log",
-      "sha256": "57f5e1679cce1c56a3562ed2f868e8fb84f0db66c5a2cf343d4d41cbdfa201a9"
+      "sha256": "272e5abad474d128edf911e5dc8170cc8bba17fa62284553a55b9f5a53c0aadd"
     },
     {
-      "bytes": 1150,
+      "bytes": 1242,
       "file": "results/validation/installed_pytest.log",
-      "sha256": "b5ef8be46d725e2af49a759f637a713e0de8ee5bab9f4ff4531a35b690473e70"
+      "sha256": "58097e0f967e98613c11b0a3fc8a3425bd6264a3497f20ab9a9bb9d808f46381"
     },
     {
-      "bytes": 74972,
+      "bytes": 74971,
       "file": "results/validation/installed_pytest.xml",
-      "sha256": "4ee772b3be906dcb06f622d4cef00c7b4a6fd3af94360213a3f1b41b7c7e31be"
+      "sha256": "07023838fdbac59f068fb971fbf24b941d215d2ab61f8624a88c35e2719d9ea0"
     },
     {
-      "bytes": 5379,
+      "bytes": 7521,
       "file": "results/validation/installed_pytest_receipt.json",
-      "sha256": "7f88fd65afc11e1422d95e0e27e5d7a104cac231fae084bdc891e4273a095f3b"
+      "sha256": "6a37dde451cc6828bbbd66c677d88870867b38ce3e89b986b4189162289672fb"
     },
     {
       "bytes": 321,
@@ -1267,54 +1267,54 @@
       "sha256": "7dd55d2610636b83161008ff2cfe8db844daf60df69892b38362b2ad71bf0e22"
     },
     {
-      "bytes": 660,
+      "bytes": 711,
       "file": "results/validation/installed_roundtrip.log",
-      "sha256": "63d54daec27a9d8794773f40d16df437df0de473c074bfebec039851bb993b08"
+      "sha256": "ec8f9bb52aec48c9e0da7e1b6cc558045198f02781fde90684a152a1276e1d03"
     },
     {
       "bytes": 20181,
-      "file": "results/validation/installed_smoke/bstesn-release-work-_1euk2g7/checkpoint.npz",
+      "file": "results/validation/installed_smoke/bstesn-release-work-nfg9edma/checkpoint.npz",
       "sha256": "68bee2b4dc9446dddfe7053ffe0d49a663170174bd06c330590be133aefbb6bf"
     },
     {
       "bytes": 6982,
-      "file": "results/validation/installed_smoke/bstesn-release-work-_1euk2g7/evaluation_truth.npz",
+      "file": "results/validation/installed_smoke/bstesn-release-work-nfg9edma/evaluation_truth.npz",
       "sha256": "627d04b0d4f432d58ea33dfb1db8ce351a07e98bfc92628b4265bfe8bf4e067e"
     },
     {
-      "bytes": 86666,
-      "file": "results/validation/installed_smoke/bstesn-release-work-_1euk2g7/model.npz",
-      "sha256": "dbf581d86c80bcd17e8d4eda046b038f076f2eaafe2285e5c1a8a40dc018bb7d"
+      "bytes": 86671,
+      "file": "results/validation/installed_smoke/bstesn-release-work-nfg9edma/model.npz",
+      "sha256": "3f26f1fca1b55de212a5e4f36c11327b022caa15cf181d9af40c73f4227fde84"
     },
     {
-      "bytes": 86666,
-      "file": "results/validation/installed_smoke/bstesn-release-work-_1euk2g7/model_roundtrip.npz",
-      "sha256": "dbf581d86c80bcd17e8d4eda046b038f076f2eaafe2285e5c1a8a40dc018bb7d"
+      "bytes": 86671,
+      "file": "results/validation/installed_smoke/bstesn-release-work-nfg9edma/model_roundtrip.npz",
+      "sha256": "3f26f1fca1b55de212a5e4f36c11327b022caa15cf181d9af40c73f4227fde84"
     },
     {
       "bytes": 125853,
-      "file": "results/validation/installed_smoke/bstesn-release-work-_1euk2g7/prediction.npz",
+      "file": "results/validation/installed_smoke/bstesn-release-work-nfg9edma/prediction.npz",
       "sha256": "7abb646920c65c03f557c1254cea6402fcf763b97a8a798a5312c7461dd8e47e"
     },
     {
       "bytes": 125853,
-      "file": "results/validation/installed_smoke/bstesn-release-work-_1euk2g7/prediction_roundtrip.npz",
+      "file": "results/validation/installed_smoke/bstesn-release-work-nfg9edma/prediction_roundtrip.npz",
       "sha256": "7abb646920c65c03f557c1254cea6402fcf763b97a8a798a5312c7461dd8e47e"
     },
     {
       "bytes": 384,
-      "file": "results/validation/installed_smoke/bstesn-release-work-_1euk2g7/resolved_configuration.yaml",
+      "file": "results/validation/installed_smoke/bstesn-release-work-nfg9edma/resolved_configuration.yaml",
       "sha256": "1307c8a580822ee22e86021a2700557df2970c4c412e59cb7fb44a952344d4e9"
     },
     {
-      "bytes": 34435,
-      "file": "results/validation/installed_smoke/bstesn-release-work-_1euk2g7/summary.json",
-      "sha256": "a6a42c8bf0fa34b3a30a352ff05429b3dda482c2421765b251ee3b68feb74121"
+      "bytes": 34436,
+      "file": "results/validation/installed_smoke/bstesn-release-work-nfg9edma/summary.json",
+      "sha256": "262b41e2a0e34ad2e2aaa1e1de2ddfc7d2f317ff069cae95af795a36728c29d3"
     },
     {
-      "bytes": 1010,
+      "bytes": 1271,
       "file": "results/validation/neural_dependencies.log",
-      "sha256": "15a781fe478307ff684528c3a8c71760d7e207e2e36ec81267cef88ac10e71aa"
+      "sha256": "bc59592ec37bdc193b9d24d0574c20f0181dc234d915f243f62654a4ba964618"
     },
     {
       "bytes": 37521,
@@ -1322,9 +1322,9 @@
       "sha256": "e34af97c4a663ce3b5971b55dd23bf290c4559b0bafc6239f3f82f0ec2e66cf3"
     },
     {
-      "bytes": 3065,
+      "bytes": 3676,
       "file": "results/validation/neural_support_dependencies.log",
-      "sha256": "5b9f6097973dc89c85df727a3196ad0da2887d227fb4698c5da37134901ed3c5"
+      "sha256": "e06d5749bd8fb65558e366364f072fd347f4606351abf7fbd907950f96ac490c"
     },
     {
       "bytes": 58260,
@@ -1332,19 +1332,19 @@
       "sha256": "12a628710c917f2aaa74605980ae85f49c13404e386fb9e25c82b2c39e677cf4"
     },
     {
-      "bytes": 112,
+      "bytes": 163,
       "file": "results/validation/pip_check.log",
-      "sha256": "c4ad0cb133ec1e8c9d484f10372abeb673b4d75c9f4c9968bcc93c3785ad56e5"
+      "sha256": "71e3a2874035eb6ac627c10cf8e649bd323df79b0ecbbdf8d68ebbe46ef393f6"
     },
     {
-      "bytes": 1195,
+      "bytes": 1236,
       "file": "results/validation/source_pytest.log",
-      "sha256": "dff9af731312bd44df46aee8cdbe8df068816cc73f52f10183a6544cd667e8b7"
+      "sha256": "960504910c11cf549ba685eb7f5f76066120d10583a368eaf638149b861e1e45"
     },
     {
-      "bytes": 74972,
+      "bytes": 74971,
       "file": "results/validation/source_pytest.xml",
-      "sha256": "fc56c2401d74815d696aef584a76aa49139eae300394d251166ae5aeb1f04117"
+      "sha256": "c66e1fe708cb4fef6305a8d403b69d25e3f13798548ec6ed2b6433359e72091c"
     },
     {
       "bytes": 5967,
@@ -1352,19 +1352,19 @@
       "sha256": "09ec044c91a1a4ae8cad00f0f4c4807ddc0a876f86068607895f09004cbaf14d"
     },
     {
-      "bytes": 241,
+      "bytes": 292,
       "file": "results/validation/venv_creation.json",
-      "sha256": "a9cbcd35f743a5bb96523e787fe45cad69f97b160ecc3a20162a8ec20b6b1112"
+      "sha256": "1e5ca1f2b161ebe171b3dacef7a6160ad07381264f13c4a074ae562644fcf2f8"
     },
     {
-      "bytes": 603,
+      "bytes": 705,
       "file": "results/validation/wheel_install.log",
-      "sha256": "50b7c783b7a6de407dd34c9e3369b3db1d896d031640e33562cb8e9dbb23b893"
+      "sha256": "0029b1e2507fdc108dfc2f6d9babaf051d808131c1e89054fb7c6b65b6923de1"
     }
   ],
   "venv_created_this_run": true,
   "version_lock_mismatches": {},
   "with_neural": true,
-  "work_directory": "/tmp/bstesn-release-work-_1euk2g7",
+  "work_directory": "/tmp/bstesn-release-work-nfg9edma",
   "working_tree_changed_during_check": []
 }
