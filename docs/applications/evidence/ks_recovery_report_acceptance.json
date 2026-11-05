@@ -1,0 +1,22 @@
+{
+  "created_utc": "2026-11-05T06:40:43.123181+00:00",
+  "evidence_levels": {
+    "E1": "exact published main audit and original recovered freeze",
+    "E2": "explicitly transcript-derived extension and spatial-diagnosis summaries",
+    "E3": "single newly recomputed forecast from retained original Bayesian fit"
+  },
+  "final_report_hashes": {
+    "ks_audited_recovery_report.html": "007a8ba00f8b6e33d923c4735c3241a25ffbff3f8bca6cc25802b7a50e2f53de",
+    "ks_audited_recovery_report.pdf": "e1f334df5f7468225c9aefe9b38b617da223b8301b1f3b4179dce3ddd08cfbde",
+    "ks_audited_recovery_report_manifest.json": "a2348610d3008e106cad5e9fdbde5ee71862736c1b611e90faf8c9f2f31c2dd9",
+    "ks_audited_recovery_report_visual_qa.json": "5ceeecd817cf431027e471cb745679376476e196a219cf09bd126536549c9564"
+  },
+  "manifested_artifacts_verified": 18,
+  "model_fits": 0,
+  "new_forecasts_by_renderer": 0,
+  "original_full_artifact_handoff_complete": false,
+  "pages_visually_inspected": 25,
+  "schema": "ks-recovery-report-public-acceptance/1",
+  "scope": "Report generation and visual/numeric artifact checks do not replace unavailable original per-origin results or full checkpoint archive.",
+  "source_sha256": "ad9276344c8152451785ff1dac2d6264a324c799fc1ce49363b1bc2e9d0155e8"
+}

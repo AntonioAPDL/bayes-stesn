@@ -1,0 +1,158 @@
+{
+  "HTML_bound_figure_PNGs_verified": 8,
+  "HTML_embedded_movie_matches_bound_MP4": true,
+  "HTML_inline_equation_PNGs": 9,
+  "HTML_movie_sha256": "803bad9c4a11566b04b6541997848a42d2c62fe200faff712d440ac4f53d58b9",
+  "created_utc": "2026-11-05T06:43:17.827281+00:00",
+  "example_artifact_files_verified": 9,
+  "example_artifact_receipt_sha256": "d53d5d6a77c2460c99faba5a53679133fe1e463d4598d1506f66988bc6797005",
+  "example_binding_checks_recorded": 24,
+  "example_new_fit_count": 0,
+  "example_new_forecast_origin_count": 1,
+  "example_new_selection_count": 0,
+  "example_reconstruction_sha256": "f2d215578071d7f2e8a6fbb1768431effce661e7882c5e6ff10b65d8b3677293",
+  "example_reported_scores_match_receipt_at_displayed_precision": true,
+  "generator_sha256": "ad9276344c8152451785ff1dac2d6264a324c799fc1ce49363b1bc2e9d0155e8",
+  "html": {
+    "bytes": 3140014,
+    "path": "deliverables/ks_audited_recovery_report.html",
+    "sha256": "007a8ba00f8b6e33d923c4735c3241a25ffbff3f8bca6cc25802b7a50e2f53de"
+  },
+  "main_audit_sha256": "fe4448818eda7e7f3ead715d989e5900db5464d47ddd446ce357c161e792f4c0",
+  "manifest_input_files_verified": 9,
+  "manifest_mismatches": 0,
+  "manifest_output_files_verified": 18,
+  "manifest_sha256": "a2348610d3008e106cad5e9fdbde5ee71862736c1b611e90faf8c9f2f31c2dd9",
+  "no_remaining_concrete_report_discrepancy": true,
+  "numeric_table_verification": {
+    "method": "Independent HTML parsing and displayed-rounding comparison against published main audit/freeze; E2 tables compared to explicitly identified transcript data. All checks completed against these same final PDF/HTML hashes.",
+    "mismatches": 0,
+    "original_missing_scientific_inputs_not_recreated": true,
+    "tables": [
+      {
+        "cells": 40,
+        "name": "A point",
+        "passed": true,
+        "rows": 8
+      },
+      {
+        "cells": 40,
+        "name": "A reliability",
+        "passed": true,
+        "rows": 8
+      },
+      {
+        "cells": 12,
+        "name": "A scores",
+        "passed": true,
+        "rows": 3
+      },
+      {
+        "cells": 48,
+        "name": "A intervals",
+        "passed": true,
+        "rows": 12
+      },
+      {
+        "cells": 45,
+        "name": "B point",
+        "passed": true,
+        "rows": 9
+      },
+      {
+        "cells": 45,
+        "name": "B reliability",
+        "passed": true,
+        "rows": 9
+      },
+      {
+        "cells": 12,
+        "name": "B scores",
+        "passed": true,
+        "rows": 3
+      },
+      {
+        "cells": 48,
+        "name": "B intervals",
+        "passed": true,
+        "rows": 12
+      },
+      {
+        "cells": 85,
+        "name": "selection",
+        "passed": true,
+        "rows": 17
+      },
+      {
+        "cells": 75,
+        "name": "paired RMSE",
+        "passed": true,
+        "rows": 15
+      },
+      {
+        "cells": 20,
+        "name": "paired CRPS",
+        "passed": true,
+        "rows": 4
+      },
+      {
+        "cells": 68,
+        "name": "compute",
+        "passed": true,
+        "rows": 17
+      },
+      {
+        "cells": 1122,
+        "name": "six retained leads",
+        "passed": true,
+        "rows": 102
+      },
+      {
+        "cells": 48,
+        "name": "E2 contiguous",
+        "passed": true,
+        "rows": 8
+      },
+      {
+        "cells": 28,
+        "name": "E2 seed",
+        "passed": true,
+        "rows": 7
+      }
+    ],
+    "total_displayed_cells": 1736
+  },
+  "operations": {
+    "deletions": 0,
+    "fits": 0,
+    "forecasts": 0,
+    "selection_changes": 0,
+    "source_edits": 0
+  },
+  "original_example_prediction_file_bytes_recovered": false,
+  "original_full_result_archive_available": false,
+  "passed": true,
+  "pdf": {
+    "bytes": 2111256,
+    "pages": 25,
+    "path": "deliverables/ks_audited_recovery_report.pdf",
+    "sha256": "e1f334df5f7468225c9aefe9b38b617da223b8301b1f3b4179dce3ddd08cfbde"
+  },
+  "private_original_receipt_sha256": "6c23954440fbb8d7921f92ac7df0a1aef9427d7c4165f7bc93660d26bf35ddec",
+  "schema": "ks-final-recovery-report-independent-review/1",
+  "scope": "Final report delta/table/hash/manifest/E3 integration check; no model execution or re-audit of unavailable original result files.",
+  "scope_corrections_verified": [
+    "A Bayes-minus-ridge-ESN paired interval includes zero explicitly",
+    "New runtime notice of automated workspace maintenance stated",
+    "Six retained leads distinguished from missing full 100-lead arrays",
+    "Historical MCMC qualification distinguished from new diagnostic certification",
+    "E3 new single-case replay distinguished from original file recovery",
+    "Relevant native Bayesian runtime match distinguished from unavailable whole-study Torch runtime",
+    "Twelve official target rows distinguished from 39 input-site coordinate rug",
+    "Full artifact handoff remains incomplete and original full result archive unavailable"
+  ],
+  "visual_QA_receipt_sha256": "5ceeecd817cf431027e471cb745679376476e196a219cf09bd126536549c9564",
+  "visual_QA_receipt_verified": true,
+  "visual_QA_scope": "All final 25 pages visually reviewed by the report author; this independent reviewer inspected the earlier six figures/page-7 issue and verified final asset and correction bindings.",
+  "whole_study_runtime_recertified": false
+}
