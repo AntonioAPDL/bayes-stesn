@@ -1,0 +1,942 @@
+{
+  "claim": "Frozen application specification, not completed test results.",
+  "created_utc": "2026-11-05T03:13:58.652544+00:00",
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "first_test_access_utc": "2026-11-05T03:13:58.657531+00:00",
+  "freeze_identity": "ca6d8dac49208767f0073a747a3fbc7ee37648715a22abc32e539378b75756dc",
+  "freeze_sha256": "90e9a5e82e077eae15c19ae887496f1ec4b4fc706925d961ae539852efd699e8",
+  "history": 128,
+  "horizon": 100,
+  "model_seed": 20261105,
+  "plot_cases": [
+    {
+      "first_target": 8000,
+      "track": "A",
+      "trajectory": 0
+    },
+    {
+      "first_target": 8000,
+      "track": "B",
+      "trajectory": 0
+    },
+    {
+      "first_target": 8000,
+      "track": "C",
+      "trajectory": 0
+    }
+  ],
+  "precision_receipt_sha256": "49c9807eb9d94713a74d33220746ab670697f0e97d7313cb34a931b59aad79e3",
+  "predictive_paths": 512,
+  "robustness_configuration_policy": "selected_interleaved_configuration_transferred_without_test_ranking; fit new contiguous training transform/features",
+  "robustness_methods": [
+    "training_mean",
+    "persistence",
+    "linear_var",
+    "ridge_esn",
+    "pod_nvar",
+    "bayes_stesn",
+    "separable_gp",
+    "basis_gru"
+  ],
+  "scoring": {
+    "bands": [
+      [
+        1,
+        10
+      ],
+      [
+        11,
+        25
+      ],
+      [
+        26,
+        50
+      ],
+      [
+        51,
+        100
+      ]
+    ],
+    "cluster_bootstrap": 2000,
+    "divergence_threshold_nrmse": 10.0,
+    "energy": "Euclidean field energy divided by sqrt(number of target sites),1024 fixed with-replacement path pairs",
+    "failure_policy": "no clipping, no fallback, preserve denominator; report complete-trajectory successful-only scores alongside failures/pending",
+    "levels": [
+      0.5,
+      0.8,
+      0.9,
+      0.95
+    ],
+    "native_selection": "episode-balanced band-weighted empirical CRPS",
+    "near_tie_policy": "among eligible candidates within1% of best validation loss choose lower predeclared complexity; report near-ties",
+    "point": "mean of complete predictive paths",
+    "point_selection": "episode-balanced band-weighted squared error",
+    "selection_near_tie_relative_tolerance": 0.01,
+    "variogram": "power .5,128 geometry-only inverse-chord-distance pairs",
+    "vpt_censor_steps": 100,
+    "vpt_threshold_nrmse": 0.4
+  },
+  "selected": {
+    "A": {
+      "basis_gru": {
+        "complexity_order": 2,
+        "config": {
+          "basis_width": 0.25,
+          "batch_size": 64,
+          "covariance_continuation_max_iter": 80,
+          "covariance_ftol": 1e-09,
+          "covariance_gtol": 1e-05,
+          "covariance_max_iter": 40,
+          "covariance_spatial_length": 0.25,
+          "covariance_spatial_nu": 1.5,
+          "epochs": 80,
+          "gradient_clip": 1.0,
+          "hidden_size": 64,
+          "lags": 16,
+          "learning_rate": 0.001,
+          "max_domain_sites": 1024,
+          "max_fit_sites": 512,
+          "max_forecast_bytes": 1073741824,
+          "mean_paths": 128,
+          "min_delta": 1e-06,
+          "patience": 12,
+          "prediction_batch_size": 64,
+          "rank": 16,
+          "refit": true,
+          "require_full_validation_horizon": true,
+          "validation_fraction": 0.2,
+          "validation_horizon": 100,
+          "weight_decay": 0.0001
+        },
+        "id": "gru_02",
+        "selection_eligible": true,
+        "selection_loss": 0.4618539287486622,
+        "selection_objective": "episode_balanced_horizon_band_CRPS",
+        "selection_receipt_sha256": "b821529880adf377724d18c9f5a2db611db9a165b726aa2c7eb7dcef27a6cdd8"
+      },
+      "bayes_stesn": {
+        "complexity_order": 3,
+        "config": {
+          "conditioning": 1024,
+          "continuation_draws": 2000,
+          "covariance": {
+            "anisotropy": false,
+            "anisotropy_sd": 0.5,
+            "geometry_terms": 4,
+            "infer_nu": false,
+            "kind": "matern",
+            "log_ell_mean": -1.7147984280919266,
+            "log_ell_sd": 0.65,
+            "log_q_mean": 0.0,
+            "log_q_sd": 1.25,
+            "max_dense_sites": 2000,
+            "mesh_nodes": null,
+            "mesh_padding": 0.5,
+            "mesh_resolution": 8,
+            "nonstationary": false,
+            "nonstationary_sd": 0.15,
+            "nu": 1.5,
+            "pc_range_probability": 0.05,
+            "pc_range_threshold": 0.3,
+            "pc_sigma_probability": 0.05,
+            "pc_sigma_threshold": 1.0,
+            "range_prior": "lognormal",
+            "scale_mode": "relative",
+            "sigma_e_scale": 1.0,
+            "smoothness_choices": [
+              0.5,
+              1.5,
+              2.5
+            ],
+            "smoothness_probabilities": [
+              0.3333333333333333,
+              0.3333333333333333,
+              0.3333333333333333
+            ],
+            "spde_order": 2,
+            "static_variance": false,
+            "variance_sd": 0.3,
+            "variance_terms": 2,
+            "vecchia_neighbors": 15
+          },
+          "diagnostics": {
+            "functional_draws": 512,
+            "max_coefficient_bytes": 268435456,
+            "min_chains": 4,
+            "min_ess": 400,
+            "rhat_limit": 1.01
+          },
+          "features": {
+            "connectivity": 0.08,
+            "encoder_epochs": 120,
+            "encoder_learning_rate": 0.01,
+            "encoder_penalty": 0.0001,
+            "encoder_width": 16,
+            "feature_scale_floor": 0.04,
+            "graph_neighbors": 6,
+            "input_scales": [
+              0.5
+            ],
+            "kind": "pca_esn",
+            "lags": [
+              1,
+              2
+            ],
+            "leak_patterns": [
+              [
+                0.2,
+                0.5,
+                0.9
+              ]
+            ],
+            "local_width": 0.25,
+            "max_feature_bytes": 536870912,
+            "modes": 16,
+            "products": 0,
+            "recurrent_norm": 0.9,
+            "score_bound": 3.0,
+            "seed": 1613790002509209539,
+            "squares": 64,
+            "units": [
+              128
+            ]
+          },
+          "innovations": "iid",
+          "prior": {
+            "allocation": "dirichlet",
+            "alpha": 1.0,
+            "base_columns": null,
+            "baseline_groups": [
+              "intercept",
+              "score",
+              "base"
+            ],
+            "beta_a": 2.0,
+            "beta_b": 2.0,
+            "fixed_slab": false,
+            "fixed_variance": 10.0,
+            "kind": "ridge",
+            "lambda0": 0.1,
+            "logistic_cov": [],
+            "logistic_mean": [],
+            "max_penalty_size": 900,
+            "mean_log_precision": -2.3025850929940455,
+            "penalty": null,
+            "sd_log_precision": 1.5,
+            "shape_a": 0.5,
+            "shape_b": 0.5,
+            "slab_df": 4.0,
+            "slab_scale": 2.0,
+            "tau0": 0.1,
+            "tau_scale": 1.0,
+            "unit": "group",
+            "unshrunk_groups": [
+              "intercept"
+            ]
+          },
+          "sampler": {
+            "a0": 2.0,
+            "adapt_interval": 25,
+            "algorithm": "auto",
+            "b0": 0.05,
+            "backend": "auto",
+            "chains": 4,
+            "checkpoint_every": 250,
+            "dense_threshold": 900,
+            "draws": 2000,
+            "init_dispersion": 2.0,
+            "init_max_dimension": 20,
+            "init_max_evaluations": 2000,
+            "init_maxiter": 100,
+            "initial_jitter": 0.15,
+            "initialize": "auto",
+            "max_dense_bytes": 268435456,
+            "max_stored_hyperstate_bytes": 536870912,
+            "parameterization": "ridge_total_scale",
+            "proposal_scale": 0.12,
+            "rho_prior_sd": 0.8,
+            "rhs_tradeoff_scale": 0.5,
+            "seed": 1921689123849822665,
+            "solver_atol": 0.0,
+            "solver_maxiter": null,
+            "solver_rtol": 1e-10,
+            "target_accept": 0.3,
+            "temporal": "iid",
+            "thin": 1,
+            "warmup": 1000
+          },
+          "spatial_mean": {
+            "bounds": null,
+            "centers": [
+              [
+                1.0,
+                0.0
+              ],
+              [
+                0.9766205557100867,
+                0.21497044021102407
+              ],
+              [
+                0.907575419670957,
+                0.4198891015602646
+              ],
+              [
+                0.7960930657056438,
+                0.6051742151937652
+              ],
+              [
+                0.6473862847818277,
+                0.7621620551276365
+              ],
+              [
+                0.46840844069979015,
+                0.8835120444460229
+              ],
+              [
+                0.26752833852922075,
+                0.963549992519223
+              ],
+              [
+                0.05413890858541761,
+                0.9985334138511238
+              ],
+              [
+                -0.16178199655276473,
+                0.9868265225415261
+              ],
+              [
+                -0.37013815533991423,
+                0.9289767198167915
+              ],
+              [
+                -0.5611870653623823,
+                0.8276889981568906
+              ],
+              [
+                -0.7259954919231306,
+                0.6876994588534235
+              ],
+              [
+                -0.8568571761675893,
+                0.5155538571770216
+              ],
+              [
+                -0.9476531711828025,
+                0.3193015301359798
+              ],
+              [
+                -0.9941379571543596,
+                0.10811901842394192
+              ],
+              [
+                -0.9941379571543597,
+                -0.10811901842394124
+              ],
+              [
+                -0.9476531711828025,
+                -0.31930153013597995
+              ],
+              [
+                -0.8568571761675892,
+                -0.5155538571770218
+              ],
+              [
+                -0.7259954919231311,
+                -0.6876994588534231
+              ],
+              [
+                -0.5611870653623825,
+                -0.8276889981568905
+              ],
+              [
+                -0.37013815533991445,
+                -0.9289767198167914
+              ],
+              [
+                -0.16178199655276476,
+                -0.9868265225415261
+              ],
+              [
+                0.0541389085854167,
+                -0.9985334138511239
+              ],
+              [
+                0.2675283385292201,
+                -0.9635499925192231
+              ],
+              [
+                0.4684084406997903,
+                -0.8835120444460228
+              ],
+              [
+                0.6473862847818279,
+                -0.7621620551276362
+              ],
+              [
+                0.796093065705644,
+                -0.6051742151937649
+              ],
+              [
+                0.9075754196709569,
+                -0.41988910156026493
+              ],
+              [
+                0.9766205557100867,
+                -0.21497044021102438
+              ]
+            ],
+            "coordinate_terms": true,
+            "kernel": "matern32",
+            "max_columns": 4096,
+            "side": 3,
+            "width": 0.3
+          }
+        },
+        "id": "bayes_03",
+        "selection_eligible": true,
+        "selection_loss": 0.7432375036371601,
+        "selection_objective": "episode_balanced_horizon_band_CRPS",
+        "selection_receipt_sha256": "57c66174838d12ea9fedd41de612cb808119bf11bcef4affe49d47045b5592dc"
+      },
+      "linear_var": {
+        "complexity_order": 4,
+        "config": {
+          "chunk_size": 512,
+          "lags": 4,
+          "max_features": 1024,
+          "rank": 16,
+          "ridge": 1e-05,
+          "spacing": 1,
+          "target": "state"
+        },
+        "id": "var_02",
+        "selection_eligible": true,
+        "selection_loss": 0.7056333279673077,
+        "selection_objective": "episode_balanced_horizon_band_MSE",
+        "selection_receipt_sha256": "02a692b2f93c7bd56a090fa016cc1ff477665ed0eb4f45f2c113cc8797dcb00b"
+      },
+      "persistence": {
+        "complexity_order": 0,
+        "config": {},
+        "id": "persistence_00",
+        "selection_eligible": true,
+        "selection_loss": 1.1463820242880904,
+        "selection_objective": "episode_balanced_horizon_band_MSE",
+        "selection_receipt_sha256": "f9d83a9cd56d6e353eef45763727f0ca62c319cb9ed86c406ee40496f2b2812c"
+      },
+      "pod_nvar": {
+        "complexity_order": 3,
+        "config": {
+          "chunk_size": 512,
+          "lags": 1,
+          "max_features": 1024,
+          "rank": 16,
+          "ridge": 0.001,
+          "spacing": 1,
+          "target": "increment"
+        },
+        "id": "nvar_06",
+        "selection_eligible": true,
+        "selection_loss": 0.2570240706338734,
+        "selection_objective": "episode_balanced_horizon_band_MSE",
+        "selection_receipt_sha256": "05a02e7a2f6d726c0f53fb4d13eadfaa5485aec2abf6ee91af2364fd0fdd02aa"
+      },
+      "ridge_esn": {
+        "complexity_order": 6,
+        "config": {
+          "chunk_size": 512,
+          "connectivity": 0.02,
+          "input_scale": 0.2,
+          "leak": 0.5,
+          "readout": "states_and_squares",
+          "ridge": 1e-06,
+          "spectral_radius": 0.9,
+          "target": "state",
+          "units": 512,
+          "washout": 128
+        },
+        "id": "esn_04",
+        "selection_eligible": true,
+        "selection_loss": 1.1229624465508374,
+        "selection_objective": "episode_balanced_horizon_band_MSE",
+        "selection_receipt_sha256": "305ce9d5b5af49a03e9f51d4a7a7e48b6e72ce366a16902e9212c76e252366d9"
+      },
+      "separable_gp": {
+        "complexity_order": 0,
+        "config": {
+          "continuation_max_iter": 120,
+          "fit_hyperparameters": true,
+          "ftol": 1e-08,
+          "gtol": 1e-05,
+          "max_fit_sites": 512,
+          "max_forecast_bytes": 1073741824,
+          "max_iter": 60,
+          "max_joint_dimension": 2000,
+          "spatial_length": 0.2,
+          "spatial_nu": 1.5,
+          "temporal_length": 4.0,
+          "temporal_nu": 0.5
+        },
+        "id": "gp_00",
+        "selection_eligible": true,
+        "selection_loss": 0.5330231065881534,
+        "selection_objective": "episode_balanced_horizon_band_CRPS",
+        "selection_receipt_sha256": "949e3e41f8a67507fdf435952ab6bc474f31eafa62be19d7bdd88f98863c3ce5"
+      },
+      "training_mean": {
+        "complexity_order": 0,
+        "config": {},
+        "id": "mean_00",
+        "selection_eligible": true,
+        "selection_loss": 1.4089031002419812,
+        "selection_objective": "episode_balanced_horizon_band_MSE",
+        "selection_receipt_sha256": "4430a7414ea6636f3e44a66d566c3d368dcc5cd847f49d406aae83adc0012e92"
+      }
+    },
+    "B": {
+      "basis_gru": {
+        "complexity_order": 2,
+        "config": {
+          "basis_width": 0.25,
+          "batch_size": 64,
+          "covariance_continuation_max_iter": 80,
+          "covariance_ftol": 1e-09,
+          "covariance_gtol": 1e-05,
+          "covariance_max_iter": 40,
+          "covariance_spatial_length": 0.25,
+          "covariance_spatial_nu": 1.5,
+          "epochs": 80,
+          "gradient_clip": 1.0,
+          "hidden_size": 64,
+          "lags": 16,
+          "learning_rate": 0.001,
+          "max_domain_sites": 1024,
+          "max_fit_sites": 512,
+          "max_forecast_bytes": 1073741824,
+          "mean_paths": 128,
+          "min_delta": 1e-06,
+          "patience": 12,
+          "prediction_batch_size": 64,
+          "rank": 16,
+          "refit": true,
+          "require_full_validation_horizon": true,
+          "validation_fraction": 0.2,
+          "validation_horizon": 100,
+          "weight_decay": 0.0001
+        },
+        "id": "gru_02",
+        "selection_eligible": true,
+        "selection_loss": 0.4158166862666796,
+        "selection_objective": "episode_balanced_horizon_band_CRPS",
+        "selection_receipt_sha256": "7261b31ff01f5e9ec1da2c36e71e6f4f0df3c95ed90ea276f8edc9790aa79b70"
+      },
+      "bayes_stesn": {
+        "complexity_order": 1,
+        "config": {
+          "conditioning": 512,
+          "continuation_draws": 2000,
+          "covariance": {
+            "anisotropy": false,
+            "anisotropy_sd": 0.5,
+            "geometry_terms": 4,
+            "infer_nu": false,
+            "kind": "matern",
+            "log_ell_mean": -1.2039728043259361,
+            "log_ell_sd": 0.65,
+            "log_q_mean": 0.0,
+            "log_q_sd": 1.25,
+            "max_dense_sites": 2000,
+            "mesh_nodes": null,
+            "mesh_padding": 0.5,
+            "mesh_resolution": 8,
+            "nonstationary": false,
+            "nonstationary_sd": 0.15,
+            "nu": 1.5,
+            "pc_range_probability": 0.05,
+            "pc_range_threshold": 0.3,
+            "pc_sigma_probability": 0.05,
+            "pc_sigma_threshold": 1.0,
+            "range_prior": "lognormal",
+            "scale_mode": "relative",
+            "sigma_e_scale": 1.0,
+            "smoothness_choices": [
+              0.5,
+              1.5,
+              2.5
+            ],
+            "smoothness_probabilities": [
+              0.3333333333333333,
+              0.3333333333333333,
+              0.3333333333333333
+            ],
+            "spde_order": 2,
+            "static_variance": false,
+            "variance_sd": 0.3,
+            "variance_terms": 2,
+            "vecchia_neighbors": 15
+          },
+          "diagnostics": {
+            "functional_draws": 512,
+            "max_coefficient_bytes": 268435456,
+            "min_chains": 4,
+            "min_ess": 400,
+            "rhat_limit": 1.01
+          },
+          "features": {
+            "connectivity": 0.08,
+            "encoder_epochs": 120,
+            "encoder_learning_rate": 0.01,
+            "encoder_penalty": 0.0001,
+            "encoder_width": 16,
+            "feature_scale_floor": 0.04,
+            "graph_neighbors": 6,
+            "input_scales": [
+              0.5
+            ],
+            "kind": "pca_esn",
+            "lags": [
+              1,
+              2
+            ],
+            "leak_patterns": [
+              [
+                0.2,
+                0.5,
+                0.9
+              ]
+            ],
+            "local_width": 0.25,
+            "max_feature_bytes": 536870912,
+            "modes": 8,
+            "products": 0,
+            "recurrent_norm": 0.9,
+            "score_bound": 3.0,
+            "seed": 1613790002509209539,
+            "squares": 32,
+            "units": [
+              64
+            ]
+          },
+          "innovations": "iid",
+          "prior": {
+            "allocation": "dirichlet",
+            "alpha": 1.0,
+            "base_columns": null,
+            "baseline_groups": [
+              "intercept",
+              "score",
+              "base"
+            ],
+            "beta_a": 2.0,
+            "beta_b": 2.0,
+            "fixed_slab": false,
+            "fixed_variance": 10.0,
+            "kind": "ridge",
+            "lambda0": 0.1,
+            "logistic_cov": [],
+            "logistic_mean": [],
+            "max_penalty_size": 900,
+            "mean_log_precision": -2.3025850929940455,
+            "penalty": null,
+            "sd_log_precision": 1.5,
+            "shape_a": 0.5,
+            "shape_b": 0.5,
+            "slab_df": 4.0,
+            "slab_scale": 2.0,
+            "tau0": 0.1,
+            "tau_scale": 1.0,
+            "unit": "group",
+            "unshrunk_groups": [
+              "intercept"
+            ]
+          },
+          "sampler": {
+            "a0": 2.0,
+            "adapt_interval": 25,
+            "algorithm": "auto",
+            "b0": 0.05,
+            "backend": "auto",
+            "chains": 4,
+            "checkpoint_every": 250,
+            "dense_threshold": 900,
+            "draws": 2000,
+            "init_dispersion": 2.0,
+            "init_max_dimension": 20,
+            "init_max_evaluations": 2000,
+            "init_maxiter": 100,
+            "initial_jitter": 0.15,
+            "initialize": "auto",
+            "max_dense_bytes": 268435456,
+            "max_stored_hyperstate_bytes": 536870912,
+            "parameterization": "ridge_total_scale",
+            "proposal_scale": 0.12,
+            "rho_prior_sd": 0.8,
+            "rhs_tradeoff_scale": 0.5,
+            "seed": 1921689123849822665,
+            "solver_atol": 0.0,
+            "solver_maxiter": null,
+            "solver_rtol": 1e-10,
+            "target_accept": 0.3,
+            "temporal": "iid",
+            "thin": 1,
+            "warmup": 1000
+          },
+          "spatial_mean": {
+            "bounds": null,
+            "centers": [
+              [
+                1.0,
+                0.0
+              ],
+              [
+                0.9324722294043558,
+                0.3612416661871529
+              ],
+              [
+                0.7390089172206591,
+                0.6736956436465572
+              ],
+              [
+                0.4457383557765383,
+                0.8951632913550623
+              ],
+              [
+                0.09226835946330202,
+                0.9957341762950345
+              ],
+              [
+                -0.2736629900720829,
+                0.961825643172819
+              ],
+              [
+                -0.6026346363792563,
+                0.7980172272802396
+              ],
+              [
+                -0.850217135729614,
+                0.5264321628773561
+              ],
+              [
+                -0.9829730996839018,
+                0.18374951781657037
+              ],
+              [
+                -0.9829730996839018,
+                -0.18374951781657012
+              ],
+              [
+                -0.8502171357296141,
+                -0.5264321628773558
+              ],
+              [
+                -0.6026346363792572,
+                -0.7980172272802389
+              ],
+              [
+                -0.2736629900720831,
+                -0.961825643172819
+              ],
+              [
+                0.09226835946330243,
+                -0.9957341762950345
+              ],
+              [
+                0.4457383557765377,
+                -0.8951632913550626
+              ],
+              [
+                0.7390089172206585,
+                -0.6736956436465578
+              ],
+              [
+                0.9324722294043558,
+                -0.36124166618715303
+              ]
+            ],
+            "coordinate_terms": true,
+            "kernel": "matern32",
+            "max_columns": 4096,
+            "side": 3,
+            "width": 0.4
+          }
+        },
+        "id": "bayes_01",
+        "selection_eligible": true,
+        "selection_loss": 0.6723028545956294,
+        "selection_objective": "episode_balanced_horizon_band_CRPS",
+        "selection_receipt_sha256": "f67df58e58b2c57aea0fc7c9d0c6fa1b74c1a34c83973f4e2897e57b95e23085"
+      },
+      "linear_var": {
+        "complexity_order": 4,
+        "config": {
+          "chunk_size": 512,
+          "lags": 4,
+          "max_features": 1024,
+          "rank": 16,
+          "ridge": 1e-05,
+          "spacing": 1,
+          "target": "state"
+        },
+        "id": "var_02",
+        "selection_eligible": true,
+        "selection_loss": 0.7262215075397749,
+        "selection_objective": "episode_balanced_horizon_band_MSE",
+        "selection_receipt_sha256": "2e847b591a8c88a1193cd48aeb319405d80bffc5abb7fa2f46883398ed585f77"
+      },
+      "periodic_cnn": {
+        "complexity_order": 2,
+        "config": {
+          "batch_size": 128,
+          "blocks": 3,
+          "checkpoint_every_batches": 50,
+          "epochs": 20,
+          "gradient_clip": 1.0,
+          "kernel_size": 5,
+          "learning_rate": 0.001,
+          "min_delta": 1e-07,
+          "patience": 6,
+          "validation_every": 1,
+          "weight_decay": 1e-06,
+          "width": 32
+        },
+        "id": "cnn_02",
+        "selection_eligible": true,
+        "selection_loss": 0.25563672730972775,
+        "selection_objective": "episode_balanced_horizon_band_MSE",
+        "selection_receipt_sha256": "abc46f8f9d74f7b99a9f74a65f0b41f087617c31681dbd143dcfd1469e13b393"
+      },
+      "persistence": {
+        "complexity_order": 0,
+        "config": {},
+        "id": "persistence_00",
+        "selection_eligible": true,
+        "selection_loss": 1.2346259718731336,
+        "selection_objective": "episode_balanced_horizon_band_MSE",
+        "selection_receipt_sha256": "ed5b8349abe1a9dc39a146eef3eb3a1d443d1b19b85dd489e095c3ee1001d592"
+      },
+      "pod_nvar": {
+        "complexity_order": 7,
+        "config": {
+          "chunk_size": 512,
+          "lags": 2,
+          "max_features": 1024,
+          "rank": 16,
+          "ridge": 1e-06,
+          "spacing": 1,
+          "target": "increment"
+        },
+        "id": "nvar_03",
+        "selection_eligible": true,
+        "selection_loss": 625780762.9157296,
+        "selection_objective": "episode_balanced_horizon_band_MSE",
+        "selection_receipt_sha256": "98b85f955bdfd88dadd8afd16c561b6dda7650a194fe426f83be4df088e317da"
+      },
+      "ridge_esn": {
+        "complexity_order": 4.5,
+        "config": {
+          "chunk_size": 512,
+          "connectivity": 0.02,
+          "input_scale": 1.0,
+          "leak": 0.2,
+          "readout": "states_and_squares",
+          "ridge": 0.1,
+          "spectral_radius": 0.7,
+          "target": "state",
+          "units": 512,
+          "washout": 128
+        },
+        "id": "esn_07_refine01",
+        "selection_eligible": true,
+        "selection_loss": 1.1621329939240994,
+        "selection_objective": "episode_balanced_horizon_band_MSE",
+        "selection_receipt_sha256": "e449d0c2cb4dc7adad57b7c20d47d8365f7c02b8db1b51e9b076993cc1885aff"
+      },
+      "separable_gp": {
+        "complexity_order": 0,
+        "config": {
+          "continuation_max_iter": 120,
+          "fit_hyperparameters": true,
+          "ftol": 1e-08,
+          "gtol": 1e-05,
+          "max_fit_sites": 512,
+          "max_forecast_bytes": 1073741824,
+          "max_iter": 60,
+          "max_joint_dimension": 2000,
+          "spatial_length": 0.2,
+          "spatial_nu": 1.5,
+          "temporal_length": 4.0,
+          "temporal_nu": 0.5
+        },
+        "id": "gp_00",
+        "selection_eligible": true,
+        "selection_loss": 0.5416010248446994,
+        "selection_objective": "episode_balanced_horizon_band_CRPS",
+        "selection_receipt_sha256": "f9521bbd23e280d1ee6f8659954fb431f6b43a4fd4b1136062ca0dbcb3e3d543"
+      },
+      "training_mean": {
+        "complexity_order": 0,
+        "config": {},
+        "id": "mean_00",
+        "selection_eligible": true,
+        "selection_loss": 1.4095369073547497,
+        "selection_objective": "episode_balanced_horizon_band_MSE",
+        "selection_receipt_sha256": "7d57b8ff46ff81cef14772a8a0a85436c53eb18c523022660c5a6f3a03ffa7fd"
+      }
+    }
+  },
+  "selection_issues": [],
+  "sensitivity_seeds": [
+    20261106,
+    20261107
+  ],
+  "sensitivity_trajectories": [
+    0,
+    5,
+    10,
+    15
+  ],
+  "test_origins": [
+    8000,
+    8100,
+    8200,
+    8300,
+    8400,
+    8500,
+    8600,
+    8700,
+    8800,
+    8900,
+    9000,
+    9100,
+    9200,
+    9300,
+    9400,
+    9500,
+    9600,
+    9700,
+    9800,
+    9900
+  ],
+  "test_trajectories": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ]
+}

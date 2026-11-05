@@ -84,6 +84,15 @@ def mib(value):
     return "-" if value is None else number(float(value)/1024**2, 1)
 
 
+def reported_range(value):
+    value=value or {}
+    if not value.get("n"):
+        return "-"
+    if value.get("min")==value.get("max"):
+        return number(value["min"])
+    return number(value.get("min"))+" - "+number(value.get("max"))
+
+
 def estimate(row, metric, *, digits=3, interval=True):
     item = row.get(metric) or {}
     if item.get("mean") is None:
@@ -152,6 +161,72 @@ def completion(rows, seed):
         "main_execution_terminal": bool(primary) and all(r["pending_origins"] == 0 for r in primary)}
 
 
+def verify_matched_seed_receipt(matched, frozen, episode_sha256):
+    """Guard the matched reporting population; never fit or rescore forecasts."""
+    if matched.get("schema") != "ks-matched-seed-sensitivity/1":
+        raise ValueError("Unsupported matched seed-sensitivity report schema")
+    if matched.get("freeze_identity") != frozen["identity"] or matched.get("source_episode_results_sha256") != episode_sha256:
+        raise ValueError("Matched seed report is stale relative to frozen selection/episode results")
+    if (matched.get("main_seed") != frozen["model_seed"] or
+            matched.get("alternative_seeds") != frozen["sensitivity_seeds"] or
+            matched.get("trajectories") != frozen["sensitivity_trajectories"]):
+        raise ValueError("Matched seed report does not use the frozen seeds and trajectory roster")
+    roster=set(frozen["sensitivity_trajectories"])
+    if not roster or len(roster) != len(frozen["sensitivity_trajectories"]) or len(roster)>4:
+        raise ValueError("This matched sensitivity report requires the declared one-to-four distinct trajectories")
+    origins=len(frozen["test_origins"])
+    if matched.get("expected_origins_per_trajectory") != origins:
+        raise ValueError("Matched seed report uses an incompatible origin denominator")
+    seeds=[frozen["model_seed"]]+list(frozen["sensitivity_seeds"])
+    stochastic={"bayes_stesn","basis_gru","ridge_esn","periodic_cnn"}
+    expected={(track,model,seed) for track in ("A","B") for model in frozen["selected"][track]
+        if model in stochastic for seed in seeds}
+    indexed={}
+    for row in matched["rows"]:
+        key=(row["track"],row["model"],row["seed"])
+        if key not in expected or key in indexed:
+            raise ValueError("Unexpected or duplicate matched seed population row")
+        if row.get("selection_eligible")!=frozen["selected"][row["track"]][row["model"]].get("selection_eligible"):
+            raise ValueError("Matched seed row changes the frozen selection-eligibility flag")
+        if row["scheduled_trajectories"]!=len(roster) or row["scheduled_origins"]!=len(roster)*origins:
+            raise ValueError("Matched seed row does not retain the full scheduled denominator")
+        if row["successful_origins"]+row["failed_origins"]+row["pending_origins"]!=row["scheduled_origins"]:
+            raise ValueError("Matched seed origin outcomes do not exhaust the schedule")
+        if not 0<=row["qualified_complete_trajectories"]<=row["complete_trajectories"]<=len(roster):
+            raise ValueError("Invalid matched seed qualification counts")
+        if row["inference_unqualified_complete_trajectories"]!=row["complete_trajectories"]-row["qualified_complete_trajectories"]:
+            raise ValueError("Matched seed unqualified count is inconsistent")
+        for metric in ("rmse","crps"):
+            ids=row[metric+"_trajectories"]
+            if len(set(ids))!=len(ids) or not set(ids)<=roster or row[metric]["n"]!=len(ids):
+                raise ValueError("Matched seed metric uses an incompatible trajectory population")
+            if len(ids)<2 and row[metric].get("ci95") is not None:
+                raise ValueError("A matched seed interval requires at least two scientific trajectories")
+        indexed[key]=row
+    if set(indexed)!=expected:
+        raise ValueError("Matched seed report omits a frozen baseline/alternative population")
+    pair_keys=set()
+    for pair in matched["paired_differences"]:
+        key=(pair["track"],pair["model"],pair["alternative_seed"],pair["metric"])
+        if key in pair_keys or pair["direction"]!="alternative_minus_main" or pair["main_seed"]!=frozen["model_seed"]:
+            raise ValueError("Invalid matched seed contrast identity or direction")
+        if pair["alternative_seed"] not in frozen["sensitivity_seeds"] or pair["metric"] not in ("rmse","crps"):
+            raise ValueError("Matched contrast uses an unplanned seed or metric")
+        baseline=indexed[pair["track"],pair["model"],pair["main_seed"]]
+        alternative=indexed[pair["track"],pair["model"],pair["alternative_seed"]]
+        eligible=set(baseline[pair["metric"]+"_trajectories"]) & set(alternative[pair["metric"]+"_trajectories"])
+        if set(pair["paired_trajectories"])!=eligible or pair["n"]!=len(eligible) or pair["scheduled_trajectories"]!=len(roster):
+            raise ValueError("Matched contrast does not preserve the exact common trajectory set")
+        if pair["n"]<2 and pair.get("ci95") is not None:
+            raise ValueError("A paired seed interval requires at least two trajectories")
+        pair_keys.add(key)
+    required_pairs={(track,model,alternative,metric) for track,model,seed in expected
+        if seed==frozen["model_seed"] for alternative in frozen["sensitivity_seeds"]
+        for metric in (("rmse","crps") if model in NATIVE else ("rmse",))}
+    if not required_pairs<=pair_keys:
+        raise ValueError("Matched seed report omits a scheduled contrast, including its zero-eligible case")
+
+
 class Inputs:
     def __init__(self, results, report, repo, allow_incomplete=False):
         self.results, self.report, self.repo = map(lambda p: Path(p).resolve(), (results, report, repo))
@@ -162,6 +237,7 @@ class Inputs:
         self.manifest = self.read(self.report/"report_manifest.json")
         self.episodes = self.read(self.results/"episode_results.json")
         self.horizons = self.read(self.report/"selected_horizons.json", optional=True)
+        self.matched_seeds = self.read(self.report/"seed_sensitivity_matched.json", optional=True)
         self.evidence = self.read(self.results/"report_evidence.json", optional=True) or {}
         self.precision = self.read(self.results/"validation_precision.json", optional=True) or {}
         self.preflight = self.evidence.get("preflight") or self.read(
@@ -169,6 +245,8 @@ class Inputs:
         extra=self.evidence.get("extra_acceptance",{})
         self.core_invariance = extra.get("ks_core_candidate_invariance") or self.read(self.repo/"docs/applications/evidence/ks_core_candidate_invariance.json", optional=True) or {}
         self.early_audit = extra.get("ks_validation_audit_early") or self.read(self.repo/"docs/applications/evidence/ks_validation_audit_early.json", optional=True) or {}
+        self.promotion_audit = extra.get("ks_validation_promotion_A_audit") or self.read(self.repo/"docs/applications/evidence/ks_validation_promotion_A_audit.json", optional=True) or {}
+        self.contiguous_history = extra.get("ks_contiguous_history_check") or self.read(self.repo/"docs/applications/evidence/ks_contiguous_history_check.json", optional=True) or {}
         self.cfg = self.experiment["config"]
         self.seed, self.rows = self.frozen["model_seed"], self.summary["rows"]
         identity = self.frozen["identity"]
@@ -183,6 +261,10 @@ class Inputs:
             raise ValueError("Report evidence belongs to a different experiment")
         if self.precision.get("experiment_identity") not in (None, self.experiment["identity"]):
             raise ValueError("Precision receipt belongs to a different experiment")
+        if self.contiguous_history and (
+                self.contiguous_history.get("freeze_identity") != identity or
+                self.contiguous_history.get("freeze_sha256") != digest(self.results/"freeze.json")):
+            raise ValueError("Contiguous-history confirmation belongs to a different frozen selection")
         for item in self.manifest.get("inputs", []):
             if item.get("name") in ("summary.json", "episode_results.json", "freeze.json", "experiment.json"):
                 if digest(self.results/item["name"]) != item["sha256"]:
@@ -203,6 +285,11 @@ class Inputs:
                 if path.exists():
                     self.selection.append((track, model, stage, self.read(path)))
         self.artifacts = {item["path"]: item for item in self.manifest.get("artifacts", [])}
+        if self.matched_seeds is not None:
+            verify_matched_seed_receipt(self.matched_seeds,self.frozen,digest(self.results/"episode_results.json"))
+            artifact=self.artifacts.get("seed_sensitivity_matched.json")
+            if artifact is None or artifact["sha256"]!=digest(self.report/"seed_sensitivity_matched.json"):
+                raise ValueError("Matched seed report is not bound to the current figure/report manifest")
         for figure in self.manifest.get("figures", []):
             path = (self.report/figure["png"]).resolve()
             if not path.is_relative_to(self.report):
@@ -437,19 +524,35 @@ class Writer:
 
     def methods(self):
         self.h("4. Implemented model mathematics", page=True)
-        self.p("All equations below use the delivered standardized response unless explicitly inverse-transformed. The exact selected numerical settings are retained in the frozen-configuration appendix. The accepted hierarchy is preserved, including its intercept prior and both residual components. Model classes are motivated by primary references; the KS/POD/spatial-decoder variants are explicitly custom adaptations.")
+        self.p("All equations below use the delivered standardized response unless explicitly inverse-transformed. The accepted Gaussian likelihood and scalar-ridge/inverse-gamma/lognormal prior family are preserved, including shrinkage of intercept coefficients and both residual components. Architecture and declared prior hyperparameters may be selected on KS validation data. Preservation of this hierarchy does not imply every prior constant equals its reference value. Exact selected settings appear here and in the frozen-configuration appendix. Model classes are motivated by primary references; KS/POD/spatial-decoder variants are explicit custom adaptations.")
         self.h("4.1 Bayesian spatial/ST-ESN", 2)
         self.equation(r"\bar y_t=\Phi C z_t+e_t,\qquad e_t\mid\sigma^2,q,\ell\sim N(0,\sigma^2[I+qK_\ell])")
-        self.equation(r"\mathrm{vec}(C)\mid\sigma^2,\lambda\sim N(0,\sigma^2\lambda^{-1}I),\qquad\sigma^2\sim\mathrm{IG}(2,0.05)")
-        self.equation(r"\log\lambda\sim N(\log0.1,1.5^2),\quad\log q\sim N(0,1.25^2),\quad\log\ell\sim N(\log0.18,0.65^2)")
-        self.p("These are the accepted reference prior values; any validation-selected prior-range median is shown explicitly in the selected configuration. The inverse-gamma density is proportional to v^(-a-1) exp(-b/v). Scalar ridge covers every readout coefficient, including intercept coefficients. K is the stationary isotropic Matérn-3/2 correlation restricted to the unit-circle embedding. Its range is a raw chord-coordinate length. Spatial innovations are iid over time conditional on the static parameters. The independent-site residual and spatial residual both represent fitted discrepancy for the clean field; neither is removed to improve intervals.")
+        self.equation(r"\mathrm{vec}(C)\mid\sigma^2,\lambda\sim N(0,\sigma^2\lambda^{-1}I),\qquad\sigma^2\sim\mathrm{IG}(a_0,b_0)")
+        self.equation(r"\log\lambda\sim N(\mu_\lambda,s_\lambda^2),\quad\log q\sim N(\mu_q,s_q^2),\quad\log\ell\sim N(\mu_\ell,s_\ell^2)")
+        self.p("The table distinguishes the accepted reference from the actual KS-selected hyperparameters for each track. Normal-distribution entries are means and standard deviations on the natural-log scale, not fitted posterior summaries. The inverse-gamma density is proportional to v^(-a-1) exp(-b/v). Scalar ridge covers every readout coefficient, including intercept coefficients. K is the stationary isotropic Matérn-3/2 correlation restricted to the unit-circle embedding. Spatial innovations are iid over time conditional on static parameters. The independent-site and spatial residuals both represent fitted discrepancy for the clean field; neither is removed to improve intervals.")
+        reference = next(c for c in self.i.cfg["candidates"]["A"]["bayes_stesn"] if c["id"] == "bayes_00")
+        specifications = [reference]+[self.i.frozen["selected"][track]["bayes_stesn"] for track in ("A","B")]
+        def prior_values(config):
+            prior, covariance, sampler = config["prior"], config["covariance"], config["sampler"]
+            return {
+                "log lambda mean / SD": f"{number(prior['mean_log_precision'],6)} / {number(prior['sd_log_precision'],6)}",
+                "log q mean / SD": f"{number(covariance['log_q_mean'],6)} / {number(covariance['log_q_sd'],6)}",
+                "log ell mean / SD": f"{number(covariance['log_ell_mean'],6)} / {number(covariance['log_ell_sd'],6)}",
+                "ell prior median": number(math.exp(covariance['log_ell_mean']),6),
+                "sigma squared IG shape / scale": f"{number(sampler['a0'],6)} / {number(sampler['b0'],6)}",
+                "Matérn smoothness": number(covariance['nu'],3),
+            }
+        values=[prior_values(item["config"]) for item in specifications]
+        self.table(["Hyperprior quantity", "Reference "+reference["id"], "Track A "+specifications[1]["id"], "Track B "+specifications[2]["id"]],
+            [[key]+[value[key] for value in values] for key in values[0]], [155,115,120,120])
+        self.p("Length ell and its prior median use raw unit-circle chord coordinates e(x)=(cos(2*pi*x/22),sin(2*pi*x/22)). They are not physical arc lengths and are not the GP's rescaled spatial-length units. For example, candidates with prior median 0.3 use mean log(0.3), whereas the accepted reference median is 0.18. These are declared validation-selected hyperparameters within the same lognormal range-prior family. Readout precision and residual-variance priors apply on the delivered training-standardized response scale.","small")
         self.p("The spatial dictionary contains a constant, optional embedded coordinates and fixed Matérn radial functions. The accepted reference uses a 3-by-3 embedding dictionary and 12 columns; the application also evaluates predetermined circle-center dictionaries. The same geometry-only function evaluates never-trained coordinates. PCA site centering/whitening, reservoir calibration and temporal-feature scaling are fitted only on each candidate's training conditioning prefix. No hidden response contributes to the basis or reservoir input.")
         self.equation(r"r_t=(I-D)r_{t-1}+D\tanh(Wr_{t-1}+U v_t+b)")
         self.p("The retained reference feeds two delayed eight-dimensional PCA score vectors into 32 leaky units. Its recurrent matrix uses operator norm 0.9, connectivity 0.08, repeated leak rates (0.2,0.5,0.9), input scale 0.5 and uniform biases on [-0.3,0.3]. Operator norm is distinct from spectral radius. Readout features are one intercept, 16 bounded lagged scores 3*tanh(a/3), 32 states and 16 selected squares, giving 65 temporal columns and 780 reference coefficients. Raw PCA scores drive the reservoir. Feature centers/scales use the latter two-thirds of the conditioning prefix, a 0.04 scale floor and dimension normalization. The reference conditioning prefix is 80 rows, leaving 5,920 likelihood targets; larger candidates declare their own prefixes.")
         self.equation(r"R=I+qK_\ell,\quad B=\Phi^{T}R^{-1}\Phi,\quad G=Z^{T}Z,\quad A=\lambda I+G\otimes B")
         self.equation(r"h=\mathrm{vec}(\Phi^{T}R^{-1}YZ),\qquad b\mid\sigma^2,Y,\lambda,q,\ell\sim N(A^{-1}h,\sigma^2A^{-1})")
         self.equation(r"Q=\mathrm{tr}(Y^{T}R^{-1}Y)-h^{T}A^{-1}h")
-        self.equation(r"\sigma^2\mid Y,\lambda,q,\ell\sim\mathrm{IG}(2+nT/2,\;0.05+Q/2)")
+        self.equation(r"\sigma^2\mid Y,\lambda,q,\ell\sim\mathrm{IG}(a_0+nT/2,\;b_0+Q/2)")
         self.p("The exact Gaussian engine integrates readout C and variance for the collapsed target, using spatial and temporal eigensystems and sufficient statistics. It does not construct the full space-time tensor-product design or a dense coefficient covariance. Adaptive random-walk Metropolis uses log(kappa)=log(lambda)+log(1+q), a unit-Jacobian change between log-coordinate systems preserving the original likelihood and prior. Adaptation stops at warmup. Each path recovers one joint readout/variance realization from one retained hyperstate and holds static parameters fixed throughout 100 steps. It generates the joint observed/target innovation field and feeds only its own fitted-site predictions into its reservoir.")
         self.p("The default final effort is four sequential chains, 1,000 warmup iterations and 2,000 retained draws per chain, with one predeclared 2,000-draw continuation. Qualification requires rank-normalized split/folded R-hat strictly below 1.01 and bulk/tail ESS at least 400, with finite checks [7]. All sampled hyperparameters are checked; every readout coefficient and ten consequential scale/readout/predictive functionals use up to 512 evenly spaced retained states per chain with a 256 MiB diagnostic cap. This monitored subset and its restriction are disclosed. HMC-specific diagnostics do not apply to this sampler. A failed gate stays inference-unqualified.")
         self.h("4.2 Separable spatiotemporal GP", 2)
@@ -515,6 +618,29 @@ class Writer:
                 self.h(f"{r.get('track')} / {label(r.get('model',''))}", 2)
                 keys = ("initial_candidates","evaluated_candidates","selected_config_id","selection_eligible","selected_primary_fit_count","fit_state_counts","parameter_count","supplied_training_rows","supplied_training_sites","usable_training_targets","bayesian_diagnostics","effort")
                 self.table(["Evidence field", "Recorded summary"], [[k,compact(r[k])] for k in keys if k in r], [145,365])
+        optimizers=[r for r in evidence_rows if r.get("optimizer_diagnostics",{}).get("fit_count",0)]
+        if optimizers:
+            self.h("Explicit likelihood-optimizer stopping disclosures",2)
+            self.p("The existing bounded L-BFGS-B qualification rule requires finite accepted parameters, a finite accepted objective below the 1e99 invalid-objective sentinel, SciPy result.success and no rejected worsening continuation. SciPy success may be triggered by relative objective reduction (ftol) or by the projected-gradient criterion (gtol). The recorded projected-gradient norm is disclosed separately; qualification does not assert that every accepted fit meets gtol. Neural-network stationary convergence is not claimed. For the basis GRU these optimizer quantities describe its residual covariance fit, not its AdamW mean-network training.")
+            self.table(["Track / selected family", "Fits / qualified", "Termination message counts"], [
+                [str(r["track"])+" / "+label(r["model"]),f"{r['optimizer_diagnostics']['fit_count']} / {r['optimizer_diagnostics'].get('qualified_fits',0)}",compact(r["optimizer_diagnostics"].get("termination_message_counts",{}))] for r in optimizers], [155,75,280])
+            self.table(["Track / selected family", "Projected gradient range", "Configured gtol / ftol", "Above / undefined gradient", "Boundary-hit counts"], [
+                [str(r["track"])+" / "+label(r["model"]),reported_range(r["optimizer_diagnostics"].get("projected_gradient_inf")),reported_range(r["optimizer_diagnostics"].get("configured_gtol"))+" / "+reported_range(r["optimizer_diagnostics"].get("configured_ftol")),
+                 f"{r['optimizer_diagnostics'].get('gradient_above_gtol_count',0)} / {r['optimizer_diagnostics'].get('undefined_gradient_count',0)}",compact(r["optimizer_diagnostics"].get("boundary_hit_counts",{}))] for r in optimizers], [145,95,80,85,105])
+            self.p("Boundary hits identify the existing bounded likelihood search; they are not an interval adjustment or a newly introduced scoring variance floor. A large projected gradient or a boundary optimum remains a numerical/identifiability limitation even when the declared relative-reduction stopping condition is satisfied. An abnormal termination is not relabeled as converged merely because its forecasts are finite.","small")
+        cohorts=i.evidence.get("optimizer_rows",[])
+        if cohorts:
+            self.h("All recorded likelihood-optimizer candidate cohorts",2)
+            self.p("This table retains unselected and abnormal candidate cohorts. It uses fit receipts only; it is not a new predictive ranking. Different model seeds remain separate.")
+            records=[]
+            for row in cohorts:
+                diagnostics=row.get("optimizer_diagnostics",row)
+                records.append([str(row.get("track"))+" / "+label(row.get("model","")),
+                    str(row.get("config_id",row.get("candidate_id","-")))+" / "+str(row.get("seed","-")),
+                    f"{diagnostics.get('fit_count',0)} / {diagnostics.get('qualified_fits',0)}",
+                    reported_range(diagnostics.get("projected_gradient_inf")),
+                    compact(diagnostics.get("termination_message_counts",{})),compact(diagnostics.get("boundary_hit_counts",{}))])
+            self.table(["Track / family", "Candidate / seed", "Fits / qualified", "Projected gradient range", "Termination counts", "Boundary counts"],records,[115,100,50,85,110,70])
         precision = i.precision
         self.h("Conditional predictive Monte Carlo precision", 2)
         if not precision:
@@ -544,10 +670,31 @@ class Writer:
         self.table(["Track", "Comparator", "Metric", "Paired n", "Bayesian minus comparator [95% CI]"], [
             [r["track"],label(r["comparator"]),r["metric"],r["n"],estimate({"delta":r},"delta")] for r in pairs], [35,150,65,55,205])
         self.h("Fixed model-seed sensitivity", 2)
-        sens=ordered([r for r in i.rows if r["seed"] != i.seed])
-        self.table(["Track", "Family / seed", "n / planned; q", "Failed / pending", "RMSE [95% CI]", "Qualified CRPS [95% CI]"], [
-            [r["track"],label(r["model"])+"\n"+str(r["seed"]),f"{r['complete_trajectories']}/{r['scheduled_trajectories']}; {r['qualified_trajectories']}",f"{r['failed_origins']}/{r['pending_origins']}",estimate(r,"rmse"),estimate(r,"crps")] for r in sens], [30,140,75,70,100,100])
-        self.p("These extra seeds use the prespecified four trajectories and are not pooled into a Bayesian forecast distribution. Their small replication count limits generalization; a between-seed comparison should not be read as 20 additional independent trajectories.")
+        matched=i.matched_seeds
+        if matched is not None:
+            self.p(f"All seeds in this section use exactly the frozen trajectories {matched['trajectories']}, with {matched['expected_origins_per_trajectory']} scheduled origins per trajectory. Baseline seed {matched['main_seed']} is recomputed as a summary of these same stored trajectory results. It is not the main table's 20-trajectory baseline mean. No model is refitted and no new forecast is generated by this reporting calculation.")
+            sens=ordered(matched["rows"])
+            self.table(["Track", "Family / seed", "Complete / planned; qualified", "Failed / pending / scheduled origins", "Mean RMSE [95% CI]", "Qualified CRPS [95% CI]"], [
+                [r["track"],label(r["model"])+"\n"+str(r["seed"])+( " (baseline)" if r["seed"]==matched["main_seed"] else ""),
+                 f"{r['complete_trajectories']}/{r['scheduled_trajectories']}; {r['qualified_complete_trajectories']}",
+                 f"{r['failed_origins']}/{r['pending_origins']}/{r['scheduled_origins']}",estimate(r,"rmse"),estimate(r,"crps")]
+                for r in sens], [30,135,80,90,95,100])
+            self.table(["Track", "Family / seed", "Selection eligible", "Unqualified complete trajectories", "Missing episode records"], [
+                [r["track"],label(r["model"])+" / "+str(r["seed"]),number(r["selection_eligible"]),
+                 r["inference_unqualified_complete_trajectories"],r["missing_episode_records"]] for r in sens], [30,180,80,105,115])
+            self.h("Paired alternative-minus-baseline seed differences",2)
+            self.p("A negative difference means the alternative seed has lower loss on the same paired trajectories. RMSE pairs require complete trajectories for both seeds; CRPS pairs additionally require both predictive distributions to qualify. Each row reports its exact trajectory intersection. The scheduled denominator remains the frozen four trajectories even when fewer qualify for a contrast.")
+            self.table(["Track / family", "Alternative - baseline", "Metric", "Paired / scheduled n", "Paired trajectory IDs", "Mean difference [95% CI]"], [
+                [str(r["track"])+" / "+label(r["model"]),str(r["alternative_seed"])+" - "+str(r["main_seed"]),r["metric"],
+                 f"{r['n']} / {r['scheduled_trajectories']}",str(r["paired_trajectories"]),estimate({"difference":r},"difference")]
+                for r in matched["paired_differences"]], [115,95,50,65,80,105])
+            self.p("Both seeds' failed, pending and inference-unqualified denominators are displayed above and retained with every contrast in seed_sensitivity_matched.json. Bootstrap resampling uses whole trajectories and preserves paired differences. At most four scientific replicates support these intervals; they are coarse descriptive sensitivity summaries, not evidence of robust equivalence or a generally superior seed. No interval is reported for fewer than two paired trajectories. Seeds are not pooled into a Bayesian predictive distribution, and these results do not create additional independent trajectories or a new seed-selection step.")
+            self.p("Recorded bootstrap policy: "+compact(matched.get("bootstrap",{}))+". Differences between native forecasts can also include remaining finite-path simulation error; these seed comparisons do not replace the separate predictive Monte Carlo checks.","small")
+        else:
+            self.p("The matched seed-sensitivity artifact is unavailable. The following alternative-seed rows are retained for execution status, but they cannot be compared directly with the main table's 20-trajectory baseline to estimate a seed effect. A matched four-trajectory baseline and paired contrasts remain missing.")
+            sens=ordered([r for r in i.rows if r["seed"] != i.seed])
+            self.table(["Track", "Family / seed", "n / planned; q", "Failed / pending", "RMSE [95% CI]", "Qualified CRPS [95% CI]"], [
+                [r["track"],label(r["model"])+"\n"+str(r["seed"]),f"{r['complete_trajectories']}/{r['scheduled_trajectories']}; {r['qualified_trajectories']}",f"{r['failed_origins']}/{r['pending_origins']}",estimate(r,"rmse"),estimate(r,"crps")] for r in sens], [30,140,75,70,100,100])
         self.h("Contiguous-site robustness", 2)
         robust=ordered([r for r in i.rows if r["track"] == "C" and r["seed"] == i.seed])
         self.p("The 40/12/12 contiguous spatial split uses new training-only transforms and fits, with the strict interleaved validation-selected configurations and predeclared methods. It is reported separately. No method was added because it looked favorable in main-test rankings.")
@@ -621,6 +768,16 @@ class Writer:
         if i.early_audit:
             scope=i.early_audit.get("audit_scope",{})
             self.p("The early validation audit is preserved as a pre-test historical snapshot, not substituted for final inference evidence. Its recorded scope: "+compact(scope),"small")
+        if i.promotion_audit:
+            audit=i.promotion_audit
+            self.p("The independent Track A promotion audit reconstructed all saved four-band losses and episode means before test access, checked eligibility and the declared 1% complexity rule, and preserved optimizer limitations. It is validation-only historical evidence; final test conclusions come from the main result tables.","small")
+            self.table(["Validation audit check", "Recorded result"],[[k,compact(v)] for k,v in audit.get("checks",{}).items()],[240,270])
+        if i.contiguous_history:
+            check=i.contiguous_history
+            self.h("Post-freeze contiguous-history confirmation",2)
+            self.p("A separate training-only confirmation was performed after the selection was frozen. It checked the transferred contiguous-site Bayesian configuration "+str(check.get("selected_config"))+" at the frozen history "+str(check.get("history"))+" using permitted training rows and 40 permitted sites for all 20 core trajectories and the three pilots. "+str(check.get("passed"))+" of "+str(check.get("total"))+" cases passed in "+number(check.get("elapsed_seconds"),2)+" seconds. This evidence does not predate the main test gate and is not a universal synchronization guarantee.")
+            self.p("The confirmation fitted no posteriors, computed no forecast scores, and changed neither history nor model selection. Its receipt is bound to the existing frozen selection. The check concerns permitted data returned to feature computation; it does not establish future-free physical disk access.","small")
+            self.table(["Confirmation quantity", "Recorded value"],[["Absolute / relative tolerance",str(check.get("absolute_tolerance"))+" / "+str(check.get("relative_tolerance"))],["Posterior fits / forecast scores",str(check.get("posterior_fits"))+" / "+str(check.get("forecast_scores_computed"))],["History or selection changed",number(check.get("history_or_selection_changed",False))],["Confirmation-process peak MiB",mib(check.get("peak_rss_bytes"))]],[240,270])
 
     def configs_and_commands(self):
         i=self.i

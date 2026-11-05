@@ -35,6 +35,7 @@ from .ks_runtime import atomic_json, file_hash, now
 
 
 NATIVE = {"bayes_stesn", "separable_gp", "basis_gru"}
+STOCHASTIC = {"bayes_stesn", "basis_gru", "ridge_esn", "periodic_cnn"}
 ORDER = ("bayes_stesn", "separable_gp", "basis_gru", "ridge_esn", "pod_nvar",
          "linear_var", "periodic_cnn", "persistence", "training_mean")
 LABELS = {
@@ -151,6 +152,121 @@ def trajectory_curve(records, metric, *, qualified_only=False, seed=20261105, re
             "uncertainty": "pointwise trajectory-cluster percentile bootstrap; conditional on selection"}
 
 
+def matched_seed_sensitivity(episodes, frozen, *, episode_results_sha256, bootstrap_seed=20261105, resamples=2000):
+    """Compare seeds on the same frozen trajectories using saved episode losses.
+
+    No model, forecast, selection or calibration is recomputed. A missing
+    episode is explicitly pending. RMSE requires every scheduled origin;
+    CRPS additionally requires a qualified native distribution. Paired
+    differences intersect eligible trajectory IDs and retain the full
+    scheduled denominator. A four-trajectory bootstrap is descriptive and
+    does not turn origins, sites or seeds into independent replicates.
+    """
+    from .ks_metrics import cluster_summary
+
+    if not isinstance(episode_results_sha256, str) or len(episode_results_sha256) != 64 or any(c not in "0123456789abcdef" for c in episode_results_sha256):
+        raise ValueError("Matched seed sensitivity requires the exact episode-results SHA-256")
+    trajectories = list(frozen["sensitivity_trajectories"])
+    if not 1 <= len(trajectories) <= 4 or len(set(trajectories)) != len(trajectories):
+        raise ValueError("Matched sensitivity requires one to four distinct frozen trajectories")
+    main_seed = int(frozen["model_seed"])
+    alternative_seeds = list(map(int, frozen["sensitivity_seeds"]))
+    if main_seed in alternative_seeds or len(set(alternative_seeds)) != len(alternative_seeds):
+        raise ValueError("Sensitivity seeds must be distinct from the main seed and one another")
+    origins = list(frozen["test_origins"])
+    if not origins or len(set(origins)) != len(origins):
+        raise ValueError("Matched sensitivity requires the distinct frozen origin schedule")
+    n_origins = len(origins)
+    by_id = {}
+    for episode in episodes:
+        identity = tuple(episode[key] for key in ("track", "model", "seed", "trajectory"))
+        if identity in by_id:
+            raise ValueError("Duplicate episode identity in matched seed input")
+        by_id[identity] = episode
+
+    def count(episode, key):
+        value = episode[key]
+        if isinstance(value, bool) or not isinstance(value, (int, np.integer)) or value < 0:
+            raise ValueError("Invalid origin count in matched sensitivity episode")
+        return int(value)
+
+    def loss(episode, metric):
+        value = episode.get(metric)
+        if isinstance(value, bool) or not isinstance(value, (int, float, np.integer, np.floating)) or not np.isfinite(value):
+            raise ValueError("Complete eligible sensitivity episode lacks a finite saved loss")
+        return float(value)
+
+    roster = [(track, model) for track in ("A", "B") for model in ORDER
+              if model in STOCHASTIC and model in frozen["selected"].get(track, {})]
+    denominator_keys = ("scheduled_trajectories", "complete_trajectories", "qualified_complete_trajectories",
+                        "inference_unqualified_complete_trajectories", "scheduled_origins", "successful_origins",
+                        "failed_origins", "pending_origins", "missing_episode_records")
+    rows, populations = [], {}
+    for track, model in roster:
+        for seed in [main_seed]+alternative_seeds:
+            row = {"track": track, "model": model, "seed": seed,
+                   "role": "main_seed" if seed == main_seed else "alternative_seed",
+                   "selection_eligible": bool(frozen["selected"][track][model].get("selection_eligible", False)),
+                   "scheduled_trajectories": len(trajectories), "scheduled_origins": len(trajectories)*n_origins,
+                   "complete_trajectories": 0, "qualified_complete_trajectories": 0,
+                   "inference_unqualified_complete_trajectories": 0,
+                   "successful_origins": 0, "failed_origins": 0, "pending_origins": 0, "missing_episode_records": 0}
+            point, probability = {}, {}
+            for trajectory in trajectories:
+                episode = by_id.get((track, model, seed, trajectory))
+                if episode is None:
+                    row["pending_origins"] += n_origins; row["missing_episode_records"] += 1
+                    continue
+                succeeded, failed, pending = (count(episode, key) for key in ("successful_origins", "failed_origins", "pending_origins"))
+                if succeeded+failed+pending != n_origins:
+                    raise ValueError("Sensitivity episode origin counts disagree with frozen schedule")
+                row["successful_origins"] += succeeded; row["failed_origins"] += failed; row["pending_origins"] += pending
+                if succeeded != n_origins:
+                    continue
+                row["complete_trajectories"] += 1
+                point[trajectory] = loss(episode, "rmse")
+                qualified = bool(episode.get("qualified", False))
+                row["qualified_complete_trajectories"] += qualified
+                row["inference_unqualified_complete_trajectories"] += not qualified
+                if model in NATIVE and qualified:
+                    probability[trajectory] = loss(episode, "crps")
+            for metric, values in (("rmse", point), ("crps", probability)):
+                selected_ids = [trajectory for trajectory in trajectories if trajectory in values]
+                row[metric] = cluster_summary([values[trajectory] for trajectory in selected_ids], seed=bootstrap_seed, resamples=resamples)
+                row[metric+"_trajectories"] = selected_ids
+                populations[(track, model, seed, metric)] = values
+            rows.append(row)
+    row_map = {(row["track"], row["model"], row["seed"]): row for row in rows}
+    differences = []
+    for track, model in roster:
+        main = row_map[(track, model, main_seed)]
+        for alternative_seed in alternative_seeds:
+            alternative = row_map[(track, model, alternative_seed)]
+            for metric in (("rmse", "crps") if model in NATIVE else ("rmse",)):
+                left = populations[(track, model, main_seed, metric)]
+                right = populations[(track, model, alternative_seed, metric)]
+                common = [trajectory for trajectory in trajectories if trajectory in left and trajectory in right]
+                differences.append({"track": track, "model": model, "main_seed": main_seed,
+                    "alternative_seed": alternative_seed, "metric": metric, "direction": "alternative_minus_main",
+                    "scheduled_trajectories": len(trajectories), "paired_trajectories": common,
+                    "main_denominators": {key: main[key] for key in denominator_keys},
+                    "alternative_denominators": {key: alternative[key] for key in denominator_keys},
+                    **cluster_summary([right[trajectory]-left[trajectory] for trajectory in common], seed=bootstrap_seed, resamples=resamples)})
+    result = {"schema": "ks-matched-seed-sensitivity/1", "freeze_identity": frozen["identity"],
+              "source_episode_results_sha256": episode_results_sha256, "main_seed": main_seed,
+              "alternative_seeds": alternative_seeds, "trajectories": trajectories,
+              "expected_origins_per_trajectory": n_origins,
+              "model_roster": [{"track": track, "model": model} for track, model in roster],
+              "bootstrap": {"unit": "trajectory", "seed": int(bootstrap_seed), "resamples": int(resamples),
+                  "interval": "pointwise percentile 95%; unavailable for fewer than two eligible trajectories"},
+              "rows": rows, "paired_differences": differences,
+              "qualification_scope": "qualified_complete_trajectories counts completed forecast episodes; incomplete episodes do not establish fit-level inference qualification",
+              "interpretation": "The main seed and alternatives use the same frozen trajectory subset. Differences are conditional on selected configurations; at most four trajectory clusters provide limited descriptive sensitivity evidence. No origin/site/path independence, seed averaging, or variance-component inference is claimed.",
+              "model_fit_or_forecast_performed": False}
+    result["identity"] = hashlib.sha256(json.dumps(result, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+    return result
+
+
 @dataclass
 class Example:
     track: str
@@ -181,6 +297,8 @@ class Report:
             self.input_receipts.append(receipt)
         self.summary = objects["summary.json"]
         self.episodes = objects["episode_results.json"]
+        self.episode_results_sha256 = next(receipt["sha256"] for receipt in self.input_receipts
+                                           if receipt["name"] == "episode_results.json")
         self.curves = objects["horizon_curves.json"]
         self.frozen = objects["freeze.json"]
         if self.summary.get("freeze_identity") != self.frozen.get("identity"):
@@ -632,6 +750,8 @@ class Report:
     def write_reports(self):
         completion = self._completion()
         lead_values = self.selected_horizons()
+        self.matched_seeds = matched_seed_sensitivity(
+            self.episodes, self.frozen, episode_results_sha256=self.episode_results_sha256)
         title = "Kuramoto–Sivashinsky: Bayesian ST-ESN and comparator study"
         status = ("All scheduled main-track origins have terminal outcomes." if completion["main_execution_terminal"]
                   else "Main-track execution is incomplete; pending work is explicitly retained below.")
@@ -721,6 +841,36 @@ class Report:
                     "Extrema summarize the final retained gate across selected primary fits, including inference-unqualified cases. Undefined diagnostics are counted separately and never treated as a pass. Every coefficient is monitored at the declared retained-state subset; hyperparameters use all retained hyperstates. These diagnostics assess inference, not scientific replicate uncertainty."
                 ])
                 add_table(["Track", "Monitoring block", "Passed / checked fits", "Quantities per fit", "Worst finite R-hat", "Smallest bulk ESS", "Smallest tail ESS", "Failed quantities across fits", "Max undefined R-hat per fit"], diagnostics)
+            optimizer_families = [row for row in evidence["family_rows"] if row.get("optimizer_diagnostics")]
+            if optimizer_families or evidence.get("optimizer_rows"):
+                section("Likelihood-optimizer termination and boundary disclosures", [
+                    "The preserved bounded L-BFGS-B qualification requires the accepted SciPy result to report success, a finite objective below 1e99 and finite parameters, and no rejected worsening continuation. SciPy can stop successfully through the relative-objective ftol criterion or the projected-gradient gtol criterion. The existing gate does not additionally require every recorded projected gradient to be at or below gtol. A successful ftol stop can therefore coexist with a gradient above gtol; those cases remain disclosed.",
+                    "For the GRU, these rows describe the Gaussian residual-covariance optimizer. Convergence of the separately trained neural mean network is not claimed. Boundary-hit names are the parameters reported by the existing implementation; their lower/upper side is not inferred. The following first table covers selected primary-seed fits, while the all-candidate table retains abnormal or ineligible candidates as well."
+                ])
+                if optimizer_families:
+                    add_table(["Track", "Family", "Qualified / checked fits", "Finite projected-gradient infinity norm: median (range)",
+                               "Configured gtol", "At/below / above gtol", "Undefined gradient", "Any boundary / fits", "Parameter boundary counts"], [
+                        [row["track"], LABELS.get(row["model"], row["model"]),
+                         f"{row['optimizer_diagnostics']['qualified_fits']} / {row['optimizer_diagnostics']['fit_count']}",
+                         _range(row["optimizer_diagnostics"]["projected_gradient_inf"], digits=4),
+                         _range(row["optimizer_diagnostics"]["configured_gtol"], digits=4),
+                         f"{row['optimizer_diagnostics']['gradient_within_gtol_count']} / {row['optimizer_diagnostics']['gradient_above_gtol_count']}",
+                         row["optimizer_diagnostics"]["undefined_gradient_count"],
+                         f"{row['optimizer_diagnostics']['fits_with_any_boundary']} / {row['optimizer_diagnostics']['fit_count']}",
+                         "; ".join(f"{key}: {value}" for key, value in sorted(row["optimizer_diagnostics"]["boundary_hit_counts"].items())) or "None"]
+                        for row in optimizer_families])
+                optimizer_rows = evidence.get("optimizer_rows", [])
+                headers = ["Track", "Family", "Configuration / seed", "Selected configuration", "Qualified / checked fits", "Accepted termination message counts", "Finite projected-gradient range", "Configured gtol", "Boundary counts"]
+                values = [[row["track"], LABELS.get(row["model"], row["model"]), f"{row['config_id']} / {row['seed']}",
+                           row["selected_configuration"], f"{row['qualified_fits']} / {row['fit_count']}",
+                           "; ".join(f"{key} ({value})" for key, value in sorted(row["termination_message_counts"].items())),
+                           _range(row["projected_gradient_inf"], digits=4), _range(row["configured_gtol"], digits=4),
+                           "; ".join(f"{key}: {value}" for key, value in sorted(row["boundary_hit_counts"].items())) or "None"]
+                          for row in optimizer_rows]
+                if values:
+                    optimizer_html, optimizer_md = _table(headers, values)
+                    html_parts.append("<details><summary>All candidate optimizer receipts, including unselected failures</summary>"+optimizer_html+"</details>")
+                    md_parts += ["### All candidate optimizer receipts\n", optimizer_md]
             precision = evidence.get("predictive_precision")
             if precision:
                 section("Validation predictive-simulation precision", [
@@ -786,6 +936,22 @@ class Report:
                 add_table(["Snapshot UTC", "Status", "Origin receipts checked", "Candidate rows checked", "Arithmetic mismatches", "Core test labels opened"], [[
                     early["snapshot_utc"], early["status"], checks["validation_origin_receipts_checked"],
                     checks["screening_candidate_rows_checked"], checks["mismatches"], early["audit_scope"]["core_test_labels_opened"]]])
+            promotion = extra.get("ks_validation_promotion_A_audit")
+            if promotion:
+                section("Strict-track promotion audit", [
+                    "A separate validation-only audit of Track A promotion is included in the complete reporting evidence. It retains actual optimizer termination, gradient and boundary disclosures, numerical provenance and ineligible candidates. This audit predates test access and is not a main-test ranking."
+                ])
+            contiguous = extra.get("ks_contiguous_history_check")
+            if contiguous:
+                section("Contiguous history confirmation after selection freeze", [
+                    "This post-freeze check compares the transferred Bayesian feature map initialized from the declared history against a full permitted-training-history replay, using only contiguous training rows and sites. It does not change the selected configuration or history, compute posterior fits or forecast scores, or read validation/test losses. It is a training-only confirmation for these cases, not a pretest claim or a universal synchronization proof."
+                ])
+                add_table(["Selected configuration", "History", "Passed / checked cases", "Absolute / relative tolerance",
+                           "New posterior fits", "Forecast scores computed", "Elapsed seconds", "Process peak RSS MiB"], [[
+                    contiguous["selected_config"], contiguous["history"], f"{contiguous['passed']} / {contiguous['total']}",
+                    f"{_number(contiguous['absolute_tolerance'], 4)} / {_number(contiguous['relative_tolerance'], 4)}",
+                    contiguous["posterior_fits"], contiguous["forecast_scores_computed"], _number(contiguous["elapsed_seconds"], 2),
+                    _number(contiguous["peak_rss_bytes"]/1024**2, 1)]])
         for track in ("A", "B", "C"):
             rows = _ordered([row for row in self.primary_rows if row["track"] == track])
             if not rows:
@@ -837,21 +1003,40 @@ class Report:
             add_table(["Track", "Comparator", "Metric", "Paired trajectories", "Mean difference [95% CI]"], [
                 [row["track"], LABELS.get(row["comparator"], row["comparator"]), row["metric"], row["n"],
                  _estimate({"difference": row}, "difference")] for row in pairs])
-        sensitivity = _ordered([row for row in self.rows if row["seed"] != self.seed])
+        sensitivity = self.matched_seeds["rows"]
         if sensitivity:
-            section("Fixed-seed sensitivity", [
-                "Additional model seeds are separately labeled sensitivity fits, not independent posterior paths or extra scientific trajectories. These rows use the prespecified episode subset and are not pooled into Bayesian predictive distributions."
+            section("Fixed-seed sensitivity on matched trajectories", [
+                "The main seed " + str(self.seed) + " and each additional seed are evaluated here on exactly the frozen trajectories "
+                + ", ".join(map(str, self.matched_seeds["trajectories"])) + ". The main-seed values in this section are recomputed from the saved episode losses on that same subset; its 20-trajectory aggregate is not the sensitivity baseline. Each configuration remains the validation-selected configuration, and these results do not select a preferred seed.",
+                "RMSE uses complete forecast episodes; CRPS additionally requires a qualified native predictive distribution. Missing episode records contribute their entire frozen origin schedule to pending counts. Qualification below refers to complete forecast episodes: an incomplete episode does not establish fit-level qualification. Point-only methods have no predictive CRPS.",
+                "Each alternative-minus-main contrast uses the exact common eligible trajectory IDs. Negative differences favor the alternative seed for the stated loss. Whole-trajectory paired bootstrap intervals are conditional on selection, with at most four scientific replicates; they provide limited descriptive sensitivity evidence and do not establish robust equivalence or general seed superiority. No interval is reported for fewer than two eligible trajectories. Seeds are not pooled into Bayesian predictive distributions or treated as additional trajectories.",
             ])
-            add_table(["Track", "Model", "Model seed", "n / scheduled", "q", "Failed / pending", "RMSE [95% CI]", "CRPS [95% CI]"], [
-                [row["track"], LABELS.get(row["model"], row["model"]), row["seed"],
-                 f"{row['complete_trajectories']} / {row['scheduled_trajectories']}", row["qualified_trajectories"],
-                 f"{row['failed_origins']} / {row['pending_origins']}", _estimate(row, "rmse"), _estimate(row, "crps")]
+            add_table(["Track", "Model", "Model seed / role", "Selection eligible", "Complete / scheduled trajectories",
+                       "Qualified / unqualified complete", "Successful / failed / pending / scheduled origins", "Missing episode records",
+                       "RMSE [95% CI]", "CRPS [95% CI]"], [
+                [row["track"], LABELS.get(row["model"], row["model"]), f"{row['seed']} / {row['role'].replace('_', ' ')}",
+                 row["selection_eligible"], f"{row['complete_trajectories']} / {row['scheduled_trajectories']}",
+                 f"{row['qualified_complete_trajectories']} / {row['inference_unqualified_complete_trajectories']}",
+                 f"{row['successful_origins']} / {row['failed_origins']} / {row['pending_origins']} / {row['scheduled_origins']}",
+                 row["missing_episode_records"], _estimate(row, "rmse"), _estimate(row, "crps")]
                 for row in sensitivity])
+            add_table(["Track", "Model", "Alternative seed", "Metric", "Paired / scheduled trajectories", "Paired trajectory IDs",
+                       "Alternative minus main [95% CI]", "Main qualified / unqualified complete", "Alternative qualified / unqualified complete",
+                       "Main failed / pending / scheduled origins", "Alternative failed / pending / scheduled origins"], [
+                [row["track"], LABELS.get(row["model"], row["model"]), row["alternative_seed"], row["metric"],
+                 f"{row['n']} / {row['scheduled_trajectories']}", ", ".join(map(str, row["paired_trajectories"])) or "None eligible",
+                 _estimate({"difference": row}, "difference"),
+                 f"{row['main_denominators']['qualified_complete_trajectories']} / {row['main_denominators']['inference_unqualified_complete_trajectories']}",
+                 f"{row['alternative_denominators']['qualified_complete_trajectories']} / {row['alternative_denominators']['inference_unqualified_complete_trajectories']}",
+                 f"{row['main_denominators']['failed_origins']} / {row['main_denominators']['pending_origins']} / {row['main_denominators']['scheduled_origins']}",
+                 f"{row['alternative_denominators']['failed_origins']} / {row['alternative_denominators']['pending_origins']} / {row['alternative_denominators']['scheduled_origins']}"]
+                for row in self.matched_seeds["paired_differences"]])
 
         section("Machine-readable episode results and evidence", [
-            "The attached JSON exports preserve every scheduled episode's completion, qualification and failure/pending counts. A missing eligible score remains absent rather than being replaced by zero. The run summary includes paired trajectory comparisons; the reporting evidence contains compact per-fit effort and diagnostic records."
+            "The attached JSON exports preserve every scheduled episode's completion, qualification and failure/pending counts. A missing eligible score remains absent rather than being replaced by zero. The run summary includes paired trajectory comparisons; seed_sensitivity_matched.json binds the matched subset and every scheduled seed contrast to the exact source episode-results hash and frozen identity. The reporting evidence contains compact per-fit effort and diagnostic records."
         ])
-        exports = [("episode_results.json", self.episodes), ("run_summary.json", self.summary)]
+        exports = [("episode_results.json", self.episodes), ("run_summary.json", self.summary),
+                   ("seed_sensitivity_matched.json", self.matched_seeds)]
         if self.evidence is not None:
             exports.append(("report_evidence.json", self.evidence))
         for name, value in exports:
@@ -888,10 +1073,34 @@ class Report:
 
         section("Frozen configuration and reproducibility", [
             "The exact run identity is " + str(self.frozen["identity"]) + ".",
-            "The Bayesian model preserves its accepted scalar-ridge Gaussian hierarchy, iid spatial innovation fields and collapsed MCMC. GP paths are conditional on fitted covariance hyperparameters; basis-GRU paths use fixed trained network/covariance parameters. Conventional controls are point-only. The selected configurations below are the actual saved choices, not claims of universal optimality.",
+            "The Bayesian model preserves the accepted scalar-ridge Gaussian hierarchical family, iid spatial innovation fields and collapsed MCMC, with declared validation-selected architecture and hyperparameters. Scalar ridge shrinks all readout coefficients, including intercept terms. Exact selected prior constants are documented below. GP paths are conditional on fitted covariance hyperparameters; basis-GRU paths use fixed trained network/covariance parameters. Conventional controls are point-only. These are the actual saved choices under the evaluated budget.",
         ])
+        reference = next((candidate["config"] for candidate in self.experiment["config"]["candidates"]["A"].get("bayes_stesn", [])
+                          if candidate["id"] == "bayes_00"), None)
+        if reference is not None:
+            bayes_settings = [("Accepted reference: bayes_00", reference)] + [
+                (f"{track}-selected: {self.frozen['selected'][track]['bayes_stesn']['id']}", self.frozen["selected"][track]["bayes_stesn"]["config"])
+                for track in ("A", "B") if "bayes_stesn" in self.frozen["selected"][track]]
+            specifications = [
+                ("Mean of log lambda", lambda c: c["prior"]["mean_log_precision"]),
+                ("SD of log lambda", lambda c: c["prior"]["sd_log_precision"]),
+                ("Mean of log q", lambda c: c["covariance"]["log_q_mean"]),
+                ("SD of log q", lambda c: c["covariance"]["log_q_sd"]),
+                ("Mean of log ell", lambda c: c["covariance"]["log_ell_mean"]),
+                ("SD of log ell", lambda c: c["covariance"]["log_ell_sd"]),
+                ("Range-prior median exp(mean log ell)", lambda c: float(np.exp(c["covariance"]["log_ell_mean"]))),
+                ("Inverse-gamma shape a0 for sigma squared", lambda c: c["sampler"]["a0"]),
+                ("Inverse-gamma scale b0 for sigma squared", lambda c: c["sampler"]["b0"]),
+                ("Fixed Matern smoothness nu", lambda c: c["covariance"]["nu"]),
+            ]
+            html_parts.append("<p>The prior families are retained; covariance range-prior constants may differ among validation-selected candidates. The range ell and its prior median use raw unit-circle chord coordinates. The inverse-gamma convention is shape/scale.</p>")
+            md_parts.append("The prior families are retained; covariance range-prior constants may differ among validation-selected candidates. The range ell and its prior median use raw unit-circle chord coordinates. The inverse-gamma convention is shape/scale.\n")
+            add_table(["Prior/kernel quantity"]+[label for label, _ in bayes_settings], [
+                [label]+[_number(extract(config), 6) for _, config in bayes_settings] for label, extract in specifications])
         safe_configuration = {"history": self.frozen["history"], "horizon": self.frozen["horizon"],
                               "paths": self.frozen["paths"], "model_seed": self.seed,
+                              "sensitivity_seeds": self.frozen["sensitivity_seeds"],
+                              "sensitivity_trajectories": self.frozen["sensitivity_trajectories"],
                               "test_origins": self.frozen["test_origins"], "selected": self.frozen["selected"],
                               "selection_issues": self.frozen.get("selection_issues", [])}
         configuration = json.dumps(safe_configuration, indent=2, sort_keys=True, allow_nan=False)
@@ -971,6 +1180,11 @@ def build_report(results, output, *, animations=True, dpi=200):
                 "revision_binding": report.evidence["binding"] if report.evidence is not None else {
                     "published_remote_commit": None, "local_tree_revision": None, "status": "reporting_evidence_not_collected"},
                 "completion": completion, "inputs": report.input_receipts,
+                "matched_seed_sensitivity": {"path": "seed_sensitivity_matched.json",
+                    "identity": report.matched_seeds["identity"],
+                    "freeze_identity": report.frozen["identity"],
+                    "source_episode_results_sha256": report.episode_results_sha256,
+                    "sha256": file_hash(report.output / "seed_sensitivity_matched.json")},
                 "figures": report.figures, "animations": report.movies,
                 "notices": report.notices, "artifacts": artifacts,
                 "artifact_bytes": sum(item["bytes"] for item in artifacts),

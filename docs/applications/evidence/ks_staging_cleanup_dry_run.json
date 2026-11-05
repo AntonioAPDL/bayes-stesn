@@ -1,0 +1,193 @@
+{
+  "cause_assessment": "Not established. This receipt records redundant staging archives and namespace evidence, without attributing an interruption mechanism.",
+  "completed_utc": "2026-11-05T03:01:52.329419+00:00",
+  "considered_files": 6,
+  "deleted_bytes": 0,
+  "deleted_files": 0,
+  "eligible_bytes": 124927544,
+  "eligible_files": 6,
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "files": [
+    {
+      "action": "would_delete",
+      "actual_worker_for_fit": false,
+      "age_seconds": 514.5198380947113,
+      "bytes": 13284710,
+      "canonical_bytes": 34424080,
+      "canonical_sha256": "8751845db150d4dd56e30f4f838d64052eebb190565a78ff11f02ea4b44090f6",
+      "canonical_zip": {
+        "crc_valid": true,
+        "members": 8038
+      },
+      "relative_path": "fits/197bac12d46c969f700ef92303a1f185e70bdf0063b2b396251d954628966495/.fit.npz.bstesn-120caf7745f0-664-7l_1hk83.npz",
+      "sha256": "67ef3c2d4af23e032f0dc746a70b45ed789ad24bb7dd7e6e8465f9910b50ae6f",
+      "stage_zip": {
+        "central_directory_readable": false,
+        "error": "BadZipFile"
+      },
+      "staging_mtime_ns": 1793847195870466081,
+      "staging_writer_pid_token": 664,
+      "terminal_receipt_completed_utc": "2026-11-05T02:53:17.589196+00:00",
+      "terminal_receipt_sha256": "651650654da2f65f46605725020e13fe745f0ebb209a277fa9ac307244626155",
+      "terminal_receipt_state": "complete",
+      "verified_redundant": true,
+      "writer_lock_held": true
+    },
+    {
+      "action": "would_delete",
+      "actual_worker_for_fit": false,
+      "age_seconds": 1483.5827255249023,
+      "bytes": 34149186,
+      "canonical_bytes": 34407662,
+      "canonical_sha256": "b2577f09848b1b5c485921fa1cb52c0da848ef801189a20ddc55d4c2db95cab9",
+      "canonical_zip": {
+        "crc_valid": true,
+        "members": 8038
+      },
+      "relative_path": "fits/36011a114ade8fc86725c52e308a5973364ba472d3a53ccf6c9493dcca645e99/.fit.npz.bstesn-120caf7745f0-67-8g3iqta0.npz",
+      "sha256": "e6b355ba1e36aec3a2c62691c0283c46f37a2d42d9d25b586ccdeb2d18082bb1",
+      "stage_zip": {
+        "central_directory_readable": false,
+        "error": "BadZipFile"
+      },
+      "staging_mtime_ns": 1793846227204894613,
+      "staging_writer_pid_token": 67,
+      "terminal_receipt_completed_utc": "2026-11-05T02:37:08.011370+00:00",
+      "terminal_receipt_sha256": "db54f6ff24500b4cbd5fa3d7ec84c89e548ea241476fd57b38947a624e35bf3a",
+      "terminal_receipt_state": "complete",
+      "verified_redundant": true,
+      "writer_lock_held": true
+    },
+    {
+      "action": "would_delete",
+      "actual_worker_for_fit": false,
+      "age_seconds": 1065.2752265930176,
+      "bytes": 14430047,
+      "canonical_bytes": 36707079,
+      "canonical_sha256": "a81feb4e1374aa30e1450961baaf3523dbdd4133d5425c22e7e6757601376782",
+      "canonical_zip": {
+        "crc_valid": true,
+        "members": 8038
+      },
+      "relative_path": "fits/7ef3c2bceffef54d7077ce4fecbdc352e8b6ca6af98d020e843243a9d57823db/.fit.npz.bstesn-120caf7745f0-355-xuq8uwgi.npz",
+      "sha256": "d5ba1e2fea12f5b164b23839b081109b1bca4a52cc43f013627b48349ae08620",
+      "stage_zip": {
+        "central_directory_readable": false,
+        "error": "BadZipFile"
+      },
+      "staging_mtime_ns": 1793846645934172181,
+      "staging_writer_pid_token": 355,
+      "terminal_receipt_completed_utc": "2026-11-05T02:44:08.005623+00:00",
+      "terminal_receipt_sha256": "ad0a88c4dd929a295746f3b49259506dd472869d1ba9ca0bc40e4e63e25f1f69",
+      "terminal_receipt_state": "complete",
+      "verified_redundant": true,
+      "writer_lock_held": true
+    },
+    {
+      "action": "would_delete",
+      "actual_worker_for_fit": false,
+      "age_seconds": 1065.285335302353,
+      "bytes": 24743678,
+      "canonical_bytes": 36728578,
+      "canonical_sha256": "528925964391aef788966447568a55135b93457ef98773a498b5c68b1650a945",
+      "canonical_zip": {
+        "crc_valid": true,
+        "members": 8038
+      },
+      "relative_path": "fits/88d43247904b5c85532b9046518aa4b53869892097f9cdd6ec7ba61ea0754ff6/.fit.npz.bstesn-120caf7745f0-354-_8sdb00w.npz",
+      "sha256": "5b315bc1b4d954b82c82bbf6505c02787c41a1cf47d019e6024a0b7fa29a5992",
+      "stage_zip": {
+        "central_directory_readable": false,
+        "error": "BadZipFile"
+      },
+      "staging_mtime_ns": 1793846646330169680,
+      "staging_writer_pid_token": 354,
+      "terminal_receipt_completed_utc": "2026-11-05T02:44:08.001183+00:00",
+      "terminal_receipt_sha256": "340bdafab9d4db9dfa09d5804ce11385b0369be341f02e205017cce68d1ea52c",
+      "terminal_receipt_state": "complete",
+      "verified_redundant": true,
+      "writer_lock_held": true
+    },
+    {
+      "action": "would_delete",
+      "actual_worker_for_fit": false,
+      "age_seconds": 1575.9986326694489,
+      "bytes": 8087452,
+      "canonical_bytes": 19437126,
+      "canonical_sha256": "4ac4e7ea4a5e3d9add6ff7e1b3c79bc8d00d71422d980dbdd20c25c031cf40bf",
+      "canonical_zip": {
+        "crc_valid": true,
+        "members": 8038
+      },
+      "relative_path": "fits/c70c4e144b6617524e4883fe762e5ae8bbfbaf605c91761da0e9b3513f01d4f1/.fit.npz.bstesn-120caf7745f0-51-v0p5yro6.npz",
+      "sha256": "ee33a938c0ab44adb65c98aa18fc782e60635c0eca158a64d5fd4d0ca6510de2",
+      "stage_zip": {
+        "central_directory_readable": false,
+        "error": "BadZipFile"
+      },
+      "staging_mtime_ns": 1793846135913506560,
+      "staging_writer_pid_token": 51,
+      "terminal_receipt_completed_utc": "2026-11-05T02:35:37.035732+00:00",
+      "terminal_receipt_sha256": "f3d80056be7f90bce89ec857321bed4e0a99b391ebc7f9b9096a46b25208104d",
+      "terminal_receipt_state": "complete",
+      "verified_redundant": true,
+      "writer_lock_held": true
+    },
+    {
+      "action": "would_delete",
+      "actual_worker_for_fit": false,
+      "age_seconds": 516.1181261539459,
+      "bytes": 30232471,
+      "canonical_bytes": 34430156,
+      "canonical_sha256": "32db3df74b79e75cd26ba73d84f19868f7a3a0d70669424b82923f8439e167ff",
+      "canonical_zip": {
+        "crc_valid": true,
+        "members": 8038
+      },
+      "relative_path": "fits/e0d18f9b2d4ef88c9ea0b7704657e39d549366c2809eea21e466e8ebaa824785/.fit.npz.bstesn-120caf7745f0-665-bwz8y1k_.npz",
+      "sha256": "8c0aac37b8b46714679bd7967dfb12225c63fe3898f437ea6442e18c14917f3b",
+      "stage_zip": {
+        "central_directory_readable": false,
+        "error": "BadZipFile"
+      },
+      "staging_mtime_ns": 1793847196178464106,
+      "staging_writer_pid_token": 665,
+      "terminal_receipt_completed_utc": "2026-11-05T02:53:17.593358+00:00",
+      "terminal_receipt_sha256": "3c686c5e23bb55e0a78c04c62e8dd8014050b45ff5896da0aecd8ecb238c9ca2",
+      "terminal_receipt_state": "complete",
+      "verified_redundant": true,
+      "writer_lock_held": true
+    }
+  ],
+  "liveness_policy": "exclusive fit writer lock plus actual outer /proc worker command/job identity; never os.kill on a filename PID token",
+  "minimum_age_seconds": 60.0,
+  "mode": "dry-run",
+  "pid_namespace_evidence": [
+    {
+      "job_id": "3a98e413c94b1748fe8a5f9d",
+      "namespace_pids": [
+        12259,
+        944
+      ],
+      "outer_pid": 12259
+    },
+    {
+      "job_id": "d4016c39fb7694f4434a7092",
+      "namespace_pids": [
+        12260,
+        945
+      ],
+      "outer_pid": 12260
+    }
+  ],
+  "protected_artifacts": [
+    "canonical fit.npz",
+    "chain and phase checkpoints",
+    "data",
+    "logs",
+    "all nonmatching filenames"
+  ],
+  "schema": "ks-redundant-staging-cleanup-1",
+  "started_utc": "2026-11-05T03:01:50.017884+00:00",
+  "tool_sha256": "e9398c57b3a94a1b8c0aa5b2b5ba42fac7a377fa4b2168e514ef04ff632dd541"
+}

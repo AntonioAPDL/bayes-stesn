@@ -1,0 +1,89 @@
+{
+  "all_canonical_and_receipt_hashes_unchanged": true,
+  "all_original_candidates_absent": true,
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "files": [
+    {
+      "absent": true,
+      "bytes": 13284710,
+      "canonical_sha256_matches": true,
+      "chain_and_phase_files_present": 2,
+      "relative_path": "fits/197bac12d46c969f700ef92303a1f185e70bdf0063b2b396251d954628966495/.fit.npz.bstesn-120caf7745f0-664-7l_1hk83.npz",
+      "staging_sha256": "67ef3c2d4af23e032f0dc746a70b45ed789ad24bb7dd7e6e8465f9910b50ae6f",
+      "terminal_receipt_sha256_matches": true
+    },
+    {
+      "absent": true,
+      "bytes": 34149186,
+      "canonical_sha256_matches": true,
+      "chain_and_phase_files_present": 2,
+      "relative_path": "fits/36011a114ade8fc86725c52e308a5973364ba472d3a53ccf6c9493dcca645e99/.fit.npz.bstesn-120caf7745f0-67-8g3iqta0.npz",
+      "staging_sha256": "e6b355ba1e36aec3a2c62691c0283c46f37a2d42d9d25b586ccdeb2d18082bb1",
+      "terminal_receipt_sha256_matches": true
+    },
+    {
+      "absent": true,
+      "bytes": 14430047,
+      "canonical_sha256_matches": true,
+      "chain_and_phase_files_present": 2,
+      "relative_path": "fits/7ef3c2bceffef54d7077ce4fecbdc352e8b6ca6af98d020e843243a9d57823db/.fit.npz.bstesn-120caf7745f0-355-xuq8uwgi.npz",
+      "staging_sha256": "d5ba1e2fea12f5b164b23839b081109b1bca4a52cc43f013627b48349ae08620",
+      "terminal_receipt_sha256_matches": true
+    },
+    {
+      "absent": true,
+      "bytes": 24743678,
+      "canonical_sha256_matches": true,
+      "chain_and_phase_files_present": 2,
+      "relative_path": "fits/88d43247904b5c85532b9046518aa4b53869892097f9cdd6ec7ba61ea0754ff6/.fit.npz.bstesn-120caf7745f0-354-_8sdb00w.npz",
+      "staging_sha256": "5b315bc1b4d954b82c82bbf6505c02787c41a1cf47d019e6024a0b7fa29a5992",
+      "terminal_receipt_sha256_matches": true
+    },
+    {
+      "absent": true,
+      "bytes": 8087452,
+      "canonical_sha256_matches": true,
+      "chain_and_phase_files_present": 2,
+      "relative_path": "fits/c70c4e144b6617524e4883fe762e5ae8bbfbaf605c91761da0e9b3513f01d4f1/.fit.npz.bstesn-120caf7745f0-51-v0p5yro6.npz",
+      "staging_sha256": "ee33a938c0ab44adb65c98aa18fc782e60635c0eca158a64d5fd4d0ca6510de2",
+      "terminal_receipt_sha256_matches": true
+    },
+    {
+      "absent": true,
+      "bytes": 30232471,
+      "canonical_sha256_matches": true,
+      "chain_and_phase_files_present": 2,
+      "relative_path": "fits/e0d18f9b2d4ef88c9ea0b7704657e39d549366c2809eea21e466e8ebaa824785/.fit.npz.bstesn-120caf7745f0-665-bwz8y1k_.npz",
+      "staging_sha256": "8c0aac37b8b46714679bd7967dfb12225c63fe3898f437ea6442e18c14917f3b",
+      "terminal_receipt_sha256_matches": true
+    }
+  ],
+  "first_apply_reported_unlinks": 6,
+  "first_postcheck_reappeared_bytes": 61863943,
+  "first_postcheck_reappeared_files": 3,
+  "initial_unique_bytes": 124927544,
+  "initial_unique_candidates": 6,
+  "numerical_source_or_configuration_changed": false,
+  "other_retry_candidates_retained": [
+    {
+      "action": "retained",
+      "age_seconds": 55.34723114967346,
+      "bytes": 20966652,
+      "reason": "Staging age or canonical/receipt timestamp ordering is insufficient",
+      "relative_path": "fits/11e484849490c9ccc18a90c89d1fe056f47075b5e68cf7704d990dc8712ed876/.fit.npz.bstesn-120caf7745f0-945-wzl5iky7.npz",
+      "staging_mtime_ns": 1793847739027046619,
+      "staging_writer_pid_token": 945
+    },
+    {
+      "action": "retained",
+      "reason": "writer_lock_busy",
+      "relative_path": "fits/576fa2c35b190e83f70bf7a0d89a1d5cad8b22dd9e0b638f291a5ef3bbdf0221/.fit.npz.bstesn-120caf7745f0-944-avajfyzi.npz"
+    }
+  ],
+  "reappearance_observation": "Three paths reappeared after successful unlink calls, with unchanged content hashes and modification times but new identical change times. The mechanism is not established.",
+  "schema": "ks-staging-cleanup-independent-verification-1",
+  "second_apply_reported_unlinks": 3,
+  "unique_byte_accounting": "Repeated unlink operations are not counted twice.",
+  "verified_absent_unique_bytes": 124927544,
+  "verified_utc": "2026-11-05T03:03:31.689156+00:00"
+}

@@ -32,6 +32,25 @@ import tempfile
 
 SCHEMA = "ks-report-evidence/1"
 SEARCH_STAGES = {"screen", "promote", "refine", "precision"}
+OPTIMIZER_QUALIFICATION = (
+    "Existing bounded L-BFGS-B gate: accepted SciPy OptimizeResult.success, finite objective below 1e99 and finite parameters, "
+    "and no rejected worsening continuation. SciPy success may be reached by relative-objective ftol or projected-gradient gtol; "
+    "the gate does not additionally require the recorded projected gradient to be <= gtol."
+)
+OPTIMIZER_MESSAGES = {
+    "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+    "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+    "STOP: CPU EXCEEDING THE TIME LIMIT",
+    "STOP: TOTAL NO. OF F,G EVALUATIONS EXCEEDS LIMIT",
+    "STOP: PROJECTED GRADIENT IS SUFFICIENTLY SMALL",
+    "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+    "STOP: CALLBACK REQUESTED HALT",
+    "WARNING: ROUNDING ERRORS PREVENT PROGRESS", "WARNING: STP = STPMAX", "WARNING: STP = STPMIN",
+    "WARNING: XTOL TEST SATISFIED", "ERROR: NO FEASIBLE SOLUTION", "ERROR: FACTR < 0", "ERROR: FTOL < 0",
+    "ERROR: GTOL < 0", "ERROR: XTOL < 0", "ERROR: STP < STPMIN", "ERROR: STP > STPMAX",
+    "ERROR: STPMIN < 0", "ERROR: STPMAX < STPMIN", "ERROR: INITIAL G >= 0", "ERROR: M <= 0",
+    "ERROR: N <= 0", "ERROR: INVALID NBD", "ABNORMAL:", "ABNORMAL", "ABNORMAL_TERMINATION_IN_LNSRCH",
+}
 
 
 def sha256(path):
@@ -111,6 +130,73 @@ def diagnostic_block(block):
     return result
 
 
+def _finite(value):
+    return float(value) if isinstance(value, (int, float)) and math.isfinite(value) else None
+
+
+def _optimizer_message(value):
+    text = " ".join(str(value or "").strip().split())
+    return {"message": text if text in OPTIMIZER_MESSAGES else "UNRECOGNIZED OPTIMIZER MESSAGE (raw text not exported)",
+            "message_allowlisted": text in OPTIMIZER_MESSAGES,
+            "message_sha256": hashlib.sha256(text.encode()).hexdigest()}
+
+
+def optimizer_fit(diag, config, model):
+    """Report the accepted result; do not introduce a different success gate."""
+    prefix = "covariance_" if model == "basis_gru" else ""
+    details = diag.get(prefix+"optimizer_details")
+    if not isinstance(details, dict) or not details.get("phases"):
+        return None
+    phases = []
+    for phase in details["phases"]:
+        phases.append({"phase": phase["phase"], "success": bool(phase["success"]), "status": phase["status"],
+            **_optimizer_message(phase.get("message")), "iterations": phase["iterations"],
+            "function_evaluations": phase["function_evaluations"], "projected_gradient_inf": _finite(phase.get("projected_gradient_inf")),
+            "ftol": _finite(phase.get("ftol")), "gtol": _finite(phase.get("gtol"))})
+    # With at most two phases, a rejected worsening continuation leaves the
+    # first result accepted; otherwise the last phase is the retained result.
+    rejected = bool(details.get("rejected_worsening_continuation", False))
+    accepted = phases[0] if rejected else phases[-1]
+    gradient = _finite(details.get("projected_gradient_inf"))
+    gtol = _finite(config.get(prefix+"gtol", accepted["gtol"]))
+    ftol = _finite(config.get(prefix+"ftol", accepted["ftol"]))
+    boundaries = diag.get(prefix+"boundary_hits", [])
+    if not isinstance(boundaries, list) or any(value not in {"spatial_length", "temporal_length", "signal_sd", "noise_sd"} for value in boundaries):
+        raise ValueError("Unexpected optimizer boundary names; extend the public-safe whitelist explicitly")
+    return {"component": "GRU residual covariance" if prefix else "GP marginal likelihood",
+            "qualified_by_existing_gate": bool(details.get("qualified", False)),
+            "qualification_criterion": OPTIMIZER_QUALIFICATION,
+            "accepted_phase": accepted["phase"], "accepted_success": accepted["success"], "accepted_status": accepted["status"],
+            **_optimizer_message(diag.get(prefix+"optimizer_message", accepted["message"])),
+            "projected_gradient_inf": gradient, "configured_gtol": gtol, "configured_ftol": ftol,
+            "gradient_within_gtol": None if gradient is None or gtol is None else gradient <= gtol,
+            "boundary_hits": sorted(set(boundaries)), "rejected_worsening_continuation": rejected, "phases": phases,
+            "neural_optimizer_convergence": "not_claimed" if prefix else "not_applicable"}
+
+
+def optimizer_summary(fits):
+    values = [fit["diagnostics"]["optimizer"] for fit in fits if fit["diagnostics"].get("optimizer")]
+    if not values:
+        return {}
+    boundary_counts = Counter(name for value in values for name in value["boundary_hits"])
+    return {"fit_count": len(values), "qualified_fits": sum(value["qualified_by_existing_gate"] for value in values),
+            "termination_message_counts": dict(Counter(value["message"] for value in values)),
+            "accepted_status_counts": dict(Counter(str(value["accepted_status"]) for value in values)),
+            "accepted_success_count": sum(value["accepted_success"] for value in values),
+            "unrecognized_termination_count": sum(not value["message_allowlisted"] for value in values),
+            "projected_gradient_inf": distribution(value["projected_gradient_inf"] for value in values),
+            "configured_gtol": distribution(value["configured_gtol"] for value in values),
+            "configured_ftol": distribution(value["configured_ftol"] for value in values),
+            "gradient_within_gtol_count": sum(value["gradient_within_gtol"] is True for value in values),
+            "gradient_above_gtol_count": sum(value["gradient_within_gtol"] is False for value in values),
+            "qualified_with_gradient_above_gtol_count": sum(value["qualified_by_existing_gate"] and value["gradient_within_gtol"] is False for value in values),
+            "undefined_gradient_count": sum(value["projected_gradient_inf"] is None for value in values),
+            "boundary_hit_counts": dict(boundary_counts), "fits_with_any_boundary": sum(bool(value["boundary_hits"]) for value in values),
+            "rejected_worsening_continuation_count": sum(value["rejected_worsening_continuation"] for value in values),
+            "qualification_criterion": OPTIMIZER_QUALIFICATION,
+            "scope": "recorded likelihood/residual-covariance optimization; no neural mean-network convergence claim"}
+
+
 def compact_fit(raw, config_id, selected_config, primary_seed):
     diag = raw.get("diagnostics", {}); config = raw.get("config", {})
     training = raw.get("training_identity", {}).get("transform", {})
@@ -143,6 +229,9 @@ def compact_fit(raw, config_id, selected_config, primary_seed):
     for key in ("boundary_hits", "covariance_boundary_hits"):
         if key in diag:
             result["diagnostics"][key] = diag[key]
+    optimizer = optimizer_fit(diag, config, raw["model"])
+    if optimizer is not None:
+        result["diagnostics"]["optimizer"] = optimizer
     gates = diag.get("gates", [])
     if gates:
         gate = gates[-1]
@@ -268,7 +357,7 @@ def collect(results, *, repo, workspace=None, published_commit=None, local_revis
                "supplied_training_rows": distribution(fit["supplied_training_rows"] for fit in selected_fits),
                "supplied_training_sites": distribution(fit["supplied_training_sites"] for fit in selected_fits),
                "usable_training_targets": distribution(fit["usable_training_targets"] for fit in selected_fits),
-               "effort": {}, "bayesian_diagnostics": {}}
+               "effort": {}, "bayesian_diagnostics": {}, "optimizer_diagnostics": optimizer_summary(selected_fits)}
         for key in sorted({key for fit in selected_fits for key in fit["effort"]}):
             row["effort"][key] = distribution(fit["effort"].get(key) for fit in selected_fits)
         for block in ("hyperparameters", "coefficients", "functionals"):
@@ -280,6 +369,14 @@ def collect(results, *, repo, workspace=None, published_commit=None, local_revis
                     **{key: distribution(value.get(key) for value in values) for key in (
                         "parameters", "max_rhat", "min_ess_bulk", "min_ess_tail", "undefined_rhat", "max_mcse_over_posterior_sd")}}
         family_rows.append(row)
+    optimizer_groups = defaultdict(list)
+    for fit in fits:
+        if fit["diagnostics"].get("optimizer"):
+            optimizer_groups[(fit["track"], fit["model"], fit["config_id"], fit["seed"])].append(fit)
+    optimizer_rows = [{"track": track, "model": model, "config_id": config_id, "seed": seed,
+                       "selected_configuration": any(fit["selected_configuration"] for fit in values),
+                       **optimizer_summary(values)}
+                      for (track, model, config_id, seed), values in sorted(optimizer_groups.items(), key=lambda item: str(item[0]))]
     precision = None
     path = results/"validation_precision.json"
     if path.exists():
@@ -292,11 +389,16 @@ def collect(results, *, repo, workspace=None, published_commit=None, local_revis
     preflight_path = repo/"docs/applications/evidence/ks_preflight.json"
     preflight = read(preflight_path) if preflight_path.exists() else None
     extra_acceptance = {}
-    for name in ("ks_core_candidate_invariance.json", "ks_validation_audit_early.json"):
+    for name in ("ks_core_candidate_invariance.json", "ks_validation_audit_early.json", "ks_validation_promotion_A_audit.json",
+                 "ks_contiguous_history_check.json"):
         path = repo/"docs/applications/evidence"/name
         if path.exists():
             value = read(path)
-            if value.get("experiment_identity") != experiment["identity"]:
+            if name == "ks_contiguous_history_check.json":
+                if (frozen is None or value.get("freeze_identity") != frozen["identity"] or
+                        value.get("freeze_sha256") != sha256(results/"freeze.json")):
+                    raise ValueError("Contiguous history evidence belongs to another frozen selection")
+            elif value.get("experiment_identity") != experiment["identity"]:
                 raise ValueError("Additional acceptance evidence belongs to another experiment")
             extra_acceptance[name.removesuffix(".json")] = value
     external = None
@@ -330,7 +432,7 @@ def collect(results, *, repo, workspace=None, published_commit=None, local_revis
                     "working_tree_changed_entries": len(status.splitlines()) if status else 0,
                     "collector_source_sha256": sha256(__file__),
                     "report_source_sha256": sha256(repo/"src/bayes_stesn/applications/ks_report.py")},
-        "campaign": campaign, "family_rows": family_rows, "fits": fits,
+        "campaign": campaign, "family_rows": family_rows, "fits": fits, "optimizer_rows": optimizer_rows,
         "current_resources": current, "storage": storage, "preflight": preflight, "predictive_precision": precision,
         "external_resources": external, "extra_acceptance": extra_acceptance,
         "budget": {key: config["budget"][key] for key in ("workers", "threads_per_worker", "initial_total_wall_hours", "total_worker_seconds_cap",

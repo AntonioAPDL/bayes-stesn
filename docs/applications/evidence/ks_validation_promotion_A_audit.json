@@ -1,0 +1,985 @@
+{
+  "audit_actions": {
+    "freeze_present": false,
+    "new_fits": 0,
+    "new_forecasts": 0,
+    "sampler_reruns": 0,
+    "source_or_configuration_changes": 0,
+    "test_access_gate_present": false,
+    "test_data_opened": false
+  },
+  "base_revision": "4bae378922b824e0e934a3aaf08a9d8a1a65046e",
+  "bayesian_qualification": [
+    {
+      "candidate": "bayes_02",
+      "continuations": 0,
+      "final_gate_extrema": {
+        "coefficients": {
+          "failed_quantity_instances": 0,
+          "maximum_rhat": 1.006622725625034,
+          "minimum_bulk_ess": 1415.8602737242825,
+          "minimum_tail_ess": 1310.6231014953078,
+          "monitored_quantity_instances": 15480
+        },
+        "functionals": {
+          "failed_quantity_instances": 0,
+          "maximum_rhat": 1.005646615432659,
+          "minimum_bulk_ess": 820.1710950195843,
+          "minimum_tail_ess": 772.9385204091351,
+          "monitored_quantity_instances": 60
+        },
+        "hyperparameters": {
+          "failed_quantity_instances": 0,
+          "maximum_rhat": 1.0069443790384234,
+          "minimum_bulk_ess": 700.2191854272953,
+          "minimum_tail_ess": 764.3490615885487,
+          "monitored_quantity_instances": 18
+        }
+      },
+      "fits": 6,
+      "qualified_fits": 6
+    },
+    {
+      "candidate": "bayes_03",
+      "continuations": 0,
+      "final_gate_extrema": {
+        "coefficients": {
+          "failed_quantity_instances": 0,
+          "maximum_rhat": 1.008378131086203,
+          "minimum_bulk_ess": 1382.5881475085052,
+          "minimum_tail_ess": 1221.3570316178236,
+          "monitored_quantity_instances": 43200
+        },
+        "functionals": {
+          "failed_quantity_instances": 0,
+          "maximum_rhat": 1.004361430584175,
+          "minimum_bulk_ess": 699.710217938645,
+          "minimum_tail_ess": 1100.56478646099,
+          "monitored_quantity_instances": 60
+        },
+        "hyperparameters": {
+          "failed_quantity_instances": 0,
+          "maximum_rhat": 1.009115317371234,
+          "minimum_bulk_ess": 624.5111674253955,
+          "minimum_tail_ess": 1013.1437890270435,
+          "monitored_quantity_instances": 18
+        }
+      },
+      "fits": 6,
+      "qualified_fits": 6
+    }
+  ],
+  "budget_snapshot": {
+    "accounting_inexact_attempts": 0,
+    "attempt_states": {
+      "complete": 258,
+      "running": 2
+    },
+    "remaining_search_seconds": 5264.472720277079,
+    "remaining_total_seconds": 25064.47272027708,
+    "running_attempt_policy": "elapsed wall time through this snapshot; active jobs continue afterwards",
+    "search_cap_seconds": 9000,
+    "total_cap_seconds": 28800,
+    "used_search_worker_seconds": 3735.527279722921,
+    "used_worker_seconds": 3735.527279722921
+  },
+  "caveats": [
+    "Native CRPS and point-family squared-error selection losses have different units/objectives; they are not one shared cross-family ranking.",
+    "validation_near_tie includes the winner itself; Track A has no distinct rival inside 1%.",
+    "A Bayesian bayes_03 is the largest evaluated capacity; the result is conditional on the profiled roster.",
+    "Qualified GP/GRU covariance fits stop by relative objective reduction and all flag noise_sd boundary; no claim that their projected gradients satisfy gtol.",
+    "A gp_01 has only 5/6 qualified promotion fits and is ineligible despite finite complete forecasts.",
+    "The 28,800-second total and 9,000-second screening budgets remain cumulative across resumes.",
+    "Validated external memory samples cover only the watchdog observation period; original namespace-mismatched per-attempt RSS is not used.",
+    "Track B promotion, bounded refinement and predictive Monte Carlo checks are not final in this snapshot."
+  ],
+  "checks": {
+    "band_and_episode_aggregation_passed": true,
+    "candidate_trajectory_receipts": 84,
+    "common_seed_history_horizon_paths_verified": {
+      "history": 128,
+      "horizon": 100,
+      "model_seed": 20261105,
+      "paths": 256
+    },
+    "complexity_near_tie_ordering_passed": true,
+    "distinct_candidate_dictionaries_within_each_family": true,
+    "eligibility_passed": true,
+    "initial_candidate_dictionaries_checked": 76,
+    "initial_screen_rankings_checked": 17,
+    "maximum_absolute_band_loss_reconstruction_error": 4.440892098500626e-16,
+    "origin_receipts": 672,
+    "promoted_candidates_match_screen_top_two": true,
+    "promotion_rankings": 8
+  },
+  "experiment_file_sha256": "a43f9a9ee865bd0d98124eb5093f7a77ae6c7ae3290b7f32d95a8a397b555bda",
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "external_resource_snapshot": {
+    "combined_worker_rss_peak_bytes": 1008340992,
+    "container_current_peak_bytes": 6930788352,
+    "disk_free_min_bytes": 58294730752,
+    "last_observed_utc": "2026-11-05T03:06:13.727443+00:00",
+    "original_attempt_rss_valid": false,
+    "samples": 622,
+    "started_utc": "2026-11-05T02:45:29.401291+00:00",
+    "status": "running"
+  },
+  "generated_utc": "2026-11-05T03:06:15Z",
+  "initial_screen_ineligible_candidates": [
+    {
+      "candidate": "nvar_00",
+      "failed_origins": 2,
+      "loss": null,
+      "model": "pod_nvar",
+      "qualified_episodes": 1,
+      "track": "A"
+    },
+    {
+      "candidate": "nvar_07",
+      "failed_origins": 1,
+      "loss": null,
+      "model": "pod_nvar",
+      "qualified_episodes": 1,
+      "track": "B"
+    },
+    {
+      "candidate": "nvar_00",
+      "failed_origins": 4,
+      "loss": null,
+      "model": "pod_nvar",
+      "qualified_episodes": 0,
+      "track": "B"
+    }
+  ],
+  "initial_screen_multi_candidate_near_ties": [
+    {
+      "chosen": "bayes_01",
+      "model": "bayes_stesn",
+      "one_percent_set": [
+        "bayes_01",
+        "bayes_02"
+      ],
+      "track": "B"
+    }
+  ],
+  "numerical_failures": {
+    "A_gp_01_trajectory_9": "L-BFGS-B ABNORMAL/status 2 after 15 iterations / 330 evaluations; finite forecast but inference-unqualified; candidate ineligible",
+    "initial_nvar_nonfinite_origins": 7,
+    "lead_range": [
+      48,
+      99
+    ],
+    "promoted_A_failed_origins": 0
+  },
+  "optimizer_existing_criterion": "bounded L-BFGS-B: finite parameters/objective, SciPy success (ftol or gtol stopping), and no rejected worsening continuation; projected-gradient threshold is reported but is not an additional existing acceptance condition; no neural stationary-optimum claim",
+  "optimizer_qualification": [
+    {
+      "boundary_hit_counts": {
+        "noise_sd": 6
+      },
+      "candidate": "gru_01",
+      "fits": 6,
+      "fits_detail": [
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "4dee09a824be277dd56221625e19d0684f84438c8ab212f4ae554b04167ed1da",
+          "fit_receipt_sha256": "954d4ec5ce1dd15a68dbc6e32fbcbde5dc63b4429b26dd0e8020a479b49fc7d0",
+          "fit_state": "complete",
+          "ftol": 1e-09,
+          "function_evaluations": 132,
+          "gtol": 1e-05,
+          "iterations": 28,
+          "projected_gradient_inf": 0.2561137095757802,
+          "qualified": true,
+          "selected_epoch": 11,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 0
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "822677e84d557171109d3cb55c902d21c4a90aea57a5c13962cf644ddc4eb0d5",
+          "fit_receipt_sha256": "9314edc7cb3d8f02129e95164f4a4ee8255eeaf8214f537d8cae7dbdf3538556",
+          "fit_state": "complete",
+          "ftol": 1e-09,
+          "function_evaluations": 116,
+          "gtol": 1e-05,
+          "iterations": 25,
+          "projected_gradient_inf": 2.3748725797026893,
+          "qualified": true,
+          "selected_epoch": 17,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 5
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "35e1d7be6d3887a367adf3694ebb8793c8574d2852c3a06bc349f0292faaeb9b",
+          "fit_receipt_sha256": "26106fcedb4a347d6fdb9af90d6075908994557d6ce001649bbe3b47f1bc5d38",
+          "fit_state": "complete",
+          "ftol": 1e-09,
+          "function_evaluations": 144,
+          "gtol": 1e-05,
+          "iterations": 30,
+          "projected_gradient_inf": 0.16298145154822377,
+          "qualified": true,
+          "selected_epoch": 5,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 10
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "5966a0468ade66caaba134af692ce93d7b3231db9bbaef63e94099c231b7e0a5",
+          "fit_receipt_sha256": "759fc8b8235df973187f47086e72ff9f383b150d104be122c739b0f79c177d60",
+          "fit_state": "complete",
+          "ftol": 1e-09,
+          "function_evaluations": 128,
+          "gtol": 1e-05,
+          "iterations": 27,
+          "projected_gradient_inf": 0.2910383063361139,
+          "qualified": true,
+          "selected_epoch": 19,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 15
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "656b0e07a58a4be8fce7355577e6840e8dbd091abd874d16f988101e9b01edda",
+          "fit_receipt_sha256": "8a0ef5b7ef8cabdcbd5d56f61a8e14ac3b3e6b61f918b4b456dc45ef547a969b",
+          "fit_state": "complete",
+          "ftol": 1e-09,
+          "function_evaluations": 116,
+          "gtol": 1e-05,
+          "iterations": 26,
+          "projected_gradient_inf": 1.5017576606943477,
+          "qualified": true,
+          "selected_epoch": 11,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 4
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "136f5c2738d96bd0be440d62615e8adc9032fb16c7be28664b9cac41a75ae52f",
+          "fit_receipt_sha256": "0130e7e402213befd51d92d01589d382717e7879fb8181fd9c2e14595f764a37",
+          "fit_state": "complete",
+          "ftol": 1e-09,
+          "function_evaluations": 108,
+          "gtol": 1e-05,
+          "iterations": 23,
+          "projected_gradient_inf": 0.1455191523602634,
+          "qualified": true,
+          "selected_epoch": 1,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 9
+        }
+      ],
+      "gradient_tolerance": 1e-05,
+      "model": "basis_gru",
+      "projected_gradient_inf_range": [
+        0.1455191523602634,
+        2.3748725797026893
+      ],
+      "projected_gradient_tolerance_satisfied": 0,
+      "qualified_fits": 6,
+      "termination_counts": {
+        "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH": 6
+      }
+    },
+    {
+      "boundary_hit_counts": {
+        "noise_sd": 6
+      },
+      "candidate": "gru_02",
+      "fits": 6,
+      "fits_detail": [
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "2e1a6fbdb8fde9137f3f8c00dcf6918f465345bb805d751b946907bd77cf2aeb",
+          "fit_receipt_sha256": "80fe2108c029224cd56134c15a71ba8e089d06464c9ef62e9fdd0c8ed02a2b86",
+          "fit_state": "complete",
+          "ftol": 1e-09,
+          "function_evaluations": 108,
+          "gtol": 1e-05,
+          "iterations": 25,
+          "projected_gradient_inf": 2.1071173378734644,
+          "qualified": true,
+          "selected_epoch": 4,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 0
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "1fcc3c0c6f6d21004e4ec7a6156dea5e7d762562da2fd1144bd0fe23dc4f18be",
+          "fit_receipt_sha256": "91ef36a4b1b448ef3f95c7bf72ea5a2fa4c88889863529e0631cd81bdd82ceae",
+          "fit_state": "complete",
+          "ftol": 1e-09,
+          "function_evaluations": 124,
+          "gtol": 1e-05,
+          "iterations": 26,
+          "projected_gradient_inf": 1.6181729832287932,
+          "qualified": true,
+          "selected_epoch": 17,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 5
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "bd8fba288b9d1b8dda182a02a6e63215a4a0a4da5d6c227d8399a8a1ded2cad4",
+          "fit_receipt_sha256": "2a0a749a27e45a5f4435d475a711bee780f2eafb1e2d41be6106df29f1bf79f1",
+          "fit_state": "complete",
+          "ftol": 1e-09,
+          "function_evaluations": 132,
+          "gtol": 1e-05,
+          "iterations": 28,
+          "projected_gradient_inf": 0.2561137095757802,
+          "qualified": true,
+          "selected_epoch": 5,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 10
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "ae459d4a6a3c5d71a1f7f51831aeea8aa8fd054328f96740ce186f609163af8b",
+          "fit_receipt_sha256": "4d193d1212cb767796b5e36448b8a95b5e4eff227188a8196175ac04f8334194",
+          "fit_state": "complete",
+          "ftol": 1e-09,
+          "function_evaluations": 116,
+          "gtol": 1e-05,
+          "iterations": 23,
+          "projected_gradient_inf": 0.16880221767494605,
+          "qualified": true,
+          "selected_epoch": 2,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 15
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "198c20f65e5a69fb952acb056c4a99a53f0e56eef52798489fc3d86e9f80477f",
+          "fit_receipt_sha256": "f4b974e184ea7af20ff1a27b4e8d6cb4bcee907f0b8637c50b3b1b513ba2b02f",
+          "fit_state": "complete",
+          "ftol": 1e-09,
+          "function_evaluations": 128,
+          "gtol": 1e-05,
+          "iterations": 24,
+          "projected_gradient_inf": 0.06984919352066733,
+          "qualified": true,
+          "selected_epoch": 15,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 4
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "389d4bb848fcd0811bbf7b57e06e78366f3678fa88643cdd00cb38c89769a60b",
+          "fit_receipt_sha256": "e7748529d4a7316500c9117a2b0ee22db77ccea2222c77e02ace379b9b47a4a1",
+          "fit_state": "complete",
+          "ftol": 1e-09,
+          "function_evaluations": 124,
+          "gtol": 1e-05,
+          "iterations": 27,
+          "projected_gradient_inf": 0.046566129013778226,
+          "qualified": true,
+          "selected_epoch": 6,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 9
+        }
+      ],
+      "gradient_tolerance": 1e-05,
+      "model": "basis_gru",
+      "projected_gradient_inf_range": [
+        0.046566129013778226,
+        2.1071173378734644
+      ],
+      "projected_gradient_tolerance_satisfied": 0,
+      "qualified_fits": 6,
+      "termination_counts": {
+        "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH": 6
+      }
+    },
+    {
+      "boundary_hit_counts": {
+        "noise_sd": 6
+      },
+      "candidate": "gp_00",
+      "fits": 6,
+      "fits_detail": [
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "121edff09ecd9b5ea65e280ed0bbee1e7aac018a1ce2ab9ab6a483775448b50d",
+          "fit_receipt_sha256": "9b18f2b358c757cae6200411ad204c20075e7f2261103e8e97e133a4287954c8",
+          "fit_state": "complete",
+          "ftol": 1e-08,
+          "function_evaluations": 140,
+          "gtol": 1e-05,
+          "iterations": 21,
+          "projected_gradient_inf": 10.174699133029614,
+          "qualified": true,
+          "selected_epoch": null,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 0
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "79f6405d2daa46290887226d47e0ba0b0a2d48e1b9b5dbe7277426e7b197bdfc",
+          "fit_receipt_sha256": "a4d1aaf52218618dd0e1eba5291929f0c646ee7297c1303608fbb97a32b87ea2",
+          "fit_state": "complete",
+          "ftol": 1e-08,
+          "function_evaluations": 145,
+          "gtol": 1e-05,
+          "iterations": 23,
+          "projected_gradient_inf": 5.424953999990619,
+          "qualified": true,
+          "selected_epoch": null,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 5
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "6e1b158294f3118b6199e6a9e56838c383e1945900c6f343ba7b89827f6e9d30",
+          "fit_receipt_sha256": "90917d1474eb5f37b808afcb3735b54e1887b1fc588a72850b6e8e8b37cb8fe7",
+          "fit_state": "complete",
+          "ftol": 1e-08,
+          "function_evaluations": 140,
+          "gtol": 1e-05,
+          "iterations": 22,
+          "projected_gradient_inf": 11.047814047191196,
+          "qualified": true,
+          "selected_epoch": null,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 10
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "61901d4a98974b3c4ac7873ab63af2e8994ad1c12dfeb6716b0e9fabd91fac66",
+          "fit_receipt_sha256": "8bbaeb869ce2403419f15535fa45467ea52ec8ba1c75da2f35e7c4953606a00e",
+          "fit_state": "complete",
+          "ftol": 1e-08,
+          "function_evaluations": 140,
+          "gtol": 1e-05,
+          "iterations": 22,
+          "projected_gradient_inf": 19.546132436527746,
+          "qualified": true,
+          "selected_epoch": null,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 15
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "374f3e6524d33431787c2f19855f07f0115f71a63cc2b694db4810246feaeb4d",
+          "fit_receipt_sha256": "c33ea869f45f3a38c02a0dd654bbd7c8b2c857e5c319ea10038d03697b40bee5",
+          "fit_state": "complete",
+          "ftol": 1e-08,
+          "function_evaluations": 145,
+          "gtol": 1e-05,
+          "iterations": 22,
+          "projected_gradient_inf": 5.750916901277608,
+          "qualified": true,
+          "selected_epoch": null,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 4
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "1798d4bd8c594b51b32b59d945cb46080e621c175526d027d4b8087eeef45c86",
+          "fit_receipt_sha256": "b88a4cd298d3b6939d02a29492a7b6c84c708b413cdc5d38899acaf9c103fffa",
+          "fit_state": "complete",
+          "ftol": 1e-08,
+          "function_evaluations": 145,
+          "gtol": 1e-05,
+          "iterations": 22,
+          "projected_gradient_inf": 4.109460839841748,
+          "qualified": true,
+          "selected_epoch": null,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 9
+        }
+      ],
+      "gradient_tolerance": 1e-05,
+      "model": "separable_gp",
+      "projected_gradient_inf_range": [
+        4.109460839841748,
+        19.546132436527746
+      ],
+      "projected_gradient_tolerance_satisfied": 0,
+      "qualified_fits": 6,
+      "termination_counts": {
+        "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH": 6
+      }
+    },
+    {
+      "boundary_hit_counts": {
+        "noise_sd": 6
+      },
+      "candidate": "gp_01",
+      "fits": 6,
+      "fits_detail": [
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "d104afd1dab19264959d0ba11c29fb6517ee4ac4be7de1a1bda49fa907ef2fd3",
+          "fit_receipt_sha256": "a4e7cf613b6c32ff367f3893d4405b0ab586f1dfc8b236dae2fc067eb0eacbd8",
+          "fit_state": "complete",
+          "ftol": 1e-08,
+          "function_evaluations": 205,
+          "gtol": 1e-05,
+          "iterations": 17,
+          "projected_gradient_inf": 706.1520634294399,
+          "qualified": true,
+          "selected_epoch": null,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 0
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "abc4622d27af727f026cd345b3268e7ebeb466ca511307034fc207481ff0e6c1",
+          "fit_receipt_sha256": "0b3196358db057d5dab625467f5f7bd7742040b29d48d62ed496335c28d3e5aa",
+          "fit_state": "complete",
+          "ftol": 1e-08,
+          "function_evaluations": 160,
+          "gtol": 1e-05,
+          "iterations": 18,
+          "projected_gradient_inf": 97.43962387953378,
+          "qualified": true,
+          "selected_epoch": null,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 5
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "d5b3a8eb7b09ddadea7e4d511793e3baa575eaa3b39eeb7f4573579c343b2df9",
+          "fit_receipt_sha256": "150e26e84960df924213a536a27f64e8db38a0909cb782bcf04eff928f72ba46",
+          "fit_state": "complete",
+          "ftol": 1e-08,
+          "function_evaluations": 160,
+          "gtol": 1e-05,
+          "iterations": 15,
+          "projected_gradient_inf": 4564.062719962938,
+          "qualified": true,
+          "selected_epoch": null,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 10
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "9dc95991740dc195e91ceb12821ecff4a8e8f86e657f97b9a7dddf267cc5a223",
+          "fit_receipt_sha256": "5a38a80ea2098baacc5a6ce962533a0f4bc1cda5ea734f6fd5c96d535555dd9a",
+          "fit_state": "complete",
+          "ftol": 1e-08,
+          "function_evaluations": 180,
+          "gtol": 1e-05,
+          "iterations": 18,
+          "projected_gradient_inf": 220.77001765432254,
+          "qualified": true,
+          "selected_epoch": null,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 15
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "4bafb4ce795ff22a20e013d2dd6515f0518406e0e9ae5fe6a0d963570da2e0ef",
+          "fit_receipt_sha256": "9ce5a70fd892f5bf6f98528d72c4b5efb2441b54802aaf9211a79a7cb0e1346c",
+          "fit_state": "complete",
+          "ftol": 1e-08,
+          "function_evaluations": 215,
+          "gtol": 1e-05,
+          "iterations": 23,
+          "projected_gradient_inf": 88.59206044871307,
+          "qualified": true,
+          "selected_epoch": null,
+          "termination_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "trajectory": 4
+        },
+        {
+          "boundary_hits": [
+            "noise_sd"
+          ],
+          "continuations": 0,
+          "fit_identity": "56a5904906e1a41d40806f655293731f0e9b52cf524ee3498de453db2199e986",
+          "fit_receipt_sha256": "d5209f027f5fa934885ef489f84956230bb00b87be273cbc2624b6baf867ba75",
+          "fit_state": "inference-unqualified",
+          "ftol": 1e-08,
+          "function_evaluations": 330,
+          "gtol": 1e-05,
+          "iterations": 15,
+          "projected_gradient_inf": 383.0762603318465,
+          "qualified": false,
+          "selected_epoch": null,
+          "termination_message": "ABNORMAL: ",
+          "trajectory": 9
+        }
+      ],
+      "gradient_tolerance": 1e-05,
+      "model": "separable_gp",
+      "projected_gradient_inf_range": [
+        88.59206044871307,
+        4564.062719962938
+      ],
+      "projected_gradient_tolerance_satisfied": 0,
+      "qualified_fits": 5,
+      "termination_counts": {
+        "ABNORMAL: ": 1,
+        "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH": 5
+      }
+    }
+  ],
+  "promotion_schedule": {
+    "count": 2,
+    "origins": [
+      6000,
+      6200,
+      6500,
+      6700,
+      7000,
+      7200,
+      7500,
+      7700
+    ],
+    "trajectories": [
+      0,
+      5,
+      10,
+      15,
+      4,
+      9
+    ]
+  },
+  "provenance": {
+    "fit_receipt_count": 84,
+    "fit_receipt_hashes": {
+      "121edff09ecd9b5ea65e280ed0bbee1e7aac018a1ce2ab9ab6a483775448b50d": "9b18f2b358c757cae6200411ad204c20075e7f2261103e8e97e133a4287954c8",
+      "136f5c2738d96bd0be440d62615e8adc9032fb16c7be28664b9cac41a75ae52f": "0130e7e402213befd51d92d01589d382717e7879fb8181fd9c2e14595f764a37",
+      "166b09fb85cfb6fb87d22240411efb3dcda188c6cb0660e92395529462399fb8": "28891a53db80e123f8f9febdd2788f62fab8889e947dc937091f88126c1edf98",
+      "1798d4bd8c594b51b32b59d945cb46080e621c175526d027d4b8087eeef45c86": "b88a4cd298d3b6939d02a29492a7b6c84c708b413cdc5d38899acaf9c103fffa",
+      "18370f21ea6833c9ff7150db694a8dcba80f544451d2133edc37477b35b775af": "15a6f17cb6df2f541623ad3fa82fa76c6a2e77c08cfc94e293e597eb6767e433",
+      "185ea4242ca42d516c3c39cb1d94cd7b28df833f02b6c98b99671e611b6fc468": "385a94bbee4b9185015059552535c6719f5e2695d884f1c92385c0fcee8db012",
+      "197bac12d46c969f700ef92303a1f185e70bdf0063b2b396251d954628966495": "651650654da2f65f46605725020e13fe745f0ebb209a277fa9ac307244626155",
+      "198c20f65e5a69fb952acb056c4a99a53f0e56eef52798489fc3d86e9f80477f": "f4b974e184ea7af20ff1a27b4e8d6cb4bcee907f0b8637c50b3b1b513ba2b02f",
+      "1bea07f7bf948ac0c8a3778f7aeb42b278d7afb7f7e6ebb5a23e712002d7adc6": "4bcbc03cf4db3aeb2f04e4ab9c796b6da641ca7d9694a8f5ab2c971ca8bd8fc5",
+      "1fcc3c0c6f6d21004e4ec7a6156dea5e7d762562da2fd1144bd0fe23dc4f18be": "91ef36a4b1b448ef3f95c7bf72ea5a2fa4c88889863529e0631cd81bdd82ceae",
+      "23655498d12693313a112060461302933ba55d692460467509271e3cd56d4ca8": "56cba014934212c3e115b3ba08af7d6043db353461edd7d5626462c42609b2a2",
+      "2bfcad84a41c75e3f3f46f5c263f80d2fc38e7ee251cb59a30c2b452f0b4ce74": "68692c5ba4527524a1c133f6fbcc0f2f082c2d26a3b5d5dac194bb1ec264f618",
+      "2e1a6fbdb8fde9137f3f8c00dcf6918f465345bb805d751b946907bd77cf2aeb": "80fe2108c029224cd56134c15a71ba8e089d06464c9ef62e9fdd0c8ed02a2b86",
+      "35e1d7be6d3887a367adf3694ebb8793c8574d2852c3a06bc349f0292faaeb9b": "26106fcedb4a347d6fdb9af90d6075908994557d6ce001649bbe3b47f1bc5d38",
+      "36011a114ade8fc86725c52e308a5973364ba472d3a53ccf6c9493dcca645e99": "db54f6ff24500b4cbd5fa3d7ec84c89e548ea241476fd57b38947a624e35bf3a",
+      "374f3e6524d33431787c2f19855f07f0115f71a63cc2b694db4810246feaeb4d": "c33ea869f45f3a38c02a0dd654bbd7c8b2c857e5c319ea10038d03697b40bee5",
+      "37e6f951cdb04deb30947e5fe010c47ec5674f944e38421e8fa00392e55e339b": "c6e5f356702d2a61d2995611dbad3b8d1f5dcea7817f4f4b61d30f99c5b45050",
+      "389d4bb848fcd0811bbf7b57e06e78366f3678fa88643cdd00cb38c89769a60b": "e7748529d4a7316500c9117a2b0ee22db77ccea2222c77e02ace379b9b47a4a1",
+      "3a73fad396cde706752b01a22033d2ea03eb78af6ede0fe5b1dc1f48037a3e37": "334fc6fc3aa17502c93ffba218c3e6e482b5381ccdfc88cc9c7bdb468891060b",
+      "3c1aac6ff345cfd52343a8504c9cd92a311c09fad6c30209dab1298640e8461e": "50f33b66394d73c0d8aa0bc4bcd80e501a097c89f26c9a6717a0a8192e3e6986",
+      "40b71a1684b36c46bba3e45b91819bfb27c31014134dbf116cad9ea19f20682c": "155336237c54e8d68f7fd80c3305fbfa9aad0ee6ae169b89a6cfdd98631877ad",
+      "4884223a9b9f3e51301379dab453bfca5abf1fe9a1fc6263ab765eed187f738f": "9b648ed881769dd3c6995f63f5845b12adcad46332f6bc394a7241d18bcbf8af",
+      "4bafb4ce795ff22a20e013d2dd6515f0518406e0e9ae5fe6a0d963570da2e0ef": "9ce5a70fd892f5bf6f98528d72c4b5efb2441b54802aaf9211a79a7cb0e1346c",
+      "4dee09a824be277dd56221625e19d0684f84438c8ab212f4ae554b04167ed1da": "954d4ec5ce1dd15a68dbc6e32fbcbde5dc63b4429b26dd0e8020a479b49fc7d0",
+      "5033b5feac4fe9709a1d5b2677e46a0a4a0484106d3d8ac5ef9213a0a0a3aab9": "faa8e99dddabd74c3cee5a82d3f6cd7292f365cc09341e47a20b12efacae75e2",
+      "511246e098b5c278ca93148973e4570fdb7fc9fa2623aec93bd19f92c11f82f8": "c2077028c57f63acb7ad8dc78286f64c50212a6ce37f16abb86c7a7195da9053",
+      "56a5904906e1a41d40806f655293731f0e9b52cf524ee3498de453db2199e986": "d5209f027f5fa934885ef489f84956230bb00b87be273cbc2624b6baf867ba75",
+      "57097eb96dd9eec733a45b6b9ddcfd74459535358120a4aa4970a8f87fc1f837": "9215babb7c07b580f614af7df0073fe615f7f171910b23a29bb589e567fad810",
+      "57685089d3dd4f142116cf99f7f80cfe4e86725575db0a954585d192ead12419": "9b05f7941bc497ff69e41bc5f33dc8ab2441c27a028b0573846cec066ad76d75",
+      "58695e92c65626eb9682868ffcfdf2d40d674aef6656ca5268d630a1b539838f": "2a710401a27b9eac4271d914a4363be9c729750edb3c6e4586a047de4a2237bc",
+      "5966a0468ade66caaba134af692ce93d7b3231db9bbaef63e94099c231b7e0a5": "759fc8b8235df973187f47086e72ff9f383b150d104be122c739b0f79c177d60",
+      "5d53d036c33a862f26600a48956abb1282d0e5368282290d4aa7ab13ce76b280": "c901946b8630c274091dcfd8a231cde845b75f0b9fc98089291e2c95dcea1bd6",
+      "61901d4a98974b3c4ac7873ab63af2e8994ad1c12dfeb6716b0e9fabd91fac66": "8bbaeb869ce2403419f15535fa45467ea52ec8ba1c75da2f35e7c4953606a00e",
+      "656b0e07a58a4be8fce7355577e6840e8dbd091abd874d16f988101e9b01edda": "8a0ef5b7ef8cabdcbd5d56f61a8e14ac3b3e6b61f918b4b456dc45ef547a969b",
+      "6e1b158294f3118b6199e6a9e56838c383e1945900c6f343ba7b89827f6e9d30": "90917d1474eb5f37b808afcb3735b54e1887b1fc588a72850b6e8e8b37cb8fe7",
+      "7762cbd725923047ea96815970bc0c88929264133df93f8ee05bc08c3b5efbcb": "8b45541f06afcd78e9f43186b3456cca83afa393db4f1e647f9a256ed095c5e2",
+      "791ac5ca43fd03264211ee9916471ca200704ef96192a54bcd3b18b373cf948b": "59ef9d2f01e7ee203823fef809ca5ef0c0667a9c63dd8ff7752ff9dc61eedacf",
+      "7941a5cd0b2d3de06c1a0ec45c3c4ebf1febe0b3cf4e49aac89ac14403288d68": "4f3f030902a6cb26d28a700f6aa60f6b0c8792207bf321a130f127d22039e1d0",
+      "79f6405d2daa46290887226d47e0ba0b0a2d48e1b9b5dbe7277426e7b197bdfc": "a4d1aaf52218618dd0e1eba5291929f0c646ee7297c1303608fbb97a32b87ea2",
+      "7dba11fdb7c9e1477640a6bfe7f57a694fe8baa1cdd24b51b364f07097392798": "dacf0ede2769994a5b866dd8a0161a2f7df403ac004d8d4bd21d22bcf9eb7742",
+      "7e608d25ea7d0406f02108c37e97d1309f80b3afb84855e192372ac220cd026d": "cc1a502cad4c6913252c064265ecd1ef731626e2b764bdc1d446d22c8cd12fe7",
+      "821e025250099e3ceed33497b9df0a2d1ed7322e114552d76fc3b7b602ba0b76": "4d15fae861af8d9dfad82a3c8a1bad910e96e22eb71aea606a9a25d1b8e26043",
+      "822677e84d557171109d3cb55c902d21c4a90aea57a5c13962cf644ddc4eb0d5": "9314edc7cb3d8f02129e95164f4a4ee8255eeaf8214f537d8cae7dbdf3538556",
+      "83110e7cdb189622523e9691279857f384f82d34d5081f229180de48d4e60c90": "c2212fc3728c215058d680680f94baa6564bd834521f3e2bca1da9b03b784f90",
+      "8781853e7ef56c01dab8a1fe44508336de165b4dac59da4d9de7273f72bd3174": "46eb436a7097a3bde20474f165b3b327f9051103f4673130bbf7321df138ba39",
+      "880b1cf84271a0c8af5a2f58e0a3a2a7578eb3d8596c9cddf9ada1542dbfbce1": "d3df59459a0acd49c6f3f35c37d282c96cfd6164c7eab16d1bc110ab77feb25e",
+      "8bcbcf4b2412e86615b4e4d9528e7654f523e0d115e637be92174f5c6f6265af": "c59ca28ea0d378c9a30f075cba0f57a9e1324a3303986890d96396d8ac3f58d5",
+      "8dfc2f450b53eb515ac1062614a096131e143984228c3c67c945449aa9a77320": "62faf32ab240743a0d7da8eb8d2a52099c4e51848a8833ebd14e05ae80c271e9",
+      "927696c4b843af2770c3a415cf81a97eed69164e74284965cf799cba6c3191b3": "aa23643fcab97f5c3dc71f3b29354101a3cab495f366238bfa23b52f15ad982a",
+      "9561815ee1519bc96c258c74a612e4daf2bbf98a000dbb9f56e45caed0b9feea": "2e7447cbb9399988daf89138213adc64ba1b611f98bae3095a25ad3e2b41cf44",
+      "9a4bda7ca396d85981b84908e18217eda0dec2bf4663a41635f6cb47ae96a48e": "bb5b13d0f4fcd4caaaf1e4185704d496c674881118062a51eed97930ca7d54fe",
+      "9dc95991740dc195e91ceb12821ecff4a8e8f86e657f97b9a7dddf267cc5a223": "5a38a80ea2098baacc5a6ce962533a0f4bc1cda5ea734f6fd5c96d535555dd9a",
+      "9fa4203a0c07a536b4f4e91a01bb91d24b55e934421cd32f03ac8689dc3acec3": "fdffd64a3f22a8092f1d6ce1f4af410f1e07286b896ac610f04d65ce3b860bda",
+      "a3ab9bd280bc074e3a09e9c4033e39fb1a58ffff9ad0663214a42fae2d799aed": "828cf5dfd26eb1d5c519ed85f8b537a2871953ecc69e0d1aba7b4794b7063031",
+      "a891fa2b24e21230c58b3a5afd99950da40d09e9ab3983bd2480e3fc01791b29": "29f7d94d574569c6d34f5308d3323763b7a62cdc662d3f702b011e000a00ee29",
+      "a97937a43e6796344ceb947551224206f8a55435ed1ba289464580c74db49f1d": "d8418b1590844100ac49dd95adfccffa492e7052b91104a55a9768343128d362",
+      "abc4622d27af727f026cd345b3268e7ebeb466ca511307034fc207481ff0e6c1": "0b3196358db057d5dab625467f5f7bd7742040b29d48d62ed496335c28d3e5aa",
+      "ac2a3eefcd3047800e7534fe9e6a074ddc1ce1b4867b35516c35d000778c1a50": "835a0a702d3bb5e6de48ed310124daf6923bd1b1fcea4c28a9f302ab998a5de9",
+      "ae459d4a6a3c5d71a1f7f51831aeea8aa8fd054328f96740ce186f609163af8b": "4d193d1212cb767796b5e36448b8a95b5e4eff227188a8196175ac04f8334194",
+      "aebea2b0744b3bf2d3d7026a9ca689fb8ccfc26290e960825516c7134b59ae87": "d0a6351f8d8892589fbe54665561863c990c447a6b2078a59e916b7af2d6b96f",
+      "aef984a2e0a32990788904b0556f1626528f838b7769d1758a4c8fad718b81e3": "4fdd595fe9f57c77abd40ecc3e7304330c15384e29cc125d6f5be5da07a4d003",
+      "b3d68d1b0f25d37b2729103300fc002ac606d54fb118980af77089ce8c16e49a": "178c3f63ad757e93f1ca63459860f5262d9b78f5603670ab0b9fd4f57a8ac970",
+      "b96e7ebe8f620e1fc656785a09d0357618f142dbb197227b3494dfe4c28e19e8": "367d7cec71ddbc5857127b16de40344fd183a5686b3ee39fe9395212fcb74396",
+      "bd8fba288b9d1b8dda182a02a6e63215a4a0a4da5d6c227d8399a8a1ded2cad4": "2a0a749a27e45a5f4435d475a711bee780f2eafb1e2d41be6106df29f1bf79f1",
+      "bf5878f43279338c43a37dbe82401805114d3c6ea5aff2a27f4db2853bc94d42": "804cd22099d5c7df53d54e383d483ccfbfbda5130e0d8185835f8f26ab1898ed",
+      "c1b8cd8f0a2d85795527adbf7228e3735f671ecf7e3254533a8b138234aab177": "7e3eecac9e09a4d02aa6658cf9b6562a21a5dc419bd2da62f83fb218ae94317e",
+      "c28094b1ddfc15ba90e0cac43aaa3da819885a5a455f1e2f85d884e506e6838c": "51962c658c86c7b463e753df93c3118332ab7a200a0804617d7a4e6fba8f58a5",
+      "c890242bec011fb5d9354ffa0de62c959ba193f0b372865fb3b0bfac632329d1": "a10fa70e8b47697a148a45db443216fb1c4db435603332319efbdb08a8fae189",
+      "cb5a2f644468df873b93ab223d2117170a3952e1ed016f7de12f8839fa2ddec3": "19a928eb12c9ef62766eee3d7a378d733b57ad176c962f8e273192c3011d52e0",
+      "d0d591696bc02d4c6bbcb148bb5121f9965d4bcee414789afff978d65d188203": "3f7196b597a90c687c5a229a927ce14adcdfd3ce25e82d381f0a29aeac7500e9",
+      "d104afd1dab19264959d0ba11c29fb6517ee4ac4be7de1a1bda49fa907ef2fd3": "a4e7cf613b6c32ff367f3893d4405b0ab586f1dfc8b236dae2fc067eb0eacbd8",
+      "d5b3a8eb7b09ddadea7e4d511793e3baa575eaa3b39eeb7f4573579c343b2df9": "150e26e84960df924213a536a27f64e8db38a0909cb782bcf04eff928f72ba46",
+      "dc391cec2b77b62c9aef055e303f2b57c04daca60b38c94f77cab3a02376faa9": "155cf1dfaa9d20077341a0fda0e2bc436e657adf5ae9716ad049c9a412c400c0",
+      "dc58a4bdf5a68d833f0f92b0c84376f6025fa5f4b31b9d965bcc7400591fee58": "e4be6643bb3201a2fbfccfc9ef44ea6298c5d0ca43b1bfafaf47d9379178e214",
+      "e0d18f9b2d4ef88c9ea0b7704657e39d549366c2809eea21e466e8ebaa824785": "3c686c5e23bb55e0a78c04c62e8dd8014050b45ff5896da0aecd8ecb238c9ca2",
+      "e5a59ea19405f4719aeaab6a95b34a0656849c46166fd6f5604ce311c5dedd8e": "b6b901fd1b61101636c89c30161b947b9dc0f71da0143017aa4f3396428633b8",
+      "eee32ab41ac368107e6c23e4d882022b691bbd8c7edce81c1392ae3bf0a7616e": "d1b7981fa3da8b1ca9315cdc4d2c6b71068a3df76fd26a74181dccc9f6d85de8",
+      "ef55eb1f03af7e919a358265ccda71c23c7d95a809e52d55842116b4af2310da": "afa411e4f3daef54cad65157fb2869b81527694e49becfe4546ea6132654258d",
+      "f0857d2944e479b6dcc2e0ebca39524628a3fdd76c09ff4cbf38aeeb5c643bbf": "14acbfbeb9d1c316d8ae7eb06d82231cf207b84605302c8b72cdea883ccd42f4",
+      "f39c1e50ab58c9f1fc6bc19a7a1b06701965e30aaf0b64398c0c0f989e1508d0": "267fb8fa199fd4e1572ed81c8786c19e0a0d1826b918a4bc94a9c8e6c6520572",
+      "f422d87ff2793c2bf1706a6a1c7204a36753075f95de6d4253b81058efb6c3c1": "8a580e80470434a165c32b086146ad1217351050b64d0b023b136efabbf99815",
+      "f511df1a832f9fcf5cc53dad9e3e07ff3eff0569b138e6b77051bdac97163089": "3c4a306aeef544cde95101ec77262f9ae834978f38597f84c04b354d91e45e9d",
+      "f597d261885ca2ba86f843d33602bc948011f13f98c398b1347919e41035abbc": "9ed77052e6b1233b02b12241a9d9e02075e130830ac58a2ca59b68f5201f7ae3",
+      "fcee1833680db14fc2fb52c9b35553083a26e3be991f50f2cceb6ee97a688ddf": "4df0e40e36aecced8273d3cabb36cfe4dcbef5d8ba8107c7681243e99cb167ab"
+    },
+    "fit_receipt_set_sha256": "39e06f1a6498f53e40398d98994f80d5d2b75a8b0592a76075e513c782eb4be6",
+    "promotion_receipt_hashes": {
+      "basis_gru": "b821529880adf377724d18c9f5a2db611db9a165b726aa2c7eb7dcef27a6cdd8",
+      "bayes_stesn": "57c66174838d12ea9fedd41de612cb808119bf11bcef4affe49d47045b5592dc",
+      "linear_var": "02a692b2f93c7bd56a090fa016cc1ff477665ed0eb4f45f2c113cc8797dcb00b",
+      "persistence": "f9d83a9cd56d6e353eef45763727f0ca62c319cb9ed86c406ee40496f2b2812c",
+      "pod_nvar": "05a02e7a2f6d726c0f53fb4d13eadfaa5485aec2abf6ee91af2364fd0fdd02aa",
+      "ridge_esn": "305ce9d5b5af49a03e9f51d4a7a7e48b6e72ce366a16902e9212c76e252366d9",
+      "separable_gp": "949e3e41f8a67507fdf435952ab6bc474f31eafa62be19d7bdd88f98863c3ce5",
+      "training_mean": "4430a7414ea6636f3e44a66d566c3d368dcc5cd847f49d406aae83adc0012e92"
+    },
+    "screen_receipt_hashes": {
+      "A/basis_gru": "768c47cfb03525d9b7a93a2916d94cddbb54324e65d4b0292433d40402596a98",
+      "A/bayes_stesn": "cdd76f79c12b7efee95c36aa35e97d71f7131b247ef43543986623e5a483124c",
+      "A/linear_var": "6d3269216d4cd6bd8c7725468e88aa52eb30cc666e5270a039dd1a8919bc43a2",
+      "A/persistence": "0dac3ea3877d68cfa5bd71fca877a8d0e8e27a81d4b286c94b6764a03fc6eded",
+      "A/pod_nvar": "54db1da80cc1d547f819c6205a38f3322d6a9051cfd6ab6d10350e26c5ad55b9",
+      "A/ridge_esn": "8509b2755cc0128158b1e6a4fddfc56985f8bbaf3a5ab09e6258bbd9d09c431c",
+      "A/separable_gp": "2cc6cbb73fff1bd53da3f4df59de45c1488dd583176aafbb720eb3de13d3407d",
+      "A/training_mean": "3238d407db119db39cf7b0b0176b6b65e492bac1e5af45f4c3e5c09c348dce1f",
+      "B/basis_gru": "3abe4447159b05fd7e14a6856cf2a65f2a84948207fee4ea9f74d9a29cf44862",
+      "B/bayes_stesn": "60ab82945180f35089b9cb38f11520f4ad47cbab0648711ab6959466bf999d77",
+      "B/linear_var": "b2db609fd47ded34e133ec5387efa22ba3d5a7218ee1187a43a9b8f0e1d65602",
+      "B/periodic_cnn": "ada641d0cb93c0aacd078a98afaccf21a7f67648bf7e5ee74c4581b244d1b754",
+      "B/persistence": "80f63e1b13db047abb77d05b7a67e686b2775bab1a00db5ec47d4ccb28548887",
+      "B/pod_nvar": "63e5fb6b653e1bff0bf073f81f2aa7baffc22b3a172f4b6c8952543f6e348623",
+      "B/ridge_esn": "cf85fb495c9eaa99ffd0f57d5e06becc8dc2174353a6af7804656fc51b1f951d",
+      "B/separable_gp": "3584e8d8eebba4be0f2e746760136721eb4fecfba006c9c9a8b20db768a5b1a5",
+      "B/training_mean": "59ea1e427df54797c21876a67455df8462d9061a6d02e428fd45f01aa02d6a4c"
+    }
+  },
+  "rankings": [
+    {
+      "candidate_order": [
+        "gru_02",
+        "gru_01"
+      ],
+      "eligible": true,
+      "failed_origins": 0,
+      "model": "basis_gru",
+      "objective": "episode_balanced_horizon_band_CRPS",
+      "one_percent_set": [
+        "gru_02"
+      ],
+      "qualified_episodes": 6,
+      "rival_near_tie_count": 0,
+      "selection_loss": 0.4618539287486622,
+      "selection_receipt_sha256": "b821529880adf377724d18c9f5a2db611db9a165b726aa2c7eb7dcef27a6cdd8",
+      "track": "A",
+      "winner": "gru_02"
+    },
+    {
+      "candidate_order": [
+        "bayes_03",
+        "bayes_02"
+      ],
+      "eligible": true,
+      "failed_origins": 0,
+      "model": "bayes_stesn",
+      "objective": "episode_balanced_horizon_band_CRPS",
+      "one_percent_set": [
+        "bayes_03"
+      ],
+      "qualified_episodes": 6,
+      "rival_near_tie_count": 0,
+      "selection_loss": 0.7432375036371601,
+      "selection_receipt_sha256": "57c66174838d12ea9fedd41de612cb808119bf11bcef4affe49d47045b5592dc",
+      "track": "A",
+      "winner": "bayes_03"
+    },
+    {
+      "candidate_order": [
+        "var_02",
+        "var_03"
+      ],
+      "eligible": true,
+      "failed_origins": 0,
+      "model": "linear_var",
+      "objective": "episode_balanced_horizon_band_MSE",
+      "one_percent_set": [
+        "var_02"
+      ],
+      "qualified_episodes": 6,
+      "rival_near_tie_count": 0,
+      "selection_loss": 0.7056333279673077,
+      "selection_receipt_sha256": "02a692b2f93c7bd56a090fa016cc1ff477665ed0eb4f45f2c113cc8797dcb00b",
+      "track": "A",
+      "winner": "var_02"
+    },
+    {
+      "candidate_order": [
+        "persistence_00"
+      ],
+      "eligible": true,
+      "failed_origins": 0,
+      "model": "persistence",
+      "objective": "episode_balanced_horizon_band_MSE",
+      "one_percent_set": [
+        "persistence_00"
+      ],
+      "qualified_episodes": 6,
+      "rival_near_tie_count": 0,
+      "selection_loss": 1.1463820242880904,
+      "selection_receipt_sha256": "f9d83a9cd56d6e353eef45763727f0ca62c319cb9ed86c406ee40496f2b2812c",
+      "track": "A",
+      "winner": "persistence_00"
+    },
+    {
+      "candidate_order": [
+        "nvar_06",
+        "nvar_05"
+      ],
+      "eligible": true,
+      "failed_origins": 0,
+      "model": "pod_nvar",
+      "objective": "episode_balanced_horizon_band_MSE",
+      "one_percent_set": [
+        "nvar_06"
+      ],
+      "qualified_episodes": 6,
+      "rival_near_tie_count": 0,
+      "selection_loss": 0.2570240706338734,
+      "selection_receipt_sha256": "05a02e7a2f6d726c0f53fb4d13eadfaa5485aec2abf6ee91af2364fd0fdd02aa",
+      "track": "A",
+      "winner": "nvar_06"
+    },
+    {
+      "candidate_order": [
+        "esn_04",
+        "esn_07"
+      ],
+      "eligible": true,
+      "failed_origins": 0,
+      "model": "ridge_esn",
+      "objective": "episode_balanced_horizon_band_MSE",
+      "one_percent_set": [
+        "esn_04"
+      ],
+      "qualified_episodes": 6,
+      "rival_near_tie_count": 0,
+      "selection_loss": 1.1229624465508374,
+      "selection_receipt_sha256": "305ce9d5b5af49a03e9f51d4a7a7e48b6e72ce366a16902e9212c76e252366d9",
+      "track": "A",
+      "winner": "esn_04"
+    },
+    {
+      "candidate_order": [
+        "gp_00",
+        "gp_01"
+      ],
+      "eligible": true,
+      "failed_origins": 0,
+      "model": "separable_gp",
+      "objective": "episode_balanced_horizon_band_CRPS",
+      "one_percent_set": [
+        "gp_00"
+      ],
+      "qualified_episodes": 6,
+      "rival_near_tie_count": 0,
+      "selection_loss": 0.5330231065881534,
+      "selection_receipt_sha256": "949e3e41f8a67507fdf435952ab6bc474f31eafa62be19d7bdd88f98863c3ce5",
+      "track": "A",
+      "winner": "gp_00"
+    },
+    {
+      "candidate_order": [
+        "mean_00"
+      ],
+      "eligible": true,
+      "failed_origins": 0,
+      "model": "training_mean",
+      "objective": "episode_balanced_horizon_band_MSE",
+      "one_percent_set": [
+        "mean_00"
+      ],
+      "qualified_episodes": 6,
+      "rival_near_tie_count": 0,
+      "selection_loss": 1.4089031002419812,
+      "selection_receipt_sha256": "4430a7414ea6636f3e44a66d566c3d368dcc5cd847f49d406aae83adc0012e92",
+      "track": "A",
+      "winner": "mean_00"
+    }
+  ],
+  "reconstruction_completed_utc": "2026-11-05T03:02:13Z",
+  "schema": "ks-validation-promotion-audit/1",
+  "scope": "Completed Track A promotion before formal freeze; initial-screen policy checks cover both tracks; no final test conclusions"
+}

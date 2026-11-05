@@ -1,0 +1,30 @@
+{
+  "core_test_labels_opened": false,
+  "coverage": [
+    "Streaming binary part boundaries and full verified round trip",
+    "Per-part/full-stream/per-member hash validation",
+    "No unsplit archive file",
+    "No overwrite or checkpoint merge",
+    "Corruption rejected before restore destination creation",
+    "Traversal paths rejected before extraction",
+    "Source/cache/staging/locks/symlinks excluded",
+    "Active scheduler/worker refusal",
+    "Archived absolute job paths preserved without rewriting"
+  ],
+  "errors": 0,
+  "failures": 0,
+  "final_results_packaged": false,
+  "fixture": "Synthetic complete results only; random regular-file payload; no KS model fitting or scientific results.",
+  "numerical_source_or_configuration_changed": false,
+  "recorded_utc": "2026-11-05T03:22:56.054167+00:00",
+  "schema": "ks-results-package-acceptance-1",
+  "skipped": 0,
+  "source_sha256": {
+    "docs/applications/ks_backup_and_restore.md": "8f0533e6ee3c767bfc958fe1c0243243f264dff2a265e51df91ee95daaa63ec4",
+    "tests/test_ks_package.py": "68749d72e84fb399c8664754a2f08fed006ee5660dcbd2c2f829b79a0f604a61",
+    "tools/package_ks_results.py": "11211b34c580d6f797293e204adefd865af1987abf46d502f7c79d8f31da4f37"
+  },
+  "status": "tool_ready_final_study_not_packaged",
+  "test_seconds": 0.568,
+  "tests": 4
+}

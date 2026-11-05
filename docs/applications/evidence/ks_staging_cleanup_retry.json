@@ -1,0 +1,135 @@
+{
+  "cause_assessment": "Not established. This receipt records redundant staging archives and namespace evidence, without attributing an interruption mechanism.",
+  "completed_utc": "2026-11-05T03:03:15.629001+00:00",
+  "considered_files": 5,
+  "deleted_bytes": 61863943,
+  "deleted_files": 3,
+  "eligible_bytes": 61863943,
+  "eligible_files": 3,
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "files": [
+    {
+      "action": "retained",
+      "age_seconds": 55.34723114967346,
+      "bytes": 20966652,
+      "reason": "Staging age or canonical/receipt timestamp ordering is insufficient",
+      "relative_path": "fits/11e484849490c9ccc18a90c89d1fe056f47075b5e68cf7704d990dc8712ed876/.fit.npz.bstesn-120caf7745f0-945-wzl5iky7.npz",
+      "staging_mtime_ns": 1793847739027046619,
+      "staging_writer_pid_token": 945
+    },
+    {
+      "action": "deleted",
+      "actual_worker_for_fit": false,
+      "age_seconds": 598.8881299495697,
+      "bytes": 13284710,
+      "canonical_bytes": 34424080,
+      "canonical_sha256": "8751845db150d4dd56e30f4f838d64052eebb190565a78ff11f02ea4b44090f6",
+      "canonical_zip": {
+        "crc_valid": true,
+        "members": 8038
+      },
+      "deleted_utc": "2026-11-05T03:03:14.773774+00:00",
+      "relative_path": "fits/197bac12d46c969f700ef92303a1f185e70bdf0063b2b396251d954628966495/.fit.npz.bstesn-120caf7745f0-664-7l_1hk83.npz",
+      "sha256": "67ef3c2d4af23e032f0dc746a70b45ed789ad24bb7dd7e6e8465f9910b50ae6f",
+      "stage_zip": {
+        "central_directory_readable": false,
+        "error": "BadZipFile"
+      },
+      "staging_mtime_ns": 1793847195870466081,
+      "staging_writer_pid_token": 664,
+      "terminal_receipt_completed_utc": "2026-11-05T02:53:17.589196+00:00",
+      "terminal_receipt_sha256": "651650654da2f65f46605725020e13fe745f0ebb209a277fa9ac307244626155",
+      "terminal_receipt_state": "complete",
+      "verified_redundant": true,
+      "writer_lock_held": true
+    },
+    {
+      "action": "deleted",
+      "actual_worker_for_fit": false,
+      "age_seconds": 1567.9542820453644,
+      "bytes": 34149186,
+      "canonical_bytes": 34407662,
+      "canonical_sha256": "b2577f09848b1b5c485921fa1cb52c0da848ef801189a20ddc55d4c2db95cab9",
+      "canonical_zip": {
+        "crc_valid": true,
+        "members": 8038
+      },
+      "deleted_utc": "2026-11-05T03:03:15.192921+00:00",
+      "relative_path": "fits/36011a114ade8fc86725c52e308a5973364ba472d3a53ccf6c9493dcca645e99/.fit.npz.bstesn-120caf7745f0-67-8g3iqta0.npz",
+      "sha256": "e6b355ba1e36aec3a2c62691c0283c46f37a2d42d9d25b586ccdeb2d18082bb1",
+      "stage_zip": {
+        "central_directory_readable": false,
+        "error": "BadZipFile"
+      },
+      "staging_mtime_ns": 1793846227204894613,
+      "staging_writer_pid_token": 67,
+      "terminal_receipt_completed_utc": "2026-11-05T02:37:08.011370+00:00",
+      "terminal_receipt_sha256": "db54f6ff24500b4cbd5fa3d7ec84c89e548ea241476fd57b38947a624e35bf3a",
+      "terminal_receipt_state": "complete",
+      "verified_redundant": true,
+      "writer_lock_held": true
+    },
+    {
+      "action": "retained",
+      "reason": "writer_lock_busy",
+      "relative_path": "fits/576fa2c35b190e83f70bf7a0d89a1d5cad8b22dd9e0b638f291a5ef3bbdf0221/.fit.npz.bstesn-120caf7745f0-944-avajfyzi.npz"
+    },
+    {
+      "action": "deleted",
+      "actual_worker_for_fit": false,
+      "age_seconds": 1149.6718535423279,
+      "bytes": 14430047,
+      "canonical_bytes": 36707079,
+      "canonical_sha256": "a81feb4e1374aa30e1450961baaf3523dbdd4133d5425c22e7e6757601376782",
+      "canonical_zip": {
+        "crc_valid": true,
+        "members": 8038
+      },
+      "deleted_utc": "2026-11-05T03:03:15.623108+00:00",
+      "relative_path": "fits/7ef3c2bceffef54d7077ce4fecbdc352e8b6ca6af98d020e843243a9d57823db/.fit.npz.bstesn-120caf7745f0-355-xuq8uwgi.npz",
+      "sha256": "d5ba1e2fea12f5b164b23839b081109b1bca4a52cc43f013627b48349ae08620",
+      "stage_zip": {
+        "central_directory_readable": false,
+        "error": "BadZipFile"
+      },
+      "staging_mtime_ns": 1793846645934172181,
+      "staging_writer_pid_token": 355,
+      "terminal_receipt_completed_utc": "2026-11-05T02:44:08.005623+00:00",
+      "terminal_receipt_sha256": "ad0a88c4dd929a295746f3b49259506dd472869d1ba9ca0bc40e4e63e25f1f69",
+      "terminal_receipt_state": "complete",
+      "verified_redundant": true,
+      "writer_lock_held": true
+    }
+  ],
+  "liveness_policy": "exclusive fit writer lock plus actual outer /proc worker command/job identity; never os.kill on a filename PID token",
+  "minimum_age_seconds": 60.0,
+  "mode": "apply",
+  "pid_namespace_evidence": [
+    {
+      "job_id": "3a98e413c94b1748fe8a5f9d",
+      "namespace_pids": [
+        12259,
+        944
+      ],
+      "outer_pid": 12259
+    },
+    {
+      "job_id": "f1b4bb5c331ad5f9046c3cca",
+      "namespace_pids": [
+        12430,
+        950
+      ],
+      "outer_pid": 12430
+    }
+  ],
+  "protected_artifacts": [
+    "canonical fit.npz",
+    "chain and phase checkpoints",
+    "data",
+    "logs",
+    "all nonmatching filenames"
+  ],
+  "schema": "ks-redundant-staging-cleanup-1",
+  "started_utc": "2026-11-05T03:03:14.094790+00:00",
+  "tool_sha256": "e9398c57b3a94a1b8c0aa5b2b5ba42fac7a377fa4b2168e514ef04ff632dd541"
+}
