@@ -71,7 +71,7 @@ def build_plan(results, original_freeze, repository, models=MODELS):
             "builder_sha256": sha256(__file__),
             "model_seeds": {model: old["model_seed"] if model == "ridge_esn" else 0 for model in models},
             "seed_meaning": "ridge ESN uses the originally frozen model seed; zero is unused for closed-form deterministic families",
-            "interpretation": "fixed original point anchors; C transfers A's declared VAR settings but refits only C training data",
+            "interpretation": "fixed original point references; C transfers A's selected point-reference hyperparameters for every included family and refits only permitted C training data",
             "disk_reserve_bytes": experiment["config"]["budget"]["disk_reserve_bytes"],
             "estimated_worker_peak_bytes": 256 * 1024 ** 2, "worker_cap_bytes": 512 * 1024 ** 2}
     plan["identity"] = content_hash(plan)

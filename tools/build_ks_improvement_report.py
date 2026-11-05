@@ -432,11 +432,11 @@ def search_evidence(reader):
             selections[f"{stage}_{track}"] = raw
             if stage == "precision":
                 continue
-            for row in raw["rows"]:
+            for plot_index, row in enumerate(raw["rows"], 1):
                 candidate = reader.candidates[(track, row["id"])]
                 if row["configuration"] != candidate["config"] or row["effective_hash"] != candidate["effective_hash"]:
                     raise ValueError("Selection configuration mismatch")
-                rows.append({"stage": stage, "track": track, "candidate_id": row["id"],
+                rows.append({"stage": stage, "track": track, "plot_index": plot_index, "candidate_id": row["id"],
                     "stratum": row["stratum"], "eligible": row["eligible"], "band_crps": row["loss"],
                     "band_mse": row["point_loss"], "qualified_episodes": row["qualified_episodes"],
                     "expected_episodes": row["expected_episodes"], "failed_origins": row["failed_origins"],
@@ -675,10 +675,11 @@ def label(row):
 
 
 def readable_scale(axis, arrays):
-    positive = np.concatenate([np.asarray(a, float).ravel() for a in arrays if a is not None]) if arrays else np.array([])
-    positive = positive[np.isfinite(positive) & (positive > 0)]
-    if len(positive) and positive.max() > 50 * np.median(positive):
-        axis.set_yscale("symlog", linthresh=max(float(np.median(positive)), 1e-8))
+    parts = [np.asarray(a, float).ravel() for a in arrays if a is not None]
+    magnitudes = np.abs(np.concatenate(parts)) if parts else np.array([])
+    magnitudes = magnitudes[np.isfinite(magnitudes) & (magnitudes > 0)]
+    if len(magnitudes) and magnitudes.max() > 50 * np.median(magnitudes):
+        axis.set_yscale("symlog", linthresh=max(float(np.median(magnitudes)), 1e-8))
         axis.text(.01, .99, "symlog; every finite value retained", transform=axis.transAxes, va="top", fontsize=7)
 
 
@@ -736,21 +737,26 @@ def plot_report(reader, cohorts, search_rows, output):
             save_figure(fig, path); plt.close(fig); paths.append(path.name)
         raw = [r for r in search_rows if r["track"] == track]
         if raw:
-            fig, axes = plt.subplots(1, 2, figsize=(12, 4.6))
+            fig, axes = plt.subplots(2, 1, figsize=(10, 7.4))
             colors = {"main_fixed_prior": "#1f77b4", "prior_scale_sensitivity": "#d95f02"}
             for ax, stage in zip(axes, ("screen", "promote")):
                 stage_rows = [r for r in raw if r["stage"] == stage]
-                for i, row in enumerate(stage_rows):
+                for row in stage_rows:
                     if row["band_crps"] is not None:
-                        ax.scatter(i, row["band_crps"], color=colors.get(row["stratum"], "#777777"), s=28)
-                ax.set_xticks(range(len(stage_rows)), [r["candidate_id"] for r in stage_rows], rotation=90, fontsize=6)
-                ax.set_title(f"{stage}: {sum(r['eligible'] for r in stage_rows)}/{len(stage_rows)} eligible")
-                ax.set_ylabel("Equal-horizon-band, episode-balanced validation CRPS")
+                        ax.scatter(row["plot_index"], row["band_crps"], color=colors.get(row["stratum"], "#777777"), s=32)
+                indices = [r["plot_index"] for r in stage_rows]
+                ticks = indices if len(indices) <= 12 else sorted(set(indices[::5] + indices[-1:]))
+                ax.set_xticks(ticks, [str(i) for i in ticks], fontsize=10)
+                ax.tick_params(axis="y", labelsize=10)
+                ax.set_xlim(.3, max(indices, default=1) + .7)
+                ax.set_title(f"{stage}: {sum(r['eligible'] for r in stage_rows)}/{len(stage_rows)} eligible", fontsize=11)
+                ax.set_xlabel("Configuration index within this stage (plot_index in search_candidates.csv)", fontsize=10)
+                ax.set_ylabel("Band-balanced validation CRPS", fontsize=10)
                 vals = [r["band_crps"] for r in stage_rows if r["band_crps"] is not None]
                 if vals: readable_scale(ax, [vals])
                 ax.grid(axis="y", alpha=.2)
-            fig.suptitle(f"{track} · Bounded staged search; blue preserved-prior, orange prior sensitivity\nIneligible cases remain in the CSV with failure/qualification counts", fontsize=10)
-            fig.tight_layout(rect=(0, 0, 1, .90)); path = output / f"search_{track}.png"
+            fig.suptitle(f"{track} · Bounded staged search; exact candidate IDs and eligibility remain in search_candidates.csv\nBlue: preserved prior · orange: prior sensitivity · gray: other reference", fontsize=11)
+            fig.tight_layout(); path = output / f"search_{track}.png"
             save_figure(fig, path); plt.close(fig); paths.append(path.name)
     if reader.freeze:
         paths.extend(plot_examples(reader, output))
@@ -1008,16 +1014,63 @@ def render_markdown(report, cohorts, comparisons, figures, diagnosis):
             "eliminate long-horizon spread or establish better forecasts. This supports investigating feedback and mean dynamics; it does not "
             "prove a unique cause. The two origins share one trajectory and were already part of validation evidence. Their stochastic score "
             "differences are not a new statistically independent ranking.", ""]
+    budget = report["budget"]
+    extension = budget.get("operational_extension")
+    extension_text = []
+    if extension:
+        if (extension.get("one_prospective_extension") is not True
+                or extension.get("frozen_science_unchanged") is not True
+                or extension.get("confirmation_scores_used_for_decision") is not False
+                or extension["original_campaign_started_utc"] != budget["campaign_started_utc"]
+                or extension["search_worker_seconds_cap_unchanged"] != budget["search_worker_seconds_cap"]):
+            raise ValueError("Operational budget extension lacks its unchanged-science/time boundary")
+        extension_text = ["### One prospective operational budget extension", "",
+            f"The original executed policy allowed {extension['original_total_worker_seconds_cap'] / 3600:g} total worker hours "
+            f"and {extension['original_wall_seconds_cap'] / 3600:g} elapsed hours. The active extension allows "
+            f"{budget['total_worker_seconds_cap'] / 3600:g} total worker hours and {budget['wall_seconds_cap'] / 3600:g} elapsed hours; "
+            f"the search threshold remains {extension['search_worker_seconds_cap_unchanged'] / 3600:g} worker hours. "
+            f"The original start `{extension['original_campaign_started_utc']}` and every recorded attempt remain in the cumulative budget. "
+            "This single prospective operational decision used receipt timing and remaining-work estimates, not confirmation performance scores. "
+            "It does not reopen selection, modify the scientific configuration or remove failures. Migration rebinds experiment/freeze identities "
+            "while retaining the frozen choices and original freeze timestamp.", "",
+            f"Recorded reason: {budget['extension_reason']}", "",
+            f"Authorization recorded (UTC): `{extension['authorized_utc']}`. "
+            f"{extension.get('authorization_timestamp_scope', '')} "
+            f"Timing-only receipt SHA-256: `{extension['timing_receipt_sha256']}`. "
+            f"Original frozen-selection identity: `{extension['frozen_selection_identity']}`. "
+            f"Previous configuration SHA-256: `{extension['previous_configuration_sha256']}`. "
+            "The complete prior budget is retained in `report.json` under `budget.operational_extension.previous_budget`.", ""]
+    point_references = [r for r in cohorts if "cheap_anchor" in r.get("roles", [])]
+    auxiliary_text = [
+        "Fixed point-reference evaluations and selected-artifact checks are separate auxiliary work, outside the main campaign's "
+        "worker-attempt ledger. The reference tool has a separate 900-second default invocation scheduling threshold, checked before "
+        "each whole trajectory/model job; an admitted job may finish beyond it. The original selected point-reference hyperparameters "
+        "are fixed, with C transferring A's configuration for every included family and refitting permitted C training data only.", ""]
+    if point_references:
+        auxiliary_text += [f"Recorded auxiliary reference fit time: {sum(r['fit_seconds'] for r in point_references):.2f} seconds. "
+            f"Recorded auxiliary reference forecast time: {sum(r['forecast_seconds'] for r in point_references):.2f} seconds. "
+            "These receipt sums include available recorded work and exclude orchestration overhead; they are not end-to-end invocation times.", ""]
+    acceptance = report.get("selected_invariance")
+    if acceptance and acceptance.get("last_invocation_seconds") is not None:
+        auxiliary_text += [f"Latest recorded selected-artifact acceptance invocation: {acceptance['last_invocation_seconds']:.2f} seconds, "
+            "separately from the main campaign ledger. This is a last-invocation field, not a cumulative timing of unrecorded earlier attempts.", ""]
     text += ["## Compute, provenance, and operational recovery", "",
         f"Attempt worker wall time recorded at this snapshot: {report['operations']['attempt_worker_seconds'] / 3600:.3f} hours, "
         f"plus {report['operations']['preparation_worker_seconds']:.1f} recorded preparation seconds. "
         "Fit receipts are deduplicated by fitted-model identity; the fit and forecast costs in each cohort are shown separately in `confirmation.csv`. "
         "Search, precision and seed runs have distinct stage totals in `operations.json`. Worker wall seconds are not CPU seconds. "
         "Fit-receipt peak RSS is a per-process high-water mark, not peak simultaneous campaign memory.", "",
-        "The configured search/worker/wall budgets are scheduling thresholds: they are checked before admitting work and do not terminate "
-        "already-running jobs at the aggregate boundary. A group of up to four jobs, each with an 1800-second timeout, can overrun a nominal "
-        "worker threshold by up to 7200 worker-seconds plus shutdown overhead. The final observed consumption must be compared with the "
+        *auxiliary_text,
+        f"The active configured thresholds are {report['budget']['total_worker_seconds_cap'] / 3600:g} total worker hours, "
+        f"{report['budget']['search_worker_seconds_cap'] / 3600:g} search worker hours and "
+        f"{report['budget']['wall_seconds_cap'] / 3600:g} elapsed hours from the original campaign start "
+        f"`{report['budget']['campaign_started_utc']}`. These are scheduling thresholds: they are checked before admitting work and do not terminate "
+        f"already-running jobs at the aggregate boundary. A group of up to {report['budget']['workers']} jobs, each with a "
+        f"{report['budget']['job_timeout_seconds']:g}-second timeout, can overrun a nominal worker threshold by up to "
+        f"{report['budget']['workers'] * report['budget']['job_timeout_seconds']:g} worker-seconds plus shutdown overhead. "
+        "The final observed consumption must be compared with the "
         "nominal thresholds separately; the existence of this allowance does not establish that an overrun occurred.", "",
+        *extension_text,
         "The run_v2 operational migration reused verified preflight evidence, fits and forecast receipts and carried prior attempt time forward. "
         "Bounded launcher memory recovery, where recorded, uses cache advice only after terminal memory-admission failures and a proved "
         "closed-worker state. It does not change model code, results, numerical gates or campaign budgets. Public receipts redact private paths. "
@@ -1028,7 +1081,7 @@ def render_markdown(report, cohorts, comparisons, figures, diagnosis):
         "## Reproduction", "", "```bash", "# Existing project environment and authorized verified cache; one numerical thread.",
         "export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1",
         "export PYTHONPATH=src", "python tools/build_ks_improvement_report.py \\",
-        "  --results /data/ks_improvement_20261105/run_v2 \\", "  --output docs/applications/improvement_results", "```", "",
+        "  --results RUN_ROOT \\", "  --output docs/applications/improvement_results", "```", "",
         "The separate anchor tool requires explicit execution and a supplied original freeze; its dry preparation does not fit models. "
         "The original campaign runner owns all fits, selection and resume. Rebuilding this report cannot change selection or schedule new jobs.", "",
         "## Primary references", ""]
@@ -1165,7 +1218,7 @@ def main(argv=None):
                                       "freeze_identity": report["freeze_identity"], "rows": seed_rows, "paired_differences": seed_pairs}}
     for name, value in files.items():
         write_json(output / name, value)
-    write_csv(output / "search_candidates.csv", search_rows, ("stage", "track", "candidate_id", "stratum", "eligible",
+    write_csv(output / "search_candidates.csv", search_rows, ("stage", "track", "plot_index", "candidate_id", "stratum", "eligible",
               "band_crps", "band_mse", "qualified_episodes", "expected_episodes", "failed_origins", "pending_origins", "unqualified_fits", "preflight_exclusion", "effective_hash"))
     write_csv(output / "controlled_screen_contrasts.csv", controls, ("track", "candidate_id", "anchor_id", "category", "stratum", "aliases",
               "changed_effective_fields", "candidate_eligible", "anchor_eligible", "screen_band_crps", "delta_band_crps", "screen_band_mse", "delta_band_mse", "paired_trajectories", "interpretation"))

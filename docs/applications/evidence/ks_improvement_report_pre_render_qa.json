@@ -1,0 +1,89 @@
+{
+  "auxiliary_scope": [
+    "C transfers A selected point-reference hyperparameters for every included family, with C training-only refits.",
+    "Reference fits/forecasts and selected-artifact checks are reported separately from main worker-attempt time.",
+    "The default 900-second auxiliary reference threshold is checked between whole jobs and is not a hard running-job cutoff."
+  ],
+  "confirmation_performance_read": false,
+  "created_utc": "2026-11-05T10:36:40.316544+00:00",
+  "final_populated_artifact_qa": {
+    "items": [
+      "All populated PDF pages and table denominators",
+      "Final horizon/coverage/width/compute figure legends and extreme-value presentation",
+      "Matched main-seed versus alternative-seed populations and failure census",
+      "First, middle and final frames of each encoded animation"
+    ],
+    "status": "pending"
+  },
+  "new_model_fits": 0,
+  "numerical_or_configuration_sources_changed": false,
+  "passed_for_scope": true,
+  "posterior_npz_read": false,
+  "raw_dataset_read": false,
+  "schema": "ks-improvement-report-pre-render-qa/1",
+  "scope": "Reporting-only review and completed pre-freeze selection-figure inspection; not final scientific result acceptance",
+  "scores_recomputed": false,
+  "search_figure": {
+    "changes": [
+      "Stacked full-width panels replace side-by-side panels with tiny rotated candidate identifiers.",
+      "Stage-specific numeric plot_index maps to exact candidate_id in search_candidates.csv.",
+      "Larger axis/label fonts, explicit color meanings, all finite scores retained."
+    ],
+    "observations": "No visible clipping, overlap or illegible rotated identifier labels in the inspected PNG; final PDF placement remains pending.",
+    "preview_basename": "search_A.png",
+    "preview_bytes": 134652,
+    "preview_sha256": "f7447163976c2e11eebc4cce74699d071ff8745f54822c4e52a22fa5fa160ef3",
+    "scope": "Completed screen and promotion selection data only; no confirmation data",
+    "source_receipts": {
+      "selection/promote_A.json": {
+        "sha256": "198c9c059725e80a5df11262485276b40f3ea5196e6ed3370a292a54c4175f60"
+      },
+      "selection/screen_A.json": {
+        "sha256": "9482f02d22aec25e53d42deaad093caea48ccad802a26d6267dcf546dc1bdb04"
+      }
+    },
+    "track": "A",
+    "visual_inspection": "passed"
+  },
+  "source_audit_corrections": [
+    "Strict R-hat < 1.01 agrees with diagnostics.py; inference thresholds are unchanged.",
+    "Near-tie rule names total p times d readout coefficient count.",
+    "PDF records temporal sqrt(d-1) and spatial sqrt(p-1) normalization, spatial SD floor 1e-6, and raw circle-chord units."
+  ],
+  "source_files": {
+    "tests/test_ks_improvement_report.py": {
+      "bytes": 8306,
+      "sha256": "60012d38a3e7be6188035f2b72dc7d417c6807ba3326ad75f50444e3cec3281e"
+    },
+    "tools/build_ks_improvement_pdf.py": {
+      "bytes": 66252,
+      "sha256": "5fa4e1057647bae2548dc603b63374755648032092e00910ae1874c6c098a2ec"
+    },
+    "tools/build_ks_improvement_report.py": {
+      "bytes": 87741,
+      "sha256": "2ab989385f770f61ff9e75c56241ecb94e136cc0cfdd5a417c3c167ca67113fd"
+    },
+    "tools/evaluate_ks_improvement_anchors.py": {
+      "bytes": 15254,
+      "sha256": "ab6c73e1e7b88a83c5d7f35de774ceb8818564c78a1178c196a3435c07e62d4c"
+    }
+  },
+  "syntax_check": {
+    "files": [
+      "tools/build_ks_improvement_report.py",
+      "tools/build_ks_improvement_pdf.py",
+      "tools/evaluate_ks_improvement_anchors.py"
+    ],
+    "passed": true
+  },
+  "test_partition_read": false,
+  "tests": {
+    "command": "PYTHONPATH=src python -m pytest -q tests/test_ks_improvement_report.py",
+    "exit_code": 0,
+    "failed": 0,
+    "new_known_answer_case": "A dominant negative excursion triggers the same symlog policy as its sign reversal; signed values are unchanged; ordinary and empty arrays retain linear/default scaling.",
+    "numerical_threads": 1,
+    "passed": 8,
+    "seconds_reported_by_pytest": 0.99
+  }
+}

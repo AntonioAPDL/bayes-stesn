@@ -6,8 +6,11 @@ This branch preserves the original KS application at revision
 `2ecd8052ce2a44c9b4ed3862382594bd84598ad7`. The new driver reuses the original
 data adapter, Bayesian likelihood and prior implementation, sampler, native
 fit/checkpoint code, predictive path generator, and score definitions. Its
-104-candidate registry and finite budget are in
+104-candidate registry and original finite budget are in
 [`ks_improvement_v1.json`](../../configs/applications/ks_improvement_v1.json).
+The one prospective operational extension is recorded separately in
+[`ks_improvement_v2_budget.json`](../../configs/applications/ks_improvement_v2_budget.json);
+it preserves that scientific registry and the original campaign start.
 The [design review](ks_improvement_literature.md) explains the scientific choices.
 
 This is exploratory work after the original test results were inspected. New
@@ -56,9 +59,11 @@ document. The campaign itself audits the complete restored cache before use.
 The executed scientific source files and package versions are hashed into every
 job. A checkpoint with an incompatible identity is refused. Keep the numerical
 source and configuration unchanged while resuming. The actual running workspace
-uses the following paths; substitute only equivalent verified roots when moving
+used the following v1-budget/run_v2 paths; substitute only equivalent verified roots when moving
 the complete workspace, using the explicit migration tool if job output paths
-must change.
+must change. After the separately documented budget-only migration below, use
+the v2 budget configuration with the new run_v3 root. Do not point a changed
+configuration at a root bound to the original experiment identity.
 
 ```bash
 export PYTHONPATH="$PWD/src"
@@ -117,10 +122,13 @@ observations covering every declared run root. After advice, the unchanged
 memory and disk admission check must pass before any retry. The advice is a
 kernel hint, so it cannot guarantee that pages are released.
 
-The original campaign's four-hour elapsed scheduling budget starts at
+The original executed campaign's four-hour elapsed scheduling budget starts at
 `2026-11-05T07:38:04.272689+00:00`; its cumulative worker cap is 12 hours, with six
-reserved for confirmation and subsequent diagnostics. Resuming preserves those
-limits. They are checked before admitting another batch: already running jobs
+reserved for confirmation and subsequent diagnostics. Ordinary resuming preserves
+the bound limits. One prospective operational extension, documented below,
+raises total worker hours to 15 and elapsed hours to five while retaining the
+six-hour search threshold, every spent attempt and that same original start.
+These limits are checked before admitting another batch: already running jobs
 can finish after a threshold is crossed. With at most four workers and a
 1,800-second per-job timeout, the maximum additional in-flight allowance is
 7,200 worker seconds, plus bounded shutdown overhead; wall overrun is at most
@@ -128,6 +136,53 @@ one job timeout plus shutdown overhead. The final report must show actual
 consumption rather than describe admission checks as exact running-job cutoffs.
 An expired scheduling budget deliberately leaves unfinished work pending.
 Starting another wrapper invocation does not reset it.
+
+### One prospective budget-only extension
+
+The extension uses receipt timing and remaining-work estimates, not confirmation
+performance scores. Its complete reason, authorization time, timing-receipt
+SHA-256, original frozen-selection identity, previous-configuration SHA-256 and
+verbatim previous budget are retained in
+`ks_improvement_v2_budget.json` under `budget.operational_extension` and the
+[public decision receipt](evidence/ks_improvement_budget_extension_decision.json).
+The selected models and original selection timestamp are retained. No candidate,
+prior, likelihood, numerical source, forecast schedule, score definition or
+failure record is changed by this operational extension.
+
+Migration must wait until the coordinator and every writer have actually exited.
+Supply a fresh, genuine closure receipt for the latest observed coordinator;
+neither a stale process number nor an invented receipt establishes quiescence.
+The tool acquires the existing locks and rejects active writers. It preserves
+the source root and uses a new destination; no history is reset in place.
+
+```bash
+python tools/extend_ks_improvement_budget.py \
+  --source /data/ks_improvement_20261105/run_v2 \
+  --destination /data/ks_improvement_20261105/run_v3 \
+  --config configs/applications/ks_improvement_v2_budget.json \
+  --cache /workspace/scratch/ks_recovery_20261105T0615/cache \
+  --closed-session-receipt FRESH_CLOSED_SESSION_RECEIPT \
+  --closed-session-id OBSERVED_LATEST_SESSION_ID \
+  --projection-receipt TIMING_RECEIPT \
+  --decision-receipt docs/applications/evidence/ks_improvement_budget_extension_decision.json
+```
+
+The command above is a metadata-only dry run after acquiring locks. Add
+`--apply` to perform the authorized migration. Its receipt must verify all carried
+attempt time, unchanged scientific content and retained artifact bytes. Only the
+operational experiment/job bindings and corresponding freeze identity change;
+the original freeze time and selected rows do not. Old and new identities remain
+linked by the migration receipt.
+
+After the destination receipt passes, resume with
+`--config configs/applications/ks_improvement_v2_budget.json` and
+`--output /data/ks_improvement_20261105/run_v3`, retaining the same cache. Use
+`--stage confirm` and, after its coordinator exits, `--stage sensitivity` as
+documented above. Keep every historical root included in any bounded cache-advice
+inventory covered by genuine closure evidence. The new elapsed deadline is five
+hours after the original start, not five additional hours from migration. The
+final report derives active limits from the recorded budget and shows both the
+original and extended policy.
 
 For status without scheduling fits:
 

@@ -1,0 +1,100 @@
+{
+  "schema": "ks-improvement-budget-migration-independent-review/1",
+  "recorded_utc": "2026-11-05T10:28:51.713170+00:00",
+  "status": "tooling_review_passed_production_migration_pending",
+  "independent_review": true,
+  "reviewed_files": [
+    {
+      "path": "tools/extend_ks_improvement_budget.py",
+      "bytes": 30608,
+      "sha256": "2440f6e5dc7622a81f88779b8a80ac42a4dc8252ae3e734a09b4c15563041fea"
+    },
+    {
+      "path": "tests/test_ks_improvement_budget_extension.py",
+      "bytes": 16605,
+      "sha256": "93020400f16bda1142e626f3d694362d14b270b7fa6353e1277df90eda8b1b49"
+    },
+    {
+      "path": "configs/applications/ks_improvement_v1.json",
+      "bytes": 1097754,
+      "sha256": "ed50c944a5e108046ed5c7e74a31fe2254887f576e17d52e8c835e36e870408a"
+    },
+    {
+      "path": "configs/applications/ks_improvement_v2_budget.json",
+      "bytes": 1100280,
+      "sha256": "a7dc9ec1f22b2ce5b8e712f5db0b401a9c38b9ee8ec75be5f9e6a1a05afd0c39"
+    },
+    {
+      "path": "docs/applications/evidence/ks_improvement_budget_extension_decision.json",
+      "bytes": 2067,
+      "sha256": "a4bb68ea24ca32d0788ca122456faf55e97f389869d10badeec94db96a8ccaf7"
+    }
+  ],
+  "configuration_review": {
+    "recursive_comparison_passed": true,
+    "all_non_budget_fields_identical": true,
+    "changed_budget_fields_only": [
+      "total_worker_seconds_cap",
+      "wall_seconds_cap",
+      "extension_reason",
+      "operational_extension"
+    ],
+    "previous_total_worker_seconds_cap": 43200,
+    "extended_total_worker_seconds_cap": 54000,
+    "previous_wall_seconds_cap": 14400,
+    "extended_wall_seconds_cap": 18000,
+    "unchanged_search_worker_seconds_cap": 21600,
+    "unchanged_campaign_started_utc": "2026-11-05T07:38:04.272689+00:00",
+    "preparation_charge_and_resource_policy_unchanged": true,
+    "public_decision_identity_verified": true,
+    "unchanged_science_identity_verified": true,
+    "science_configuration_identity": "221c7b55e3ac5a771c84e729108fd74dd1fca894c77c9455adde9a30bdee3448"
+  },
+  "validation": {
+    "command": "PYTHONPATH=src python -m pytest -q tests/test_ks_improvement_budget_extension.py",
+    "numerical_threads": 1,
+    "exit_code": 0,
+    "tests_passed": 6,
+    "tests_failed": 0,
+    "pytest_reported_seconds": 1.41,
+    "scope": "Synthetic temporary fixtures only; no production model, cache, fit payload, forecast payload or performance scores were opened.",
+    "tests": [
+      "test_all_states_payloads_freeze_and_historical_charges_survive_rebinding",
+      "test_dry_run_is_metadata_only_and_busy_existing_locks_refuse",
+      "test_stale_closure_or_unfinished_attempt_cannot_be_adopted",
+      "test_scientific_change_start_reset_and_extra_resource_change_are_refused",
+      "test_native_receipt_and_forecast_identity_corruption_fail_before_publish",
+      "test_existing_or_concurrently_created_destination_is_never_overwritten"
+    ]
+  },
+  "reviewed_contracts": [
+    "Every closed attempt is copied byte-for-byte, including inherited attempts without a current job ID; all elapsed charges and the original preparation charge remain counted.",
+    "Completed, failed and inference-unqualified immutable terminal states, results and finish times are retained; jobs without immutable terminal evidence remain pending.",
+    "Fit keys and native checkpoint, chain, phase, forecast, precision, example, history and selection artifacts are preserved; no fitting, forecasting or selection occurs.",
+    "Only required experiment, output and job identifiers are rebound. The frozen choices, scientific fields and original freeze creation time remain unchanged.",
+    "Original source records are archived. The new experiment has a new migration creation time, while the explicit original campaign clock remains unchanged.",
+    "A sufficiently recent genuine coordinator-closure receipt and every existing scheduler and fit-writer lock are required.",
+    "Application-time numerical runtime, cache, native-fit and forecast identities are checked, together with copied byte counts and checksums.",
+    "The original disk reserve remains enforced. Publication requires a new destination and atomic no-replace rename; there is no overwrite fallback.",
+    "Synthetic migrated evidence remains compatible with the existing compact-package verifier and report reader."
+  ],
+  "resolved_issue": {
+    "description": "Source attempt charges were summed in sorted filename order, but destination charges were summed in filesystem order and compared with exact floating-point equality. Identical receipts could therefore produce a false accounting failure.",
+    "resolution": "Both enumerations now use sorted filename order. Every elapsed_seconds value and original receipt byte is unchanged.",
+    "regression": "The preservation fixture reverses filesystem glob enumeration and verifies exact carried accounting."
+  },
+  "limits": [
+    "Production migration was pending at this review. This receipt does not certify that files were copied or that the new run started.",
+    "Application-time source/runtime/cache validation and real native checkpoint checks were mocked or exercised only on synthetic fixtures; actual apply must pass them independently.",
+    "The timing-projection artifact was not independently recomputed or inspected in this review. Its required hash and response-independent provenance checks were reviewed in the tool and configuration.",
+    "A metadata-only dry run does not establish actual copy integrity, runtime/cache compatibility, or production quiescence at a later time.",
+    "The limits are scheduling thresholds. Already admitted jobs retain the unchanged bounded in-flight allowance; actual cumulative consumption must be reported.",
+    "This is an operational review, not certification of MCMC qualification, forecast accuracy, completed scientific stages or final artifact delivery."
+  ],
+  "production_migration": {
+    "state": "pending",
+    "executed_by_reviewer": false,
+    "active_run_modified_by_reviewer": false,
+    "frozen_numerical_sources_modified_by_reviewer": false
+  }
+}

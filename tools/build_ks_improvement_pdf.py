@@ -274,8 +274,14 @@ class Renderer:
                "applies only to score terms in the readout. Recurrent weights are sparse Gaussian draws scaled to "
                "the declared operator norm; input-weight standard deviation is input_scale divided by the square "
                "root of the incoming dimension, and fixed biases are uniform on [-0.3,0.3]. Readout feature centering "
-               "and scaling use the final two thirds of the conditioning prefix, with scale floor 0.04. The spectral "
+               "and scaling use the final two thirds of the conditioning prefix, with scale floor 0.04. The d-1 "
+               "nonintercept temporal features are then divided by sqrt(d-1). The spectral "
                "radius is measured separately and must not be confused with the configured operator norm.", "small")
+        self.p("The p-1 nonintercept spatial dictionary columns are centered on permitted training coordinates, "
+               "divided by their training-geometry standard deviations floored at 10⁻⁶, and divided by sqrt(p-1); "
+               "the intercept remains one. Both the radial-basis width and residual range ell use raw unit-circle "
+               "chord-distance units, whose maximum is two, rather than physical arc-length units. These "
+               "dimension normalizations are part of the accepted coefficient-prior interpretation.", "small")
         self.p("Each predictive path holds its static parameter draw fixed, generates the accepted spatially correlated "
                "innovations, and feeds back its own generated input-site field. Primary point forecasts average complete "
                "paths. Residual uncertainty remains part of this fitted clean-field predictive model; it is not an "
@@ -298,14 +304,14 @@ class Renderer:
             ["Training-only preflight", "All 104 candidates on trajectories 0, 5. All 208 checks passed at history 512; the common history was fixed before screening."],
             ["Initial screen", "Two trajectories, four validation origins, full permitted training panel, 256 paths. One common seed 20261105."],
             ["Promotion", "Four main candidates plus original anchor and one separate prior sensitivity; six trajectories, eight origins, 512 paths."],
-            ["Precision and freeze", "Four repeated 512-path ensembles on two fixed cases for each eligible promoted main candidate. Candidate-specific near-tie tolerance; lower readout dimension breaks near ties."],
+            ["Precision and freeze", "Four repeated 512-path ensembles on two fixed cases for each eligible promoted main candidate. Candidate-specific near-tie tolerance; lower total readout coefficient count p × d breaks near ties."],
             ["Confirmation", "Freeze first; evaluate on the other 14 trajectories, all20 validation origins. No reselection on these outcomes."],
             ["Model-seed sensitivity", "Additional seeds 20261106, 20261107 on trajectories 0, 5, 10, 15 and eight origins; matched main-seed references."],
         ], [1.25, 3.75])
         self.p("Selection minimizes episode-balanced CRPS, with equal weights for the mean losses in leads 1-10, 11-25, "
                "26-50 and 51-100. Reported ordinary 100-step CRPS and RMSE are distinct summaries. MCMC keeps four chains, "
                "1000 warmup and 2000 retained states per chain, with one bounded 2000-draw continuation. Qualification "
-               "requires rank-normalized split R-hat at most 1.01 and bulk/tail ESS ≥ 400 for monitored quantities [3].")
+               "requires rank-normalized split R-hat strictly below 1.01 and bulk/tail ESS ≥ 400 for monitored quantities [3].")
         self.p("All sampled hyperstates are checked. All readout coefficients and ten scale/readout/predictive functionals "
                "are checked using 512 evenly spaced retained states per chain. Predictive precision repetitions measure "
                "conditional simulation variability; they are not substitutes for chain convergence or trajectory-level uncertainty.")
@@ -484,7 +490,7 @@ class Renderer:
     def figure_pages(self):
         for track in self.r["tracks"]:
             for name, title, caption in [
-                (f"search_{track}.png", f"6{track}. Search evidence", "All evaluated configurations retain their eligibility and failure counts in search_candidates.csv. Legacy prior references, fixed-prior candidates and prior sensitivity remain separate. These scores are selection data."),
+                (f"search_{track}.png", f"6{track}. Search evidence", "Configuration indices map to plot_index and the exact candidate_id within each track/stage in search_candidates.csv. All evaluated configurations retain their eligibility and failure counts there. Legacy prior references, fixed-prior candidates and prior sensitivity remain separate. These scores are selection data."),
                 (f"compute_{track}.png", f"7{track}. Accuracy and compute", "Fitting cost is measured wall time per fitted model. Forecast and search time are reported separately; neither candidate count nor epoch count alone measures comparable opportunity."),
                 (f"example_{track}_t01_a6000.png", f"8{track}. Predeclared space-time example", "Trajectory 1, first target 6000 was fixed before confirmation. Only official validation target sites are scored. The site map distinguishes permitted inputs from held-out targets; categorical target rows do not imply interpolation of a fully observed field."),
                 (f"intervals_{track}_t01_a6000.png", f"9{track}. Predictive intervals at fixed coordinates", "Coordinates follow the first/middle/last official target-site rule. These are marginal 90% clean-field predictive intervals. They do not describe simultaneous field or path coverage."),
@@ -584,7 +590,7 @@ class Renderer:
                              f"{d['extrema_blocks']}/{d['expected_blocks']}"])
         self.table(["Block", "Recorded chain counts", "Diagnostic states per chain", "Finite extrema / block receipts"],
                    observed, [1.3, 1.1, 1.7, 1.7])
-        self.p("The gate requires four chains, rank-normalized split R-hat ≤ 1.01 and bulk/tail ESS ≥ 400. "
+        self.p("The gate requires four chains, rank-normalized split R-hat strictly below 1.01 and bulk/tail ESS ≥ 400. "
                "Hyperparameters use all retained sampled states. Every readout coefficient and the ten monitored "
                "functionals are checked on 512 evenly spaced retained states per chain; this disclosed diagnostic "
                "subsample does not exclude coefficient directions. The one allowed continuation adds 2000 retained "
@@ -645,19 +651,71 @@ class Renderer:
     def operations(self):
         self.heading("10. Computation, acceptance and limitations")
         ops = self.r["operations"]
+        budget = self.r["budget"]
+        total_hours = budget["total_worker_seconds_cap"] / 3600
+        search_hours = budget["search_worker_seconds_cap"] / 3600
+        elapsed_hours = budget["wall_seconds_cap"] / 3600
+        reserved_hours = total_hours - search_hours
         self.table(["Stage", "Worker wall hours"], [[k, fmt(v/3600,3)] for k,v in ops["attempt_worker_seconds_by_stage"].items()] +
                    [["Recorded preparation", fmt(ops["preparation_worker_seconds"]/3600,3)],
                     ["Cumulative attempt + preparation", fmt((ops["attempt_worker_seconds"]+ops["preparation_worker_seconds"])/3600,3)]], [3,2])
-        self.p("The environment has an 8-core CPU quota and an 8 GiB container memory limit; no GPU was used. Four model "
-               "workers run with one numerical thread each. The measured 512-unit pilot required 64.82 s for a qualified fit, "
+        references = [r for r in self.r["confirmation"] if "cheap_anchor" in r.get("roles", [])]
+        if references:
+            self.table(["Separate auxiliary work", "Measured seconds", "Timing scope"], [
+                ["Fixed point-reference fitting", fmt(sum(r["fit_seconds"] for r in references), 2),
+                 "Sum of available fitted-model receipts; excluded from main worker ledger"],
+                ["Fixed point-reference forecasting", fmt(sum(r["forecast_seconds"] for r in references), 2),
+                 "Sum of recorded origin forecasts, including recorded failures; excluded from main worker ledger"]],
+                [1.6, 1, 2.8])
+        self.p("The fixed point-reference evaluation and selected-artifact acceptance checks are separate auxiliary "
+               "work, not part of the main campaign's recorded worker-attempt total. The reference tool's default "
+               "900-second invocation limit is checked before each whole trajectory/model job; an admitted job can "
+               "finish beyond that threshold. Reference fit/forecast timings exclude orchestration overhead and are "
+               "not substituted for an end-to-end invocation time. The accepted reference configurations are fixed "
+               "before these auxiliary evaluations; no new tuning is performed.", "small")
+        self.p("The environment has an 8-core CPU quota and an 8 GiB container memory limit; no GPU was used. "
+               f"Up to {budget['workers']} model workers use {budget['threads_per_worker']} numerical thread(s) each. "
+               "The measured 512-unit pilot required 64.82 s for a qualified fit, "
                "5.53 s for one 256-path forecast and 537,538,560 bytes peak RSS. Derived matrices use the accepted separable "
                "structure; the full space-time tensor design and a giant readout covariance are not materialized.")
-        self.p("The configured admission thresholds are 12 worker hours overall, 6 worker hours for search, and 4 elapsed "
-               "hours; six worker hours are reserved for confirmation and diagnostics. Already admitted jobs may finish "
-               "after a threshold. At four workers with 1800-second per-job timeouts, this creates a bounded in-flight "
-               "overrun allowance. Actual recorded use, not the nominal threshold alone, determines budget compliance.")
+        self.p(f"The active configured admission thresholds are {total_hours:g} worker hours overall, "
+               f"{search_hours:g} worker hours for search, and {elapsed_hours:g} elapsed hours. The difference "
+               f"({reserved_hours:g} worker hours) is reserved for confirmation and diagnostics. The campaign clock "
+               f"starts at {html.escape(budget['campaign_started_utc'])}; resuming does not restart it. "
+               f"Already admitted jobs may finish after a threshold. At {budget['workers']} workers with "
+               f"{budget['job_timeout_seconds']:g}-second per-job timeouts, the maximum additional admitted group "
+               f"represents {budget['workers'] * budget['job_timeout_seconds']:g} worker seconds, plus shutdown overhead. "
+               "Actual recorded use, not the nominal threshold alone, determines budget compliance.")
+        extension = budget.get("operational_extension")
+        if extension:
+            if (extension.get("one_prospective_extension") is not True
+                    or extension.get("frozen_science_unchanged") is not True
+                    or extension.get("confirmation_scores_used_for_decision") is not False
+                    or extension["original_campaign_started_utc"] != budget["campaign_started_utc"]
+                    or extension["search_worker_seconds_cap_unchanged"] != budget["search_worker_seconds_cap"]):
+                raise ValueError("Operational budget extension lacks the recorded unchanged-science/time boundary")
+            self.p("One prospective operational extension", "h2")
+            self.table(["Scheduling policy", "Total worker hours", "Search worker hours", "Elapsed hours"], [
+                ["Original executed policy", extension["original_total_worker_seconds_cap"] / 3600,
+                 extension["search_worker_seconds_cap_unchanged"] / 3600,
+                 extension["original_wall_seconds_cap"] / 3600],
+                ["Active extended policy", total_hours, search_hours, elapsed_hours]], [1.8, 1.2, 1.2, 1.1])
+            self.p("The extension was authorized prospectively from receipt timing and remaining-work estimates. "
+                   "Confirmation performance scores were not used for that decision. It preserves the original "
+                   "campaign start and all spent worker time; it does not restart the clock, reopen selection, "
+                   "change the scientific configuration or erase failures. Migration rebinds the experiment and "
+                   "freeze identities to the operational configuration while retaining the frozen choices and "
+                   "original freeze timestamp. The source run and previous configuration remain evidence.")
+            self.p("Recorded reason: " + html.escape(budget["extension_reason"]), "small")
+            self.table(["Extension provenance", "Recorded value"], [
+                ["Authorization recorded (UTC)", extension["authorized_utc"]],
+                ["Timing-only receipt SHA-256", extension["timing_receipt_sha256"]],
+                ["Original frozen-selection identity", extension["frozen_selection_identity"]],
+                ["Previous configuration SHA-256", extension["previous_configuration_sha256"]]], [1.5, 3.5])
+            if extension.get("authorization_timestamp_scope"):
+                self.p(html.escape(extension["authorization_timestamp_scope"]), "small")
         self.p("Scheduling also requires the 1.5× worker-memory estimate to fit the combined allowance and 65% of "
-               "container-aware headroom. The disk reserve is 12,565,873,460 bytes. Cache advice releases pages of closed "
+               f"container-aware headroom. The disk reserve is {budget['disk_reserve_bytes']:,} bytes. Cache advice releases pages of closed "
                "fit files after proved child termination; it neither deletes checkpoints nor relaxes admission.")
         self.p("An early mutable-ledger inconsistency was repaired by verifying 208 immutable preflight artifacts, "
                "carrying their identities and prior time forward, and adopting immutable terminal receipts as authority. "
@@ -669,6 +727,10 @@ class Renderer:
                    f"failed={a['failed_cases']}, complete={a['complete']}. Tests fix fitted parameters and randomness, "
                    "perturb hidden histories and future labels, and separately refit preprocessing/features on unchanged "
                    "permitted training inputs. They establish output separation, not future-free physical disk access.")
+            if a.get("last_invocation_seconds") is not None:
+                self.p(f"The recorded latest acceptance-check invocation took {fmt(a['last_invocation_seconds'], 2)} "
+                       "seconds, separately from the campaign worker ledger. This field is the latest invocation, "
+                       "not an assertion that earlier attempts required zero time.", "small")
         self.p("The finite search can leave important settings at a search boundary. Conditional confirmation can "
                "support improvement within this experiment, but cannot establish a globally optimal architecture. "
                "A larger capacity, a changed reservoir normalization or a different periodic basis would be a separately "

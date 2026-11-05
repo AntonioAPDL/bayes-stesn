@@ -140,3 +140,29 @@ def test_anchor_nonfinite_is_numerical_failure_but_shape_error_is_not():
     with pytest.raises(ValueError, match="shape"):
         module.physical_prediction(np.ones((1, 2)), transform, (1, 1))
     assert module.physical_prediction(np.array([[2.]]), transform, (1, 1)).item() == 2.
+
+
+def test_display_scale_detects_negative_extremes_without_changing_signed_values():
+    class Axis:
+        transAxes = None
+
+        def __init__(self):
+            self.scale = None
+
+        def set_yscale(self, name, **kwargs):
+            self.scale = (name, kwargs)
+
+        def text(self, *args, **kwargs):
+            pass
+
+    values = np.array([-1e9, -1., 0., 1., 2., 3.])
+    original = values.copy()
+    negative, positive = Axis(), Axis()
+    report.readable_scale(negative, [values])
+    report.readable_scale(positive, [-values])
+    assert negative.scale == positive.scale == ("symlog", {"linthresh": 2.})
+    np.testing.assert_array_equal(values, original)
+    ordinary, empty = Axis(), Axis()
+    report.readable_scale(ordinary, [np.array([-3., -1., 0., 1., 2.])])
+    report.readable_scale(empty, [None])
+    assert ordinary.scale is None and empty.scale is None
