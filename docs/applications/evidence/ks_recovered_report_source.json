@@ -1,0 +1,70 @@
+{
+  "created_utc": "2026-11-05T06:19:22.420674+00:00",
+  "diagnostic_script_executed": false,
+  "diagnostic_script_syntax_parse_passed": true,
+  "full_original_diagnosis_json_recovered": false,
+  "git_diff_check": "passed",
+  "historical_consumer_check": {
+    "elapsed_seconds": 0.825,
+    "historical_receipt_sha256": "175002af40545895803f6beb83e6f75526ae93802a5cca7d4936943ad3e9d730",
+    "passed": 1,
+    "rerun_on_recovery_host": false,
+    "tests": 1
+  },
+  "no_fake_runner_summary_created": true,
+  "no_production_report_run": true,
+  "no_scientific_refit_or_forecast": true,
+  "old_workspace_path_recreated": false,
+  "original_diagnosis_json_sha256": "225b61a3e38e70f85249ba2d31719bccd0f2b9cfae027ea6ea6dc844305b79a9",
+  "public_recovery_source_sha256": "25fc74f96c36950c9e11c5d8228ce3b556b3a5f13ac2fbe6b5fb27ad2ea49538",
+  "reconstructed_diagnosis_summary": "private/retained_contiguous_diagnosis_facts.json",
+  "reconstructed_summary_limitation": "Transcript-derived NEW summary with retained verified values/check descriptions. It is not the original 48-check audit and cannot supply missing source-artifact hashes or be passed as the original diagnostic receipt.",
+  "record_type": "NEW recovery record; not a replacement for an original run/audit receipt",
+  "recovered_repository_files": [
+    {
+      "bytes": 143319,
+      "matches_pre_outage_hash": true,
+      "path": "src/bayes_stesn/applications/ks_report.py",
+      "sha256": "1d3d05dc9caa42b71e9e94cec42315a2306807fb0e9f93a627b0726d547d8deb",
+      "syntax_parse_passed": true
+    },
+    {
+      "bytes": 6692,
+      "matches_pre_outage_hash": true,
+      "path": "tests/test_ks_report_presentation.py",
+      "sha256": "3fd03b8c7687d9f17a7eb855911e615956f9abb8e454ca9b7f514427a91124e7",
+      "syntax_parse_passed": true
+    }
+  ],
+  "recovery_method": "Reapplied exact code deltas retained in prior apply_patch tool-call context to the published base; checked both resulting SHA-256 values against their recorded pre-outage hashes.",
+  "recovery_support_files": [
+    {
+      "bytes": 11099,
+      "path": "private/ks_report_final.patch",
+      "sha256": "110bb2dd883cb0d587db86c6f82ec287520e239f6580de0eae5b764eacdb9410"
+    },
+    {
+      "bytes": 2119,
+      "path": "private/ks_report_presentation_final.patch",
+      "sha256": "30925b32e313a8a3c48f9709fb0c0ea3fe2b6ec59849ac777a7ef1970ca520cb"
+    },
+    {
+      "bytes": 14327,
+      "path": "private/ks_report_recovery_packet.json",
+      "sha256": "0cf71af41575e395c1ec60abfb369aac5a07b8f6fb54157fd7de4dc2a89bbb85"
+    },
+    {
+      "bytes": 15127,
+      "path": "private/diagnose_ks_contiguous_geometry.py",
+      "sha256": "42f9f5481c1f61e6eb67825f12f7df9027da01a0cfe14bc548416a84a26c8f2e"
+    },
+    {
+      "bytes": 12897,
+      "path": "private/retained_contiguous_diagnosis_facts.json",
+      "sha256": "7569d2bffaa6b2a6901dc1198f7c0348d9963be516ee8843d7c46c4d76c632e3"
+    }
+  ],
+  "schema": "ks-report-source-recovery-provenance/1",
+  "source_base_report_sha256": "7059d6bed5ecc85c8962345fd5fba9954f63530a917777e171c24f1e497de337",
+  "source_base_revision": "7802ddddc2c0cf27cc54ce00490e3d0affd8f681"
+}

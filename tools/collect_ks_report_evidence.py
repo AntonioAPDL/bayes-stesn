@@ -391,7 +391,9 @@ def collect(results, *, repo, workspace=None, published_commit=None, local_revis
     preflight = read(preflight_path) if preflight_path.exists() else None
     extra_acceptance = {}
     extra_names = ["ks_core_candidate_invariance.json", "ks_validation_audit_early.json", "ks_validation_promotion_A_audit.json",
-                   "ks_contiguous_history_check.json"]
+                   "ks_contiguous_history_check.json", "ks_main_tracks_audit_v2.json",
+                   "ks_final_extensions_audit.json", "ks_nvar_B_selection_audit.json",
+                   "ks_contiguous_spatial_representation_diagnosis.json"]
     extra_names.extend(path.name for path in sorted((repo/"docs/applications/evidence").glob("ks_memory_recovery_*.json")))
     for name in extra_names:
         path = repo/"docs/applications/evidence"/name
@@ -403,9 +405,9 @@ def collect(results, *, repo, workspace=None, published_commit=None, local_revis
                     raise ValueError("Contiguous history evidence belongs to another frozen selection")
             elif value.get("experiment_identity") != experiment["identity"]:
                 raise ValueError("Additional acceptance evidence belongs to another experiment")
-            if name.startswith("ks_memory_recovery_") and value.get("freeze_identity") is not None:
+            if value.get("freeze_identity") is not None:
                 if frozen is None or value["freeze_identity"] != frozen["identity"]:
-                    raise ValueError("Operational recovery evidence belongs to another frozen selection")
+                    raise ValueError("Additional evidence belongs to another frozen selection")
             extra_acceptance[name.removesuffix(".json")] = value
     external = None
     observer_path = repo/"tools/watch_ks_resources.py"

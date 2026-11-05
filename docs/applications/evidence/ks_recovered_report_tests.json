@@ -1,0 +1,12 @@
+{
+  "schema": "ks-recovered-report-tests/1",
+  "created_utc": "2026-11-05T06:23:52.397072+00:00",
+  "test": "tests/test_ks_report_presentation.py",
+  "passed": 5,
+  "failed": 0,
+  "elapsed_seconds": 1.27,
+  "environment": "project venv with matching NumPy/SciPy and pytest 9.2.0; single numerical thread",
+  "scientific_fits": 0,
+  "scientific_forecasts": 0,
+  "scope": "report presentation and strict diagnosis-consumer guards; does not revalidate missing original result bytes"
+}

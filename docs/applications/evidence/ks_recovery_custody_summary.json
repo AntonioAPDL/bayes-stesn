@@ -1,0 +1,29 @@
+{
+  "availability": {
+    "input_delivery_objects_retrieved_and_verified": 4,
+    "main_aggregate_evidence_recovered": true,
+    "original_extension_audit_bytes_recovered": false,
+    "original_full_geometry_diagnosis_bytes_recovered": false,
+    "original_full_multipart_backup_created": false,
+    "original_result_directory": false,
+    "private_study_backup_objects_recovered": 2
+  },
+  "base_commit": "7802ddddc2c0cf27cc54ce00490e3d0affd8f681",
+  "base_tree": "61777a154c276cb5a51312d6ab044a963399eb06",
+  "checks": {
+    "authoritative_core_source_files_unchanged": 43,
+    "canonical_experiment_and_freeze_hashes_match": true,
+    "freeze_bound_numerical_source_hashes_match": 51,
+    "numeric_discrepancies": 0,
+    "numeric_leaves_compared": 4421,
+    "published_main_audit_sha256": "fe4448818eda7e7f3ead715d989e5900db5464d47ddd446ce357c161e792f4c0",
+    "restored_fit_internal_content_checksum_passed": true,
+    "restored_fit_zip_members_crc_passed": 8038,
+    "verbatim_main_rows": 17,
+    "verbatim_six_lead_rows": 102
+  },
+  "created_utc": "2026-11-05T06:24:29.131940+00:00",
+  "private_custody_sha256": "61f02ee059f25944d07163809a4cd0200e91c0b9055772702054b30425563ad7",
+  "schema": "ks-recovery-custody-public-summary/1",
+  "scope": "Verifies recovered files and an exact extract of the published historical main audit. Does not re-audit missing per-origin results or certify new example outputs. The recorded terminal campaign status is separate from current artifact availability."
+}

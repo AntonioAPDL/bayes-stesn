@@ -1,0 +1,464 @@
+{
+  "C_displayed_results": [
+    {
+      "complete_trajectories": 20,
+      "coverage90": "0.9399416667",
+      "crps": "905.339301313",
+      "finite_divergent": 400,
+      "mae": "1121.88715",
+      "model": "bayes_stesn",
+      "nonfinite_failed": 0,
+      "nrmse": "1770.78294",
+      "rmse": "2106.688961895",
+      "rmse_ci95": [
+        "1256.0327066503853",
+        "3584.9409985847174"
+      ],
+      "vpt_steps": "1",
+      "width90": "6877.457476"
+    },
+    {
+      "complete_trajectories": 20,
+      "coverage90": "0.83630625",
+      "crps": "0.857928149",
+      "finite_divergent": 0,
+      "mae": "1.19035993",
+      "model": "separable_gp",
+      "nonfinite_failed": 0,
+      "nrmse": "1.27599956",
+      "rmse": "1.51782523",
+      "rmse_ci95": [
+        "1.4427397945234586",
+        "1.6003662033212323"
+      ],
+      "vpt_steps": "2.4425",
+      "width90": "4.30001928"
+    },
+    {
+      "complete_trajectories": 20,
+      "coverage90": "0.909016667",
+      "crps": "2.93333159",
+      "finite_divergent": 95,
+      "mae": "3.34535123",
+      "model": "basis_gru",
+      "nonfinite_failed": 0,
+      "nrmse": "4.23025709",
+      "rmse": "5.03609276",
+      "rmse_ci95": [
+        "4.475588234528828",
+        "5.609193738172471"
+      ],
+      "vpt_steps": "1.23",
+      "width90": "26.4767838"
+    },
+    {
+      "complete_trajectories": 20,
+      "finite_divergent": 0,
+      "mae": "1.78073937",
+      "model": "ridge_esn",
+      "nonfinite_failed": 0,
+      "nrmse": "1.87477419",
+      "rmse": "2.23027710",
+      "rmse_ci95": [
+        "2.1132187563186315",
+        "2.3527415910643588"
+      ],
+      "vpt_steps": "1.71"
+    },
+    {
+      "complete_trajectories": 20,
+      "finite_divergent": 0,
+      "mae": "1.06143944",
+      "model": "linear_var",
+      "nonfinite_failed": 0,
+      "nrmse": "1.09556877",
+      "rmse": "1.30296880",
+      "rmse_ci95": [
+        "1.2570694775313744",
+        "1.3489267159568648"
+      ],
+      "vpt_steps": "2.2925"
+    },
+    {
+      "complete_trajectories": 20,
+      "finite_divergent": 0,
+      "mae": "1.22009078",
+      "model": "persistence",
+      "nonfinite_failed": 0,
+      "nrmse": "1.26163637",
+      "rmse": "1.50009999",
+      "rmse_ci95": [
+        "1.4262297518522788",
+        "1.5772731880236919"
+      ],
+      "vpt_steps": "2.0775"
+    },
+    {
+      "complete_trajectories": 20,
+      "finite_divergent": 0,
+      "mae": "0.975309785",
+      "model": "training_mean",
+      "nonfinite_failed": 0,
+      "nrmse": "0.995444579",
+      "rmse": "1.18436790",
+      "rmse_ci95": [
+        "1.1394554188188097",
+        "1.2290382356622755"
+      ],
+      "vpt_steps": "3.225"
+    },
+    {
+      "accuracy_population_origins": 0,
+      "complete_trajectories": 0,
+      "completed_fits": 20,
+      "failed_fits": 0,
+      "failure_or_divergence": 297,
+      "finite_divergent": 37,
+      "finite_origins": 140,
+      "full_schedule_point_score_defined": false,
+      "model": "pod_nvar",
+      "nonfinite_failed": 260,
+      "rmse": null
+    }
+  ],
+  "C_lead_values": {
+    "bayes_coverage90": [
+      0.1329166667,
+      0.4452083333,
+      0.8170833333,
+      0.9841666667,
+      0.999375,
+      0.9995833333
+    ],
+    "bayes_crps": [
+      1809.2838869419688,
+      1401.2258732854916,
+      1156.392096380473,
+      775.653813837832,
+      819.5016109077876,
+      874.116113107242
+    ],
+    "bayes_rmse": [
+      3607.92534838161,
+      3276.849598290114,
+      2976.9304717900286,
+      1654.8387441343875,
+      1682.821122228734,
+      1840.7411639443671
+    ],
+    "bayes_width90": [
+      662.6811019338454,
+      2449.576531026797,
+      5319.8538983000135,
+      7387.458681069591,
+      7482.664656371891,
+      7349.9944333530875
+    ],
+    "gru_coverage90": [
+      0.1522916667,
+      0.7839583333,
+      0.7858333333,
+      0.8685416667,
+      0.9472916667,
+      0.9847916667
+    ],
+    "gru_rmse": [
+      7.314917811287953,
+      5.403536818115123,
+      5.012582248827078,
+      5.177370525575,
+      4.641196369611854,
+      4.4864001202679935
+    ],
+    "gru_width90": [
+      0.7820865773,
+      17.84569322,
+      19.11192526,
+      22.69744761,
+      27.83692789,
+      32.15139378
+    ],
+    "horizons": [
+      1,
+      5,
+      10,
+      25,
+      50,
+      100
+    ]
+  },
+  "bayes_diagnostic_displayed_extrema": {
+    "C": {
+      "coeff_max_rhat": 1.009063015079027,
+      "coeff_min_bulk_ess": 1237.6006834678399,
+      "coeff_min_tail_ess": 1135.6175018969602,
+      "continued": 1,
+      "failed_monitored_parameters": 0,
+      "fits": 20,
+      "functional_max_rhat": 1.0052568962860442,
+      "functional_min_bulk_ess": 668.798640736188,
+      "functional_min_tail_ess": 878.6607314646488,
+      "hyper_max_mcse_over_sd": 0.04065527646728798,
+      "hyper_max_rhat": 1.0087083437564601,
+      "hyper_min_bulk_ess": 608.0506975790641,
+      "hyper_min_tail_ess": 744.6178418744538,
+      "initial": 19,
+      "qualified": 20
+    },
+    "sensitivity": {
+      "coeff_max_rhat": 1.007625680266715,
+      "coeff_min_bulk_ess": 1270.7177463813812,
+      "coeff_min_tail_ess": 1114.3007784297,
+      "continued": 3,
+      "failed_monitored_parameters": 0,
+      "fits": 16,
+      "functional_max_rhat": 1.0050073101805115,
+      "functional_min_bulk_ess": 636.4104977299872,
+      "functional_min_tail_ess": 852.852483379875,
+      "hyper_max_rhat": 1.0096887696243346,
+      "hyper_min_bulk_ess": 603.0310933192312,
+      "hyper_min_tail_ess": 786.5844600110245,
+      "initial": 13,
+      "qualified": 16
+    }
+  },
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "freeze_identity": "ca6d8dac49208767f0073a747a3fbc7ee37648715a22abc32e539378b75756dc",
+  "freeze_sha256": "90e9a5e82e077eae15c19ae887496f1ec4b4fc706925d961ae539852efd699e8",
+  "last_verified_files": [
+    {
+      "available_in_context": "final edit text and substantial source excerpts; not a full byte-identical copy",
+      "bytes": 153689,
+      "path": "tools/build_ks_pdf.py",
+      "sha256": "d3954e62bf635e05861d522eafba571df254deac47682d7a91dbf0c71d878a90"
+    },
+    {
+      "available_in_context": "identity, check counts, filtered bindings, conclusions and many scalar/lead values; original complete file unavailable",
+      "bytes": 665973,
+      "path": "docs/applications/evidence/ks_final_extensions_audit.json",
+      "sha256": "77f62520bb50420b3bc24844f3c43b3bfeea42ac47a50571ba03a87ffa8cc98b"
+    },
+    {
+      "available_in_context": "substantial exact tool output; other agent owns diagnosis",
+      "bytes": 39174,
+      "path": "docs/applications/evidence/ks_contiguous_spatial_representation_diagnosis.json",
+      "sha256": "225b61a3e38e70f85249ba2d31719bccd0f2b9cfae027ea6ea6dc844305b79a9"
+    },
+    {
+      "available_in_context": "full displayed tool output; source-audit agent owns operational evidence",
+      "bytes": 8860,
+      "path": "docs/applications/evidence/ks_final_cleanup.json",
+      "sha256": "920c7f9bab3ece04f45a964e8cb1e9a4e576d37f0b9c7f62501e6154d402cc36"
+    },
+    {
+      "available_in_context": "hash and role, not full source",
+      "bytes": 40618,
+      "path": "private/audit_ks_extensions_20261105.py",
+      "sha256": "9675e438b387d995cfec95c4fa9180a369d45458127fa1cbf05c2ec694a16c87"
+    },
+    {
+      "available_in_context": "hash and role, not full source",
+      "bytes": 30947,
+      "path": "private/audit_ks_main_historical_20261105.py",
+      "sha256": "13029d81d8d311da8c759a5e48d799f435bbc469b5fbda9ae2e31f1437ce21fd"
+    }
+  ],
+  "limitations": [
+    "The old workspace was not available when recovery began. This record does not establish its disappearance mechanism.",
+    "This is not the original 665973-byte final extension audit. Full origin receipts, arrays, fitted checkpoints and complete audit content must be recovered independently.",
+    "Scalar strings retain the precision present in agent messages/summary; some are rounded and are not suitable for reconstituting original JSON hashes.",
+    "No scientific computations, fits, forecasts, scoring, selection or summary generation were performed during this recovery."
+  ],
+  "matched_seed_displayed_results": {
+    "additional_scheduled_origins": 1120,
+    "all_56_additional_fits_complete": true,
+    "cnn_alternative_minus_main": [
+      {
+        "ci95": [
+          -0.0770862466019227,
+          0.34515357442542444
+        ],
+        "mean": 0.13403366391175087,
+        "seed": 20261106
+      },
+      {
+        "ci95": [
+          -0.3049624455129624,
+          0.6497003689167209
+        ],
+        "mean": 0.1723689617018792,
+        "seed": 20261107
+      }
+    ],
+    "crps": {
+      "A_bayes": [
+        0.81478192,
+        0.8117509118,
+        0.8338504101
+      ],
+      "A_gru": [
+        0.6493218985,
+        0.6605366261,
+        0.6805762908
+      ],
+      "B_bayes": [
+        0.7353741109,
+        0.7331621501,
+        0.7281916597
+      ],
+      "B_gru": [
+        0.58224473,
+        0.6280955468,
+        0.6298600429
+      ]
+    },
+    "finite_divergent": 0,
+    "interpretation": "Four matched trajectory clusters only; main-seed four-case means are not the main twenty-case means. These sensitivity fits were not used to choose a seed.",
+    "nonfinite_failed": 0,
+    "rmse": {
+      "A_bayes": [
+        1.3742434722,
+        1.3423564004,
+        1.3927213693
+      ],
+      "A_esn": [
+        1.371698553,
+        1.299407686,
+        1.3068077867
+      ],
+      "A_gru": [
+        1.1565280014,
+        1.1872357228,
+        1.1967582583
+      ],
+      "B_bayes": [
+        1.2290973214,
+        1.2257195063,
+        1.2168698256
+      ],
+      "B_cnn": [
+        0.7366854974,
+        0.8707191613,
+        0.9090544591
+      ],
+      "B_esn": [
+        1.2663135164,
+        1.2832125958,
+        1.3279799988
+      ],
+      "B_gru": [
+        1.0901074818,
+        1.1575635913,
+        1.1616253825
+      ]
+    },
+    "seeds": [
+      20261105,
+      20261106,
+      20261107
+    ],
+    "trajectories": [
+      0,
+      5,
+      10,
+      15
+    ]
+  },
+  "origin_census": {
+    "contiguous_C": {
+      "failure_or_divergence": 792,
+      "finite": 2940,
+      "finite_divergent": 532,
+      "fit_failure_placeholders": 0,
+      "inference_unqualified_finite": 0,
+      "nonfinite_failed": 260,
+      "pending": 0,
+      "scheduled": 3200
+    },
+    "sensitivity_A_B": {
+      "finite": 1120,
+      "finite_divergent": 0,
+      "inference_unqualified_finite": 0,
+      "nonfinite_failed": 0,
+      "pending": 0,
+      "scheduled": 1120
+    }
+  },
+  "original_extension_subset_bindings": {
+    "fingerprints": {
+      "episodes": {
+        "count": 216,
+        "records_sorted_by": [
+          "track",
+          "model",
+          "seed",
+          "trajectory"
+        ],
+        "sha256": "c6355cf5946111f12437f8a70c443d1b45a334a411665271cb9eb28e470d9b4a"
+      },
+      "horizon_curves": {
+        "count": 196,
+        "records_sorted_by": [
+          "track",
+          "model",
+          "seed",
+          "trajectory"
+        ],
+        "sha256": "6402b8dfe2181a0c047ed73b020bbb102c71d6dc42a934c699853141bc0c69f4"
+      },
+      "paired_comparisons": {
+        "count": 35,
+        "records_sorted_by": [
+          "track",
+          "reference",
+          "comparator",
+          "metric"
+        ],
+        "sha256": "fbea829c8cb86a936592d93868b934eeb5fefd3f88f7f64b21bc6a10e0f769da"
+      },
+      "summary_rows": {
+        "count": 22,
+        "records_sorted_by": [
+          "track",
+          "model",
+          "seed"
+        ],
+        "sha256": "962929c8add61bdc86f9ee4afb21bc14ad15fd5bb0029ab4482c70a81bb6ff1f"
+      }
+    },
+    "main_seed": 20261105,
+    "schema": "ks-extension-audit-subset-bindings/1",
+    "scope": "A/B alternative seeds and contiguous C; paired comparisons C only"
+  },
+  "original_terminal_audit": {
+    "C_paired_comparisons": 35,
+    "discrepancies": 0,
+    "elapsed_seconds": 7.586030978000053,
+    "exact_metadata_checks": 321275,
+    "extension_episodes": 216,
+    "forecasts": 0,
+    "matched_export_comparison_at_audit": "not_yet_exported",
+    "matched_seed_contrasts": 22,
+    "matched_seed_rows": 21,
+    "model_fits": 0,
+    "numeric_checks": 65100,
+    "numerical_source_changes": 0,
+    "passed": true,
+    "peak_rss_bytes": 152072192,
+    "predeclared_examples_checked": 7,
+    "scheduled_extension_origins": 4320,
+    "selection_changes": 0,
+    "summary_commands_invoked": 0
+  },
+  "original_workspace": "<original-workspace>",
+  "personal_context_retrieval": "Personal context is unavailable for this conversation.",
+  "public_recovery_source_sha256": "780a98811222b8d72fefad8e758fd4ff810f76b2ab097caccd7b3edf83e09ead",
+  "recorded_utc": "2026-11-05T06:16:05.574488+00:00",
+  "schema": "ks-transcript-recovery-record/1",
+  "status": "partial_recovery_from_agent_context_not_original_result_receipt",
+  "store_search": {
+    "found": 0,
+    "key_enumeration_api_available": false,
+    "plausible_key_count_checked": 19
+  }
+}

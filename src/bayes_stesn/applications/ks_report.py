@@ -281,6 +281,39 @@ def _json_identity(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
 
 
+def verify_contiguous_diagnosis(diagnosis, frozen, *, results, repository):
+    """Bind a post-test explanatory receipt without recomputing any model."""
+    if (diagnosis.get("schema") != "ks-contiguous-spatial-representation-diagnosis/1"
+            or diagnosis.get("status") != "passed_identity_and_representation_checks"
+            or diagnosis.get("freeze_identity") != frozen["identity"]
+            or diagnosis.get("experiment_identity") != frozen["experiment_identity"]):
+        raise ValueError("Contiguous diagnosis has a stale or incompatible frozen identity")
+    manifest = diagnosis["source_manifest"]
+    if _json_identity(manifest) != diagnosis["source_manifest_sha256"]:
+        raise ValueError("Contiguous diagnosis source-manifest hash differs")
+    roots = {"results": Path(results).resolve(), "repository": Path(repository).resolve()}
+    seen = set()
+    for item in manifest:
+        root = roots[item["root"]]
+        path = (root/item["path"]).resolve()
+        key = (item["root"], item["path"])
+        if key in seen or not path.is_relative_to(root):
+            raise ValueError("Invalid contiguous diagnosis source path")
+        seen.add(key)
+        if path.stat().st_size != item["bytes"] or file_hash(path) != item["sha256"]:
+            raise ValueError("Contiguous diagnosis source artifact changed")
+    rows = diagnosis["rows"]
+    expected = {(track, model) for track in ("A", "C") for model in ("bayes_stesn", "basis_gru")}
+    if len(rows) != 4 or {(row["track"], row["model"]) for row in rows} != expected:
+        raise ValueError("Contiguous diagnosis does not cover its declared fixed cases")
+    for row in rows:
+        if (row["trajectory"] != 0 or row["first_target"] != 8000
+                or row["config_id"] != frozen["selected"]["A"][row["model"]]["id"]
+                or not row.get("checks") or not all(row["checks"].values())):
+            raise ValueError("Contiguous diagnosis case or checked boundary disagrees")
+    return {(row["track"], row["model"]): row for row in rows}
+
+
 def _reliability_schedule(frozen):
     schedule = []
     for track in ("A", "B", "C"):
@@ -618,6 +651,13 @@ class Report:
                 raise ValueError("Report source changed since evidence collection; refresh the report-only evidence collector")
         else:
             self.notices.append("Campaign cost, diagnostics, storage and published-revision evidence were not collected; run tools/collect_ks_report_evidence.py before the final handoff.")
+        self.contiguous_diagnosis = None
+        path = self.results/"evidence/ks_contiguous_spatial_representation_diagnosis.json"
+        if path.exists():
+            self.contiguous_diagnosis, receipt = _read_json(path)
+            verify_contiguous_diagnosis(self.contiguous_diagnosis, self.frozen,
+                                        results=self.results, repository=Path(__file__).resolve().parents[3])
+            receipt["name"] = str(path.relative_to(self.results)); self.input_receipts.append(receipt)
         for row in self.rows:
             observed = self.records(row["track"], row["model"], row["seed"])
             if len(observed) != row["complete_trajectories"]:
@@ -1395,12 +1435,34 @@ class Report:
             rows = _ordered([row for row in self.primary_rows if row["track"] == track])
             if not rows:
                 continue
-            section(TRACKS[track] + " · primary seed", [
+            reliability = _ordered([row for row in self.reliability["rows"] if row["track"] == track and row["seed"] == self.seed])
+            introduction = [
                 "n denotes complete scored trajectories; q denotes qualified complete trajectories. "
                 "All failed/pending origins remain in the listed scheduled denominator. "
                 "A dash means no eligible estimate, not zero loss."
-            ])
-            reliability = _ordered([row for row in self.reliability["rows"] if row["track"] == track and row["seed"] == self.seed])
+            ]
+            if track == "C":
+                scores = {row["model"]: row for row in rows}
+                counts = {row["model"]: row for row in reliability}
+                for model in ("bayes_stesn", "basis_gru"):
+                    if model in scores:
+                        row, count = scores[model], counts[model]
+                        introduction.append(f"{LABELS[model]}: RMSE {_estimate(row, 'rmse', interval=False)}, "
+                            f"CRPS {_estimate(row, 'crps', interval=False)}, and mean 90% interval width {_estimate(row, 'width_0.9', interval=False)}. "
+                            f"The full schedule contains {count['finite_divergent_origins']} finite-divergent origins among "
+                            f"{count['scheduled_origins']} scheduled origins, with {row['qualified_trajectories']} qualified complete trajectories. "
+                            "Inference qualification does not establish useful spatial extrapolation; broad intervals do not compensate for poor predictive scores.")
+                if "pod_nvar" in scores:
+                    row, count = scores["pod_nvar"], counts["pod_nvar"]
+                    introduction.append(f"POD-NVAR has {count['failed_rollout_origins']} failed rollouts and "
+                        f"{count['finite_divergent_origins']} additional finite-divergent origins among {count['scheduled_origins']} scheduled origins. "
+                        f"There are {row['complete_trajectories']} complete trajectories. "
+                        + ("No complete-trajectory aggregate RMSE is defined; the remaining finite origins stay in the reliability census."
+                           if row.get("rmse", {}).get("mean") is None else "The reported accuracy remains conditional on its complete trajectories."))
+                if "training_mean" in scores:
+                    introduction.append("The training-mean anchor's RMSE is " + _estimate(scores["training_mean"], "rmse", interval=False)
+                                        + ". These contiguous-site results are reported separately from A and B.")
+            section(TRACKS[track] + " · primary seed", introduction)
             add_table(["Model", "Scheduled origins", "Finite successful", "Finite divergence", "Failed rollout", "Fit-failure placeholders",
                        "Pending", "Severe rollout union", "Inference-unqualified finite"], [
                 [LABELS.get(row["model"], row["model"]), row["scheduled_origins"], row["finite_successful_origins"],
@@ -1458,6 +1520,27 @@ class Report:
             html_parts.append("<details><summary>Values at the six prespecified forecast leads</summary>" + lead_html + "</details>")
             md_parts += ["### Values at the six prespecified forecast leads\n", lead_md]
 
+        if self.contiguous_diagnosis is not None:
+            diagnostic = {(row["track"], row["model"]): row for row in self.contiguous_diagnosis["rows"]}
+            bayes_a, bayes_c = (diagnostic[(track, "bayes_stesn")] for track in ("A", "C"))
+            gru_a, gru_c = (diagnostic[(track, "basis_gru")] for track in ("A", "C"))
+            section("Contiguous spatial representation: verified post-test diagnosis", [
+                "A read-only audit of the fixed trajectory-0, first-target-8000 A/C artifacts found no checked index, unit, response-transform, spatial-partition or periodic-seam mismatch. Saved training data and physical evaluation truth agree exactly with the delivered adapter. The receipt is bound to this freeze and the hashes of its unchanged source, fitted artifacts and saved examples. No refitting, posterior solve/draw, new prediction or reselection was performed.",
+                "The Bayesian spatial dictionary is Phi(s) = [1, (r(s) − mean_train(r)) / max(SD_train(r), 1e−6) / sqrt(31)]. The 31 raw columns are two unit-circle coordinates and 29 fixed-center radial functions. Centering and scaling use permitted training coordinates only. The 1e−6 floor is inactive in both inspected fits; the C minimum column SD is " + _number(bayes_c["dictionary_column_scales"]["minimum"], 7) + ".",
+                "The Bayesian training-dictionary condition number rises from " + _number(bayes_a["training_basis_spectrum"]["condition_number"], 4)
+                + " in A to " + _number(bayes_c["training_basis_spectrum"]["condition_number"], 4) + " in C; the maximum target-row norm rises from "
+                + _number(bayes_a["target_row_norm"]["maximum"], 2) + " to " + _number(bayes_c["target_row_norm"]["maximum"], 2)
+                + ". Retained lambda medians are " + _number(bayes_a["retained_prior_precision_quantiles_025_50_975"][1], 7) + " and "
+                + _number(bayes_c["retained_prior_precision_quantiles_025_50_975"][1], 7) + ", respectively. These fitted quantities are not a change to the prior or the selected configuration.",
+                "For fixed sigma², lambda and the same temporal feature z, the coefficient-prior contribution to mean variance is (sigma²/lambda) × ||Phi(s)||² × ||z||². This isolates a geometry contribution; it does not by itself causally explain the different fitted posteriors, data or forecast states.",
+                "The GRU basis satisfies Phi_trainᵀ Phi_train / n_train = I, rather than unit unscaled Gram normalization. Its observed-value projection followed by target decoding is D = Phi_target Phi_trainᵀ / n_train. The operator norm of D rises from "
+                + _number(gru_a["projection_decoder_operator_norm"], 2) + " in A to " + _number(gru_c["projection_decoder_operator_norm"], 2)
+                + " in C, while the C training orthogonality error remains " + _number(gru_c["training_orthogonality_max_absolute_error"], 4) + ".",
+                "Severe errors are already present at the first lead of the fixed C example: Bayesian RMSE " + _number(bayes_c["saved_example"]["lead_rmse"]["1"], 2)
+                + " and GRU RMSE " + _number(gru_c["saved_example"]["lead_rmse"]["1"], 2)
+                + ". The saved geometry supports unstable extension across the withheld gap and weak identification of target-active spatial directions as a concrete mechanism. This is not a complete causal decomposition or proof that every numerical issue is absent. The catastrophic forecasts, broad intervals and failure denominators remain unchanged in the report."
+            ])
+
         pairs = [row for row in self.summary.get("paired_comparisons", []) if row["metric"] in ("nrmse", "crps")]
         if pairs:
             section("Paired Bayesian-minus-comparator differences", [
@@ -1502,6 +1585,8 @@ class Report:
                    ("seed_sensitivity_matched.json", self.matched_seeds), ("reliability_census.json", self.reliability)]
         if self.evidence is not None:
             exports.append(("report_evidence.json", self.evidence))
+        if self.contiguous_diagnosis is not None:
+            exports.append(("contiguous_spatial_representation_diagnosis.json", self.contiguous_diagnosis))
         for name, value in exports:
             destination = self.output/name; atomic_json(destination, value); self.artifact_paths.add(name)
             encoded = base64.b64encode(destination.read_bytes()).decode("ascii")
@@ -1662,6 +1747,12 @@ def build_report(results, output, *, animations=True, dpi=200):
                 "curve_uncertainty": "pointwise trajectory-cluster bootstrap, 2000 resamples, seed 20261105",
                 "visual_qa_status": "requires_rendered_figure_and_video_inspection",
                 "visual_qa_policy": "Inspect representative A/B heatmaps, lead/interval plots and PDF layouts; decode MP4 frames 0/50/99 without retaining a full frame dump; save an independent QA receipt naming checked artifact hashes. Automated generation alone is not a visual inspection."}
+    if report.contiguous_diagnosis is not None:
+        manifest["contiguous_spatial_diagnosis"] = {
+            "path": "contiguous_spatial_representation_diagnosis.json",
+            "freeze_identity": report.frozen["identity"],
+            "source_manifest_sha256": report.contiguous_diagnosis["source_manifest_sha256"],
+            "sha256": file_hash(report.output/"contiguous_spatial_representation_diagnosis.json")}
     atomic_json(report.output / "report_manifest.json", manifest)
     return manifest
 

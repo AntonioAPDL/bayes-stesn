@@ -10,7 +10,8 @@ from copy import deepcopy
 
 import pytest
 
-from bayes_stesn.applications.ks_report import Report
+from bayes_stesn.applications.ks_report import Report, _json_identity, verify_contiguous_diagnosis
+from bayes_stesn.applications.ks_runtime import file_hash
 
 
 def test_large_finite_tail_gets_companion_without_changing_estimates():
@@ -108,3 +109,26 @@ def test_terminal_status_retains_failed_and_unqualified_extension_rows():
     assert not status["all_requested_scheduled_origins_terminal"]
     assert status["extension_pending_origins"] == 23
     assert status["extension_failed_origins"] == 2
+
+
+def test_contiguous_diagnosis_rejects_wrong_freeze_or_changed_source(tmp_path):
+    source = tmp_path/"saved_source.txt"
+    source.write_text("fixed source\n")
+    frozen = {"identity": "frozen", "experiment_identity": "experiment", "selected": {"A": {
+        "bayes_stesn": {"id": "bayes_03"}, "basis_gru": {"id": "gru_02"}}}}
+    manifest = [{"root": "results", "path": source.name, "bytes": source.stat().st_size,
+                 "sha256": file_hash(source)}]
+    receipt = {"schema": "ks-contiguous-spatial-representation-diagnosis/1",
+               "status": "passed_identity_and_representation_checks",
+               "freeze_identity": "frozen", "experiment_identity": "experiment",
+               "source_manifest": manifest, "source_manifest_sha256": _json_identity(manifest),
+               "rows": [{"track": track, "model": model, "trajectory": 0, "first_target": 8000,
+                         "config_id": frozen["selected"]["A"][model]["id"], "checks": {"identity": True}}
+                        for track in ("A", "C") for model in ("bayes_stesn", "basis_gru")]}
+    assert len(verify_contiguous_diagnosis(receipt, frozen, results=tmp_path, repository=tmp_path)) == 4
+    with pytest.raises(ValueError, match="frozen identity"):
+        verify_contiguous_diagnosis({**receipt, "freeze_identity": "different"}, frozen,
+                                    results=tmp_path, repository=tmp_path)
+    source.write_text("changed source\n")
+    with pytest.raises(ValueError, match="source artifact changed"):
+        verify_contiguous_diagnosis(receipt, frozen, results=tmp_path, repository=tmp_path)

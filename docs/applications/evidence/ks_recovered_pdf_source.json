@@ -1,0 +1,38 @@
+{
+  "base_revision": "7802ddddc2c0cf27cc54ce00490e3d0affd8f681",
+  "base_sha256": "c463f3545b7a3b3b6802919e4d7674681b6175950fa207cfa1ce6a274ff9eea6",
+  "byte_identical": false,
+  "exact_retained_fragments": [
+    "final 7-hunk patch including corrected hash expression",
+    "contiguous_findings method",
+    "Inputs extension audit read and check",
+    "findings method call"
+  ],
+  "original_final_bytes": 153689,
+  "original_final_sha256": "d3954e62bf635e05861d522eafba571df254deac47682d7a91dbf0c71d878a90",
+  "pdf_rendered": false,
+  "public_recovery_source_sha256": "f8ffc01f5451c8eaacd2fad275c5295c8bfcff812a0fda899c74d54f495c4c72",
+  "reconstructed_fragments": [
+    "extension_subset_bindings and verify_extension_audit_receipt source bodies, using exact retained schema/algorithm rather than original source bytes"
+  ],
+  "recovered_bytes": 153672,
+  "recovered_sha256": "218d65b2ec9871fcd21937077ae8b59c8b851f29dec982b420f4852e890c4ece",
+  "schema": "ks-report-source-recovery/1",
+  "scientific_runs": 0,
+  "synthetic_binding_checks": [
+    "expected_filtered_counts",
+    "unchanged_passes",
+    "clock_only_change_passes",
+    "contiguous_change_rejected",
+    "seed_change_rejected",
+    "episode_change_rejected",
+    "curve_change_rejected",
+    "pair_change_rejected",
+    "duplicate_rejected"
+  ],
+  "synthetic_binding_checks_passed": 9,
+  "verification": [
+    "Python syntax parses",
+    "every retained patch hunk matched exactly once"
+  ]
+}

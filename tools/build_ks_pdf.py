@@ -113,6 +113,39 @@ def verify_main_audit_receipt(audit, frozen, summary, episodes, horizon_curves):
     return True
 
 
+def extension_subset_bindings(summary, episodes, horizon_curves, main_seed):
+    """Fingerprint alternative-seed and contiguous results independently of main A/B."""
+    include=lambda row: row["track"]=="C" or row["seed"]!=main_seed
+    groups={
+        "summary_rows":([r for r in summary["rows"] if include(r)],("track","model","seed")),
+        "episodes":([r for r in episodes if include(r)],("track","model","seed","trajectory")),
+        "horizon_curves":([r for r in horizon_curves if include(r)],("track","model","seed","trajectory")),
+        "paired_comparisons":([r for r in summary["paired_comparisons"] if r["track"]=="C"],("track","reference","comparator","metric")),
+    }
+    fingerprints={}
+    for name,(records,keys) in groups.items():
+        identities=[tuple(row[k] for k in keys) for row in records]
+        if len(set(identities))!=len(identities):
+            raise ValueError("Duplicate extension-audit record identity in "+name)
+        ordered=sorted(records,key=lambda row:tuple(row[k] for k in keys))
+        raw=json.dumps(ordered,sort_keys=True,separators=(",",":"),allow_nan=False).encode()
+        fingerprints[name]={"count":len(ordered),"records_sorted_by":list(keys),"sha256":hashlib.sha256(raw).hexdigest()}
+    return {"schema":"ks-extension-audit-subset-bindings/1","main_seed":main_seed,
+            "scope":"A/B alternative seeds and contiguous C; paired comparisons C only",
+            "fingerprints":fingerprints}
+
+
+def verify_extension_audit_receipt(audit, frozen, summary, episodes, horizon_curves):
+    if (audit.get("freeze_identity")!=frozen["identity"] or
+            audit.get("experiment_identity")!=frozen["experiment_identity"] or
+            audit.get("passed") is not True or audit.get("discrepancies")):
+        raise ValueError("Extension audit is unqualified or belongs to a different frozen experiment")
+    actual=extension_subset_bindings(summary,episodes,horizon_curves,frozen["model_seed"])
+    if audit.get("extension_subset_bindings")!=actual:
+        raise ValueError("The audited sensitivity/contiguous results changed; repeat their independent reconciliation")
+    return True
+
+
 def clean(text):
     return str(text).replace("\u2011", "-").replace("\u2013", "-").replace("\u2014", "-").replace("\u2212", "-")
 
@@ -411,7 +444,10 @@ class Inputs:
                 self.memory_recoveries.append((name, receipt))
         self.memory_recoveries.sort(key=lambda item: (item[1].get("event_utc", ""), item[0]))
         self.main_audit = extra.get("ks_main_tracks_audit_v2") or self.read(self.repo/"docs/applications/evidence/ks_main_tracks_audit_v2.json", optional=True) or {}
+        self.extension_audit = extra.get("ks_final_extensions_audit") or self.read(self.repo/"docs/applications/evidence/ks_final_extensions_audit.json", optional=True) or {}
         self.nvar_selection_audit = extra.get("ks_nvar_B_selection_audit") or self.read(self.repo/"docs/applications/evidence/ks_nvar_B_selection_audit.json", optional=True) or {}
+        self.representation_diagnosis = extra.get("ks_contiguous_spatial_representation_diagnosis") or self.read(self.repo/"docs/applications/evidence/ks_contiguous_spatial_representation_diagnosis.json", optional=True) or {}
+        self.final_cleanup = extra.get("ks_final_cleanup") or self.read(self.repo/"docs/applications/evidence/ks_final_cleanup.json", optional=True) or {}
         self.cfg = self.experiment["config"]
         self.seed, self.rows = self.frozen["model_seed"], self.summary["rows"]
         identity = self.frozen["identity"]
@@ -434,6 +470,36 @@ class Inputs:
         if self.main_audit:
             verify_main_audit_receipt(self.main_audit, self.frozen, self.summary,
                 self.episodes, self.read(self.results/"horizon_curves.json"))
+        if self.extension_audit:
+            verify_extension_audit_receipt(self.extension_audit,self.frozen,self.summary,
+                self.episodes,self.read(self.results/"horizon_curves.json"))
+        if self.representation_diagnosis:
+            diagnosis=self.representation_diagnosis
+            cases={(row["track"],row["model"]):row for row in diagnosis.get("rows",[])}
+            expected={(track,model) for track in ("A","C") for model in ("bayes_stesn","basis_gru")}
+            plot_cases={row["track"]:(row["trajectory"],row["first_target"]) for row in self.frozen["plot_cases"]}
+            if (diagnosis.get("schema")!="ks-contiguous-spatial-representation-diagnosis/1" or
+                    diagnosis.get("experiment_identity")!=self.experiment["identity"] or
+                    diagnosis.get("freeze_identity")!=identity or
+                    diagnosis.get("status")!="passed_identity_and_representation_checks" or
+                    diagnosis.get("source_artifacts_unchanged") is not True or
+                    len(diagnosis.get("rows",[]))!=len(expected) or set(cases)!=expected):
+                raise ValueError("Contiguous representation diagnosis is incompatible with the frozen study")
+            provenance=diagnosis.get("source_manifest",[])
+            if hashlib.sha256(json.dumps(provenance,sort_keys=True,separators=(",",":"),allow_nan=False).encode()).hexdigest()!=diagnosis.get("source_manifest_sha256") or not any(
+                    row.get("kind")=="frozen_protocol" and row.get("sha256")==digest(self.results/"freeze.json")
+                    for row in provenance):
+                raise ValueError("Contiguous representation diagnosis has stale source bindings")
+            for (track,model),row in cases.items():
+                if ((row["trajectory"],row["first_target"])!=plot_cases[track] or
+                        row.get("config_id")!=self.frozen["selected"]["A"][model]["id"] or
+                        not row.get("checks") or not all(value is True for value in row["checks"].values())):
+                    raise ValueError("Contiguous representation diagnosis changes the predeclared case or failed a check")
+        if self.final_cleanup and (
+                self.final_cleanup.get("schema")!="ks-final-cleanup/1" or
+                self.final_cleanup.get("experiment_identity")!=self.experiment["identity"] or
+                self.final_cleanup.get("freeze_identity")!=identity):
+            raise ValueError("Final cleanup receipt belongs to another experiment or freeze")
         if self.nvar_selection_audit:
             audit=self.nvar_selection_audit; selected=self.frozen["selected"]["B"]["pod_nvar"]
             provenance={r["path"]:r for r in audit.get("source_manifest",[])}
@@ -692,6 +758,7 @@ class Writer:
                        f"Its {row['failed_origins']} failed and {row['pending_origins']} pending origins remain in the full {row['scheduled_origins']}-origin schedule. "
                        "The full-schedule RMSE is undefined. A lower complete-case RMSE cannot establish superiority over a family evaluated on all scheduled trajectories; the descriptive minimum above excludes this incomplete accuracy population.")
         self.seed_sensitivity_findings()
+        self.contiguous_findings()
         if i.frozen.get("selection_issues"):
             self.h("Qualification limitations frozen before testing", 2)
             for issue in i.frozen["selection_issues"]:
@@ -722,6 +789,57 @@ class Writer:
         if cnn_values is not None:
             self.p("On this matched subset, the CNN's mean RMSE ranges from "+number(min(cnn_values),6)+" to "+number(max(cnn_values),6)+" across the fixed seeds. Its favorable main-track result therefore accompanies observable seed sensitivity. The detailed section reports paired alternate-minus-main differences, trajectory-bootstrap intervals and full denominators; four trajectory clusters provide limited descriptive evidence.")
         self.p("Model seeds are distinct from sampler chains and predictive paths. The three fitted models are not pooled into a Bayesian predictive distribution or treated as additional independent trajectories.","small")
+
+    def contiguous_findings(self):
+        i=self.i
+        rows={r["model"]:r for r in i.rows if r["track"]=="C" and r["seed"]==i.seed}
+        if not rows or any(r["pending_origins"] or r["pending_fits"] for r in rows.values()):
+            return
+        self.h("Contiguous-site robustness: severe transfer failures",2)
+        self.p("This separate prespecified experiment transfers the selected strict-interleaved configurations to fresh fits using 40 contiguous training sites. It tests a harder spatial information boundary and does not retune configurations on its test outcomes.")
+        bayes=rows.get("bayes_stesn")
+        if bayes and bayes.get("nrmse",{}).get("mean") is not None and bayes["nrmse"]["mean"]>10:
+            reliability=i.reliability_rows.get(("C","bayes_stesn",i.seed),{})
+            self.p("Bayesian ST-ESN has a catastrophic forecasting failure in this transfer: mean RMSE "+estimate(bayes,"rmse")+", normalized RMSE "+estimate(bayes,"nrmse",interval=False)+", and CRPS "+estimate(bayes,"crps",interval=False)+". "+str(reliability.get("finite_divergent_origins","unavailable"))+" of "+str(bayes["scheduled_origins"])+" origins crossed the prespecified finite-divergence threshold. All "+str(bayes["qualified_fits"])+" fitted posteriors passed their recorded inference gate; that qualification does not establish forecasting adequacy.")
+            self.p("Its nominal 90% coverage is "+number(100*bayes["coverage_0.9"]["mean"],2)+"%, with mean interval width "+estimate(bayes,"width_0.9",interval=False)+" physical units. Broad intervals and near-nominal aggregate coverage do not rescue the extreme point and proper-score errors.")
+            leads=i.horizons.get("rows",[]) if isinstance(i.horizons,dict) else (i.horizons or [])
+            first=next((r for r in leads if r["track"]=="C" and r["model"]=="bayes_stesn" and r["horizon"]==1),None)
+            if first:
+                self.p("The failure is already present at lead 1: RMSE "+estimate(first,"rmse",interval=False)+", with 90% coverage "+number(100*first["coverage_0.9"]["mean"],2)+"%. It cannot be described only as error that emerges after a long autonomous rollout. These are observed results; numerical and basis diagnostics are distinct from a causal attribution.")
+        defined=[r for r in rows.values() if r["complete_trajectories"]==r["scheduled_trajectories"] and r.get("rmse",{}).get("mean") is not None]
+        if defined:
+            best=min(defined,key=lambda r:r["rmse"]["mean"])
+            self.p("The lowest defined full-schedule RMSE in this robustness experiment is "+label(best["model"])+": "+estimate(best,"rmse",interval=False)+". The outcome is specific to the frozen transferred configurations and spatial extensions.")
+        gru=rows.get("basis_gru")
+        if gru and gru.get("rmse",{}).get("mean") is not None:
+            reliability=i.reliability_rows.get(("C","basis_gru",i.seed),{})
+            self.p("The basis GRU also deteriorates: RMSE "+estimate(gru,"rmse",interval=False)+", with "+str(reliability.get("finite_divergent_origins","unavailable"))+" finite-divergent origins out of "+str(gru["scheduled_origins"])+".")
+        nvar=rows.get("pod_nvar")
+        if nvar and nvar["complete_trajectories"]==0:
+            reliability=i.reliability_rows.get(("C","pod_nvar",i.seed),{})
+            self.p("POD-NVAR has "+str(nvar["qualified_fits"])+" completed fits and "+str(nvar["failed_fits"])+" failed fits, but "+str(nvar["failed_origins"])+" nonfinite forecast failures out of "+str(nvar["scheduled_origins"])+" scheduled origins. None of its trajectories is complete, so its aggregate RMSE is unavailable and its full-schedule RMSE is undefined. The remaining "+str(reliability.get("finite_successful_origins","unavailable"))+" finite origins stay in the reliability census, including "+str(reliability.get("finite_divergent_origins","unavailable"))+" finite divergences; they are not silently substituted for the complete schedule.")
+        self.representation_findings()
+
+    def representation_findings(self):
+        diagnosis=self.i.representation_diagnosis
+        if not diagnosis:
+            return
+        self.h("Saved spatial-representation diagnosis: one fixed case",2)
+        rows={(r["track"],r["model"]):r for r in diagnosis["rows"]}
+        a,c=rows[("A","bayes_stesn")],rows[("C","bayes_stesn")]
+        ga,gc=rows[("A","basis_gru")],rows[("C","basis_gru")]
+        self.p("A post-test, read-only diagnosis inspected the predeclared trajectory "+str(c["trajectory"])+", first target "+str(c["first_target"])+", in A and C for Bayesian ST-ESN and basis GRU. All "+str(sum(len(r["checks"]) for r in diagnosis["rows"]))+" saved identity, input-boundary, site, time and transform checks pass. No checked index, unit, response-transform, spatial-partition or periodic-seam mismatch was found. No fit, parameter draw, network forward pass, reservoir rollout, forecast or selection change was performed.")
+        self.table(["Geometry quantity", "Interleaved A", "Contiguous C"],[
+            ["Bayes: training-basis condition number",number(a["training_basis_spectrum"]["condition_number"],6),number(c["training_basis_spectrum"]["condition_number"],6)],
+            ["Bayes: maximum target basis-row norm",number(a["target_row_norm"]["maximum"],6),number(c["target_row_norm"]["maximum"],6)],
+            ["Bayes: retained precision lambda median",number(a["retained_prior_precision_quantiles_025_50_975"][1],6),number(c["retained_prior_precision_quantiles_025_50_975"][1],6)],
+            ["Bayes: weak training directions (relative singular value < 1e-6)",a["weak_training_directions"],c["weak_training_directions"]],
+            ["GRU: maximum target basis-row norm",number(ga["target_row_norm"]["maximum"],6),number(gc["target_row_norm"]["maximum"],6)],
+            ["GRU: projection/target-decoder operator norm",number(ga["projection_decoder_operator_norm"],6),number(gc["projection_decoder_operator_norm"],6)]
+        ],[270,120,120])
+        self.p("The Bayesian dictionary is centered and scaled using permitted training coordinates, then divided by sqrt(31), with a separate intercept for this 32-column selected configuration. Its 1e-6 column-scale floor is inactive in both inspected cases; the smallest C raw-column standard deviation is "+number(c["dictionary_column_scales"]["minimum"],7)+". The C target loadings are much larger than those seen at training sites, and six directions are weakly identified by the training geometry. The reported lambda values summarize the retained posterior states, not changes to its prior family or a new fitted model.")
+        self.p("The GRU training basis remains numerically orthonormal: Phi_T^T Phi_T/n=I, with maximum C error "+number(gc["training_orthogonality_max_absolute_error"],4)+". Nevertheless, the same basis at the unseen gap has very large loadings. The reported norm of Phi_* Phi_T^T/n measures the exact geometry-only projection/decode map; it is not a replacement forecast or a new scored recurrence.")
+        self.p("These saved-artifact observations support weak training identification and amplified unseen-gap basis extension as a concrete mechanism consistent with the failure. They do not decompose the total error into causes or prove absence of every numerical issue. The diagnosis is limited to one fixed trajectory/origin per inspected model/track; the full C failure census is established separately. Passing MCMC or optimizer diagnostics does not establish useful extrapolation.","small")
 
     def main_tables(self):
         self.h("2. Main-track results", page=True)
@@ -834,6 +952,8 @@ class Writer:
             [[key]+[value[key] for value in values] for key in values[0]], [155,115,120,120])
         self.p("Length ell and its prior median use raw unit-circle chord coordinates e(x)=(cos(2*pi*x/22),sin(2*pi*x/22)). They are not physical arc lengths and are not the GP's rescaled spatial-length units. For example, candidates with prior median 0.3 use mean log(0.3), whereas the accepted reference median is 0.18. These are declared validation-selected hyperparameters within the same lognormal range-prior family. Readout precision and residual-variance priors apply on the delivered training-standardized response scale.","small")
         self.p("The spatial dictionary contains a constant, optional embedded coordinates and fixed Matérn radial functions. The accepted reference uses a 3-by-3 embedding dictionary and 12 columns; the application also evaluates predetermined circle-center dictionaries. The same geometry-only function evaluates never-trained coordinates. PCA site centering/whitening, reservoir calibration and temporal-feature scaling are fitted only on each candidate's training conditioning prefix. No hidden response contributes to the basis or reservoir input.")
+        self.equation(r"\phi(x)=\left[1,\frac{r_j(x)-\bar r_{j,T}}{\max(s_{j,T},10^{-6})\sqrt{p-1}}\right]_{j=1}^{p-1}")
+        self.p("Here r_j are raw embedded-coordinate and radial-dictionary columns; their means and population standard deviations use only permitted training coordinates T. This spatial column standardization is separate from response normalization and from reservoir/PCA feature scaling. The selected A configuration and its C transfer have p=32: two circle-coordinate columns and 29 fixed radial centers, followed by the intercept. Centering/scaling is refitted for the new permitted C geometry. Consequently, the same prior family on coefficients need not induce the same prior scale at a withheld coordinate across spatial protocols.","small")
         self.equation(r"r_t=(I-D)r_{t-1}+D\tanh(Wr_{t-1}+U v_t+b)")
         self.p("The retained reference feeds two delayed eight-dimensional PCA score vectors into 32 leaky units. Its recurrent matrix uses operator norm 0.9, connectivity 0.08, repeated leak rates (0.2,0.5,0.9), input scale 0.5 and uniform biases on [-0.3,0.3]. Operator norm is distinct from spectral radius. Readout features are one intercept, 16 bounded lagged scores 3*tanh(a/3), 32 states and 16 selected squares, giving 65 temporal columns and 780 reference coefficients. Raw PCA scores drive the reservoir. Feature centers/scales use the latter two-thirds of the conditioning prefix, a 0.04 scale floor and dimension normalization. The reference conditioning prefix is 80 rows, leaving 5,920 likelihood targets; larger candidates declare their own prefixes.")
         dimensions=[]
@@ -1090,6 +1210,14 @@ class Writer:
                 else:
                     archive_check="An exact archive comparison is not recorded. "
                 self.p("Observer session "+str(observer.get("session_index","unavailable"))+" retains "+str(observer.get("samples","unavailable"))+" samples and "+str(observer.get("retained_job_rows","unavailable"))+" per-job rows. Complete per-job map: "+number(observer.get("per_job_map_complete"))+". "+archive_check+observer.get("claim",""),"small")
+        if i.final_cleanup:
+            cleanup=i.final_cleanup; fit=cleanup["fit_staging"]; archive=cleanup["archive_staging"]; storage=cleanup["storage"]
+            retained=cleanup["retained_staging_total"]
+            self.h("Final guarded cleanup and retained staging",2)
+            self.p("After workers and the observer had stopped, one guarded pass removed "+str(fit["deleted_files"])+" redundant task-created fit staging files, totaling "+number(fit["deleted_logical_bytes"]/1e6,3)+" MB of logical bytes. All "+str(fit["canonical_fits_postverified"])+" canonical fit replacements were postverified, with zero recorded canonical fit/receipt hash changes and zero archive CRC failures. The observed available-space gain was "+number(storage["available_space_change_bytes"]/1e6,3)+" MB; filesystem snapshots include other environment activity, so this is not asserted to equal deletion bytes.")
+            self.p(str(fit["reappeared_files"])+" fit staging files reappeared at the post-check and were retained without repeat deletion. The "+str(archive["retained_files"])+" archive staging files were also retained because writable-descriptor verification remained unresolved; the cleanup guard was not bypassed. The final receipt therefore records "+str(retained["files_at_postcheck"])+" retained staging files totaling "+number(retained["logical_bytes_at_postcheck"]/1e6,3)+" MB. No staging-creation or reappearance cause is inferred.")
+            self.table(["Cleanup snapshot", "Bytes"],[["Available disk after cleanup",storage["after"]["disk_available_bytes"]],["Required disk reserve",storage["disk_reserve_bytes"]],["Workspace allocated bytes after cleanup",storage["after"]["workspace"]["allocated_unique_bytes"]],["Retained staging logical bytes",retained["logical_bytes_at_postcheck"]]],[280,230])
+            self.p(cleanup["protected"],"small")
         if p.get("resources"):
             self.h("Initial measured resources and allocation",2)
             self.table(["Resource/allocation", "Value"],flatten(p["resources"]),[250,260])
@@ -1133,6 +1261,14 @@ class Writer:
                 for track,r in sorted(audit.get("main_origin_census",{}).items())],[40,80,70,70,120,130])
             self.p("The audit records "+str(checks.get("numeric_checks"))+" numerical comparisons, "+str(checks.get("exact_metadata_checks"))+" metadata checks and "+str(checks.get("predeclared_examples_checked"))+" predeclared examples, with zero discrepancies. Numerical comparisons use relative/absolute tolerances of "+compact(audit.get("numeric_tolerance",{}))+". Finite extremes remain in all eligible score populations; a nonfinite origin prevents a full-schedule RMSE. No fits, forecasts, reselection or summary commands were performed by the audit.","small")
             self.p("The original aggregate-file hashes remain as historical provenance. This report separately checks canonical hashes of the unchanged primary-seed A/B rows, episodes, full horizon curves and paired comparisons; adding completed seed or contiguous results does not invalidate those main-only bindings.","small")
+        if i.extension_audit:
+            audit=i.extension_audit; checks=audit["checks"]
+            self.h("Post-test terminal sensitivity/robustness reconciliation",2)
+            self.p("A separate read-only audit reconstructed the completed A/B alternative-seed and contiguous C origin schedules, all episode summaries and 100-lead curves, C paired comparisons, and the matched four-trajectory seed contrasts. It found zero discrepancies in "+str(checks["numeric_checks"])+" numerical and "+str(checks["exact_metadata_checks"])+" metadata checks. It checked "+str(checks["predeclared_examples_checked"])+" available fixed C examples; the failed fixed NVAR case was not replaced by a favorable example.")
+            self.table(["Extension", "Scheduled", "Finite", "Failed rollouts", "Finite divergent", "Pending"],[
+                [name,r["scheduled_origins"],r["finite_successful_origins"],r["failed_rollout_origins"],r["finite_divergent_origins"],r["pending_origins"]]
+                for name,r in sorted(audit["origin_census"].items())],[130,70,70,90,90,60])
+            self.p("Bayesian qualification was independently recomputed from the saved per-parameter diagnostic summaries using the frozen gates; posterior arrays and R-hat estimates were not recomputed. The audit preserves catastrophic finite C errors and distinguishes completed NVAR fits from failed forecast origins. Main A/B bindings remain unchanged. This PDF checks canonical hashes of the final extension rows, episodes, curves and C paired comparisons before reporting them; original aggregate-file hashes are retained as historical provenance.","small")
         if i.contiguous_history:
             check=i.contiguous_history
             self.h("Post-freeze contiguous-history confirmation",2)
