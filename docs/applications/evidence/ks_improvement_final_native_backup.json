@@ -1,0 +1,833 @@
+{
+  "binary_transport_fragments": 79,
+  "canonical_manifest_sha256": "c001bba3d223fbb887f663b01b29fb8951acc38a1e7cea624e063324b67f96bb",
+  "canonical_package_files": 19,
+  "canonical_zip_parts": 14,
+  "compact_evidence_manifest_sha256": "6807ed35e84678588c0e7ebf4c7de58348b4123503935d5d0493cc571cbfb9a0",
+  "complete": true,
+  "configuration_identity": "26f84f988fd28d3a2e3a600d5034d260c87086edc874d0bdf29c08b85fb46509",
+  "created_utc": "2026-11-05T13:31:05.793009+00:00",
+  "duplicates_created_by_retry": 0,
+  "execution": {
+    "connector_service_rss_locally_observable": false,
+    "download_url_or_inline_binary_in_receipts": false,
+    "maximum_pipelines": 4,
+    "maximum_readback_peak_rss_bytes": 25911296,
+    "pilot_readback_seconds": 4.911479684997175,
+    "pilot_upload_seconds": 19.696
+  },
+  "experiment_identity": "067aaf08f46d7a21895ce15876d482a4a837d58627026a59e07a63db37f5c376",
+  "files": [
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0001.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0001.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "a720060f633a5dbba9a6186df54766ba4505e25dbb383e4ac8301aea7a7f0733",
+      "verified_utc": "2026-11-05T12:50:33.486861+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0001.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0001.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "dc61d979b744012b4073196a37ccf29338bfd89d86a77a050a3e053f05865ec6",
+      "verified_utc": "2026-11-05T12:53:40.771457+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0001.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0001.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "04dd7813c3e19926b66b2e15fca1084cdafa90c3eea1b8679e62163562ac3ffa",
+      "verified_utc": "2026-11-05T12:54:51.318907+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0001.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0001.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "1684bc104033c1e28f5d642a6f32e926ccea703d19792f213442f071ffce0296",
+      "verified_utc": "2026-11-05T12:54:17.218955+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0001.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0001.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "caa9bf04d8f8dd5de9a5232d62cf04613cf6a76dd3095621068a352cd0be10f8",
+      "verified_utc": "2026-11-05T12:53:41.635449+00:00"
+    },
+    {
+      "bytes": 4290474,
+      "canonical_name": "native_fits.part0001.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0001.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "104d407029b5ac7b0c6e49aebf73aa89264f3fafb9b9ee2bb59aa9fd47cc3948",
+      "verified_utc": "2026-11-05T12:54:17.662910+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0002.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0002.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "4bd1181cf1b58092d658b7eb4f5bcd924413df20d5ba3ebdc896d877a9aca1e1",
+      "verified_utc": "2026-11-05T12:55:10.134468+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0002.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0002.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "53d8e74a6146f6330b4414acd93ee32f1f69e85dc10a6680553068ca3adbc3ef",
+      "verified_utc": "2026-11-05T12:55:20.297479+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0002.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0002.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "2799e092df52204955493345959eae477f23bc58ac45d336554597e8a240eaf1",
+      "verified_utc": "2026-11-05T12:55:52.714305+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0002.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0002.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "b05a978180af7b88d5620b6ced26c123b236265139bc2fd1cadfd4a39e25ac36",
+      "verified_utc": "2026-11-05T12:56:09.319844+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0002.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0002.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "d0fcb2d2fc70d85cce34991c8e57a4a7f91a82636a701e2a93d928e55360a4a8",
+      "verified_utc": "2026-11-05T12:56:58.177491+00:00"
+    },
+    {
+      "bytes": 24680910,
+      "canonical_name": "native_fits.part0002.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0002.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "47b5917ec1b17dd7cf77e450c5bc14a44cd7842af64b2bf58419d63fcdc35772",
+      "verified_utc": "2026-11-05T12:56:45.462764+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0003.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0003.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "9e88049bb39898f2329a9047cb414f8d130d5ac85200dd7f46f1fc4ce755b204",
+      "verified_utc": "2026-11-05T12:58:06.195728+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0003.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0003.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "34c3f8a1a525dcb3a8bf7aa00e80f2927def5fd63ce2397d8a8141d5c6dd3e08",
+      "verified_utc": "2026-11-05T12:56:59.709827+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0003.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0003.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "ab814e1b8630a06112d3f34cf764942e6d46fb4d96f84b51741761c39e7463ce",
+      "verified_utc": "2026-11-05T12:57:53.903253+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0003.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0003.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "cfc347cbe053e830c123e10ad36adcb30ecbe0fb78b289b321fa1738116c40b1",
+      "verified_utc": "2026-11-05T12:57:53.947498+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0003.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0003.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "141ddd213bb8122addca8d36981a5af7873614f9d12c9a6f5bfb62f47c5c82ab",
+      "verified_utc": "2026-11-05T12:58:57.361092+00:00"
+    },
+    {
+      "bytes": 7766217,
+      "canonical_name": "native_fits.part0003.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0003.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "81130a6fb1c4068f34ee0734963c63c33ab2f1559a2d37f445681127f7afe171",
+      "verified_utc": "2026-11-05T12:58:54.055181+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0004.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0004.zip.chunk001.bin",
+      "readback_attempts": 2,
+      "sha256": "9cade5276788e0cd94ddbfa867bdc0228087ea92f74ca58fa9bf4b65a3277155",
+      "verified_utc": "2026-11-05T13:02:31.806720+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0004.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0004.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "3baa3a2497603ccd37415eabaf9e395079b74959f2c1078e870756b537b4a697",
+      "verified_utc": "2026-11-05T12:59:57.354216+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0004.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0004.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "b629d707fa0e72a69e9e7816fb5160f976bacf1bee751a206943254a41ea2433",
+      "verified_utc": "2026-11-05T13:00:08.739334+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0004.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0004.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "3bb3933fd0de4bcc7b65a73889e8b587ab2bfe21234540e8d0fee47912f1edea",
+      "verified_utc": "2026-11-05T13:06:48.502844+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0004.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0004.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "a3e08bd2597c0e92c3f70976126cdb5e06defe3dd4826ab2adb630cd04f97f0e",
+      "verified_utc": "2026-11-05T13:04:36.744084+00:00"
+    },
+    {
+      "bytes": 18610105,
+      "canonical_name": "native_fits.part0004.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0004.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "278bae563468c53247d5a99f742ee90988bec79891230073a9a0aaa94de7d80a",
+      "verified_utc": "2026-11-05T13:04:30.948953+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0005.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0005.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "b492bad474c755b6877e6d2b806a6525a1541f3bb58555f5aa79e77f44913682",
+      "verified_utc": "2026-11-05T13:06:32.445982+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0005.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0005.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "8479b59864fabec2288e03d563eed757a87622b9888308d40c204a1db72d3167",
+      "verified_utc": "2026-11-05T13:05:37.695164+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0005.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0005.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "8718ea11e5fdb1628107b7ba19b41b489301591eed38918c5c6a1532513d634f",
+      "verified_utc": "2026-11-05T13:05:34.919621+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0005.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0005.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "74ae058cc5aa769a333b2fb3609d98399ed09144a0188aaaf3cc05c9438f9e51",
+      "verified_utc": "2026-11-05T13:07:07.062838+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0005.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0005.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "634cb3e43c74d7f91b8fc42cd1e3ba27eecbccbfee80e22188be721ac3009966",
+      "verified_utc": "2026-11-05T13:07:41.790279+00:00"
+    },
+    {
+      "bytes": 28318230,
+      "canonical_name": "native_fits.part0005.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0005.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "cde6de40ab0ffc31f1486da4f8f55548bab91b13af2c2bbbb78d8968fa659cb3",
+      "verified_utc": "2026-11-05T13:08:02.066671+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0006.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0006.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "637b14409d0a2f63a2096f20377e060a0ac950eb6e7994f3a1f8b1a9d8f4d552",
+      "verified_utc": "2026-11-05T13:08:51.574667+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0006.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0006.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "ba34a48f91d27d723759be6a5a037e35f202ea85d6d13c36c09d0a0ddc2863f0",
+      "verified_utc": "2026-11-05T13:08:51.615060+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0006.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0006.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "5f0f9e194b60d93fe3ed41eed04d6f9d029fab89962a392b270b20e88186a68b",
+      "verified_utc": "2026-11-05T13:09:03.764466+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0006.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0006.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "03b4736730a3682f68672d24b8134d1c06611cbe35befe53333ffb09d90f4fb7",
+      "verified_utc": "2026-11-05T13:09:37.095991+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0006.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0006.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "5a11f1d89612218e28b0b6f0aaf7f6bf2edb9447ab51e59d3023341632e1a540",
+      "verified_utc": "2026-11-05T13:10:34.828520+00:00"
+    },
+    {
+      "bytes": 26947722,
+      "canonical_name": "native_fits.part0006.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0006.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "e3a5b814dc4c86cb6d9da946736dd6f6ef82709d60e72511862aa5b717049317",
+      "verified_utc": "2026-11-05T13:09:19.806233+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0007.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0007.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "bb30dff332eb4e567ebf422191eb40ec34d426c170c5824243988ae1da45cda9",
+      "verified_utc": "2026-11-05T13:11:13.240891+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0007.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0007.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "43e42028b05276d933d0f3d33e212a79715fdca190bcdad8250ec9234c48e831",
+      "verified_utc": "2026-11-05T13:10:43.463463+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0007.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0007.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "cbc017b803aff44727a46369d637109bb8b9e9a0801b848faaec5517bcbb4aa1",
+      "verified_utc": "2026-11-05T13:11:19.634944+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0007.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0007.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "352aceffb98ecb4dfdb2e3f6156edc8c7a72802f953fbbefcc4b5918eb421ecd",
+      "verified_utc": "2026-11-05T13:12:36.546390+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0007.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0007.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "0ab07d1d015d5d238a5c1a974b876653606d41ff4bf09133ddd2a8fdefa60410",
+      "verified_utc": "2026-11-05T13:12:16.591021+00:00"
+    },
+    {
+      "bytes": 11790845,
+      "canonical_name": "native_fits.part0007.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0007.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "cf3364b70b360e7750102583d9759aa530c84e4f0ca7ccf9376314720be1ae7f",
+      "verified_utc": "2026-11-05T13:12:02.382301+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0008.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0008.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "104ee0e5687a338eb79c468a7d5732be779affecaced5d751104583022262eb7",
+      "verified_utc": "2026-11-05T13:12:54.218926+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0008.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0008.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "52fa0253cda1167a9e2ea95976f5f6194cf718c60481f07e69e9efe4f2e669fe",
+      "verified_utc": "2026-11-05T13:13:15.479429+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0008.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0008.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "173154c811dbe6c4b9277841c81af48700c8f8fc88f65e006643cf9225fa1d74",
+      "verified_utc": "2026-11-05T13:14:09.144536+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0008.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0008.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "8144591e426066ef4a16c4299db29df116c62f8bbc8731619c7f091d8018cb91",
+      "verified_utc": "2026-11-05T13:13:49.462302+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0008.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0008.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "62f7b2ee95619d208de208c0c7c5519fdf4ad9219ad6c9512dc93f9ffff99f06",
+      "verified_utc": "2026-11-05T13:14:26.239010+00:00"
+    },
+    {
+      "bytes": 14972979,
+      "canonical_name": "native_fits.part0008.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0008.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "16225ae13aeb0b20b2ff7cffab6702c2c1e08054559e42cff2e88bc37500378a",
+      "verified_utc": "2026-11-05T13:13:56.879005+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0009.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0009.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "14b6df031d265ea29600ea69855c0d864bae9e7c98ac2fda81d633b189ead2cd",
+      "verified_utc": "2026-11-05T13:15:59.481456+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0009.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0009.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "92788da85772a18b6363162f18f3a95806e44170a5a9502bc097941a28763e27",
+      "verified_utc": "2026-11-05T13:16:09.866898+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0009.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0009.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "9f1c693eb8454379ee76e4d34d3d79e165d186d32f0a414fe0c677e5242789e3",
+      "verified_utc": "2026-11-05T13:16:07.614932+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0009.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0009.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "37b3f2c9103103c79b87ed616da8af68e8ee7a21b366b289105fa9001bf7a9a3",
+      "verified_utc": "2026-11-05T13:16:10.592445+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0009.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0009.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "9ceeaf6d099bc333c043681667acbe99c4b423571f2df9af0552cf2e18b4d883",
+      "verified_utc": "2026-11-05T13:17:39.711998+00:00"
+    },
+    {
+      "bytes": 9617537,
+      "canonical_name": "native_fits.part0009.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0009.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "f36858998e5af0624b46fc094f9b04703038cfa6603427da345169275711be92",
+      "verified_utc": "2026-11-05T13:17:05.603193+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0010.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0010.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "364eb518ce39b700bc2c538fcf0522ced84199f6d355f7336961447f489afb0e",
+      "verified_utc": "2026-11-05T13:18:40.810932+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0010.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0010.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "39f3868bd3ac00c6fec35914f728b93fdc7428fd37d04a508785dcaa5da720d0",
+      "verified_utc": "2026-11-05T13:17:11.074923+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0010.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0010.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "eae43dbb6f6fa8821df2411e7d7fd1a9db08287e56160da67f39a1c94332414f",
+      "verified_utc": "2026-11-05T13:18:33.193284+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0010.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0010.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "9a8338e2466fedab4a44a325f339c2fdbd0987fef3ce8da71d1723015ff3e1d6",
+      "verified_utc": "2026-11-05T13:18:55.550949+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0010.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0010.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "804db4bb12d49f5a3d9109577f64b9635e00cbcce51b65a2eba4a89c7c755225",
+      "verified_utc": "2026-11-05T13:18:56.491945+00:00"
+    },
+    {
+      "bytes": 32542068,
+      "canonical_name": "native_fits.part0010.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0010.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "18c436bbb297567601bbb6e217da2c16dfc0f2836f951815812fd20c11b72a0c",
+      "verified_utc": "2026-11-05T13:19:52.251559+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0011.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0011.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "cd3c6ab015a18370911369ed571bda8ca790c51b2bf0c4ba3d58273f15fe43a2",
+      "verified_utc": "2026-11-05T13:20:50.093942+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0011.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0011.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "c6286b35e8b1df6bd11ecd43569a77da1b997e23861d7ce35352efd6eab68f75",
+      "verified_utc": "2026-11-05T13:20:09.105422+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0011.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0011.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "05c6c7a9243a3bf55da1a542e1a6835a0aacdd0576bf8bf9ed1f45b6c8f24ade",
+      "verified_utc": "2026-11-05T13:20:03.783976+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0011.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0011.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "c739ed269136d34f93ae22285b8b3e44cc0778c0091bfb5422ddf3fadcad15f2",
+      "verified_utc": "2026-11-05T13:21:46.038112+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0011.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0011.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "be685882cc83e6999207e86c8192ee0dee71e425c24ee69d8fd78c38ba5f0e0d",
+      "verified_utc": "2026-11-05T13:22:15.942403+00:00"
+    },
+    {
+      "bytes": 14665645,
+      "canonical_name": "native_fits.part0011.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0011.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "decb8a27a9afe74efa1d09291ae194be2208ebaa0b084fda9664d2cddcee8b2a",
+      "verified_utc": "2026-11-05T13:21:01.126777+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0012.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0012.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "89d0494c7d2d10e537023c7ee96aa9fd086495df6ea2b2de8538144e561a3f33",
+      "verified_utc": "2026-11-05T13:22:21.353428+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0012.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0012.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "bae56a167ec08d0adf15a1d1958e20af77b15b75a4a644aa3736029dd161e4f4",
+      "verified_utc": "2026-11-05T13:22:40.520292+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0012.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0012.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "02dfa1c2bbb6bd9029db8b05644f2277e54788aee1f9fc9bd9fbeae9f4d1f992",
+      "verified_utc": "2026-11-05T13:23:56.721175+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0012.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0012.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "157ca2a72e33975399dd80404cba100e3adca8943d905644b85861750abe69e7",
+      "verified_utc": "2026-11-05T13:23:43.619481+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0012.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0012.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "ce311dd458a20f3dcff80c6da0e6ce6d335362fd17a767b64421cbf4861ae3e0",
+      "verified_utc": "2026-11-05T13:24:39.916023+00:00"
+    },
+    {
+      "bytes": 26011071,
+      "canonical_name": "native_fits.part0012.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0012.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "26d86666eb9bcd11bdf73f65e1c226889a60b75d756d6a61e666b5365253a68c",
+      "verified_utc": "2026-11-05T13:23:44.294448+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0013.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0013.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "9b02ecf697fe7bd032ed04a26836dab65e7fbbe3e4a20c3b12626bace783109b",
+      "verified_utc": "2026-11-05T13:25:44.183680+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0013.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0013.zip.chunk002.bin",
+      "readback_attempts": 1,
+      "sha256": "c2210b2f153b0b4c9a58806fb6714b22bbb2dcc0e66d60430909db1f4fb73346",
+      "verified_utc": "2026-11-05T13:26:15.983414+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0013.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0013.zip.chunk003.bin",
+      "readback_attempts": 1,
+      "sha256": "36f66a545b014d44d3a373273aaa4bfea1cf980c7bf42a784adeade9d421f1d2",
+      "verified_utc": "2026-11-05T13:26:26.161547+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0013.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0013.zip.chunk004.bin",
+      "readback_attempts": 1,
+      "sha256": "356de74f2b6012346d6a005ae86d3ed033b89bbc3a86e93aae18215ebf6dbbc3",
+      "verified_utc": "2026-11-05T13:26:25.510988+00:00"
+    },
+    {
+      "bytes": 100663296,
+      "canonical_name": "native_fits.part0013.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0013.zip.chunk005.bin",
+      "readback_attempts": 1,
+      "sha256": "8140fc3fdaabd6731fa613e9e33729cb853ab6ac54eea07f1ccf220fff6d1e85",
+      "verified_utc": "2026-11-05T13:26:23.875291+00:00"
+    },
+    {
+      "bytes": 19049364,
+      "canonical_name": "native_fits.part0013.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0013.zip.chunk006.bin",
+      "readback_attempts": 1,
+      "sha256": "6203b745fba6bdbd6fcbe7d50aff6aeae0d11b2ac041e4d125a5c0da4ea86327",
+      "verified_utc": "2026-11-05T13:26:56.298365+00:00"
+    },
+    {
+      "bytes": 54829654,
+      "canonical_name": "native_fits.part0014.zip",
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0014.zip.chunk001.bin",
+      "readback_attempts": 1,
+      "sha256": "8114c28cdb36aad2667c85757f9ae45ee588ea68666d2710fd3ba2d5c8d03a06",
+      "verified_utc": "2026-11-05T13:27:29.914312+00:00"
+    },
+    {
+      "bytes": 519257,
+      "canonical_name": "manifest.json",
+      "name": "KS_improvement_native_FINAL_20261105_manifest.json",
+      "readback_attempts": 1,
+      "sha256": "c001bba3d223fbb887f663b01b29fb8951acc38a1e7cea624e063324b67f96bb",
+      "verified_utc": "2026-11-05T13:26:53.250403+00:00"
+    },
+    {
+      "bytes": 80,
+      "canonical_name": "manifest.sha256",
+      "name": "KS_improvement_native_FINAL_20261105_manifest.sha256",
+      "readback_attempts": 1,
+      "sha256": "c96e2b97c3baacd169a3a3123ac10f4ac7a61fcd1c18508aea1718a3147d78da",
+      "verified_utc": "2026-11-05T13:26:52.923460+00:00"
+    },
+    {
+      "bytes": 2207,
+      "canonical_name": "RESTORE.md",
+      "name": "KS_improvement_native_FINAL_20261105_RESTORE.md",
+      "readback_attempts": 1,
+      "sha256": "3e2dbdbc8fdb4135f79f40e916e9554bec53ef49576a0481d46f9cdb6004c844",
+      "verified_utc": "2026-11-05T13:27:46.660966+00:00"
+    },
+    {
+      "bytes": 46428,
+      "canonical_name": "restore_ks_improvement_fits.py",
+      "name": "KS_improvement_native_FINAL_20261105_restore_ks_improvement_fits.py",
+      "readback_attempts": 1,
+      "sha256": "41bef20e9a0a9ee9671da5e96bf242d0eb1d4f887cd3259ec06e2629b690c907",
+      "verified_utc": "2026-11-05T13:27:47.750388+00:00"
+    },
+    {
+      "bytes": 404,
+      "canonical_name": "verification.json",
+      "name": "KS_improvement_native_FINAL_20261105_verification.json",
+      "readback_attempts": 1,
+      "sha256": "29219acb57553d409a1d9e148a2bb77eca6b054e5f602c5718e3ead88fc27656",
+      "verified_utc": "2026-11-05T13:27:49.031686+00:00"
+    },
+    {
+      "bytes": 28969,
+      "canonical_name": null,
+      "name": "KS_improvement_native_FINAL_20261105_transport_manifest.json",
+      "readback_attempts": 1,
+      "sha256": "82aa2042ca028e4c023a234912bb0a897c6781590509e3029c93beddd08e6e41",
+      "verified_utc": "2026-11-05T13:27:48.238394+00:00"
+    },
+    {
+      "bytes": 127,
+      "canonical_name": null,
+      "name": "KS_improvement_native_FINAL_20261105_transport_manifest.sha256",
+      "readback_attempts": 1,
+      "sha256": "fee46d12d3de8f6b7ca4954c201c27b475fd4f18c34995e65738e672421f9a4a",
+      "verified_utc": "2026-11-05T13:28:04.865059+00:00"
+    },
+    {
+      "bytes": 9289,
+      "canonical_name": null,
+      "name": "KS_improvement_native_FINAL_20261105_restore_native_transport.py",
+      "readback_attempts": 1,
+      "sha256": "ddfb67c377522b42fbbc8b0bfc3580a2bcaa9fcb60a45aeeb274c779969d7578",
+      "verified_utc": "2026-11-05T13:28:05.450407+00:00"
+    },
+    {
+      "bytes": 587,
+      "canonical_name": null,
+      "name": "KS_improvement_native_FINAL_20261105_TRANSPORT_README.txt",
+      "readback_attempts": 1,
+      "sha256": "c30de89449b9eb14845f70a848c012ee798fa1d400422944e2e4cfa5197741c5",
+      "verified_utc": "2026-11-05T13:28:05.237034+00:00"
+    }
+  ],
+  "forecast_state_count": 228,
+  "freeze_identity": "96774e83e2f737ceed30abc232b3a328b79894b0173a8e7a629c0289f0c3f4d2",
+  "inference_restart_state_count": 0,
+  "native_fit_count": 228,
+  "native_internal_checksums_verified_by_package_creator": 228,
+  "other_transport_objects": 9,
+  "qualified_native_fit_count": 228,
+  "resolved_readback_failures": [
+    {
+      "attempt": 1,
+      "cause": "Unproven; first readback was incomplete. Fresh fetch/readback of the same provider object matched exact full size and SHA256.",
+      "error_class": "ValueError",
+      "expected_bytes": 100663296,
+      "http_code": null,
+      "name": "KS_improvement_native_FINAL_20261105_native_fits.part0004.zip.chunk001.bin",
+      "received_bytes": 37748736,
+      "same_uploaded_object_subsequently_verified": true
+    }
+  ],
+  "resolved_upload_failure": {
+    "bytes": 507606954,
+    "http_status": 413,
+    "occurred_before_action_invocation": true,
+    "provider_limit_bytes": 104857600,
+    "remote_object_created": false,
+    "resolution": "96MiB transport fragments; canonical ZIPs and manifest retained unchanged."
+  },
+  "schema": "ks-improvement-final-native-backup/1",
+  "scope": "Selected-only completed native forecast states and compact evidence. This is not a mid-chain RNG backup or directly relocated coordinator.",
+  "selected_fit_coverage": {
+    "expected_unique_selected_fits": 228,
+    "known": true,
+    "missing_or_unreceipted": [],
+    "present_receipted_native_fits": 228,
+    "scope": "Frozen selected/anchor/prior configurations across declared fit trajectories; additional declared seeds for main/anchor roles. Availability is not inference qualification."
+  },
+  "source_and_runtime": {
+    "application": {
+      "ks_data.py": "b928534eca0c8507c64c51caf562f335899d7aa75ba993d6ca0fcda3b583ea00",
+      "ks_improvement_candidates.py": "f2b1d96b3ef0e2ea575e070c5bece2c48600c01bf05d7405b91983705da2d41c",
+      "ks_improvement_diagnostics.py": "de639b9fd3acf214a0d6e4530860cd609286aaf01a128c61521d5b1a01c8cc19",
+      "ks_improvement_runner.py": "9bfc8343feb7e49fa8c026c105e3b3959416483a711f687c90e2a09bde26c2a8",
+      "ks_metrics.py": "0a4f709931cbd91f42e76e8e34497ac539f302d79113ba9720972f33edb90400",
+      "ks_runtime.py": "ff70f020dcb877975cf246e3264cafe01372121d1114532d34e18fa455eb9aa0"
+    },
+    "native": {
+      "runtime": {
+        "blas": [
+          {
+            "architecture": "SkylakeX",
+            "internal_api": "openblas",
+            "num_threads": 1,
+            "version": "0.3.30"
+          },
+          {
+            "architecture": "SkylakeX",
+            "internal_api": "openblas",
+            "num_threads": 1,
+            "version": "0.3.30"
+          }
+        ],
+        "blas_threads": {
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1"
+        },
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+        "python": "3.12.14",
+        "scipy": "1.17.0"
+      },
+      "source_sha256": "ee8f7273bc4d3f7e8f523680e77681406dd5a5848e5909bf118497734f3a5319"
+    },
+    "packages": {
+      "h5py": "3.16.0",
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "threadpoolctl": "3.6.0"
+    }
+  },
+  "transport_helper_independent_check": {
+    "canonical_fixture_bytes": 2098116,
+    "canonical_fixture_files": 6,
+    "chunk_mib": 1,
+    "existing_destination_refused": true,
+    "production_payloads_opened": false,
+    "reviewer": "independent_source_reviewer",
+    "roundtrip_exact": true
+  },
+  "transport_helper_sha256": "ddfb67c377522b42fbbc8b0bfc3580a2bcaa9fcb60a45aeeb274c779969d7578",
+  "transport_manifest_sha256": "82aa2042ca028e4c023a234912bb0a897c6781590509e3029c93beddd08e6e41",
+  "verification": {
+    "all_bytes_streamed_from_authenticated_fetch_references": true,
+    "all_files_not_shared_at_final_metadata_read": true,
+    "all_files_provider_size_and_parent_verified": true,
+    "canonical_manifest_unchanged": true,
+    "folder_permission_roles": [
+      "owner"
+    ],
+    "local_download_copies": 0,
+    "permission_changes": false,
+    "proof": "Each original ZIP was streamed through its complete SHA256 while producing ordered chunk hashes; all remote chunks then returned exactly those bytes and hashes.",
+    "readback_chunk_bytes": 1048576,
+    "unresolved_failures": 0
+  },
+  "verified_bytes": 6837814409,
+  "verified_files": 88
+}

@@ -1,0 +1,71 @@
+{
+  "archive_payload_bytes": 98138812,
+  "archive_payload_members": 4884,
+  "complete_binary_readback": true,
+  "created_utc": "2026-11-05T13:26:37.510202+00:00",
+  "excluded": "Raw data, environments, native NPZs, retrieval URLs and transport manifests; fixed-reference NPZs embed training panels and are retained locally, not included. Fresh reference rollouts need verified data and refitting or those separate checkpoints.",
+  "files": [
+    {
+      "expected_bytes": 26925146,
+      "expected_sha256": "4bfca2fc6876b2cb6a2b23e23d5b9ee66de3b92cfa9d0043a8b01df74539e465",
+      "local_download_copies": 0,
+      "name": "KS_improvement_operational_FINAL_20261105.zip",
+      "passed": true,
+      "readback_bytes": 26925146,
+      "readback_peak_rss_bytes": 19062784,
+      "readback_seconds": 1.6909418770010234,
+      "readback_sha256": "4bfca2fc6876b2cb6a2b23e23d5b9ee66de3b92cfa9d0043a8b01df74539e465",
+      "state": "verified",
+      "verified_utc": "2026-11-05T13:25:24.871027+00:00"
+    },
+    {
+      "expected_bytes": 1140743,
+      "expected_sha256": "7cf41179aa60e8406171367b0b585506a0c3f4fb1c6e982c182b70e7c312dc3a",
+      "local_download_copies": 0,
+      "name": "KS_improvement_operational_FINAL_20261105_manifest.json",
+      "passed": true,
+      "readback_bytes": 1140743,
+      "readback_peak_rss_bytes": 17956864,
+      "readback_seconds": 0.35550899400550406,
+      "readback_sha256": "7cf41179aa60e8406171367b0b585506a0c3f4fb1c6e982c182b70e7c312dc3a",
+      "state": "verified",
+      "verified_utc": "2026-11-05T13:25:46.578885+00:00"
+    },
+    {
+      "expected_bytes": 871,
+      "expected_sha256": "3323a58b273cceafd54c2b36450669b3d2ed806a6e0916e45b27ebc710c0b5a6",
+      "local_download_copies": 0,
+      "name": "KS_improvement_operational_FINAL_20261105_verification.json",
+      "passed": true,
+      "readback_bytes": 871,
+      "readback_peak_rss_bytes": 16908288,
+      "readback_seconds": 0.04934576300001936,
+      "readback_sha256": "3323a58b273cceafd54c2b36450669b3d2ed806a6e0916e45b27ebc710c0b5a6",
+      "state": "verified",
+      "verified_utc": "2026-11-05T13:25:57.126301+00:00"
+    },
+    {
+      "expected_bytes": 3277,
+      "expected_sha256": "9ee9018c01ec757f385257d57beb4a8c9397ab15c1f7deb0eb02197dffb11523",
+      "local_download_copies": 0,
+      "name": "KS_improvement_operational_FINAL_20261105_verify_operational_evidence.py",
+      "passed": true,
+      "readback_bytes": 3277,
+      "readback_peak_rss_bytes": 16908288,
+      "readback_seconds": 0.1337392319983337,
+      "readback_sha256": "9ee9018c01ec757f385257d57beb4a8c9397ab15c1f7deb0eb02197dffb11523",
+      "state": "verified",
+      "verified_utc": "2026-11-05T13:26:09.281263+00:00"
+    }
+  ],
+  "identity": "b5c8659aceb47303c48ce6b51b53cfaf4358de01873c07b539ecbe96f7efe275",
+  "private_destination": true,
+  "public_provider_ids": false,
+  "schema": "ks-private-operational-backup-public-receipt/1",
+  "scientific_revision": "9d4532535478669e26f177be87bbd92066fae41e",
+  "scope": "Receipt-level reconstruction of fixed-reference tables and independent audits, exact configurations, original final bindings, closure/resource/migration/resume evidence. All JSON raw bytes preserved.",
+  "sharing_changed": false,
+  "status": "complete",
+  "verified_bytes": 28070037,
+  "verified_files": 4
+}

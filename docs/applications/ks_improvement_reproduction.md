@@ -40,10 +40,39 @@ reconciles the compact exports against the retained receipts. The integrated
 report has 24 cohorts and 317 complete cohort episodes; this is not a count of
 independent scientific replicates across methods.
 
-The current human-readable report and movie review is a separate delivery step.
-An unpublished QA preview is not a published final PDF. Use the final source-bound
-visual review receipt, once present, for the exact inspected artifact hashes;
-the historical pre-render receipts below do not establish that review.
+The final 50-page PDF, fifteen PNG/vector-PDF figure pairs, and three compact
+animations passed the [completed visual review](evidence/ks_improvement_final_visual_qa.json).
+The PDF names published scientific revision
+`9d4532535478669e26f177be87bbd92066fae41e`; subsequent delivery receipts do not
+change its numerical source or results. Historical preview and pre-render
+receipts below remain provenance, not substitutes for this completed review.
+
+All 88 selected-native transport objects passed complete remote byte-count and
+SHA-256 readback before cleanup. The
+[native-backup receipt](evidence/ks_improvement_final_native_backup.json) records
+the exact selected-checkpoint scope. A separate
+[operational backup](evidence/ks_improvement_final_operational_backup.json)
+preserves receipt-level reconstruction of the fixed-reference tables and audit
+scripts; fresh reference rollouts require the verified data and refitting or
+the locally retained reference checkpoints.
+
+After verified backup and genuine coordinator closure, the
+[guarded duplicate cleanup](evidence/ks_improvement_final_duplicate_cleanup.json)
+removed 348 byte-identical native files from the historical run_v2 migration
+source, reclaiming 10,550,111,372 bytes. Every active run_v3 replacement was fully
+hashed against the applied migration manifest before deletion. Original data,
+the original study, active fits, logs, receipts, chain/phase restart files and
+unidentified sidecars remain protected. The historical run_v2 directory is an
+evidence/restart-sidecar source, not a second complete native-fit cache.
+
+The separate [transport cleanup](evidence/ks_improvement_native_transport_cleanup.json)
+removed 79 checksum-verified transfer fragments, reclaiming another
+6,837,207,061 bytes while retaining the 14 canonical ZIPs and every small
+manifest/helper. Combined removal was 17,387,318,433 bytes. The
+[final workspace snapshot](evidence/ks_improvement_final_workspace.json)
+records resource headroom, 454 retained active native fits, zero pending
+scientific jobs, and an unchanged clean original-study checkout. The snapshot
+precedes only the small final handoff ZIP and delivery-metadata commit.
 
 ## Environment and data
 
@@ -98,7 +127,7 @@ not paths to recreate with symlinks. Use:
 | Verified delivered cache | `/data/ks_improvement_20261105/cache` |
 | Project Python | `/data/ks_improvement_20261105/env/bin/python` |
 | Original comparator-selection freeze | `/data/ks_improvement_20261105/recovered_original_evidence/ks_frozen_specification_full.json` |
-| Preserved source campaign | `/data/ks_improvement_20261105/run_v2` |
+| Historical source receipts/logs/restart sidecars | `/data/ks_improvement_20261105/run_v2` |
 | Terminal campaign after verified migration | `/data/ks_improvement_20261105/run_v3` |
 
 ```bash
@@ -123,7 +152,8 @@ The guarded migration **passed and was applied** on 2026-11-05. Its receipt,
 It preserves 348 completed native checkpoints, 3,138 complete forecast receipts,
 and 31,138.42515946799 cumulative worker seconds, including the original
 90-second preparation charge. No scientific computation was performed by the
-migration, and the source run_v2 was neither modified nor deleted.
+migration; that migration did not modify or delete the source run_v2. The later
+verified duplicate cleanup described above is a separate, receipted operation.
 These are counts at the migration frontier, not a claim that confirmation,
 seed sensitivity, or the auxiliary reference and acceptance schedules finished.
 

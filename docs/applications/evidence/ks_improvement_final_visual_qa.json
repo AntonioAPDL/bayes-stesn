@@ -662,16 +662,42 @@
     "verified_manifest_members": 46
   },
   "freeze_identity": "96774e83e2f737ceed30abc232b3a328b79894b0173a8e7a629c0289f0c3f4d2",
-  "identity": "23fe2ac5514a5eb619973eb2030c4d87724002279dd5439e6e91e1117a31b08f",
+  "identity": "dfbf98ade2be6dbd9489066f68b1bf466a8b712b9043b3213939d9273fdc2dd2",
   "limitations": [
     "Visual QA is presentation evidence, not a replacement for the independent numerical and inference audits.",
     "Model examples are the predeclared validation case, not an aggregate ranking.",
     "No full-study new test partition was opened."
   ],
-  "pending": [
-    "render PDF with actual published source revision; compare every page to verified preview and visually inspect changed pages"
-  ],
-  "published_pdf": null,
+  "pending": [],
+  "previous_publication_readiness_receipt_sha256": "a5f4e58db704f7edde2bccab5b1e0ac3e40db57a64b1f6b9bd9370053646ce66",
+  "published_pdf": {
+    "actual_render_exit_code": 0,
+    "file": "KS_STESN_expanded_study_20261105.pdf",
+    "pages": 50,
+    "pdf_bytes": 3255486,
+    "pdf_sha256": "bf889122627f62d84642edcdb3eee0af179db546c85662fc148bcaa79076a080",
+    "publication_provenance": {
+      "identical_source_tree": "30c10fdf6e21c8d679510f1b79b040a5157ff082",
+      "local_equivalent_revision": "32aa6a778de25ab9994bc9b72b0f63fc472ee685",
+      "remote_revision_verified_by_parent": "9d4532535478669e26f177be87bbd92066fae41e"
+    },
+    "render_child_peak_rss_bytes": 139431936,
+    "render_wall_seconds": 3.5068299539998407,
+    "renderer_manifest_scope": "The renderer leaves its automatic visual_qa field pending; this separate receipt records the completed visual review.",
+    "renderer_manifest_sha256": "e00b10db9719686a3762df41b22be9b22b9ea6e30650552ba07cc5aeb2cd751b",
+    "renderer_sha256": "9dc00539aa2dfe13427bddba739a24e76014f9977c6bbcd14c87791007ded9ed",
+    "report_manifest_sha256": "a39f81abb285743676b44ecda2371fa0f80fb0bba51c951cac0aa62607b8b231",
+    "source_revision": "9d4532535478669e26f177be87bbd92066fae41e",
+    "status": "passed",
+    "visual_review": {
+      "49pages_pixel_identical_to_reviewed50pagepreview": true,
+      "all50pages_passed": true,
+      "all50pages_text_within_bounds": true,
+      "changed_page1_visually_reviewed": true,
+      "comparison_receipt_sha256": "3f8a2f101331e9203c8477181852949ebcf51733a4f30e6210af0df187da43fe",
+      "unpublished_marker_absent": true
+    }
+  },
   "schema": "ks-improvement-final-presentation-qa/1",
   "scientific_changes": {
     "new_fits": 0,
@@ -711,7 +737,7 @@
       "sha256": "21a5a6513604073eb6903f8fd80ffd89ccf62a030762b435fd46844adbe77f45"
     }
   },
-  "status": "figures_movies_and_unpublished_pdf_passed; published_revision_pdf_pending",
+  "status": "passed",
   "targeted_checks": {
     "animation_signed_axis_test": {
       "deselected": 7,
@@ -758,5 +784,6 @@
     },
     "source_revision": "UNPUBLISHED_QA_PREVIEW",
     "status": "passed"
-  }
+  },
+  "updated_utc": "2026-11-05T13:23:55.276113+00:00"
 }
