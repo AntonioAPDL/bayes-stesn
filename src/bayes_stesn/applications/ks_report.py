@@ -596,6 +596,7 @@ class Report:
         self.seed = int(self.frozen["model_seed"])
         self.rows = self.summary["rows"]
         self.primary_rows = [row for row in self.rows if row["seed"] == self.seed]
+        self._completion()  # Reject an omitted frozen cohort before rendering any figure.
         self.by_episode = {(row["track"], row["model"], row["seed"], row["trajectory"]): row
                            for row in self.episodes}
         if len(self.by_episode) != len(self.episodes):
@@ -754,8 +755,57 @@ class Report:
         positive = [value for value in peaks.values() if value > 0]
         if len(positive) < 3:
             return set()
-        threshold = max(10., 100.*float(np.median(positive)))
+        threshold = max(10., 25.*float(np.median(positive)))
         return {model for model, value in peaks.items() if value > threshold}
+
+    @staticmethod
+    def _annotate_compute_points(axis, points):
+        """Place small display labels inside the axes without hiding a point."""
+        from matplotlib.transforms import Bbox
+
+        axis.figure.canvas.draw()
+        renderer = axis.figure.canvas.get_renderer()
+        bounds = axis.get_window_extent(renderer)
+        inside = Bbox.from_extents(bounds.x0+3, bounds.y0+3, bounds.x1-3, bounds.y1-3)
+        marker_boxes = []
+        for seconds, mean, _ in points:
+            px, py = axis.transData.transform((seconds, mean))
+            marker_boxes.append(Bbox.from_bounds(px-5, py-5, 10, 10))
+        placed, annotations = [], []
+
+        def overlap(first, second):
+            width = max(0., min(first.x1, second.x1)-max(first.x0, second.x0))
+            height = max(0., min(first.y1, second.y1)-max(first.y0, second.y0))
+            return width*height
+
+        for seconds, mean, label in points:
+            annotation = axis.annotate(label, (seconds, mean), xytext=(6, 8),
+                                       textcoords="offset points", fontsize=7,
+                                       annotation_clip=False)
+            best = None
+            for dy in (8, -14, 22, -28, 36, -42, 50, -56):
+                for dx in (6, -6, 26, -26):
+                    annotation.set_position((dx, dy))
+                    annotation.set_horizontalalignment("left" if dx > 0 else "right")
+                    box = annotation.get_window_extent(renderer).expanded(1.05, 1.15)
+                    outside = box.width*box.height-overlap(box, inside)
+                    penalty = 1000*outside + sum(overlap(box, other) for other in placed+marker_boxes)
+                    candidate = (penalty, abs(dx)+abs(dy), dx, dy, box)
+                    if best is None or candidate[:2] < best[:2]:
+                        best = candidate
+                    if penalty <= 1e-8:
+                        break
+                if best[0] <= 1e-8:
+                    break
+            _, _, dx, dy, box = best
+            annotation.set_position((dx, dy))
+            annotation.set_horizontalalignment("left" if dx > 0 else "right")
+            placed.append(box); annotations.append(annotation)
+            if abs(dx)+abs(dy) > 28:
+                axis.annotate("", (seconds, mean), xytext=(dx, dy), textcoords="offset points",
+                              arrowprops={"arrowstyle": "-", "color": "#777777", "lw": .5,
+                                          "shrinkA": 2, "shrinkB": 4})
+        return annotations
 
     def error_curves(self, plt):
         for track in ("A", "B", "C"):
@@ -800,7 +850,7 @@ class Report:
                     if companion:
                         caption += ("This additional display shows the other methods on a readable scale. " + names +
                             " remains in the separate full-range figure and every numeric table, with its original losses and intervals unchanged. "
-                            "The display-only rule separates a method when its maximum mean/interval exceeds both 10 and 100 times the median model maximum. No model, trajectory or origin is removed from the study's score population.")
+                            "The display-only rule separates a method when its maximum mean/interval exceeds both 10 and 25 times the median model maximum. No model, trajectory or origin is removed from the study's score population.")
                     else:
                         caption += "All methods with eligible curves appear here, including extreme finite losses; nonfinite failures remain in the separate full-schedule census."
                     suffix = f"error_horizon_comparison_{track}" if companion else f"error_horizon_{track}"
@@ -869,7 +919,10 @@ class Report:
                     ticks = np.unique(np.linspace(0, len(example.x)-1, min(7, len(example.x))).round().astype(int))
                     axis.set_yticks(ticks, [f"{example.x[k]:.2f}" for k in ticks])
                     axis.set_xlabel("Elapsed physical time")
-                    axis.set_ylabel("Official target x (one row per site)")
+                    if j == 0:
+                        axis.set_ylabel("Official target x (one row per site)")
+                    else:
+                        axis.tick_params(axis="y", labelleft=False)
                     axis.set_title(title, fontsize=10)
                 figure.colorbar(images[1], ax=axes[:2], fraction=.027, pad=.02, label="Field (physical units)")
                 figure.colorbar(images[2], ax=axes[2], fraction=.046, pad=.04, label="Signed error (physical units)")
@@ -939,11 +992,14 @@ class Report:
         track_rows = {track: _ordered([row for row in self.primary_rows if row["track"] == track]) for track in ("A", "B")}
         extremes = {track: self._extreme_display_models({row["model"]: row["rmse"] for row in rows if row.get("rmse", {}).get("mean") is not None})
                     for track, rows in track_rows.items()}
+        for track, rows in track_rows.items():
+            extremes[track] |= self._extreme_display_models({row["model"]: self.curve(track, row["model"], "rmse") for row in rows})
         for companion in ([False, True] if any(extremes.values()) else [False]):
             figure, axes = plt.subplots(1, 2, figsize=(11.4, 5.5)); shown = False; shown_models = set()
+            figure.subplots_adjust(left=.08, right=.95, bottom=.28, top=.82, wspace=.4)
             for axis, track in zip(axes, ("A", "B")):
-                arrays = []
-                for j, row in enumerate(track_rows[track]):
+                arrays, points = [], []
+                for row in track_rows[track]:
                     if companion and row["model"] in extremes[track]:
                         continue
                     estimate = row.get("rmse", {}); seconds = float(row.get("fit_seconds", 0))
@@ -954,9 +1010,7 @@ class Report:
                     if estimate.get("ci95") is not None:
                         axis.vlines(seconds, *estimate["ci95"], color=COLORS.get(model), linewidth=1.3)
                         arrays.append(estimate["ci95"])
-                    offset = 7+11*(j % 3) if not companion and extremes[track] else (-15 if j % 2 == 0 else 7)
-                    axis.annotate(f"{ORDER.index(model)+1} (n={estimate['n']})", (seconds, mean),
-                                  xytext=(6, offset), textcoords="offset points", fontsize=7)
+                    points.append((seconds, mean, f"{ORDER.index(model)+1} (n={estimate['n']})"))
                     shown = True; shown_models.add(model)
                 axis.set_xscale("log"); axis.set_xlabel("Total selected-fit wall time (seconds; log scale)")
                 axis.set_ylabel("Trajectory-mean RMSE (physical units)")
@@ -971,18 +1025,18 @@ class Report:
                     names = ", ".join(LABELS[model] for model in ORDER if model in extremes[track])
                     axis.text(.02, .02, "Shown in full-range figure: " + names, transform=axis.transAxes, fontsize=7,
                               bbox={"facecolor": "white", "alpha": .85, "edgecolor": "none"})
+                self._annotate_compute_points(axis, points)
             if shown:
                 title = "Accuracy versus fitting cost: readable companion" if companion else "Accuracy versus fitting cost: full range"
                 figure.suptitle(title, fontsize=12)
                 handles = [Line2D([], [], color=COLORS[model], marker="o", linestyle="none",
                                   label=f"{ORDER.index(model)+1}: {LABELS[model]}") for model in ORDER if model in shown_models]
                 figure.legend(handles=handles, loc="lower center", ncol=3, fontsize=7.5, frameon=False)
-                figure.subplots_adjust(left=.08, right=.95, bottom=.28, top=.82, wspace=.4)
                 caption = ("Costs sum selected-configuration fit-receipt wall times, including terminal failed fits where recorded. "
                     "They exclude earlier interrupted-attempt overhead and forecast time. Campaign attempt and screening costs, when collected, are reported separately. "
                     "RMSE summarizes complete trajectories only; labels show its actual n. "
                     "Vertical intervals are trajectory-cluster 95% intervals conditional on selection. Tracks remain separate. ")
-                caption += ("This additional view separates extreme-range methods only for readability; all their original values remain in the full-range figure and numeric tables. The display threshold is max(10, 100 times the median model mean/interval maximum), applied separately by track. No metric or scoring population changes."
+                caption += ("This additional view separates extreme-range methods only for readability; all their original values remain in the full-range figure and numeric tables. A method is separated when its aggregate or horizon mean/interval maximum exceeds max(10, 25 times the median model maximum), applied separately by track and aggregate/horizon view. No metric or scoring population changes."
                             if companion else "All eligible methods and extreme finite errors are retained. Full-schedule failure/divergence counts appear separately, and incomplete finite-outcome populations do not define full-schedule accuracy.")
                 self._save_figure(figure, "accuracy_compute_comparison" if companion else "accuracy_compute", title, caption)
             plt.close(figure)
@@ -1059,14 +1113,34 @@ class Report:
                 plt.close(figure)
 
     def _completion(self):
-        expected = {(track, model) for track in ("A", "B") for model in self.frozen["selected"][track]}
-        actual = {(row["track"], row["model"]): row for row in self.primary_rows if row["track"] in ("A", "B")}
-        complete = expected == set(actual) and all(row["pending_origins"] == 0 for row in actual.values())
-        pending = sum(row["pending_origins"] for row in actual.values())
-        failures = sum(row["failed_origins"] for row in actual.values())
-        extensions_pending = sum(row["pending_origins"] for row in self.rows if row["track"] == "C" or row["seed"] != self.seed)
+        expected = {}
+        for track, model, seed, trajectory in _reliability_schedule(self.frozen):
+            expected.setdefault((track, model, seed), set()).add(trajectory)
+        actual = {}
+        for row in self.rows:
+            key = (row["track"], row["model"], row["seed"])
+            if key in actual:
+                raise ValueError("Duplicate summary cohort; regenerate a coherent full-schedule summary")
+            actual[key] = row
+        if set(actual) != set(expected):
+            raise ValueError("Summary must retain every frozen main, sensitivity and robustness cohort, including pending or failed cohorts")
+        for key, row in actual.items():
+            n_trajectories = len(expected[key]); n_origins = n_trajectories*len(self.frozen["test_origins"])
+            if row["scheduled_trajectories"] != n_trajectories or row["scheduled_origins"] != n_origins:
+                raise ValueError("Summary cohort denominator differs from the frozen schedule")
+            if any(isinstance(row[name], bool) or not isinstance(row[name], (int, np.integer)) or row[name] < 0
+                   for name in ("failed_origins", "pending_origins")) or row["failed_origins"]+row["pending_origins"] > n_origins:
+                raise ValueError("Invalid failed/pending origin counts in summary cohort")
+        main = [row for (track, _, seed), row in actual.items() if track in ("A", "B") and seed == self.seed]
+        extensions = [row for (track, _, seed), row in actual.items() if track == "C" or seed != self.seed]
+        complete = bool(main) and all(row["pending_origins"] == 0 for row in main)
+        pending = sum(row["pending_origins"] for row in main)
+        failures = sum(row["failed_origins"] for row in main)
+        extensions_pending = sum(row["pending_origins"] for row in extensions)
+        extensions_failed = sum(row["failed_origins"] for row in extensions)
         return {"main_execution_terminal": complete, "main_pending_origins": pending,
                 "main_failed_origins": failures, "extension_pending_origins": extensions_pending,
+                "extension_failed_origins": extensions_failed,
                 "all_requested_scheduled_origins_terminal": complete and extensions_pending == 0}
 
     def selected_horizons(self):
@@ -1103,10 +1177,15 @@ class Report:
             self.results, self.frozen, self.experiment, self.episodes,
             episode_results_sha256=self.episode_results_sha256, freeze_sha256=self.freeze_sha256)
         title = "Kuramoto–Sivashinsky: Bayesian ST-ESN and comparator study"
-        status = ("All scheduled main-track origins have terminal outcomes." if completion["main_execution_terminal"]
-                  else "Main-track execution is incomplete; pending work is explicitly retained below.")
+        if completion["all_requested_scheduled_origins_terminal"]:
+            status = "All requested main-track, sensitivity and robustness origin schedules have terminal outcomes."
+        elif completion["main_execution_terminal"]:
+            status = "Main-track origin schedules have terminal outcomes; required sensitivity or robustness work remains pending."
+        else:
+            status = "Main-track execution is incomplete; pending work is explicitly retained below."
         status += (f" Failed main-track origins: {completion['main_failed_origins']}; "
                    f"pending main-track origins: {completion['main_pending_origins']}; "
+                   f"failed sensitivity/robustness origins: {completion['extension_failed_origins']}; "
                    f"pending sensitivity/robustness origins: {completion['extension_pending_origins']}.")
         html_parts, md_parts = [], [f"# {title}\n", "## Execution status\n", status + "\n"]
 
@@ -1138,6 +1217,17 @@ class Report:
             section("Validation-selection qualification issues", [
                 "These families did not have a fully eligible candidate on all promotion cases. Their retained outputs remain labeled diagnostic/provisional even if individual later fits qualify. The final fit gate and successful validation selection are separate facts."
             ] + list(issues))
+        selected_nvar_b = self.frozen.get("selected", {}).get("B", {}).get("pod_nvar")
+        if selected_nvar_b is not None:
+            nvar_loss = selected_nvar_b.get("selection_loss")
+            paragraphs = [
+                "Track B POD-NVAR retained " + selected_nvar_b["id"] + " with frozen episode-balanced, horizon-band validation squared error "
+                + _number(nvar_loss, 6) + ". The bounded staged search evaluates only promoted candidates and its declared refinement at the larger validation stage; unpromoted initial candidates are not automatically revisited. Selection establishes the best eligible configuration among that evaluated set, not a stable or globally optimal NVAR setting.",
+                "Numerical eligibility and predictive stability are different checks. A finite but very large validation error or a finite divergence can remain eligible under the frozen rule; failed nonfinite forecasts make a candidate ineligible. The reported test reliability therefore remains essential even when a configuration passed validation eligibility."
+            ]
+            if nvar_loss is not None and float(nvar_loss) > 1e6:
+                paragraphs.append("The very large retained Track B NVAR validation loss documents instability already observed before test access. Its selection is a limitation of this finite staged search, not evidence that the family was well optimized or stable.")
+            section("NVAR search scope and pre-test stability", paragraphs)
         if self.evidence is not None:
             evidence = self.evidence; binding = evidence["binding"]; campaign = evidence["campaign"]
             section("Execution cost and provenance", [

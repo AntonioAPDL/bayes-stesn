@@ -1,0 +1,68 @@
+{
+  "changes": [
+    "Require every frozen main, seed-sensitivity and contiguous cohort before claiming full schedule terminal status.",
+    "Terminal outcomes may include explicit failed and inference-unqualified outcomes; terminal does not mean successful.",
+    "Preserve all finite extreme scores in full-range figures; add clearly disclosed readable companions.",
+    "Place cost labels within axes and remove redundant heatmap row labels that collided with a colorbar.",
+    "Expose the actual frozen Track B NVAR validation loss and the limited staged-search/pre-test-instability caveat."
+  ],
+  "checks": [
+    "test_full_schedule_known_answer_retains_396_4_2_6_and_340_56",
+    "test_pending_and_failed_fit_are_distinct_from_observed_rollout_failure",
+    "test_changed_origin_receipt_rejects_stale_episode_summary",
+    "test_large_finite_tail_gets_companion_without_changing_estimates",
+    "test_crowded_cost_labels_stay_inside_axes_without_overlap",
+    "test_completion_rejects_missing_robustness_or_sensitivity_cohort",
+    "test_terminal_status_retains_failed_and_unqualified_extension_rows"
+  ],
+  "generated_utc": "2026-11-05T05:12:37.927268+00:00",
+  "git_diff_check": "passed",
+  "model_fit_or_forecast_performed": false,
+  "numerical_model_or_configuration_modified": false,
+  "private_preview_qa": {
+    "animations_rendered": false,
+    "artifacts_visually_inspected": 14,
+    "dpi": 140,
+    "final_production_artifact_qa_complete": false,
+    "format": "PNG",
+    "memory_budget_bytes": 300000000,
+    "numeric_threads_per_library": 1,
+    "process_peak_rss_bytes": 153542656,
+    "production_report_rendered": false,
+    "production_results_modified": false,
+    "receipt_sha256": "b1e590b18eedd730bb7736a1ad2a1df53c94ee964755ae7be012cad90d15dbcf",
+    "state": "passed_targeted_private_preview",
+    "tracks": [
+      "A",
+      "B"
+    ]
+  },
+  "raw_junit_sha256": "f5c21e51e5d0f2bc208c3b714abe05d643e00fb6d2bb77976ba65a1d48339b72",
+  "reproduce": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 python -m pytest -q tests/test_ks_report_reliability.py tests/test_ks_report_presentation.py",
+  "schema": "ks-report-render-readiness-acceptance/1",
+  "scope": "Focused synthetic reporting regressions, plus separately identified private main-track figure readiness QA; no scientific source, configuration, selection, fit, forecast or numerical result was changed.",
+  "selection_or_score_population_modified": false,
+  "sources": [
+    {
+      "path": "src/bayes_stesn/applications/ks_report.py",
+      "sha256": "c4441d7dc296d1287f766b935ac705ab6d436398529458e6fb0603982d3cbd50"
+    },
+    {
+      "path": "tests/test_ks_report_reliability.py",
+      "sha256": "decb503385a990c5ba12d337b918072689ff25448d4ce18d97c078ce0bdbe17d"
+    },
+    {
+      "path": "tests/test_ks_report_presentation.py",
+      "sha256": "587bc019f3ec658d61b1e8107906b3730dcc968edeeaf9a2d69440c2cb7865c2"
+    }
+  ],
+  "status": "passed",
+  "test_scope": "Synthetic inputs only. One small in-memory plot verifies label bounds; no production result inputs are read by the regression tests.",
+  "tests": {
+    "elapsed_seconds": 1.435,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 7
+  }
+}

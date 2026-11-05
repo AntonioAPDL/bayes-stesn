@@ -411,6 +411,7 @@ class Inputs:
                 self.memory_recoveries.append((name, receipt))
         self.memory_recoveries.sort(key=lambda item: (item[1].get("event_utc", ""), item[0]))
         self.main_audit = extra.get("ks_main_tracks_audit_v2") or self.read(self.repo/"docs/applications/evidence/ks_main_tracks_audit_v2.json", optional=True) or {}
+        self.nvar_selection_audit = extra.get("ks_nvar_B_selection_audit") or self.read(self.repo/"docs/applications/evidence/ks_nvar_B_selection_audit.json", optional=True) or {}
         self.cfg = self.experiment["config"]
         self.seed, self.rows = self.frozen["model_seed"], self.summary["rows"]
         identity = self.frozen["identity"]
@@ -433,6 +434,16 @@ class Inputs:
         if self.main_audit:
             verify_main_audit_receipt(self.main_audit, self.frozen, self.summary,
                 self.episodes, self.read(self.results/"horizon_curves.json"))
+        if self.nvar_selection_audit:
+            audit=self.nvar_selection_audit; selected=self.frozen["selected"]["B"]["pod_nvar"]
+            provenance={r["path"]:r for r in audit.get("source_manifest",[])}
+            if (audit.get("passed") is not True or audit.get("freeze_identity") != identity or
+                    audit.get("experiment_identity") != self.experiment["identity"] or
+                    audit.get("selected",{}).get("selected_config_id") != selected["id"] or
+                    audit["selected"].get("effective_config") != selected["config"] or
+                    audit["selected"].get("promotion_loss") != selected["selection_loss"] or
+                    provenance.get("selection/B_pod_nvar_promote.json",{}).get("sha256") != selected["selection_receipt_sha256"]):
+                raise ValueError("NVAR selection caveat is not bound to this frozen decision")
         if self.contiguous_history and (
                 self.contiguous_history.get("freeze_identity") != identity or
                 self.contiguous_history.get("freeze_sha256") != digest(self.results/"freeze.json")):
@@ -850,7 +861,8 @@ class Writer:
                 selected = i.frozen["selected"][track][model]
                 rows.append([track,label(model),len(candidates),selected["id"],number(selected.get("selection_eligible",False)),number(selected.get("selection_loss")),selected.get("selection_objective","")])
         self.table(["Track", "Family", "Initial candidates", "Selected ID", "Eligible", "Selection loss", "Objective"], rows, [30,108,45,73,45,62,140])
-        self.p("These are best among the configurations evaluated under the recorded budget. Search boundaries, ineligible candidates, near-ties and refinements remain visible. Candidate count alone does not establish fairness; permitted observations, actual inference/optimization effort, forecast horizons and reusable fits also matter.")
+        self.p("These configurations were selected under the recorded staged budget and loss/complexity rule. Final selection compares fully eligible candidates at promotion fidelity; candidates eliminated earlier are not automatically reevaluated on that larger schedule. Search boundaries, ineligible candidates, near-ties and refinements remain visible. Candidate count alone does not establish fairness; permitted observations, actual inference/optimization effort, forecast horizons and reusable fits also matter.")
+        self.nvar_selection_caveat()
         self.h("Initial structured proposals", 2)
         self.p("Each row below is an actual candidate tuple. Unlisted combinations were not part of a Cartesian search. Shared candidate definitions can occur in both tracks; fitted transforms, parameters and selections remain independent.")
         seen = {}
@@ -866,7 +878,7 @@ class Writer:
             self.h(f"{track} / {label(model)} / {stage}", 2)
             ranking = receipt.get("ranking", [])
             if ranking:
-                self.table(["Candidate", "Eligible", "Qualified episodes", "Failed origins", "Validation loss", "Near-tie"], [
+                self.table(["Candidate", "Eligible", "Qualified episodes", "Failed origins", "Validation loss", "Within 1% set"], [
                     [r.get("candidate",{}).get("id","-"),number(r.get("eligible",False)),r.get("qualified_episodes","-"),r.get("failed_origins","-"),number(r.get("loss")),number(r.get("validation_near_tie",False))] for r in ranking], [95,55,80,70,100,65])
             elif stage == "refinement":
                 self.table(["Refinement item", "Recorded value"], [
@@ -929,6 +941,23 @@ class Writer:
                     contrasts.append([item.get("track"),label(item.get("model","")),item.get("first_target"),level.get("paths_per_ensemble"),number(level.get("mean_difference")),number(level.get("single_ensemble_difference_sd")),number(level.get("replicate_mean_difference_mcse"))])
             if contrasts:
                 self.table(["Track", "Family", "Origin", "Paths", "Chosen-runner loss", "Single-ensemble SD", "Four-replicate MCSE"], contrasts, [30,120,45,45,90,85,95])
+
+    def nvar_selection_caveat(self):
+        audit=self.i.nvar_selection_audit
+        if not audit:
+            return
+        selected=audit["selected"]; counts=audit["stage_counts"]
+        self.h("Pre-test NVAR instability and the staged-search limitation",2)
+        self.p("For Track B POD-NVAR, "+str(counts["initial_candidates"])+" initial configurations were screened and "+str(counts["initial_promoted_candidates"])+" were promoted. The selected "+selected["selected_config_id"]+" had initial band-MSE "+number(selected["screen_loss"],6)+", but its larger promotion evaluation had episode-balanced, equal-horizon-band MSE "+format(selected["promotion_loss"],",.6f")+". All its promotion forecasts were finite, while "+str(selected["promotion_finite_divergent_origins"])+" crossed the declared divergence threshold. Finite completion therefore did not establish stable autonomous behavior.")
+        stage_rows=[r for r in audit["stage_rows"] if r["stage"] in ("promote","refine")]
+        self.table(["Stage / candidate", "Eligible", "Failed origins", "Finite divergent origins", "Validation band-MSE"],[[r["stage"]+" / "+r["candidate_id"],number(r["eligible"]),r["failed_origins"],r["finite_divergent_origins"],number(r["loss"],6)] for r in stage_rows],[150,55,85,100,120])
+        self.p("Only "+", ".join(selected["promoted_and_refined_eligible_candidates"])+" was fully eligible among the promoted configurations and the bounded boundary refinement. The refinement followed the recorded rule: "+audit["refinement_reason"]+". The other "+str(counts["initial_candidates_not_revisited_at_promotion_fidelity"])+" initial candidates were not revisited at promotion fidelity. This limited search left severe validation instability unresolved; it does not establish a stable or globally optimal NVAR setting.")
+        exceptional=selected.get("selected_exceptional_validation_origins",[])
+        if exceptional:
+            self.table(["Validation trajectory", "First target", "Finite origin RMSE", "Origin band-MSE", "Divergence flag"],[[r["trajectory"],r["first_target"],number(r.get("rmse"),6),number(r.get("band_mse"),6),number(r.get("diverged",False))] for r in exceptional],[100,75,105,125,105])
+        if not selected["actual_multiple_candidate_tie"]:
+            self.p("The recorded 1% membership flag includes the selected candidate itself. There was no multi-candidate eligible near-tie here, so the complexity rule did not decide between viable rivals.","small")
+        self.p("The saved validation decisions and the severe finite validation divergence predate the test gate. The audit of those receipts was performed later and changed no models or selection. The test outcomes retain their own full denominators and extreme finite errors; this warning is not used for post-test reselection.","small")
 
     def uncertainty_and_extensions(self):
         i = self.i
@@ -1028,7 +1057,13 @@ class Writer:
             if "first_session_per_job_map_complete" in observer:
                 self.p("Observer coverage limitation: "+observer.get("limitation","")+" The recovered first-session aggregate has "+str(observer.get("first_session_samples"))+" samples; its full observed-job count is unknown. Retained per-job rows are not presented as a complete census, and missing worker peaks are not reconstructed from unrelated processes.","small")
             elif observer:
-                self.p("Observer session "+str(observer.get("session_index","unavailable"))+" retains "+str(observer.get("samples","unavailable"))+" samples and "+str(observer.get("retained_job_rows","unavailable"))+" per-job rows. Complete per-job map: "+number(observer.get("per_job_map_complete"))+"; byte-identical archive verified: "+number(observer.get("archived_file_byte_identical_to_saved_final_summary"))+". "+observer.get("claim",""),"small")
+                if "archived_file_byte_identical_to_saved_final_summary" in observer:
+                    archive_check="Byte-identical session archive verified: "+number(observer["archived_file_byte_identical_to_saved_final_summary"])+". "
+                elif "rebuilt_serialization_byte_identical" in observer:
+                    archive_check="The saved merged aggregate was rebuilt byte-for-byte: "+number(observer["rebuilt_serialization_byte_identical"])+". "
+                else:
+                    archive_check="An exact archive comparison is not recorded. "
+                self.p("Observer session "+str(observer.get("session_index","unavailable"))+" retains "+str(observer.get("samples","unavailable"))+" samples and "+str(observer.get("retained_job_rows","unavailable"))+" per-job rows. Complete per-job map: "+number(observer.get("per_job_map_complete"))+". "+archive_check+observer.get("claim",""),"small")
         if p.get("resources"):
             self.h("Initial measured resources and allocation",2)
             self.table(["Resource/allocation", "Value"],flatten(p["resources"]),[250,260])

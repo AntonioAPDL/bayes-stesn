@@ -72,6 +72,50 @@ the appended event has its own evidence file,
 exposed as `extra_acceptance.ks_memory_recovery_20261105_event2`. No additional
 cache advice or deletion was performed by this documentation audit.
 
+### Third pause: larger worker estimate at the next family boundary
+
+At 05:07:34 UTC, after both additional Bayesian seeds in Track B had completed,
+the scheduler paused before admitting Track B CNN sensitivity. Its
+safety-adjusted estimate was 1,800,000,000 bytes and the current allowance was
+1,789,068,902 bytes. The stop snapshot had no running ledger jobs. Guarded advice
+at 05:08:54 UTC covered 712 existing files and 5,517,978,204 logical bytes, with
+zero errors, deletions, or content changes. The same frozen study then resumed;
+the new invocation retained its two-hour wall-time cap and the configured total
+worker-time cap.
+
+| Cgroup quantity | Before advice | After advice |
+|---|---:|---:|
+| Current accounted bytes | 7,331,471,360 | 3,540,639,744 |
+| File-backed accounted bytes | 6,982,311,936 | 3,200,884,736 |
+| Anonymous accounted bytes | 95,395,840 | 100,691,968 |
+| Configured limit, bytes | 8,589,934,592 | 8,589,934,592 |
+| Cumulative `memory.events:max` | 6,450 | 6,450 |
+| Cumulative `memory.events:oom` | 0 | 0 |
+| Cumulative `memory.events:oom_kill` | 0 | 0 |
+
+The `max` counter increased by 582 since the previous recovery's final reading;
+it did not change between this advice call's two recorded snapshots. The
+recorded peak remained 8,590,311,424 bytes. These values retain the evidence of
+memory-limit pressure even though the later before-advice current reading was
+below that peak. The scheduler stop and advice measurements occurred at different
+times; the stop allowance is not recomputed from the later snapshot. No claim
+attributes all hierarchical counter activity exclusively to the KS workers.
+
+The retained pre-restart observer file is an aggregate of three sessions, not a
+single-session record. Reconstructing that aggregate from the three durable
+session files reproduced its JSON and serialized bytes exactly. Session three
+itself retained 634 samples and all 28 recorded job rows; its combined-worker RSS
+peak was 1,113,669,632 bytes. Session four began at 05:09:02 UTC. The incomplete
+first-session job map remains explicitly incomplete throughout.
+
+The separate receipt is
+[`evidence/ks_memory_recovery_20261105_event3.json`](evidence/ks_memory_recovery_20261105_event3.json).
+The first two receipts remain unchanged. The collector now discovers all matching
+`ks_memory_recovery_*.json` receipts and verifies their experiment identity and
+any recorded freeze identity. The PDF consumer uses the same event family. This
+documentation audit performed no cache advice, deletion, fitting, or test-label
+access, and all 51 frozen numerical Python files still matched their hashes.
+
 ### Reusable guarded command
 
 `tools/reclaim_ks_file_cache.py` defaults to a dry-run. It checks the existing

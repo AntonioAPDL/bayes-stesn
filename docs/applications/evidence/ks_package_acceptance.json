@@ -1,14 +1,4 @@
 {
-  "combined_acceptance_run": {
-    "failures": 0,
-    "seconds": 0.55,
-    "test_files": [
-      "tests/test_ks_cache_advice.py",
-      "tests/test_ks_resource_observer.py",
-      "tests/test_ks_package.py"
-    ],
-    "tests": 10
-  },
   "core_test_labels_opened": false,
   "coverage": [
     "Streaming binary part boundaries and full verified round trip",
@@ -20,22 +10,33 @@
     "Source/cache/staging/locks/symlinks excluded",
     "Active scheduler/worker refusal",
     "Archived absolute job paths preserved without rewriting",
-    "Durable observer session histories included in verified round trip"
+    "Durable observer session histories included in verified round trip",
+    "Actual singular report directory and nested final figures included in verified round trip"
   ],
   "errors": 0,
   "failures": 0,
   "final_results_packaged": false,
   "fixture": "Synthetic complete results only; random regular-file payload; no KS model fitting or scientific results.",
   "numerical_source_or_configuration_changed": false,
-  "recorded_utc": "2026-11-05T03:59:57.715693+00:00",
+  "previous_combined_acceptance_run": {
+    "failures": 0,
+    "seconds": 0.55,
+    "test_files": [
+      "tests/test_ks_cache_advice.py",
+      "tests/test_ks_resource_observer.py",
+      "tests/test_ks_package.py"
+    ],
+    "tests": 10
+  },
+  "recorded_utc": "2026-11-05T04:59:48.904147+00:00",
   "schema": "ks-results-package-acceptance-1",
   "skipped": 0,
   "source_sha256": {
-    "docs/applications/ks_backup_and_restore.md": "8f0533e6ee3c767bfc958fe1c0243243f264dff2a265e51df91ee95daaa63ec4",
-    "tests/test_ks_package.py": "a4f220759de852f96d2ed1fd1b52e4aea4cab079dbd9d6f2276da2db222f4fdd",
-    "tools/package_ks_results.py": "c4254135766169c19673027c584e0345854d2d105f6a495f791c9c9303089049"
+    "docs/applications/ks_backup_and_restore.md": "df96ecdcc0e55838e0bc140c8b11dbdff34ecbfd1fed5cb8cdb0db1eaaf428c7",
+    "tests/test_ks_package.py": "9fe2dfcb0db8e9affb1e6446cee305e08900ed64aa08cc019e357dadf6a78303",
+    "tools/package_ks_results.py": "fe5b742b1a8057d7284160206340a188ab9c5c2a75ef94129d169298feb20e56"
   },
   "status": "tool_ready_final_study_not_packaged",
-  "test_seconds": null,
+  "test_seconds": 0.56,
   "tests": 4
 }

@@ -1,0 +1,249 @@
+{
+  "admission_policy": {
+    "allowance_formula": "min(combined_worker_cap_bytes, 0.65 * max(0, headroom))",
+    "configuration_changed": false,
+    "gates_changed": false,
+    "headroom_formula": "(memory.max - memory.current) + 0.5 * inactive_file",
+    "reported_stop_allowance_bytes": 1789068902,
+    "reported_stop_required_bytes": 1800000000,
+    "required_formula": "1.5 * estimated_combined_worker_RSS <= allowance",
+    "timing_note": "The rejection at 05:07:34 and later before-advice resource measurements are distinct snapshots; do not recompute the stop allowance from the later measurement."
+  },
+  "cache_advice_or_deletion_performed_by_audit": false,
+  "classification": "Conservative scheduling pause with recorded cumulative memory-limit pressure; no recorded OOM event or OOM kill.",
+  "collector_acceptance": {
+    "first_session_gap_still_explicit": true,
+    "model_fit_or_scoring_performed": false,
+    "observer_sessions": 4,
+    "recovery_event_keys": [
+      "ks_memory_recovery_20261105",
+      "ks_memory_recovery_20261105_event2",
+      "ks_memory_recovery_20261105_event3"
+    ],
+    "success": true,
+    "test_outputs_read": false,
+    "third_session_rows_complete": 28
+  },
+  "event": "Third conservative memory-admission pause after both additional Bayesian seeds completed in Track B, before Track B CNN sensitivity; the same frozen study resumed after guarded task-file cache advice.",
+  "event_index": 3,
+  "event_utc": "2026-11-05T05:08:54.962723+00:00",
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "freeze_identity": "ca6d8dac49208767f0073a747a3fbc7ee37648715a22abc32e539378b75756dc",
+  "frozen_numerical_files_verified": 51,
+  "frozen_numerical_mismatches": [],
+  "interpretation": "The cumulative memory.events max counter was 6450 both before and after advice, 582 greater than the post-event-2 reading. The recorded peak remained 8590311424 bytes. This retains evidence of memory-limit pressure even though the later pre-advice current reading had fallen below its earlier peak. The advice interval coincided with a 3781427200-byte decrease in file-backed accounting and a 5296128-byte increase in anonymous memory. OOM and OOM-kill counters remained zero. Cgroup accounting and hierarchical event counts include other activity, so their changes are not attributed exclusively to this advice operation or the KS workers.",
+  "kernel_counter_reference": {
+    "interpretation": "max counts occasions when usage was about to exceed the maximum boundary; it differs from the oom and oom_kill counters. The counters are hierarchical.",
+    "section": "memory.events",
+    "url": "https://docs.kernel.org/admin-guide/cgroup-v2.html"
+  },
+  "model_fit_or_scoring_performed_by_audit": false,
+  "numerical_source_hashes": {
+    "configs/applications/ks_experiment.json": "daf3f5aa75adf46162be288b73e521b825866ebf7e8b1c4384f4227fe3a639a2",
+    "src/bayes_stesn/applications/ks_native.py": "dfb6e8c2d9baefa54cb87b162175ac3672f8bc17f9e8951272ba6e329798fd6e",
+    "src/bayes_stesn/applications/ks_runner.py": "4a5813c531908dfb5f697e039e02ada19ffe782166af5f3238b45458638ac998",
+    "src/bayes_stesn/applications/ks_runtime.py": "ff70f020dcb877975cf246e3264cafe01372121d1114532d34e18fa455eb9aa0"
+  },
+  "observer_recovery": {
+    "aggregate_rebuilt_exactly_from_three_durable_sessions": true,
+    "alerts_count": 0,
+    "archive_relative_path": "observer_sessions/session_b2fccc2cdd63a2d1b47f.json",
+    "archive_sha256": "1516ddb1f31707d4c0055a61294246b8d7b3f61ec13e47e9ede6d987a4044597",
+    "claim": "Session three was already durable before restart. Rebuilding the three-session aggregate reproduces the retained pre-restart file exactly; the first-session missing per-job map remains explicitly incomplete.",
+    "combined_worker_rss_peak_bytes": 1113669632,
+    "container_current_peak_bytes": 8589828096,
+    "disk_free_min_bytes": 55351025664,
+    "ended_utc": "2026-11-05T05:07:34.662604+00:00",
+    "first_session_limitation_preserved": true,
+    "next_session_started_utc": "2026-11-05T05:09:02.131527+00:00",
+    "per_job_map_complete": true,
+    "rebuilt_serialization_byte_identical": true,
+    "retained_job_rows": 28,
+    "samples": 634,
+    "saved_aggregate_bytes": 103906,
+    "saved_aggregate_retained_job_rows": 203,
+    "saved_aggregate_samples": 4089,
+    "saved_aggregate_sha256": "b03e82db22a3cc973d78338523c1a3ef9965ce064dee001424e7908306254d7c",
+    "saved_prior_record_kind": "merged aggregate of three sessions, not a single-session record",
+    "session_index": 3,
+    "started_utc": "2026-11-05T04:46:20.015810+00:00"
+  },
+  "pause_operator_snapshot": {
+    "observer_exit_code": 0,
+    "running_ledger_jobs": 0,
+    "scheduler_exit_code": 1,
+    "scope": "Operator-observed stop status; independent guarded-tool quiescence verified again before advice.",
+    "utc": "2026-11-05T05:07:34+00:00"
+  },
+  "prior_events": [
+    {
+      "relative_path": "ks_memory_recovery_20261105.json",
+      "sha256": "f1ee5bb880a69378e61c5b538e6c03a8898c8fa45ab3daabd7dc8db72e6e51f1",
+      "unchanged": true
+    },
+    {
+      "relative_path": "ks_memory_recovery_20261105_event2.json",
+      "sha256": "56f1401375839abd4de5928e8facc0c18ea6b3c390fae5ad9ac73e2a6815a699",
+      "unchanged": true
+    }
+  ],
+  "private_source_receipt_sha256": "f119ed7f15b283f741b22f100ae389a1e4b7125f045a3ef1653c0cbb490ac13f",
+  "recorded_utc": "2026-11-05T05:10:42.573627+00:00",
+  "recovery": {
+    "after": {
+      "active_file": 3136749568,
+      "anon": 100691968,
+      "current": 3540639744,
+      "file": 3200884736,
+      "inactive_file": 64135168,
+      "limit": 8589934592,
+      "peak": 8590311424
+    },
+    "anon_change_bytes": 5296128,
+    "before": {
+      "active_file": 3738206208,
+      "anon": 95395840,
+      "current": 7331471360,
+      "file": 6982311936,
+      "inactive_file": 3244105728,
+      "limit": 8589934592,
+      "peak": 8590311424
+    },
+    "container_current_reduction_bytes": 3790831616,
+    "errors": 0,
+    "file_cache_reduction_bytes": 3781427200,
+    "file_content_changes": 0,
+    "files_advised": 712,
+    "files_deleted": 0,
+    "global_cache_operation": false,
+    "guarded_tool_state": "applied",
+    "logical_file_bytes": 5517978204,
+    "max_events_increase_since_previous_recovery_after": 582,
+    "memory_events_after": {
+      "high": 0,
+      "low": 0,
+      "max": 6450,
+      "oom": 0,
+      "oom_group_kill": 0,
+      "oom_kill": 0
+    },
+    "memory_events_before": {
+      "high": 0,
+      "low": 0,
+      "max": 6450,
+      "oom": 0,
+      "oom_group_kill": 0,
+      "oom_kill": 0
+    },
+    "min_file_bytes": 1048576,
+    "no_live_KS_workers_verified_before_operation": true,
+    "operation": "POSIX_FADV_DONTNEED on existing regular task files",
+    "tool": "tools/reclaim_ks_file_cache.py"
+  },
+  "resume_audit": {
+    "by_stage_track": {
+      "final/A": {
+        "complete": 157,
+        "failed": 3
+      },
+      "final/B": {
+        "complete": 180
+      },
+      "promote/A": {
+        "complete": 83,
+        "inference-unqualified": 1
+      },
+      "promote/B": {
+        "complete": 95,
+        "failed": 1
+      },
+      "refine/B": {
+        "complete": 11,
+        "failed": 1
+      },
+      "screen/A": {
+        "complete": 71,
+        "failed": 1
+      },
+      "screen/B": {
+        "complete": 77,
+        "failed": 3
+      },
+      "sensitivity/A": {
+        "complete": 24
+      },
+      "sensitivity/B": {
+        "complete": 16,
+        "running": 2
+      }
+    },
+    "checkpoints_rewritten_by_audit": false,
+    "configured_total_worker_seconds_cap": 28800,
+    "ledger_jobs": 726,
+    "resume_cli_wall_hours": 2,
+    "running_jobs": [
+      {
+        "job_id": "2add4b9ffc2834ee5cc2517d",
+        "model": "periodic_cnn",
+        "seed": 20261106,
+        "stage": "sensitivity",
+        "track": "B",
+        "trajectory": 0
+      },
+      {
+        "job_id": "fe53c7f58a1bfb1197f9b75c",
+        "model": "periodic_cnn",
+        "seed": 20261106,
+        "stage": "sensitivity",
+        "track": "B",
+        "trajectory": 5
+      }
+    ],
+    "same_experiment_and_freeze_retained": true,
+    "scientific_failure_states_preserved": true,
+    "sensitivity_by_track_model_seed": {
+      "A/basis_gru/20261106": {
+        "complete": 4
+      },
+      "A/basis_gru/20261107": {
+        "complete": 4
+      },
+      "A/bayes_stesn/20261106": {
+        "complete": 4
+      },
+      "A/bayes_stesn/20261107": {
+        "complete": 4
+      },
+      "A/ridge_esn/20261106": {
+        "complete": 4
+      },
+      "A/ridge_esn/20261107": {
+        "complete": 4
+      },
+      "B/basis_gru/20261106": {
+        "complete": 4
+      },
+      "B/basis_gru/20261107": {
+        "complete": 4
+      },
+      "B/bayes_stesn/20261106": {
+        "complete": 4
+      },
+      "B/bayes_stesn/20261107": {
+        "complete": 4
+      },
+      "B/periodic_cnn/20261106": {
+        "running": 2
+      }
+    },
+    "snapshot_utc": "2026-11-05T05:10:42.573627+00:00",
+    "states": {
+      "complete": 714,
+      "failed": 9,
+      "inference-unqualified": 1,
+      "running": 2
+    }
+  },
+  "schema": "ks-memory-recovery/1",
+  "test_labels_read_by_audit": false
+}
