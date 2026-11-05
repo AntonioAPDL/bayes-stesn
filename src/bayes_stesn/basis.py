@@ -14,12 +14,20 @@ class SpatialMeanSpec:
     bounds: tuple[tuple[float, float], ...] | None = None
     centers: tuple[tuple[float, ...], ...] | None = None
     max_columns: int = 4096
+    harmonics: int = 8
 
     def __post_init__(self):
         if self.side < 2 or not np.isfinite(self.width) or self.width <= 0:
             raise ValueError("Spatial mean side >= 2 and positive finite width required")
-        if self.kernel not in {"matern32", "gaussian"}:
-            raise ValueError("Supported spatial mean kernels: matern32, gaussian")
+        if self.kernel not in {"matern32", "gaussian", "fourier"}:
+            raise ValueError("Supported spatial mean kernels: matern32, gaussian, fourier")
+        if (isinstance(self.harmonics, (bool, np.bool_))
+                or not isinstance(self.harmonics, (int, np.integer))
+                or self.harmonics < 1):
+            raise ValueError("Fourier harmonics must be a positive integer")
+        if self.kernel == "fourier" and (self.coordinate_terms or self.centers is not None
+                                         or self.bounds is not None):
+            raise ValueError("Fourier basis uses harmonics only; disable coordinate_terms and omit centers/bounds")
         if self.max_columns < 2:
             raise ValueError("max_columns must be at least two")
         for name in ("bounds", "centers"):
@@ -39,6 +47,16 @@ class SpatialMean:
     @classmethod
     def fit(cls, coordinates, spec):
         coordinates = np.asarray(coordinates, dtype=float)
+        if spec.kernel == "fourier":
+            if 1+2*spec.harmonics > spec.max_columns:
+                raise MemoryError("Fourier dictionary exceeds max_columns")
+            # Predetermined L2(circle) normalization. In particular, no small
+            # training-arc standard deviation inflates unseen-sector columns.
+            instance = cls(spec, np.empty((0, 2)), np.zeros(2*spec.harmonics),
+                           np.full(2*spec.harmonics, 1/np.sqrt(2)),
+                           np.sqrt(2*spec.harmonics))
+            instance._raw(coordinates)  # validate the declared circle geometry
+            return instance
         dim = coordinates.shape[1]
         count = len(spec.centers) if spec.centers is not None else spec.side**dim
         if count+1+(dim if spec.coordinate_terms else 0)>spec.max_columns:
@@ -61,6 +79,17 @@ class SpatialMean:
         return instance
 
     def _raw(self, coordinates):
+        if self.spec.kernel == "fourier":
+            coordinates = np.asarray(coordinates, dtype=float)
+            if (coordinates.ndim != 2 or coordinates.shape[1] != 2
+                    or not np.isfinite(coordinates).all()
+                    or not np.allclose(np.linalg.norm(coordinates, axis=1), 1.,
+                                       rtol=0., atol=1e-10)):
+                raise ValueError("Fourier spatial means require finite unit-circle coordinates")
+            angle = np.arctan2(coordinates[:, 1], coordinates[:, 0])
+            phase = angle[:, None]*np.arange(1, self.spec.harmonics+1)
+            # Pair order: cos(1), sin(1), cos(2), sin(2), ... .
+            return np.stack((np.cos(phase), np.sin(phase)), axis=-1).reshape(len(angle), -1)
         distance = cdist(np.asarray(coordinates, dtype=float), self.centers)
         if self.spec.kernel == "matern32":
             u = np.sqrt(3)*distance/self.spec.width

@@ -1,0 +1,214 @@
+{
+  "budget": {
+    "combined_worker_cap_bytes": 5368709120,
+    "disk_reserve_bytes": 12781798196,
+    "estimated_worker_peak_bytes": 536870912,
+    "evict_closed_task_artifact_pages": true,
+    "frozen_after_pilot": true,
+    "heartbeat_seconds": 5,
+    "job_timeout_seconds": 7200,
+    "measurements": {
+      "core_reference_fit_seconds": 62.570487031000084,
+      "core_reference_forecast_256_paths_100_steps_seconds": 1.1830629050000425,
+      "core_reference_peak_rss_bytes": 326119424,
+      "estimated_main_screen_hours": [
+        12,
+        18
+      ],
+      "estimated_total_hours": [
+        24,
+        50
+      ],
+      "interpretation": "Measured resource cases, without predictive-quality scores; selected complexity and convergence repairs may change cost.",
+      "resource_receipt": "docs/applications/evidence/ks_fullfield_launch_resources.json",
+      "resource_receipt_sha256": "853a81435eae5f2ed590beef38afc4e0e5e6d465ac1759ab1e4bd01e8e586520",
+      "rhs_1000_cold_bank_512_paths_100_steps_seconds": 96.88933644400004,
+      "rhs_1000_cold_bank_peak_rss_bytes": 504422400
+    },
+    "minimum_container_headroom_bytes": 805306368,
+    "partial_roster_at_stage_cap": true,
+    "pilot_job_timeout_seconds": 600,
+    "preflight_job_timeout_seconds": 600,
+    "preparation_charge_interpretation": "Conservative profiling/acceptance allowance; charged once to total and shared search, not separately to each stage.",
+    "preparation_worker_seconds": 900,
+    "search_worker_seconds_cap": 93600,
+    "stage_worker_seconds_caps": {
+      "anchors": 900,
+      "confirm": 86400,
+      "precision": 7200,
+      "preflight": 1800,
+      "promote": 21600,
+      "screen": 61080,
+      "sensitivity": 36000
+    },
+    "total_worker_seconds_cap": 216000,
+    "wall_seconds_cap": 259200,
+    "workers": 1
+  },
+  "confirmation": {
+    "origins": [
+      6000,
+      6100,
+      6200,
+      6300,
+      6400,
+      6500,
+      6600,
+      6700,
+      6800,
+      6900,
+      7000,
+      7100,
+      7200,
+      7300,
+      7400,
+      7500,
+      7600,
+      7700,
+      7800,
+      7900
+    ],
+    "paths": 512,
+    "trajectories": [
+      1,
+      2,
+      3,
+      6,
+      7,
+      8,
+      11,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      19
+    ]
+  },
+  "deferred_tracks": [
+    "C"
+  ],
+  "forecast_seed": 2026110509,
+  "history_candidates": [
+    512,
+    1024,
+    2048
+  ],
+  "horizon": 100,
+  "interpretation": "Exploratory validation-only expansion after original test inspection; original results remain frozen. No claim of universal optimality.",
+  "model_seed": 20261105,
+  "path_batch": 32,
+  "pilot": {
+    "chains": 2,
+    "draws": 32,
+    "functional_draws": 16,
+    "history": 512,
+    "init_max_evaluations": 80,
+    "init_maxiter": 10,
+    "labels": [
+      "dynamics_a0.2_r0.9",
+      "capacity1000_increment",
+      "rhs_base_state",
+      "rhs_capacity1000_increment",
+      "lag32_all"
+    ],
+    "other_trajectories": [
+      0
+    ],
+    "paths": 32,
+    "reference_trajectories": [
+      0,
+      1,
+      2
+    ],
+    "warmup": 32
+  },
+  "precision": {
+    "enabled": true,
+    "origins": [
+      6000,
+      6500
+    ],
+    "paths": 512,
+    "replicates": 4,
+    "trajectory": 0
+  },
+  "promote": {
+    "count": 6,
+    "matched_prior_extra": 1,
+    "origins": [
+      6000,
+      6200,
+      6500,
+      6700,
+      7000,
+      7200,
+      7500,
+      7700
+    ],
+    "paths": 512,
+    "trajectories": [
+      0,
+      5,
+      10,
+      15,
+      4,
+      9
+    ]
+  },
+  "schema": "ks-fullfield-experiment/1",
+  "screen": {
+    "origins": [
+      6000,
+      6500,
+      7000,
+      7500
+    ],
+    "paths": 256,
+    "trajectories": [
+      0,
+      5
+    ]
+  },
+  "selection": {
+    "description": "Distribution: band-balanced CRPS. Dynamics: CRPS subject to early RMSE within10percent of best eligible early RMSE. Point: band-balanced MSE. CRPS near ties prefer longer valid prediction time, then fewer coefficients. All planned trajectory/origin outcomes and inference gates are required.",
+    "early_horizon": 10,
+    "early_rmse_relative_tolerance": 0.1,
+    "maximum_severe_divergent_origins": 0,
+    "mc_sd_multiplier": 2.0,
+    "modes": [
+      "distribution",
+      "dynamics",
+      "point"
+    ],
+    "relative_crps_near_tie": 0.01
+  },
+  "sensitivity": {
+    "origins": [
+      6000,
+      6200,
+      6500,
+      6700,
+      7000,
+      7200,
+      7500,
+      7700
+    ],
+    "paths": 512,
+    "seeds": [
+      20261106,
+      20261107
+    ],
+    "trajectories": [
+      0,
+      5,
+      10,
+      15
+    ]
+  },
+  "tracks": [
+    "A",
+    "B"
+  ]
+}

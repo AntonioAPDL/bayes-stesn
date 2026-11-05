@@ -5,12 +5,13 @@ pooling, graph diffusion, and a small nonlinear autoencoder are optional input
 encoders. No encoder or normalization is fitted on a forecast/evaluation block.
 """
 from __future__ import annotations
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, replace
 import numpy as np
 from scipy.linalg import svd
 from scipy.spatial.distance import cdist
 from scipy.sparse import csr_matrix
 from ._reservoir import TemporalFeaturesV3
+from .raw_reservoir import RawFieldTemporalFeatures
 from .io import content_hash
 
 
@@ -36,9 +37,13 @@ class FeatureSpec:
     encoder_learning_rate: float = 0.01
     encoder_penalty: float = 1e-4
     max_feature_bytes: int = 512*1024**2
+    # Raw-field options do not alter the original PCA route or its RNG stream.
+    recurrent_scaling: str = "operator_norm"
+    spectral_radius: float | None = None
+    raw_readout_lags: str = "all"
 
     def __post_init__(self):
-        kinds = {"pca_esn", "local_features_esn", "graph_features_esn", "frozen_encoder_esn"}
+        kinds = {"pca_esn", "raw_esn", "local_features_esn", "graph_features_esn", "frozen_encoder_esn"}
         if self.kind not in kinds:
             raise ValueError(f"Unknown feature kind {self.kind}; expected one of {sorted(kinds)}")
         for name in ("units", "lags"):
@@ -57,6 +62,22 @@ class FeatureSpec:
                 raise ValueError("Encoder penalty must be nonnegative")
         if self.max_feature_bytes < 1:
             raise ValueError("max_feature_bytes must be positive")
+        if self.recurrent_scaling not in {"operator_norm", "spectral_radius"}:
+            raise ValueError("recurrent_scaling must be operator_norm or spectral_radius")
+        if self.raw_readout_lags not in {"all", "latest", "none"}:
+            raise ValueError("raw_readout_lags must be all, latest, or none")
+        if self.kind == "raw_esn":
+            if len(self.units) != 1:
+                raise ValueError("raw_esn currently requires exactly one reservoir layer")
+            if self.raw_readout_lags == "latest" and 1 not in self.lags:
+                raise ValueError("The latest direct readout requires lag 1")
+            if self.recurrent_scaling == "spectral_radius" and (
+                    self.spectral_radius is None or not np.isfinite(self.spectral_radius)
+                    or self.spectral_radius <= 0):
+                raise ValueError("spectral_radius must be positive and finite")
+        elif (self.recurrent_scaling != "operator_norm" or self.spectral_radius is not None
+              or self.raw_readout_lags != "all"):
+            raise ValueError("Spectral-radius scaling and direct-readout controls require kind='raw_esn'")
 
     @classmethod
     def v3(cls):
@@ -70,7 +91,7 @@ class FrozenEncoder:
 
     @classmethod
     def fit(cls, y, coordinates, spec):
-        if spec.kind == "pca_esn":
+        if spec.kind in {"pca_esn", "raw_esn"}:
             return cls(spec.kind, {})
         if spec.kind == "graph_features_esn":
             n = len(coordinates)
@@ -135,7 +156,7 @@ class FrozenEncoder:
 
     def transform(self, y):
         y = np.asarray(y, dtype=float)
-        if self.kind == "pca_esn":
+        if self.kind in {"pca_esn", "raw_esn"}:
             return y
         p = self.parameters
         if self.kind == "graph_features_esn":
@@ -156,16 +177,30 @@ class FrozenFeatures:
     def fit(cls, y, conditioning, coordinates, spec, *, correction_base=None):
         if not spec.lags or min(spec.lags)<1:
             raise ValueError("Positive feature lags are required")
-        state_size=max(spec.lags)*spec.modes+sum(spec.units)
-        dimension=1+len(spec.lags)*spec.modes+sum(spec.units)+spec.squares+spec.products
-        estimate=8*(len(y)*(state_size+dimension)+sum(size*size for size in spec.units))
-        if estimate>spec.max_feature_bytes:
-            raise MemoryError(f"Feature history/weights need at least {estimate/1024**2:.1f} MiB; increase max_feature_bytes deliberately or reduce dimensions")
-        encoder = FrozenEncoder.fit(np.asarray(y)[:conditioning], coordinates, spec)
-        encoded = encoder.transform(y)
-        names = ("modes", "units", "lags", "input_scales", "leak_patterns", "score_bound",
-                 "squares", "products", "seed", "recurrent_norm", "connectivity", "feature_scale_floor")
-        core = TemporalFeaturesV3(encoded, conditioning, **{k: getattr(spec, k) for k in names})
+        if spec.kind == "raw_esn":
+            values = np.asarray(y, dtype=float)
+            if values.ndim != 2:
+                raise ValueError("Raw-field features need a time-by-site matrix")
+            # Canonicalize an inactive PCA dimension to the actual input count.
+            spec = replace(spec, modes=values.shape[1])
+            encoder = FrozenEncoder.fit(values[:conditioning], coordinates, spec)
+            names = ("units", "lags", "input_scales", "leak_patterns", "score_bound",
+                     "squares", "products", "seed", "recurrent_norm", "connectivity",
+                     "feature_scale_floor", "recurrent_scaling", "spectral_radius",
+                     "raw_readout_lags", "max_feature_bytes")
+            core = RawFieldTemporalFeatures(values, conditioning,
+                **{k: getattr(spec, k) for k in names})
+        else:
+            state_size=max(spec.lags)*spec.modes+sum(spec.units)
+            dimension=1+len(spec.lags)*spec.modes+sum(spec.units)+spec.squares+spec.products
+            estimate=8*(len(y)*(state_size+dimension)+sum(size*size for size in spec.units))
+            if estimate>spec.max_feature_bytes:
+                raise MemoryError(f"Feature history/weights need at least {estimate/1024**2:.1f} MiB; increase max_feature_bytes deliberately or reduce dimensions")
+            encoder = FrozenEncoder.fit(np.asarray(y)[:conditioning], coordinates, spec)
+            encoded = encoder.transform(y)
+            names = ("modes", "units", "lags", "input_scales", "leak_patterns", "score_bound",
+                     "squares", "products", "seed", "recurrent_norm", "connectivity", "feature_scale_floor")
+            core = TemporalFeaturesV3(encoded, conditioning, **{k: getattr(spec, k) for k in names})
         correction = None
         if correction_base is not None:
             d0 = int(correction_base)
@@ -194,7 +229,8 @@ class FrozenFeatures:
 
     @property
     def groups(self):
-        groups = ["intercept"] + ["score"]*self.core.input_dimension
+        inputs = getattr(self.core, "readout_input_dimension", self.core.input_dimension)
+        groups = ["intercept"] + ["score"]*inputs
         for j, size in enumerate(self.spec.units):
             groups.extend([f"reservoir_{j+1}"]*size)
         groups.extend(["squares"]*self.spec.squares)
@@ -235,7 +271,9 @@ class FrozenFeatures:
 
     @classmethod
     def from_state(cls, state):
-        core = TemporalFeaturesV3.__new__(TemporalFeaturesV3)
+        kind = state["spec"].get("kind", "pca_esn")
+        core_cls = RawFieldTemporalFeatures if kind == "raw_esn" else TemporalFeaturesV3
+        core = core_cls.__new__(core_cls)
         core.__dict__.update(state["core"])
         core._sparse_W = [csr_matrix(w) for w in core.W]
         return cls(core, FrozenEncoder(**state["encoder"]), FeatureSpec(**state["spec"]), state["correction"])

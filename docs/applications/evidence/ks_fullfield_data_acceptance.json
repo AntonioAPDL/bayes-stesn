@@ -1,0 +1,113 @@
+{
+  "schema": "ks-fullfield-data-acceptance/1",
+  "status": "passed",
+  "verified_objects": [
+    {
+      "name": "ks_prepared_v1.tar.gz",
+      "bytes": 182334299,
+      "sha256": "898f18deccc1fe6b3fb4d6eb0aa847244dc115efc56a260aceaae07bc22c227c"
+    },
+    {
+      "name": "source_and_metadata_v2.tar.gz",
+      "bytes": 9981003,
+      "sha256": "c88f8475b97a9b7159e643e06e424d0f58630400182957602e48b91097422965"
+    },
+    {
+      "name": "drive_catalog.json",
+      "bytes": 633855,
+      "sha256": "510a14dfa23e66fc861066dc4707fc46a192ba13588af2ba30f1e69478ce6be0"
+    },
+    {
+      "name": "restore.py",
+      "bytes": 23108,
+      "sha256": "9711bbb6a78c59e106134f3ebd64c151e45593b9d8b46304d2d81759c833b282"
+    }
+  ],
+  "complete_catalog_parsed": true,
+  "restore_dry_run_passed": true,
+  "verified_restored_archive_members": 458,
+  "resolved_HDF5_external_links": 23,
+  "adapter_cases": [
+    {
+      "phase": "pilot",
+      "track": "A",
+      "training_shape": [
+        1200,
+        39
+      ],
+      "transform_fitting_time_bounds": [
+        0,
+        1200
+      ],
+      "transform_value_count": 46800
+    },
+    {
+      "phase": "pilot",
+      "track": "B",
+      "training_shape": [
+        1200,
+        64
+      ],
+      "transform_fitting_time_bounds": [
+        0,
+        1200
+      ],
+      "transform_value_count": 76800
+    },
+    {
+      "phase": "pilot",
+      "track": "C",
+      "training_shape": [
+        1200,
+        40
+      ],
+      "transform_fitting_time_bounds": [
+        0,
+        1200
+      ],
+      "transform_value_count": 48000
+    },
+    {
+      "phase": "core",
+      "track": "A",
+      "training_shape": [
+        6000,
+        39
+      ],
+      "transform_fitting_time_bounds": [
+        0,
+        6000
+      ],
+      "transform_value_count": 234000
+    },
+    {
+      "phase": "core",
+      "track": "B",
+      "training_shape": [
+        6000,
+        64
+      ],
+      "transform_fitting_time_bounds": [
+        0,
+        6000
+      ],
+      "transform_value_count": 384000
+    },
+    {
+      "phase": "core",
+      "track": "C",
+      "training_shape": [
+        6000,
+        40
+      ],
+      "transform_fitting_time_bounds": [
+        0,
+        6000
+      ],
+      "transform_value_count": 240000
+    }
+  ],
+  "data_generated": false,
+  "model_inputs_include_solver_truth": false,
+  "io_limitation": "Facade constructs labels internally; tested output separation, not future-free disk access."
+}

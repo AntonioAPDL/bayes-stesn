@@ -1,0 +1,39 @@
+{
+  "schema": "ks-fullfield-budget-decision/1",
+  "workers": 1,
+  "numerical_threads_per_worker": 1,
+  "total_worker_seconds_cap": 216000,
+  "wall_seconds_cap": 259200,
+  "search_worker_seconds_cap": 93600,
+  "stage_worker_seconds_caps": {
+    "preflight": 1800,
+    "anchors": 900,
+    "screen": 61080,
+    "promote": 21600,
+    "precision": 7200,
+    "confirm": 86400,
+    "sensitivity": 36000
+  },
+  "preparation_worker_seconds": 900,
+  "preparation_charge_interpretation": "Conservative 15-minute allowance for measured profiling and acceptance work; not an exact wall-time measurement.",
+  "job_timeout_seconds": 7200,
+  "pilot_job_timeout_seconds": 600,
+  "preflight_job_timeout_seconds": 600,
+  "combined_worker_cap_bytes": 5368709120,
+  "disk_reserve_bytes": 12781798196,
+  "estimated_worker_peak_bytes": 536870912,
+  "minimum_container_headroom_bytes": 805306368,
+  "partial_roster_at_stage_cap": true,
+  "initial_main_screen_estimate_hours": [
+    12,
+    18
+  ],
+  "initial_total_estimate_hours": [
+    24,
+    50
+  ],
+  "estimate_caveat": "Extrapolated from measured pilot and full-training reference fits. Selected model size, convergence repairs, and synchronization exclusions can materially change cost. Finite caps remain authoritative.",
+  "deferred_robustness": "Contiguous-site track starts only after main work; all already consumed worker and elapsed time is charged to the same global caps.",
+  "incomplete_policy": "Keep unfinished candidates pending; promote only fully qualified complete candidate results. A partial-roster selection must be labeled explicitly. Do not extend the budget silently.",
+  "stage_allowance_slack_seconds": 120
+}
