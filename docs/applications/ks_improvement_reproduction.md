@@ -643,6 +643,25 @@ report's `source_manifest.json` and
 by the animation tool. Generating a report does not fit, forecast, or rerun
 selection.
 
+After the reporting changes have been committed and the final compact report
+has been generated, render its human-readable PDF with the required revision
+argument:
+
+```bash
+KS_REPORT_REVISION=$(git rev-parse HEAD)
+"$KS_PYTHON" tools/build_ks_improvement_pdf.py \
+  --report "$KS_REPORT_ROOT" \
+  --output "$KS_REPORT_ROOT/ks_improvement_report.pdf" \
+  --revision "$KS_REPORT_REVISION"
+```
+
+The renderer creates a missing output parent, checks every compact artifact's
+manifest entry, and verifies the temporary PDF before publishing it by atomic
+rename. Its separate `ks_improvement_report.manifest.json` records the exact
+renderer and PDF hashes, page count, source revision and report-manifest hash.
+Structural verification is not visual review: its `visual_qa` field remains
+`pending` until a separate receipt documents inspection of the actual pages.
+
 With the frozen selection and report-bound example arrays present, render the
 three tracks separately in compact MP4s:
 
@@ -675,3 +694,32 @@ and are recorded in `animation_receipt.json`; an entirely missing track gets no
 empty movie. Matching completed movies are checksum-verified and reused.
 Incompatible outputs require a new directory; the tool does not overwrite them
 or substitute a more favorable example.
+
+### Final artifact review remains a separate required step
+
+The [pre-render QA receipt](evidence/ks_improvement_report_pre_render_qa.json)
+covers its stated source, synthetic checks and pre-freeze search-figure review.
+It explicitly leaves **final populated artifact QA pending**. Neither that
+receipt nor a successful renderer exit certifies the final tables or layout.
+Generate the final compact report first, then its PDF and movies; rebuilding
+the compact report changes the bound animation identity, so use a new animation
+output directory if a prior render no longer matches.
+
+Before final delivery, record a separate review of:
+
+- Every PDF page, including table continuation headers, complete/failure
+  denominators, fixed point-reference labels, physical lead times, and the
+  distinction between confirmation and exploratory selection diagnostics.
+- The populated horizon, calibration, width, compute, heatmap and interval
+  figures, retaining extreme finite values and clearly identifying the official
+  validation sites and permitted input sites.
+- The main-versus-alternative seed comparisons on their identical trajectory
+  rosters, with failed, unqualified and pending outcomes retained.
+- Each actual encoded movie's first, middle and final frames, as well as its
+  recorded codec, resolution, 100-frame count and playback duration. The movie
+  renderer already checks those technical properties but does not claim visual
+  inspection.
+
+Bind that final review to the exact PDF, figure and animation hashes. Temporary
+page/frame images used for inspection are QA working files, not a redundant
+scientific output archive.

@@ -621,6 +621,125 @@ def anchor_cohorts(reader, root):
     return rows, {"plan": plan, "binding": binding, "source_manifest": manifest}
 
 
+def migration_evidence(reader):
+    """Bind applied migration metadata without reopening fits or forecast scores."""
+    path = reader.root / "migration" / "receipt.json"
+    if not path.exists():
+        return None, {}
+    raw = reader.read(path)
+    binding = reader.manifest["migration/receipt.json"]
+    migration = {k: v for k, v in raw.items() if isinstance(v, (int, float, bool))
+                 or (isinstance(v, str) and ("sha256" in k or "identity" in k or k in ("schema", "status")))}
+    migration.update(receipt_sha256=binding["sha256"], receipt_bytes=binding["bytes"],
+                     receipt_content_identity=content_hash(raw),
+                     preflight_adoption_count=len(raw.get("preflight_adoptions", [])),
+                     scope="Immutable migration snapshot; counts are not final campaign totals")
+    for key in ("source_experiment", "destination_experiment", "created_utc"):
+        if key in raw:
+            migration[key] = raw[key]
+    if raw.get("schema") != "ks-improvement-budget-migration/1":
+        return migration, {}
+    flags = ("passed", "apply", "attempt_bytes_preserved", "native_forecast_and_example_bytes_preserved",
+             "history_and_selection_bytes_preserved", "freeze_scientific_fields_and_original_created_utc_preserved",
+             "all_spent_work_including_prior_migration_attempts_carried_exactly", "native_identity_guards_remain_required")
+    if (any(raw.get(key) is not True for key in flags) or reader.freeze is None
+            or raw["destination_experiment"] != reader.experiment["identity"]
+            or raw["destination_freeze_identity"] != reader.freeze["identity"]
+            or raw["original_freeze_created_utc"] != reader.freeze["created_utc"]
+            or raw["wall_budget_start"] != reader.cfg["budget"]["campaign_started_utc"]
+            or raw["runtime_and_cache"]["cache_identity"] != reader.experiment["cache_identity"]
+            or raw["runtime_and_cache"]["numerical_source_runtime_identical"] is not True
+            or raw["scientific_recomputation"] is not False
+            or raw["source_root_modified_or_deleted"] is not False
+            or raw["confirmation_score_objects_decoded"] != 0
+            or not math.isclose(raw["carried_worker_seconds"], raw["attempt_elapsed_seconds"] +
+                                raw["preparation_worker_seconds"], rel_tol=0., abs_tol=1e-9)):
+        raise ValueError("Applied budget migration lacks its frozen scientific/accounting binding")
+    for key in ("source_freeze_identity", "destination_freeze_identity", "original_freeze_created_utc",
+                "wall_budget_start", "terminal_states", "destination_terminal_states", "forecast_receipt_states"):
+        migration[key] = raw[key]
+    migration["runtime_and_cache"] = {k: raw["runtime_and_cache"][k] for k in
+                                     ("cache_identity", "numerical_source_runtime_identical")}
+    migration["cache_relocation"] = {k: raw["cache_relocation"][k] for k in
+        ("explicit_source_path", "expected_cache_identity", "same_verified_cache_and_runtime_required")}
+    opaque = raw["reviewed_fit_sidecars"]
+    migration["reviewed_fit_sidecars"] = {"binding": opaque["binding"],
+        "count": raw["reviewed_fit_sidecar_count"], "bytes": raw["reviewed_fit_sidecar_bytes"],
+        "canonical_checkpoint_adoption": opaque["canonical_checkpoint_adoption"]}
+    auxiliary = raw["reviewed_inference_sidecars"]
+    migration["reviewed_inference_sidecars"] = {"binding": auxiliary["binding"], "fits": [
+        {**{k: row[k] for k in ("fit_key", "native_sha256", "inference_restart_state_available", "qualification_changed")},
+         "archived_artifact_count": len(row["archive_paths"])} for row in auxiliary["fits"]]}
+    if (opaque["canonical_checkpoint_adoption"] is not False
+            or any(row["inference_restart_state_available"] is not False or row["qualification_changed"] is not False
+                   for row in auxiliary["fits"])):
+        raise ValueError("Reviewed sidecars were relabeled as active checkpoint state")
+
+    repository = Path(__file__).resolve().parents[1]
+    public = {}
+    def public_read(key, name, fields):
+        relative = "docs/applications/evidence/" + name
+        payload = (repository / relative).read_bytes()
+        value = json.loads(payload)
+        public[key] = {"repository_path": relative, "bytes": len(payload),
+                       "sha256": hashlib.sha256(payload).hexdigest(),
+                       "data": {k: value[k] for k in fields if k in value}}
+        return value
+    review = public_read("applied_migration_review", "ks_improvement_applied_migration_independent_review.json",
+        ("schema", "created_utc", "passed", "scope", "scope_limits", "applied_migration_receipt", "identities",
+         "budget_accounting", "migration_snapshot_counts", "scientific_contract_preserved", "reviewed_auxiliary_pair"))
+    if (review.get("passed") is not True
+            or review["applied_migration_receipt"]["sha256"] != binding["sha256"]
+            or review["applied_migration_receipt"]["bytes"] != binding["bytes"]
+            or review["identities"]["destination_experiment"] != reader.experiment["identity"]
+            or review["identities"]["destination_freeze"] != reader.freeze["identity"]
+            or review["identities"]["source_experiment"] != raw["source_experiment"]
+            or review["identities"]["cache_identity_unchanged"] != reader.experiment["cache_identity"]
+            or review["budget_accounting"]["carried_worker_seconds"] != raw["carried_worker_seconds"]
+            or review["budget_accounting"]["original_campaign_started_utc"] != raw["wall_budget_start"]
+            or review["scientific_contract_preserved"]["freeze_created_utc"] != reader.freeze["created_utc"]
+            or review["migration_snapshot_counts"]["native_checkpoints"] != raw["native_checkpoint_count"]
+            or review["migration_snapshot_counts"]["forecast_receipts"] != sum(raw["forecast_receipt_states"].values())):
+        raise ValueError("Independent applied-migration review does not bind the current immutable receipt")
+    if auxiliary["fits"]:
+        proof = public_read("native_auxiliary_validation", "ks_improvement_native_auxiliary_validation_13103f.json",
+            ("schema", "created_utc", "source_experiment_identity", "fit_key", "track", "candidate_id", "trajectory",
+             "seed", "native_fit_identity", "native_qualified", "native_posterior_state_counts", "comparison_counts",
+             "retained_state_prefix_equal_per_chain", "retained_log_density_prefix_equal_per_chain",
+             "source_files_unchanged_during_read", "actual_chain_matches_completed_phase_sha256",
+             "exact_completed_inference_restart_available_from_auxiliary_pair", "scientific_recomputation"))
+        reviewed_pair = review["reviewed_auxiliary_pair"]
+        matches = [r for r in auxiliary["fits"] if r["fit_key"] == proof["fit_key"]]
+        if (len(matches) != 1 or len(auxiliary["fits"]) != 1
+                or public["native_auxiliary_validation"]["sha256"] != reviewed_pair["prefix_proof_sha256"]
+                or proof["source_experiment_identity"] != raw["source_experiment"]
+                or proof["files"]["fit.npz"]["sha256"] != matches[0]["native_sha256"]
+                or reviewed_pair["native_sha256"] != matches[0]["native_sha256"]
+                or proof["native_qualified"] is not True or reviewed_pair["native_qualification_unchanged"] is not True
+                or proof["exact_completed_inference_restart_available_from_auxiliary_pair"] is not False
+                or not all(proof["retained_state_prefix_equal_per_chain"].values())
+                or not all(proof["retained_log_density_prefix_equal_per_chain"].values())
+                or proof["scientific_recomputation"] is not False):
+            raise ValueError("Auxiliary-prefix evidence lacks its historical/native binding")
+    resume_name = "ks_improvement_actual_resume_acceptance.json"
+    if (repository / "docs/applications/evidence" / resume_name).exists():
+        resumed = public_read("actual_resume_acceptance", resume_name,
+            ("schema", "created_utc", "passed", "scope", "limits", "destination_experiment_identity",
+             "migration_receipt_sha256", "immutable_migration_review_sha256", "original_campaign_started_utc", "checks"))
+        if (resumed.get("passed") is not True
+                or resumed["destination_experiment_identity"] != reader.experiment["identity"]
+                or resumed["migration_receipt_sha256"] != binding["sha256"]
+                or resumed["immutable_migration_review_sha256"] != public["applied_migration_review"]["sha256"]
+                or resumed["original_campaign_started_utc"] != raw["wall_budget_start"]
+                or resumed["checks"]["scientific_configuration_seed_history_and_schedule_changes"] != 0):
+            raise ValueError("Observed resume acceptance has incompatible migration provenance")
+        public["actual_resume_acceptance"]["data"]["cases"] = [
+            {k: row[k] for k in ("track", "trajectory", "candidate_id", "model_seed", "forecast_seed", "history",
+                "horizon", "paths", "completed_origins", "failed_origins", "sampler_refit",
+                "native_and_fit_receipt_byte_identical_to_migration_snapshot")} for row in resumed["cases"]]
+    return migration, public
+
+
 def operation_evidence(reader, operations_root=None):
     attempts = []
     stage_seconds = {}
@@ -629,17 +748,7 @@ def operation_evidence(reader, operations_root=None):
         entry = {k: raw.get(k) for k in ("job_id", "stage", "elapsed_seconds", "state", "reason", "returncode")}
         attempts.append(entry)
         stage_seconds[raw["stage"]] = stage_seconds.get(raw["stage"], 0.) + float(raw["elapsed_seconds"])
-    migration_path = reader.root / "migration" / "receipt.json"
-    migration = None
-    if migration_path.exists():
-        raw = reader.read(migration_path)
-        # Values are allowlisted by type/name; private absolute source paths are not exported.
-        migration = {k: v for k, v in raw.items() if isinstance(v, (int, float, bool))
-                     or (isinstance(v, str) and ("sha256" in k or "identity" in k or k in ("schema", "status")))}
-        migration["preflight_adoption_count"] = len(raw.get("preflight_adoptions", []))
-        for key in ("source_experiment", "destination_experiment"):
-            if key in raw:
-                migration[key] = raw[key]
+    migration, public = migration_evidence(reader)
     bounded = []
     if operations_root and Path(operations_root).exists():
         for path in sorted(Path(operations_root).glob("*/cache_*.json")):
@@ -651,7 +760,7 @@ def operation_evidence(reader, operations_root=None):
             "attempt_worker_seconds": sum(stage_seconds.values()),
             "preparation_worker_seconds": reader.cfg["budget"].get("preparation_worker_seconds", 0.),
             "unique_fit_seconds": sum(f["fit_seconds"] for f in reader.fits.values()),
-            "migration": migration, "bounded_cache_advice": bounded,
+            "migration": migration, "public_evidence": public, "bounded_cache_advice": bounded,
             "budget_semantics": "scheduling thresholds checked before job/group admission; running jobs are not killed when the aggregate threshold is crossed",
             "maximum_admitted_group_worker_seconds": reader.cfg["budget"]["workers"] * reader.cfg["budget"]["job_timeout_seconds"],
             "in_flight_overrun_qualification": "up to workers times per-job timeout plus shutdown overhead beyond a nominal worker threshold; actual final consumption must be checked separately",
@@ -877,7 +986,105 @@ def with_ci(summary):
     return result
 
 
-def render_markdown(report, cohorts, comparisons, figures, diagnosis):
+def seed_sensitivity_markdown(rows, pairs):
+    """Display the already aggregated matched populations; never recompute scores."""
+    text = ["## Model-seed sensitivity", "",
+        "The two additional seeds use four declared selection trajectories and eight validation origins. "
+        "The main-seed reference uses exactly the same four trajectories and origins, reusing compatible promotion receipts. "
+        "It is not the 14-trajectory confirmation mean. Each seed/candidate/track has 32 scheduled origins. "
+        "Model seeds are not posterior draws, and predictions from different seeds are not pooled.", ""]
+    if not rows:
+        return text + ["Matched seed-sensitivity outcomes are pending.", ""]
+    text += ["| Track / candidate | Role | Seed / population | Complete trajectories | RMSE [95% CI] | CRPS [95% CI] |",
+             "|---|---|---|---:|---:|---:|"]
+    for row in rows:
+        population = "matched main" if row["stage"] == "matched_main_seed" else "alternate"
+        text.append(f"| {row['track']} / {row['candidate_id']} | {' / '.join(row['roles'])} | "
+                    f"{row['seed']} / {population} | {row['complete_trajectories']}/{row['scheduled_trajectories']} | "
+                    f"{with_ci(row['metrics']['rmse'])} | {with_ci(row['metrics']['crps'])} |")
+    text += ["", "| Track / candidate / seed | Qualified fits | Finite / scheduled origins | Rollout failed | Inference blocked | Other failed-job blocked | Pending | Finite divergent | Full-schedule score defined |",
+             "|---|---:|---:|---:|---:|---:|---:|---:|---:|"]
+    for row in rows:
+        text.append(f"| {row['track']} / {row['candidate_id']} / {row['seed']} | "
+                    f"{row['qualified_fits']}/{row['scheduled_trajectories']} | "
+                    f"{row['finite_successful_origins']}/{row['scheduled_origins']} | {row['failed_rollout_origins']} | "
+                    f"{row['unqualified_blocked_origins']} | {row['failed_job_blocked_origins']} | "
+                    f"{row['pending_origins']} | {row['finite_divergent_origins']} | {row['full_schedule_point_score_defined']} |")
+    text += ["", "Accuracy includes only complete trajectories; the census retains every scheduled origin. "
+             "Inference-blocked and other blocked outcomes are not observed nonfinite rollouts. Finite divergence remains scored. "
+             "A dash denotes an undefined or pending statistic, never zero error. The JSON retains per-trajectory counts and "
+             "finite origins outside the accuracy population.", "",
+             "| Track / candidate | Alternate − main seed | Metric | Paired trajectories | Exact paired IDs | Mean difference [95% CI] |",
+             "|---|---|---|---:|---|---:|"]
+    for pair in pairs:
+        if pair["metric"] not in ("rmse", "crps"):
+            continue
+        text.append(f"| {pair['track']} / {pair['left']} | {pair['left_seed']} − {pair['right_seed']} | "
+                    f"{pair['metric']} | {pair['n']}/{len(pair['scheduled_trajectories'])} | "
+                    f"{pair['paired_trajectories']} | {with_ci(pair)} |")
+    text += ["", "Differences are alternate minus matched main seed on the exact intersection of complete trajectories. "
+             "Negative RMSE/CRPS differences favor the alternate seed. Intervals resample trajectories, with at most four "
+             "independent trajectory clusters; no interval is reported for fewer than two pairs. Missing pairs are not imputed, "
+             "and all scheduled zero-pair contrasts remain listed. These are conditional sensitivity checks after selection.", ""]
+    return text
+
+
+def migration_markdown(operations):
+    migration = operations.get("migration")
+    if migration is None:
+        return ["No applied migration receipt is bound in this report snapshot.", ""]
+    text = ["### Applied migration and retained restart scope", "",
+            f"The consumed migration receipt has SHA-256 `{migration['receipt_sha256']}`. "
+            "Its counts describe the immutable migration snapshot, not final campaign completion. "
+            "`operations.json` preserves the sanitized receipt fields and hash-bound independent evidence.", ""]
+    if migration.get("schema") != "ks-improvement-budget-migration/1":
+        return text + ["This earlier operational receipt is retained with its recorded schema; it is not relabeled "
+                       "as proof of a later budget-extension migration.", ""]
+    text += [f"The applied migration was recorded at `{migration['created_utc']}`. It preserved "
+             f"{migration['native_checkpoint_count']} native checkpoints and "
+             f"{sum(migration['forecast_receipt_states'].values())} forecast receipts, with "
+             f"{migration['attempt_files']} existing attempt records carrying "
+             f"{migration['carried_worker_seconds']:.6f} worker-seconds including preparation. "
+             "Prior interruptions and historical attempt IDs remain charged. Frozen scientific choices and their "
+             f"original creation time `{migration['original_freeze_created_utc']}` were retained. "
+             "No model fit, forecast, or selection was recomputed by migration.", "",
+             f"Source experiment: `{migration['source_experiment']}`. Adopted experiment: "
+             f"`{migration['destination_experiment']}`. The actual migration receipt and independent review bind "
+             "the adopted freeze, original clock, identical numerical runtime, and exact verified cache identity. "
+             "Explicit cache-path relocation changes an operational path, not the dataset or scientific protocol.", ""]
+    opaque = migration["reviewed_fit_sidecars"]
+    text += [f"{opaque['count']} exact-bound opaque sidecars ({opaque['bytes']} bytes) were preserved outside "
+             "active fits and were not adopted as checkpoints. Their creator is unproven.", ""]
+    auxiliary = migration["reviewed_inference_sidecars"]["fits"]
+    for row in auxiliary:
+        text += [f"For fit `{row['fit_key']}`, {row['archived_artifact_count']} reviewed auxiliary chain/phase files "
+                 "were archived outside active inference state. The completed native posterior and its qualification "
+                 "were preserved; this is not an additional failed fit or failed forecast. The archived pair is "
+                 "unavailable as an exact final inference restart, and no final RNG state or additional posterior "
+                 "draws were manufactured. All unlisted checkpoints remain subject to strict validation.", ""]
+    public = operations.get("public_evidence", {})
+    proof = public.get("native_auxiliary_validation", {}).get("data")
+    if proof:
+        counts = proof["comparison_counts"]
+        text += [f"The bound prefix check for {proof['track']}/{proof['candidate_id']}, trajectory "
+                 f"{proof['trajectory']}, seed {proof['seed']}, verified {counts['array_comparisons']} retained "
+                 f"arrays and {counts['scalar_comparisons']} scalar values against the completed native posterior, "
+                 f"whose per-chain retained state counts are {proof['native_posterior_state_counts']}. "
+                 "It supports the retained native forecast state while preserving the auxiliary restart limitation. "
+                 "The source of the historical discrepancy is unproven.", ""]
+    resume = public.get("actual_resume_acceptance", {}).get("data")
+    if resume:
+        checks = resume["checks"]
+        text += [f"A separate observed-resume check covered {checks['closed_jobs_checked']} closed jobs: "
+                 f"{checks['existing_native_models_reused']} existing native fits were reused, "
+                 f"{checks['original_origin_receipts_byte_identical']} prior origin receipts remained byte-identical, "
+                 f"and {checks['previously_missing_origins_now_complete']} previously absent origins were completed "
+                 "by the resumed coordinator. This operational check did not read performance scores or rerun "
+                 "selection, and it does not establish completion of other campaign jobs.", ""]
+    return text
+
+
+def render_markdown(report, cohorts, comparisons, figures, diagnosis, *, seed_rows=(), seed_pairs=()):
     text = ["# Bayesian ST-ESN: validation-only KS improvement study", "",
         f"**Status: {report['status'].upper()}.** Receipt snapshot: {report['created_utc']}.", "",
         "This is a custom, literature-grounded KS experiment. It is an exploratory follow-up motivated by the original application results. "
@@ -996,11 +1203,7 @@ def render_markdown(report, cohorts, comparisons, figures, diagnosis):
             text.append(f"| {row['track']} | {', '.join(row['aliases'])} | {', '.join(row['changed_effective_fields'])} | "
                         f"{format_number(row['screen_band_crps'])} | {format_number(row['delta_band_crps'])} | "
                         f"{format_number(row['screen_band_mse'])} | {format_number(row['delta_band_mse'])} | {len(row['paired_trajectories'])} |")
-    text += ["",
-        "## Model-seed sensitivity", "",
-        "The two additional seeds are evaluated on four declared selection trajectories and eight validation origins. "
-        "`seed_sensitivity.json` includes the main seed on exactly those same four trajectories and origins, all scheduled denominators, "
-        "and paired alternative-minus-main differences with n≤4. These results are not compared with the 14-trajectory confirmation mean.", ""]
+    text += [""] + seed_sensitivity_markdown(seed_rows, seed_pairs)
     if report.get("selected_invariance"):
         receipt = report["selected_invariance"]
         text += ["## Selected-model acceptance", "",
@@ -1084,7 +1287,7 @@ def render_markdown(report, cohorts, comparisons, figures, diagnosis):
         "The final observed consumption must be compared with the "
         "nominal thresholds separately; the existence of this allowance does not establish that an overrun occurred.", "",
         *extension_text,
-        "The run_v2 operational migration reused verified preflight evidence, fits and forecast receipts and carried prior attempt time forward. "
+        *migration_markdown(report['operations']),
         "Bounded launcher memory recovery, where recorded, uses cache advice only after terminal memory-admission failures and a proved "
         "closed-worker state. It does not change model code, results, numerical gates or campaign budgets. Public receipts redact private paths. "
         "A partial snapshot does not imply the remaining stages completed.", "",
@@ -1185,7 +1388,9 @@ def main(argv=None):
     manifest = {"schema": "ks-improvement-report-source-manifest/1", "experiment_identity": reader.experiment["identity"],
                 "results_receipts": reader.manifest, "builder_sha256": sha256(__file__),
                 "initial_diagnosis_sha256": sha256(diagnosis_path) if diagnosis_path.exists() else None,
-                "anchors": anchor_evidence, "selected_invariance": acceptance}
+                "anchors": anchor_evidence, "selected_invariance": acceptance,
+                "operational_public_evidence": {key: {k: v for k, v in value.items() if k != "data"}
+                                                for key, value in operations["public_evidence"].items()}}
     manifest["identity"] = content_hash(manifest)
     selected_parameters = []
     if reader.freeze:
@@ -1247,7 +1452,8 @@ def main(argv=None):
             {f"{m}_{k}": row["metrics"][m].get(k) for m in METRICS for k in ("mean", "ci95", "n")})
     write_csv(output / "confirmation.csv", flat, list(flat[0]) if flat else ("track", "candidate_id", "complete_trajectories"))
     write_csv(output / "paired_comparisons.csv", comparisons, ("track", "purpose", "left", "right", "left_seed", "right_seed", "metric", "n", "mean", "ci95", "paired_trajectories"))
-    atomic_bytes(output / "README.md", render_markdown(report, cohorts, comparisons, figures, diagnosis).encode())
+    atomic_bytes(output / "README.md", render_markdown(report, cohorts, comparisons, figures, diagnosis,
+                 seed_rows=seed_rows, seed_pairs=seed_pairs).encode())
     artifact_files = list(files) + ["search_candidates.csv", "controlled_screen_contrasts.csv", "confirmation.csv", "paired_comparisons.csv", "README.md"] + figures + vector_figures
     artifact_manifest = {"schema": "ks-improvement-report-artifacts/1", "experiment_identity": report["experiment_identity"],
                          "freeze_identity": report["freeze_identity"], "source_manifest_identity": manifest["identity"],

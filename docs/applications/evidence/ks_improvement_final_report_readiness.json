@@ -1,0 +1,116 @@
+{
+  "cli_and_dependencies": {
+    "animation_help_exit": 0,
+    "ffmpeg_available": true,
+    "ffprobe_available": true,
+    "pdf_help_exit": 0,
+    "pdfinfo_available": true,
+    "pdftoppm_available": true,
+    "required_dejavu_fonts_available": true,
+    "scope": "No report or animation generation; help invocation and path existence checks only"
+  },
+  "confirmation_performance_read": false,
+  "created_utc": "2026-11-05T12:00:38.843894+00:00",
+  "document_syntax": {
+    "bash_blocks_checked": 21,
+    "embedded_python_blocks_parsed": 1,
+    "passed": true
+  },
+  "final_populated_artifact_qa": {
+    "items": [
+      "Every populated PDF page and table population",
+      "Final horizon/calibration/width/compute and fixed-example figure presentation",
+      "Matched-seed pairing and reliability denominators against final compact outputs",
+      "Encoded first/middle/final frames of each delivered movie"
+    ],
+    "status": "pending"
+  },
+  "migration_consumer": {
+    "confirmed_prefix_comparisons": 7750,
+    "exact_auxiliary_restart_available": false,
+    "experiment_identity": "067aaf08f46d7a21895ce15876d482a4a837d58627026a59e07a63db37f5c376",
+    "fit_checkpoint_or_forecast_score_objects_read": false,
+    "freeze_identity": "96774e83e2f737ceed30abc232b3a328b79894b0173a8e7a629c0289f0c3f4d2",
+    "input_metadata": {
+      "experiment.json": {
+        "bytes": 1165374,
+        "sha256": "c284c36256a1ecc0846fb93337a8f7a248bafd1e1f629ad50eb7142d9f5ee913"
+      },
+      "freeze.json": {
+        "bytes": 59701,
+        "sha256": "8539a493c99f9afc7a73b0de3374e660c70f9242ea8b06617d5f3db201593c3d"
+      },
+      "migration/receipt.json": {
+        "bytes": 2228543,
+        "sha256": "95099d0c7d7eeaea0b9a82357912fcd012b86a45559c30ecb8c43eb0ab94a751"
+      }
+    },
+    "passed": true,
+    "private_paths_in_displayed_paragraphs": false,
+    "production_report_or_results_reader_constructed": false,
+    "public_evidence": {
+      "actual_resume_acceptance": {
+        "bytes": 16709,
+        "repository_path": "docs/applications/evidence/ks_improvement_actual_resume_acceptance.json",
+        "sha256": "336a50cc1596305e14a75fa3b4e712de6d3f2e4a7f30f5f86289d786a67d5b72"
+      },
+      "applied_migration_review": {
+        "bytes": 5926,
+        "repository_path": "docs/applications/evidence/ks_improvement_applied_migration_independent_review.json",
+        "sha256": "b1ee45c88e3ec19d280734dd1a25bc0f5c1c4f2ba44a9df1d9cc004cbf4de347"
+      },
+      "native_auxiliary_validation": {
+        "bytes": 5210,
+        "repository_path": "docs/applications/evidence/ks_improvement_native_auxiliary_validation_13103f.json",
+        "sha256": "594e82111eee09987002388c5ffdeb16413569dfbd452578963b9feec4fb09c3"
+      }
+    }
+  },
+  "new_fits": 0,
+  "new_forecasts": 0,
+  "numerical_source_or_configuration_changes": false,
+  "output_parent_review": {
+    "animation": "Creates parent, streams100frames, validates encoded format/count/duration, then atomically publishes; visual review separately required",
+    "compact_report": "mkdir(parents=True, exist_ok=True)",
+    "pdf": "Creates parent, verifies temporary PDF, atomically publishes PDF; manifest marks visual QA pending"
+  },
+  "passed_for_scope": true,
+  "posterior_npz_read": false,
+  "raw_dataset_read": false,
+  "schema": "ks-improvement-final-report-readiness/1",
+  "scope": "Reporting-only CLI/output-parent preparation, synthetic PDF table checks, and metadata-only applied-migration consumer compatibility; not final populated artifact QA",
+  "scores_recomputed": false,
+  "sources": {
+    "docs/applications/ks_improvement_reproduction.md": {
+      "bytes": 37883,
+      "sha256": "9e259bdae3dc40c329ad0f7e4242b689d9ea847dce37207ed0d59a4e8e362389"
+    },
+    "tests/test_ks_improvement_pdf.py": {
+      "bytes": 5672,
+      "sha256": "ef84799f4cb2afccf07f8335d0188e6142b73b78740d7c3768ffe7320a606568"
+    },
+    "tools/animate_ks_improvement.py": {
+      "bytes": 24953,
+      "sha256": "bfb284e48a493f0d4e57d8e0a6c1c79bac314c9f0426b435befcfda46f02ad92"
+    },
+    "tools/build_ks_improvement_pdf.py": {
+      "bytes": 77165,
+      "sha256": "5c1bbe5c0bec4ffdc5245517f4c89e8f764a0b8566c513543812b4029925c183"
+    },
+    "tools/build_ks_improvement_report.py": {
+      "bytes": 105633,
+      "sha256": "396b90fdc84f3e285eefec78021e2e7e10ec792f659fec7072b2f47fa4c20467"
+    }
+  },
+  "test_partition_read": false,
+  "tests": {
+    "cases": [
+      "Matched-main/alternative seed tables retain all32 origin outcomes and n=0 RMSE/CRPS contrasts",
+      "Migration snapshot and archive-only restart limitation retained; mismatched destination freeze rejected"
+    ],
+    "command": "PYTHONPATH=src python -m pytest -q tests/test_ks_improvement_pdf.py",
+    "failed": 0,
+    "passed": 2,
+    "pytest_seconds": 0.14
+  }
+}

@@ -211,6 +211,9 @@ class Renderer:
         self.p("Custom, literature-grounded experiment | validation-only follow-up", "h2")
         self.p(f"Evidence status: <b>{self.r['status'].upper()}</b>. Generated from immutable receipts dated "
                f"{html.escape(self.r['created_utc'])}.")
+        self.p("Complete denotes terminal scheduled jobs within the supplied report scope; recorded failures and "
+               "inference-unqualified jobs are terminal outcomes. It does not mean that every fit qualified or every "
+               "rollout succeeded. The tables retain those outcomes and state the accuracy population explicitly.", "small")
         if self.r["status"] != "complete":
             self.p("<b>INCOMPLETE PREVIEW.</b> This document does not establish completion of screening, selection, "
                    "confirmation or sensitivity. Pending schedules remain visible. No unfinished score is imputed.")
@@ -454,16 +457,75 @@ class Renderer:
     def sensitivity_pages(self):
         self.heading("5. Model-seed sensitivity and diagnostic interpretation")
         rows = self.seed.get("rows", [])
-        if rows:
-            self.table(["Track", "Role", "Seed", "Complete /4", "RMSE", "CRPS"], [
-                [r["track"], role(r), r["seed"], r["complete_trajectories"],
-                 fmt(r["metrics"]["rmse"]["mean"]), fmt(r["metrics"]["crps"]["mean"])] for r in rows], [.55,2.25,1.15,.8,1,1])
-        else:
-            self.p("Model-seed sensitivity is pending.")
         self.p("The main seed is evaluated on the same four trajectories and eight origins as each additional seed. "
                "These n ≤ 4 comparisons are conditional sensitivity analyses, not comparisons with the 14-trajectory "
                "confirmation mean. Model seeds are not posterior samples, and their predictions are not pooled into "
                "an invented Bayesian model-averaging distribution.")
+        if not rows:
+            self.p("Model-seed sensitivity is pending.")
+        else:
+            def model_label(row):
+                labels = {"main": "New", "anchor": "Old"}
+                return " / ".join(labels.get(item, item) for item in row["roles"])
+
+            index = {(r["track"], r["candidate_id"], r["seed"]): r for r in rows}
+            if len(index) != len(rows):
+                raise ValueError("Duplicate matched-seed cohort in the compact report")
+            self.p("The following tables display the saved complete-trajectory estimates and trajectory-bootstrap "
+                   "95% intervals. An undefined estimate remains undefined; it is not replaced by an available "
+                   "origin or the larger confirmation cohort. With one complete trajectory an interval is unavailable, "
+                   "and even four clusters give limited precision.", "small")
+            for track in TRACKS:
+                current = [r for r in rows if r["track"] == track]
+                if not current:
+                    continue
+                self.p(f"Track {track}: matched model seeds", "h2")
+                labels = dict.fromkeys((model_label(r), r["candidate_id"]) for r in current)
+                self.p("; ".join(f"{html.escape(label)}: {html.escape(cid)}" for label, cid in labels), "small")
+                self.table(["Configuration", "Seed / role", "Complete trajectories", "RMSE [95% CI]", "CRPS [95% CI]"], [
+                    [model_label(r), str(r["seed"]) + ("\nMatched main" if r["stage"] == "matched_main_seed" else "\nAlternative"),
+                     f"{r['complete_trajectories']}/{r['scheduled_trajectories']}",
+                     interval(r["metrics"]["rmse"]), interval(r["metrics"]["crps"])] for r in current],
+                    [1.05, 1.1, .9, 1.65, 1.65])
+                self.table(["Config.", "Seed", "Qualified fits", "Finite origins", "Rollout failed",
+                            "Inference blocked", "Other blocked / pending", "Finite divergent"], [
+                    [model_label(r), r["seed"], f"{r['qualified_fits']}/{r['scheduled_trajectories']}",
+                     f"{r['finite_successful_origins']}/{r['scheduled_origins']}", r["failed_rollout_origins"],
+                     r["unqualified_blocked_origins"], f"{r['failed_job_blocked_origins']} / {r['pending_origins']}",
+                     r["finite_divergent_origins"]] for r in current],
+                    [.8, 1.05, .8, .8, .8, .9, 1.0, .8])
+                self.p("Finite + rollout-failed + inference-blocked + other-blocked + pending exhaust the 32 scheduled "
+                       "origins in each row. Finite divergence is a subset of finite outcomes, not an extra missing outcome. "
+                       "Blocked origins have no observed rollout. Accuracy uses only complete qualified trajectories; "
+                       "finite divergent forecasts remain included whenever their trajectory is complete.", "small")
+                excluded = [r for r in current if r["finite_origins_outside_score_population"]]
+                if excluded:
+                    self.p("Additional finite origins outside the complete-trajectory score population: " + "; ".join(
+                        f"{model_label(r)}, seed {r['seed']}: {r['finite_origins_outside_score_population']}"
+                        for r in excluded) + ". These remain in the outcome census above.", "small")
+                pairs = [r for r in self.seed.get("paired_differences", [])
+                         if r["track"] == track and r["metric"] in ("rmse", "crps")]
+                if pairs:
+                    displayed = []
+                    for pair in pairs:
+                        left = index[(track, pair["left"], pair["left_seed"])]
+                        right = index[(track, pair["right"], pair["right_seed"])]
+                        if (pair["left"] != pair["right"] or pair["difference"] != "left minus right"
+                                or pair["conditional_on_complete_pairs"] is not True
+                                or right["stage"] != "matched_main_seed"
+                                or left["stage"] != "sensitivity"):
+                            raise ValueError("Seed contrast does not compare an alternative with its matched main seed")
+                        displayed.append([model_label(left), pair["left_seed"], pair["metric"].upper(),
+                            f"{pair['n']}/{len(pair['scheduled_trajectories'])}",
+                            ", ".join(map(str, pair["paired_trajectories"])) or "None", interval(pair)])
+                    self.table(["Config.", "Alternative seed", "Metric", "Pairs", "Paired trajectory IDs",
+                                "Alternative − main [95% CI]"], displayed, [.8, 1.05, .75, .65, 1.15, 1.75])
+                    self.p("Differences are alternative seed minus the matched main seed for the same configuration. "
+                           "Negative RMSE or CRPS differences favor that alternative seed. Each contrast uses only its "
+                           "listed complete-pair intersection; zero-pair contrasts remain undefined. These stored paired "
+                           "intervals are not differences between separately summarized cohort confidence intervals.", "small")
+                else:
+                    self.p("No matched paired-difference records are available for this track.", "small")
         if self.diagnosis:
             self.heading("5b. What the retained-fit diagnostic establishes")
             cases = sorted(self.diagnosis["cases"], key=lambda c: c["first_target"])
@@ -648,6 +710,68 @@ class Renderer:
                "objects and the fixed-reference plan identity are retained in source_manifest.json. No Gaussian "
                "distribution is added to these point forecasts.", "small")
 
+    def applied_migration_evidence(self):
+        operations = self.r["operations"]
+        migration = operations.get("migration") or {}
+        if (migration.get("schema") != "ks-improvement-budget-migration/1"
+                or migration.get("apply") is not True or migration.get("passed") is not True):
+            return
+        if (migration["destination_experiment"] != self.r["experiment_identity"]
+                or migration["destination_freeze_identity"] != self.r["freeze_identity"]):
+            raise ValueError("Applied migration is not bound to the reported destination experiment and freeze")
+        self.p("Applied run_v3 migration and checkpoint custody", "h2")
+        self.p("The guarded run_v2-to-run_v3 migration applied the prospective budget extension and relocated the "
+               "verified cache and source paths. It preserved the numerical source/runtime, selected model choices, "
+               "completed native and forecast bytes, original campaign clock and all spent worker charges. The "
+               "source run was retained. Operational identities changed; this operation did not fit a model, "
+               "recompute a forecast, reopen selection or change a failure record.")
+        self.table(["Migration snapshot (not final totals)", "Recorded value"], [
+            ["Applied receipt creation (UTC)", migration["created_utc"]],
+            ["Migration receipt SHA-256", migration["receipt_sha256"]],
+            ["Native checkpoints carried", migration["native_checkpoint_count"]],
+            ["Completed forecast receipts carried", migration.get("forecast_receipt_states", {}).get("complete", "Unavailable")],
+            ["Worker seconds carried, including preparation", fmt(migration["carried_worker_seconds"], 6)],
+            ["Original selection timestamp, preserved", migration["original_freeze_created_utc"]],
+            ["Original campaign start, preserved", migration["wall_budget_start"]]], [2.1, 3.0])
+        self.p("These are the immutable migration-frontier counts. They do not assert completion of the subsequent "
+               "confirmation, seed-sensitivity, reference or acceptance schedules; current outcomes appear in their "
+               "own full-schedule tables.", "small")
+        public = operations.get("public_evidence", {})
+        fits = migration.get("reviewed_inference_sidecars", {}).get("fits", [])
+        if fits:
+            evidence = public.get("native_auxiliary_validation")
+            if len(fits) != 1 or evidence is None:
+                raise ValueError("Archive-only sampler disclosure requires its one explicitly reviewed prefix proof")
+            pair, prefix = fits[0], evidence["data"]
+            if (prefix["fit_key"] != pair["fit_key"] or prefix["native_qualified"] is not True
+                    or pair["qualification_changed"] is not False
+                    or pair["inference_restart_state_available"] is not False
+                    or prefix["exact_completed_inference_restart_available_from_auxiliary_pair"] is not False):
+                raise ValueError("Archive-only auxiliary proof differs from the completed native qualification/restart scope")
+            label = f"{prefix['track']}/{prefix['candidate_id']}, trajectory {prefix['trajectory']}, seed {prefix['seed']}"
+            counts = ", ".join(map(str, prefix["native_posterior_state_counts"]))
+            comparisons = prefix["comparison_counts"]["array_comparisons"]
+            self.p("One historical auxiliary sampler pair belongs to the unselected " + html.escape(label) + ". "
+                   "Its completed native checkpoint was independently validated and its recorded qualification is "
+                   "unchanged. The native posterior retains " + counts + " states across its four chains. "
+                   f"All {comparisons:,} retained auxiliary state-array comparisons and the corresponding log-density "
+                   "prefixes matched that completed posterior. The auxiliary pair itself did not represent an exact "
+                   "completed inference restart and was preserved as archive-only evidence outside active fit storage.")
+            self.p("Exact inference restart from this one archived pair is unavailable. No final RNG state was invented, "
+                   "no partial chain was relabeled complete, and no extra MCMC was run for the migration. The creator "
+                   "and cause of the historical mismatch remain unproven. This is a specific checkpoint-custody "
+                   "limitation; it does not change the completed native posterior, its qualification, the selected "
+                   "models or any forecast score.", "small")
+        if public:
+            labels = {"applied_migration_review": "Independent applied-migration review",
+                      "actual_resume_acceptance": "Actual continuation acceptance",
+                      "native_auxiliary_validation": "Native-versus-auxiliary prefix proof"}
+            self.table(["Bound public operational evidence", "SHA-256"], [
+                [labels.get(key, key), value["sha256"]] for key, value in public.items()], [2.0, 3.2])
+            self.p("These public operational receipts are checksum-bound in the compact report. The actual-continuation "
+                   "acceptance covers its named closed jobs; it is not a claim that every remaining job was complete "
+                   "at the time of that review.", "small")
+
     def operations(self):
         self.heading("10. Computation, acceptance and limitations")
         ops = self.r["operations"]
@@ -721,6 +845,7 @@ class Renderer:
                "carrying their identities and prior time forward, and adopting immutable terminal receipts as authority. "
                "The responsible external mechanism was not established. No scientific candidate, prior, data, forecast "
                "or score was changed by that recovery. The original run remains evidence.")
+        self.applied_migration_evidence()
         a = self.r.get("selected_invariance")
         if a:
             self.p(f"<b>Selected-artifact acceptance:</b> {a['passed_cases']}/{a['expected_cases']} cases passed; "
