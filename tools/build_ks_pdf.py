@@ -54,6 +54,9 @@ REFERENCES = [
     ("Vehtari et al. (2021). Rank-normalization, folding, and localization: An improved R-hat for assessing convergence of MCMC. Bayesian Analysis 16(2), 667-718.", "https://arxiv.org/abs/1903.08008", None),
     ("Gneiting and Raftery (2007). Strictly Proper Scoring Rules, Prediction, and Estimation. Journal of the American Statistical Association 102(477), 359-378.", "https://doi.org/10.1198/016214506000001437", None),
     ("Scheuerer and Hamill (2015). Variogram-Based Proper Scoring Rules for Probabilistic Forecasts of Multivariate Quantities. Monthly Weather Review 143, 1321-1334.", "https://doi.org/10.1175/MWR-D-14-00269.1", None),
+    ("Hartikainen and Särkkä (2010). Kalman Filtering and Smoothing Solutions to Temporal Gaussian Process Regression Models. IEEE International Workshop on Machine Learning for Signal Processing, 379-384.", "https://doi.org/10.1109/MLSP.2010.5589113", "https://users.aalto.fi/~ssarkka/pub/gp-ts-kfrts.pdf"),
+    ("Cho et al. (2014). Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation. EMNLP, 1724-1734.", "https://aclanthology.org/D14-1179/", None),
+    ("PyTorch contributors. torch.nn.GRU, PyTorch 2.15 API documentation. Accessed 5 November 2026.", "https://docs.pytorch.org/docs/2.15/generated/torch.nn.modules.rnn.GRU.html", None),
 ]
 REPORT_PACKAGES = ("reportlab", "pypdf", "matplotlib", "numpy", "Pillow")
 
@@ -100,6 +103,16 @@ def estimate(row, metric, *, digits=3, interval=True):
     value = number(item["mean"], digits)
     if interval and item.get("ci95") is not None:
         value += "\n["+", ".join(number(v, digits) for v in item["ci95"])+"]"
+    return value
+
+
+def reliability_frequency(row, metric):
+    item=row[metric]
+    if item["pending_origins"]:
+        return "["+", ".join(number(100*v,2)+"%" for v in item["identified_bounds"])+"]\npending-outcome bounds"
+    value=number(100*item["mean"],2)+"%"
+    if item.get("ci95") is not None:
+        value+="\n["+", ".join(number(100*v,2)+"%" for v in item["ci95"])+"]"
     return value
 
 
@@ -227,6 +240,99 @@ def verify_matched_seed_receipt(matched, frozen, episode_sha256):
         raise ValueError("Matched seed report omits a scheduled contrast, including its zero-eligible case")
 
 
+def verify_reliability_receipt(census, frozen, summary, episode_sha256, freeze_sha256):
+    """Check saved full-schedule counts without rescoring or running a model."""
+    canonical=lambda value: hashlib.sha256(json.dumps(value,sort_keys=True,
+        separators=(",",":"),allow_nan=False).encode()).hexdigest()
+    if census.get("schema")!="ks-reliability-census/1":
+        raise ValueError("Unsupported reliability census schema")
+    for key,value in (("freeze_identity",frozen["identity"]),
+                      ("freeze_sha256",freeze_sha256),
+                      ("experiment_identity",frozen["experiment_identity"]),
+                      ("source_episode_results_sha256",episode_sha256)):
+        if census.get(key)!=value:
+            raise ValueError("Reliability census has an inconsistent "+key)
+    if census.get("source_manifest_sha256")!=canonical(census["source_manifest"]):
+        raise ValueError("Reliability source manifest hash mismatch")
+    if census.get("identity")!=canonical({k:v for k,v in census.items() if k!="identity"}):
+        raise ValueError("Reliability census identity mismatch")
+    summary_rows={(r["track"],r["model"],r["seed"]):r for r in summary["rows"]}
+    rows={}; trajectories={}
+    fields=("scheduled_origins","observed_origins","finite_successful_origins",
+        "failed_rollout_origins","fit_failure_placeholder_origins","failed_origins",
+        "pending_origins","finite_divergent_origins","severe_rollout_origins",
+        "failure_or_divergence_origins","inference_unqualified_successful_origins",
+        "inference_unqualified_observed_origins")
+    def counts(record):
+        for field in fields:
+            value=record[field]
+            if isinstance(value,bool) or not isinstance(value,int) or value<0:
+                raise ValueError("Invalid reliability origin count: "+field)
+        if record["finite_successful_origins"]+record["failed_origins"]+record["pending_origins"]!=record["scheduled_origins"]:
+            raise ValueError("Reliability outcomes do not partition the full schedule")
+        if record["failed_rollout_origins"]+record["fit_failure_placeholder_origins"]!=record["failed_origins"]:
+            raise ValueError("Reliability failure decomposition is inconsistent")
+        if record["observed_origins"]!=record["finite_successful_origins"]+record["failed_rollout_origins"]:
+            raise ValueError("Reliability observed count must exclude fit-failure placeholders")
+        if record["finite_divergent_origins"]>record["finite_successful_origins"]:
+            raise ValueError("Finite divergence is not a subset of finite successful rollouts")
+        if record["severe_rollout_origins"]!=record["finite_divergent_origins"]+record["failed_rollout_origins"] or record["failure_or_divergence_origins"]!=record["finite_divergent_origins"]+record["failed_origins"]:
+            raise ValueError("Reliability failure/divergence unions are inconsistent")
+        if not 0<=record["inference_unqualified_successful_origins"]<=record["inference_unqualified_observed_origins"]<=record["observed_origins"]:
+            raise ValueError("Invalid inference-unqualified reliability counts")
+        if record["inference_unqualified_successful_origins"]>record["finite_successful_origins"]:
+            raise ValueError("Unqualified successful count exceeds finite successes")
+    for record in census["trajectories"]:
+        key=tuple(record[k] for k in ("track","model","seed","trajectory"))
+        if key in trajectories:
+            raise ValueError("Duplicate reliability trajectory identity")
+        counts(record); trajectories[key]=record
+    for row in census["rows"]:
+        key=tuple(row[k] for k in ("track","model","seed"))
+        if key in rows or key not in summary_rows:
+            raise ValueError("Unexpected or duplicate reliability family identity")
+        counts(row); rows[key]=row; source=summary_rows[key]
+        for field in ("scheduled_trajectories","scheduled_origins","complete_trajectories","failed_origins","pending_origins"):
+            if row[field]!=source[field]:
+                raise ValueError("Reliability census disagrees with summary "+field)
+        if row["qualified_complete_trajectories"]!=source["qualified_trajectories"]:
+            raise ValueError("Reliability qualified population disagrees with summary")
+        expected=frozen["test_trajectories"] if row["seed"]==frozen["model_seed"] else frozen["sensitivity_trajectories"]
+        cohort={k[3]:v for k,v in trajectories.items() if k[:3]==key}
+        if set(cohort)!=set(expected) or row["scheduled_trajectories"]!=len(expected):
+            raise ValueError("Reliability trajectory roster differs from the frozen schedule")
+        for field in fields:
+            if row[field]!=sum(record[field] for record in cohort.values()):
+                raise ValueError("Reliability family/trajectory counts disagree: "+field)
+        n_origins=len(frozen["test_origins"])
+        for record in cohort.values():
+            if record["scheduled_origins"]!=n_origins or bool(record["complete"])!=(record["finite_successful_origins"]==n_origins):
+                raise ValueError("Reliability trajectory completeness is inconsistent")
+            if bool(record["qualified_complete"])!=(bool(record["complete"]) and record["inference_unqualified_successful_origins"]==0):
+                raise ValueError("Reliability qualified-complete flag is inconsistent")
+        if row["complete_trajectories"]!=sum(bool(record["complete"]) for record in cohort.values()) or row["qualified_complete_trajectories"]!=sum(bool(record["qualified_complete"]) for record in cohort.values()):
+            raise ValueError("Reliability complete trajectory counts are inconsistent")
+        in_scores=row["complete_trajectories"]*n_origins
+        if row["finite_successful_origins_in_score_population"]!=in_scores or row["finite_successful_origins_excluded_incomplete_trajectories"]!=row["finite_successful_origins"]-in_scores:
+            raise ValueError("Reliability census loses finite origins outside the accuracy population")
+        if bool(row["full_schedule_point_score_defined"])!=(row["finite_successful_origins"]==row["scheduled_origins"]):
+            raise ValueError("Full-schedule point accuracy is undefined with missing finite forecasts")
+        for field,count_field in (("failure_fraction","failed_origins"),("finite_divergence_fraction","finite_divergent_origins"),("severe_rollout_fraction","severe_rollout_origins"),("failure_or_divergence_fraction","failure_or_divergence_origins")):
+            frequency=row[field]; known=row[count_field]; total=row["scheduled_origins"]; pending=row["pending_origins"]
+            if (frequency["known_count"],frequency["scheduled_origins"],frequency["pending_origins"])!=(known,total,pending):
+                raise ValueError("Reliability frequency denominator mismatch")
+            bounds=[known/total,(known+pending)/total]
+            if len(frequency["identified_bounds"])!=2 or any(not math.isclose(a,b,rel_tol=1e-12,abs_tol=1e-12) for a,b in zip(frequency["identified_bounds"],bounds)):
+                raise ValueError("Reliability frequency bounds disagree with observed counts")
+            if pending:
+                if frequency["status"]!="observed_lower_bound_with_pending" or frequency.get("ci95") is not None or frequency.get("between_trajectory_standard_error") is not None:
+                    raise ValueError("Pending reliability outcomes cannot have a completed-schedule interval")
+            elif frequency["status"]!="terminal_schedule" or not math.isclose(frequency["mean"],known/total,rel_tol=1e-12,abs_tol=1e-12):
+                raise ValueError("Terminal reliability frequency is inconsistent")
+    if set(rows)!=set(summary_rows) or any(key[:3] not in rows for key in trajectories):
+        raise ValueError("Reliability census omits or adds a scheduled family")
+
+
 class Inputs:
     def __init__(self, results, report, repo, allow_incomplete=False):
         self.results, self.report, self.repo = map(lambda p: Path(p).resolve(), (results, report, repo))
@@ -238,6 +344,8 @@ class Inputs:
         self.episodes = self.read(self.results/"episode_results.json")
         self.horizons = self.read(self.report/"selected_horizons.json", optional=True)
         self.matched_seeds = self.read(self.report/"seed_sensitivity_matched.json", optional=True)
+        self.reliability = self.read(self.report/"reliability_census.json", optional=True)
+        self.reliability_rows = {}
         self.evidence = self.read(self.results/"report_evidence.json", optional=True) or {}
         self.precision = self.read(self.results/"validation_precision.json", optional=True) or {}
         self.preflight = self.evidence.get("preflight") or self.read(
@@ -247,6 +355,7 @@ class Inputs:
         self.early_audit = extra.get("ks_validation_audit_early") or self.read(self.repo/"docs/applications/evidence/ks_validation_audit_early.json", optional=True) or {}
         self.promotion_audit = extra.get("ks_validation_promotion_A_audit") or self.read(self.repo/"docs/applications/evidence/ks_validation_promotion_A_audit.json", optional=True) or {}
         self.contiguous_history = extra.get("ks_contiguous_history_check") or self.read(self.repo/"docs/applications/evidence/ks_contiguous_history_check.json", optional=True) or {}
+        self.memory_recovery = extra.get("ks_memory_recovery_20261105") or self.read(self.repo/"docs/applications/evidence/ks_memory_recovery_20261105.json", optional=True) or {}
         self.cfg = self.experiment["config"]
         self.seed, self.rows = self.frozen["model_seed"], self.summary["rows"]
         identity = self.frozen["identity"]
@@ -261,6 +370,8 @@ class Inputs:
             raise ValueError("Report evidence belongs to a different experiment")
         if self.precision.get("experiment_identity") not in (None, self.experiment["identity"]):
             raise ValueError("Precision receipt belongs to a different experiment")
+        if self.memory_recovery.get("experiment_identity") not in (None,self.experiment["identity"]):
+            raise ValueError("Operational memory-recovery receipt belongs to a different experiment")
         if self.contiguous_history and (
                 self.contiguous_history.get("freeze_identity") != identity or
                 self.contiguous_history.get("freeze_sha256") != digest(self.results/"freeze.json")):
@@ -290,6 +401,17 @@ class Inputs:
             artifact=self.artifacts.get("seed_sensitivity_matched.json")
             if artifact is None or artifact["sha256"]!=digest(self.report/"seed_sensitivity_matched.json"):
                 raise ValueError("Matched seed report is not bound to the current figure/report manifest")
+        if self.reliability is not None:
+            verify_reliability_receipt(self.reliability,self.frozen,self.summary,
+                digest(self.results/"episode_results.json"),digest(self.results/"freeze.json"))
+            artifact=self.artifacts.get("reliability_census.json")
+            if artifact is None or artifact["sha256"]!=digest(self.report/"reliability_census.json"):
+                raise ValueError("Reliability census is not bound to the current figure/report manifest")
+            for receipt in self.reliability["source_manifest"]:
+                path=(self.results/receipt["path"]).resolve()
+                if not path.is_relative_to(self.results) or path.stat().st_size!=receipt["bytes"] or digest(path)!=receipt["sha256"]:
+                    raise ValueError("Reliability source receipt is missing, changed, or outside the result root")
+            self.reliability_rows={(r["track"],r["model"],r["seed"]):r for r in self.reliability["rows"]}
         for figure in self.manifest.get("figures", []):
             path = (self.report/figure["png"]).resolve()
             if not path.is_relative_to(self.report):
@@ -462,6 +584,41 @@ class Writer:
                        f"{bayes['qualified_trajectories']} qualified complete trajectories, and selection eligibility {number(bayes.get('selection_eligible',False))}. "
                        f"Its reported mean RMSE is {estimate(bayes,'rmse',interval=False)}; qualified predictive CRPS is {estimate(bayes,'crps',interval=False)}. "
                        "A lower point error, better interval calibration, better spatial transfer and lower compute cost are separate conclusions.")
+                competitors=[r for r in eligible if r["model"]!="bayes_stesn"]
+                if bayes in eligible and competitors and all(bayes["rmse"]["mean"]>r["rmse"]["mean"] for r in competitors):
+                    self.p("Within this track, Bayesian ST-ESN has a higher mean RMSE than every other selection-eligible family with a complete finite schedule and qualified native inference where applicable. This is the observed result for these selected configurations and this information boundary; it is not a claim that Bayesian forecasting generally fails.")
+                if bayes.get("coverage_0.9",{}).get("mean") is not None:
+                    coverage=bayes["coverage_0.9"]["mean"]
+                    self.p(f"Its nominal 90% intervals have empirical marginal coverage {number(100*coverage,2)}% "
+                           f"({number(100*(coverage-.9),2)} percentage points relative to nominal) and mean width {estimate(bayes,'width_0.9',interval=False)} physical units. "
+                           "Coverage and interval width must be assessed together with CRPS and point error.")
+                native_competitors=[r for r in competitors if r["model"] in NATIVE and r.get("crps",{}).get("mean") is not None]
+                if bayes.get("crps",{}).get("mean") is not None and native_competitors and all(bayes["crps"]["mean"]>r["crps"]["mean"] for r in native_competitors):
+                    broader=bayes.get("width_0.9",{}).get("mean") is not None and all(
+                        r.get("width_0.9",{}).get("mean") is not None and bayes["width_0.9"]["mean"]>r["width_0.9"]["mean"] for r in native_competitors)
+                    self.p("Bayesian ST-ESN also has higher mean CRPS than each other fully qualified native probabilistic family in this track. "+
+                           ("Its broader intervals do not reverse that proper-score result. " if broader else "")+
+                           "Qualified sampler diagnostics do not guarantee forecasting accuracy, and these results do not establish a failure of MCMC convergence as their cause.")
+                values=i.horizons
+                if isinstance(values,dict):
+                    values=values.get("rows",values.get("values",[]))
+                lead_rows=sorted([r for r in (values or []) if r.get("track")==track and r.get("model")=="bayes_stesn"],key=lambda r:r["horizon"])
+                if lead_rows:
+                    self.table(["Bayesian lead / physical time", "RMSE", "CRPS", "90% coverage", "90% width"],[[
+                        f"{r['horizon']} / {number(r.get('elapsed_physical_time',.25*r['horizon']),2)}",
+                        estimate(r,"rmse",interval=False),estimate(r,"crps",interval=False),
+                        number(100*r["coverage_0.9"]["mean"],2)+"%" if r.get("coverage_0.9",{}).get("mean") is not None else "-",
+                        estimate(r,"width_0.9",interval=False)] for r in lead_rows],[150,85,85,90,100])
+                    by_lead={r["horizon"]:r for r in lead_rows}
+                    coverage=lambda h: by_lead.get(h,{}).get("coverage_0.9",{}).get("mean")
+                    if all(coverage(h) is not None and coverage(h)<.9 for h in (1,5,10)) and all(coverage(h) is not None and coverage(h)>.9 for h in (50,100)):
+                        self.p("The aggregate coverage combines pronounced early undercoverage with later overcoverage. It therefore does not imply uniformly calibrated forecasts across lead times. The table records observed deterioration and uncertainty behavior; it does not identify their cause. The horizon appendix retains trajectory-level uncertainty intervals for the prespecified leads.")
+            conditional=[r for r in rows if r["complete_trajectories"]<r["scheduled_trajectories"]
+                         and r.get("rmse",{}).get("mean") is not None]
+            for row in conditional:
+                self.p(f"{label(row['model'])} has an accuracy estimate from only {row['complete_trajectories']}/{row['scheduled_trajectories']} complete trajectories. "
+                       f"Its {row['failed_origins']} failed and {row['pending_origins']} pending origins remain in the full {row['scheduled_origins']}-origin schedule. "
+                       "The full-schedule RMSE is undefined. A lower complete-case RMSE cannot establish superiority over a family evaluated on all scheduled trajectories; the descriptive minimum above excludes this incomplete accuracy population.")
         if i.frozen.get("selection_issues"):
             self.h("Qualification limitations frozen before testing", 2)
             for issue in i.frozen["selection_issues"]:
@@ -470,7 +627,7 @@ class Writer:
 
     def main_tables(self):
         self.h("2. Main-track results", page=True)
-        self.p("Every primary family has 20 scheduled trajectories and 20 autonomous 100-step origins per trajectory. Point estimates below use complete trajectories only; missing and failed origins remain in the reliability denominator. Native point estimates average the same complete paths used for probability scores. A dash means no eligible estimate.")
+        self.p("Every primary family has 20 scheduled trajectories and 20 autonomous 100-step origins per trajectory. Point estimates below use complete trajectories only, with n stated in each row. Missing and failed origins remain in the full-schedule reliability denominator. Finite forecasts from a trajectory containing a failed origin remain part of the reliability census even though that trajectory is excluded from the accuracy summary. Native point estimates average the same complete paths used for probability scores. A dash means no eligible estimate; failed or pending outcomes are never imputed into a full-schedule RMSE.")
         for track in ("A", "B"):
             rows = ordered([r for r in self.i.rows if r["track"] == track and r["seed"] == self.i.seed])
             self.h(f"Track {track}: {TRACKS[track]}", 2)
@@ -478,18 +635,50 @@ class Writer:
                 [label(r["model"]), f"{r['complete_trajectories']}/{r['scheduled_trajectories']}",r["qualified_trajectories"],
                  number(r.get("selection_eligible",False)), f"{r['failed_origins']}/{r['pending_origins']} of {r['scheduled_origins']}",
                  f"{r.get('inference_unqualified_fits',0)}/{r.get('failed_fits',0)}/{r.get('pending_fits',0)}"] for r in rows], [110,66,45,62,85,95])
+            self.reliability_tables(rows)
+            self.h("Conditional point accuracy on complete trajectories",2)
             self.table(["Family", "Mean RMSE [95% CI]", "Mean NRMSE [95% CI]", "Mean MAE [95% CI]", "VPT steps"], [
-                [label(r["model"]),estimate(r,"rmse"),estimate(r,"nrmse"),estimate(r,"mae"),estimate(r,"vpt_steps",digits=1,interval=False)] for r in rows], [115,103,103,103,69])
+                [label(r["model"])+f"\ncomplete n={r['complete_trajectories']}",estimate(r,"rmse"),estimate(r,"nrmse"),estimate(r,"mae"),estimate(r,"vpt_steps",digits=1,interval=False)] for r in rows], [115,103,103,103,69])
             native = [r for r in rows if r["model"] in NATIVE]
             self.table(["Qualified distribution", "n", "CRPS [95% CI]", "Spatial energy", "Spatial variogram"], [
                 [label(r["model"]),r.get("crps",{}).get("n",0),estimate(r,"crps"),estimate(r,"spatial_energy",interval=False),estimate(r,"spatial_variogram",interval=False)] for r in native], [138,30,115,105,105])
             self.table(["Family", "Interval", "Eligible n", "Coverage [95% CI]", "Mean width [95% CI]"], [
                 [label(r["model"]),f"{100*q:g}%",r.get(f"coverage_{q}",{}).get("n",0),estimate(r,f"coverage_{q}"),estimate(r,f"width_{q}")]
                 for r in native for q in (.5,.8,.9,.95)], [138,50,55,125,125])
-            self.table(["Family", "Finite divergence fraction", "VPT censored fraction", "Fit receipt seconds", "Saved forecast seconds", "Fit-receipt peak MiB"], [
+            self.table(["Family", "Complete-case finite divergence", "Complete-case VPT censoring", "Fit receipt seconds", "Saved forecast seconds", "Fit-receipt peak MiB"], [
                 [label(r["model"]),estimate(r,"divergence_fraction",interval=False),estimate(r,"vpt_censored_fraction",interval=False),
                  number(r.get("fit_seconds"),1),number(r.get("forecast_seconds"),1),number(r.get("peak_worker_rss_bytes",0)/1024**2,1)] for r in rows], [115,76,76,75,75,76])
         self.p("Fit-receipt time totals reusable selected fits and can include models already fitted during selection; it is not an additive final-stage campaign total. Saved forecast time covers represented forecast receipts. The reported RSS here is the maximum fit-receipt process peak, which need not equal the whole worker's forecast peak. Cumulative monitored attempts are reported separately in the resource section.", "small")
+
+    def reliability_tables(self, summary_rows):
+        self.h("Full-schedule reliability",2)
+        if self.i.reliability is None:
+            self.p("The full-schedule reliability census is unavailable. The summary's complete-case divergence fraction cannot substitute for this missing census; failures and pending origins remain listed above.")
+            return
+        rows=[self.i.reliability_rows[r["track"],r["model"],r["seed"]] for r in summary_rows]
+        summary={(r["track"],r["model"],r["seed"]):r for r in summary_rows}
+        self.p("Every scheduled origin contributes to these counts. A finite successful rollout can still cross the prespecified divergence threshold (any lead RMSE above 10 permitted training SD). Failed rollouts have no usable finite score. Fit failures account separately for forecasts that could not be produced. Failure and finite-divergence counts are disjoint, so their union retains both types of adverse outcome. Extreme finite losses are preserved in accuracy summaries without clipping.","small")
+        self.table(["Family", "Finite / scheduled", "Failed rollout + fit placeholders", "Finite divergence", "Failure or divergence", "Pending", "Full-schedule RMSE"], [
+            [label(r["model"]),f"{r['finite_successful_origins']}/{r['scheduled_origins']}",
+             f"{r['failed_rollout_origins']} + {r['fit_failure_placeholder_origins']}",
+             r["finite_divergent_origins"],r["failure_or_divergence_origins"],r["pending_origins"],
+             estimate(summary[r["track"],r["model"],r["seed"]],"rmse",interval=False)
+                if r["full_schedule_point_score_defined"] else "undefined"] for r in rows], [100,70,75,60,65,45,90])
+        self.table(["Family", "Finite origins in / outside accuracy population", "Unqualified finite / observed origins", "Failure frequency [95% CI]", "Failure-or-divergence frequency [95% CI]"], [
+            [label(r["model"]),f"{r['finite_successful_origins_in_score_population']} / {r['finite_successful_origins_excluded_incomplete_trajectories']}",
+             f"{r['inference_unqualified_successful_origins']} / {r['inference_unqualified_observed_origins']}",
+             reliability_frequency(r,"failure_fraction"),reliability_frequency(r,"failure_or_divergence_fraction")] for r in rows], [110,100,95,100,110])
+        self.p("Frequency intervals resample whole trajectories with all scheduled origins retained. If outcomes remain pending, displayed bounds are the observed event count divided by the schedule and the corresponding maximum after adding every pending outcome; no bootstrap interval is claimed for that unfinished schedule. A full-schedule point score can be defined for finite but inference-unqualified forecasts only as a labeled diagnostic. Qualified probabilistic comparison still uses its separate inference gate.","small")
+        self.p("For terminal families with no observed failures or divergence events, empirical resampling of the observed trajectory clusters gives a degenerate [0, 0] frequency interval. This is a property of those recorded clusters; it does not establish zero failure or divergence probability on new trajectories. A zero count therefore means no observed events in this schedule, not guaranteed future reliability.","small")
+        keys=set(summary)
+        exceptional=[r for r in self.i.reliability["trajectories"] if (r["track"],r["model"],r["seed"]) in keys
+                     and (r["failed_origins"] or r["pending_origins"] or r["finite_divergent_origins"] or r["inference_unqualified_observed_origins"])]
+        if exceptional:
+            self.table(["Family", "Trajectory", "Finite / scheduled", "Failed / pending", "Finite divergence", "Unqualified observed"], [
+                [label(r["model"]),r["trajectory"],f"{r['finite_successful_origins']}/{r['scheduled_origins']}",
+                 f"{r['failed_origins']}/{r['pending_origins']}",r["finite_divergent_origins"],r["inference_unqualified_observed_origins"]]
+                for r in sorted(exceptional,key=lambda q:(q["model"],q["trajectory"]))], [130,50,85,80,75,90])
+        self.p("Complete per-trajectory counts, exceptional first-target indices, source-receipt hashes and the full-schedule definition are retained in reliability_census.json. Finite origins outside the accuracy population are counted here even when another origin in the same trajectory failed.","small")
 
     def protocol(self):
         i, cfg, f = self.i, self.i.cfg, self.i.frozen
@@ -549,6 +738,22 @@ class Writer:
         self.p("The spatial dictionary contains a constant, optional embedded coordinates and fixed Matérn radial functions. The accepted reference uses a 3-by-3 embedding dictionary and 12 columns; the application also evaluates predetermined circle-center dictionaries. The same geometry-only function evaluates never-trained coordinates. PCA site centering/whitening, reservoir calibration and temporal-feature scaling are fitted only on each candidate's training conditioning prefix. No hidden response contributes to the basis or reservoir input.")
         self.equation(r"r_t=(I-D)r_{t-1}+D\tanh(Wr_{t-1}+U v_t+b)")
         self.p("The retained reference feeds two delayed eight-dimensional PCA score vectors into 32 leaky units. Its recurrent matrix uses operator norm 0.9, connectivity 0.08, repeated leak rates (0.2,0.5,0.9), input scale 0.5 and uniform biases on [-0.3,0.3]. Operator norm is distinct from spectral radius. Readout features are one intercept, 16 bounded lagged scores 3*tanh(a/3), 32 states and 16 selected squares, giving 65 temporal columns and 780 reference coefficients. Raw PCA scores drive the reservoir. Feature centers/scales use the latter two-thirds of the conditioning prefix, a 0.04 scale floor and dimension normalization. The reference conditioning prefix is 80 rows, leaving 5,920 likelihood targets; larger candidates declare their own prefixes.")
+        dimensions=[]
+        for record in i.evidence.get("family_rows",[]):
+            if record.get("model")!="bayes_stesn" or record.get("track") not in ("A","B"):
+                continue
+            effort=record.get("effort",{}); temporal=effort.get("temporal_features",{}); spatial=effort.get("spatial_basis",{})
+            if not temporal.get("n") or not spatial.get("n"):
+                continue
+            coefficients=(str(int(temporal["min"]*spatial["min"]))
+                          if temporal["min"]==temporal["max"] and spatial["min"]==spatial["max"] else "see per-fit receipts")
+            dimensions.append([record["track"]+" / "+str(record.get("selected_config_id")),
+                reported_range(temporal),reported_range(spatial),coefficients,
+                reported_range(record.get("parameter_count")),reported_range(effort.get("conditioning_rows")),
+                reported_range(record.get("usable_training_targets"))])
+        if dimensions:
+            self.table(["Selected fit", "Temporal columns d", "Spatial columns p", "Readout coefficients p*d", "Recorded parameter count", "Conditioning rows", "Likelihood targets"],dimensions,[105,65,65,80,75,60,70])
+            self.p("These dimensions come from actual selected-fit receipts. Temporal columns include the intercept, every declared lagged-score column, reservoir states and selected squared/product features. Readout coefficients are the product of the realized temporal and spatial column counts. The recorded total parameter count additionally includes the four scalar readout-precision, spatial-variance, range and residual-variance parameters.","small")
         self.equation(r"R=I+qK_\ell,\quad B=\Phi^{T}R^{-1}\Phi,\quad G=Z^{T}Z,\quad A=\lambda I+G\otimes B")
         self.equation(r"h=\mathrm{vec}(\Phi^{T}R^{-1}YZ),\qquad b\mid\sigma^2,Y,\lambda,q,\ell\sim N(A^{-1}h,\sigma^2A^{-1})")
         self.equation(r"Q=\mathrm{tr}(Y^{T}R^{-1}Y)-h^{T}A^{-1}h")
@@ -558,10 +763,12 @@ class Writer:
         self.h("4.2 Separable spatiotemporal GP", 2)
         self.equation(r"y_t(s)=m+f_t(s)+\epsilon_t(s),\qquad k((s,t),(s',t'))=\sigma_f^2K_s(s,s')K_t(t,t')")
         self.p("The GP retains an independent-site/time nugget and a separable Matérn latent process. The small spatial eigensystem decouples exact one- or two-state temporal filters for temporal smoothness 1/2 or 3/2. Bounded L-BFGS-B estimates covariance parameters from permitted training likelihood. Spatial coordinates are normalized by the maximum observed coordinate span; temporal range uses physical saved times. These parameter units differ from the Bayesian covariance range. At each origin the filter starts from its stationary prior and conditions exactly on the supplied history. Joint simulation preserves temporal dependence of both observed modes and the conditional unseen-site remainder. Uncertainty conditions on estimated hyperparameters and does not include a Bayesian hyperparameter posterior.")
+        self.p("Hartikainen and Särkkä [10] establish exact finite-dimensional state representations for half-integer Matérn temporal kernels, with Kalman inference and marginal likelihood linear in the number of times for fixed state dimension. This supports the temporal engine; the periodic spatial eigendecomposition and declared KS conditioning protocol are application adaptations.","small")
         self.h("4.3 Probabilistic coordinate-basis GRU", 2)
         self.equation(r"\Phi^{T}\Phi/n=I,\quad a_t=\Phi^{T}(y_t-c)/(ns),\quad\mu_t(x)=c+s\phi(x)^{T}g_\theta(a_{t-L:t-1})")
         self.equation(r"\mathrm{Cov}(e_t(x),e_t(x'))=s^2[\sigma_f^2K_\ell(x,x')+\sigma_e^2\mathbf{1}(x=x')]")
         self.p("A fixed coordinate basis projects permitted fields. A GRU with a linear readout predicts the next coefficient state, resetting hidden state for each declared lag window. AdamW minimizes projected one-step MSE. A chronological training-only tail selects an epoch by autonomous loss; that epoch count is refitted on the full permitted training panel. The internal stopping fit excludes its tail from learned preprocessing. A subsequent Gaussian likelihood fit estimates spatial innovation covariance from optimization-row residuals. This is staged MSE/covariance fitting with fixed trained parameters, not joint Bayesian neural inference or validation-fitted calibration. Each path projects its generated fitted-site field back into the next coefficient context and samples new-site innovations conditionally on the same spatial field. Float32 neural calculations are checked against fixed-weight float64 calculations; sensitive covariance algebra and scoring use float64. Recurrent-comparator context is provided by [2].")
+        self.p("Cho et al. [11] supply the reset/update-gated recurrent-unit origin. The actual implementation uses torch.nn.GRU(rank, hidden_size, batch_first=True) and a linear head. PyTorch 2.15 [12] applies the candidate-state reset gate after the hidden affine transform, unlike the original paper's order. The coordinate basis, staged spatial Gaussian innovations and KS ancestral forecast are this repository's custom probabilistic adaptation.","small")
         self.h("4.4 Anchors and conventional vector controls", 2)
         self.p("Training mean and persistence are point-only anchors. All strict conventional controls share a parameter-free periodic piecewise-linear decoder from fitted sites to targets. The seam is included, weights are nonnegative and sum to one, and fitted-site queries reproduce their native values. VAR/ESN states evolve in their observed-site or POD state; decoding is an output operation and is not silently reprojected each step. No hidden truth is fed back.")
         self.equation(r"\widehat W=\arg\min_W\left\{N^{-1}\Vert XW-Y\Vert_F^2+\lambda\sum_{j>0,k}W_{jk}^2\right\}")
@@ -665,7 +872,7 @@ class Writer:
     def uncertainty_and_extensions(self):
         i = self.i
         self.h("6. Paired uncertainty, sensitivity and robustness", page=True)
-        self.p("All uncertainty below uses trajectories as clusters. Origins, site-time cells, chains and predictive paths are dependent within a fitted trajectory and do not increase the scientific replication count. Paired differences use common complete trajectories. Probability differences additionally require qualified distributions. Negative loss differences favor Bayesian ST-ESN. These descriptive intervals condition on selected configurations and do not adjust for multiple comparisons.")
+        self.p("All uncertainty below uses trajectories as clusters. Origins, site-time cells, chains and predictive paths are dependent within a fitted trajectory and do not increase the scientific replication count. Paired differences use common complete trajectories. Probability differences additionally require qualified distributions. A comparison on 17 common complete trajectories matches those populations but remains conditional on their completion; it does not recover performance on all 20 scheduled trajectories or remove the selection caused by failed rollouts. Negative loss differences favor Bayesian ST-ESN. These descriptive intervals condition on selected configurations and do not adjust for multiple comparisons.")
         pairs = [r for r in i.summary.get("paired_comparisons",[]) if r["metric"] in ("rmse","nrmse","mae","crps")]
         self.table(["Track", "Comparator", "Metric", "Paired n", "Bayesian minus comparator [95% CI]"], [
             [r["track"],label(r["comparator"]),r["metric"],r["n"],estimate({"delta":r},"delta")] for r in pairs], [35,150,65,55,205])
@@ -703,7 +910,7 @@ class Writer:
         self.h("Score definitions and reliability", 2)
         self.equation(r"\mathrm{CRPS}(F_P,y)=P^{-1}\sum_p|x_p-y|-(2P^2)^{-1}\sum_{p,q}|x_p-x_q|")
         self.p("The empirical score is applied marginally at each site/lead and averaged according to the stated selection or reporting rule [8]. Coverage and widths use empirical central 50%, 80%, 90% and 95% quantiles for the clean simulated field. Spatial energy divides the Euclidean norm by sqrt(number of target sites), with 1,024 seeded with-replacement empirical path pairs for its pair term. It is a Monte Carlo approximation to the empirical energy score. Variogram score uses power 0.5, up to 128 geometry-only site pairs and normalized inverse-chord-distance weights [9]. Both spatial scores are per-lead field scores, not whole-path temporal scores.")
-        self.p("VPT is the first lead whose spatial RMSE divided by permitted training SD exceeds 0.4, right censored at 100. This threshold is an experiment convention, not an imported Lyapunov-time scale. Finite divergence is any lead above 10 training SD. Nonfinite paths are failures. There is no clipping, hidden fallback, favorable-seed replacement, or dropping of unsuccessful episodes from scheduled denominators. Successful-only summaries are labeled as such.")
+        self.p("VPT is computed from the primary point forecast: the average of complete predictive paths for native probabilistic models, and the deterministic rollout for point-only methods. It is the first lead whose point-forecast spatial RMSE divided by permitted training SD exceeds 0.4, right censored at 100. It is not a distribution or an average of crossing times computed separately for predictive sample paths. This threshold is an experiment convention, not an imported Lyapunov-time scale. Finite divergence is any lead of this point-forecast error above 10 training SD. Nonfinite predictive paths are failures. There is no clipping, hidden fallback, favorable-seed replacement, or dropping of unsuccessful episodes from scheduled denominators. Successful-only summaries are labeled as such.")
 
     def figures(self):
         self.h("7. Figures and predeclared examples", page=True)
@@ -738,6 +945,16 @@ class Writer:
         if external:
             self.h("Validated external resource observations",2)
             self.table(["Watchdog field", "Measured value"],[[k,compact(v)] for k,v in external.items() if k != "jobs"],[220,290])
+        if i.memory_recovery:
+            event=i.memory_recovery; recovery=event.get("recovery",{}); policy=event.get("admission_policy",{})
+            self.h("Recorded memory-admission pause and recovery",2)
+            self.p("After Track A finished, the conservative container-aware memory gate paused scheduling before Track B. The recorded recovery used POSIX_FADV_DONTNEED advice on "+str(recovery.get("files_advised"))+" existing task-owned large files after confirming no live KS workers. The receipt records "+str(recovery.get("files_deleted"))+" deleted files and "+str(recovery.get("file_content_changes"))+" file-content changes. The same frozen configuration and admission rules were then resumed. The recorded memory-event counters show no observed out-of-memory event.")
+            self.table(["Cgroup quantity", "Before advice (MiB)", "After advice (MiB)"],[[name,mib(recovery.get("before",{}).get(key)),mib(recovery.get("after",{}).get(key))] for name,key in (("Container current memory","current"),("File-backed accounting","file"),("Anonymous memory","anon"),("Container limit","limit"))],[220,145,145])
+            self.p(event.get("interpretation",""),"small")
+            self.p(policy.get("timing_note",""),"small")
+            observer=event.get("observer_recovery",{})
+            if observer:
+                self.p("Observer coverage limitation: "+observer.get("limitation","")+" The recovered first-session aggregate has "+str(observer.get("first_session_samples"))+" samples; its full observed-job count is unknown. Retained per-job rows are not presented as a complete census, and missing worker peaks are not reconstructed from unrelated processes.","small")
         if p.get("resources"):
             self.h("Initial measured resources and allocation",2)
             self.table(["Resource/allocation", "Value"],flatten(p["resources"]),[250,260])
@@ -842,6 +1059,12 @@ class Writer:
             self.h(f"Track {track}",2)
             self.table(["Family", "Lead / time", "n / q", "RMSE [95% CI]", "NRMSE", "MAE", "Qualified CRPS [95% CI]"],[
                 [label(r["model"]),f"{r['horizon']} / {number(r.get('elapsed_physical_time',.25*r['horizon']),2)}",f"{r.get('complete_trajectories','-')}/{r.get('qualified_complete_trajectories','-')}",estimate(r,"rmse"),estimate(r,"nrmse",interval=False),estimate(r,"mae",interval=False),estimate(r,"crps")] for r in rows],[110,60,45,90,60,60,95])
+            probability=[r for r in rows if r["model"] in NATIVE]
+            if probability:
+                self.table(["Qualified distribution", "Lead / time", "Qualified n", "90% coverage [95% CI]", "90% width [95% CI]"],[
+                    [label(r["model"]),f"{r['horizon']} / {number(r.get('elapsed_physical_time',.25*r['horizon']),2)}",
+                     r.get('qualified_complete_trajectories','-'),estimate(r,"coverage_0.9"),estimate(r,"width_0.9")]
+                    for r in probability],[145,65,50,125,125])
 
     def references(self):
         self.h("Appendix B. Primary references and provenance",page=True)
@@ -849,7 +1072,8 @@ class Writer:
             self.p(f"[{index}] {title}")
             self.p(f'<link href="{escape(url,quote=True)}" color="#00669c">{escape(url)}</link>',"small",markup=True)
             if code:
-                self.p(f'Author code: <link href="{escape(code,quote=True)}" color="#00669c">{escape(code)}</link>',"small",markup=True)
+                source_label="Author manuscript" if code.endswith(".pdf") else "Author code"
+                self.p(f'{source_label}: <link href="{escape(code,quote=True)}" color="#00669c">{escape(code)}</link>',"small",markup=True)
         self.p("Reference papers motivate implementations and diagnostics; the prepared dataset configuration and frozen protocol govern this experiment. APEBench's ecosystem/solver and the published KS experiments' Lyapunov normalization, training sizes and rankings are not substituted for this application.")
         self.h("Report input receipts",2)
         self.table(["Input", "Bytes", "SHA-256"],[[r["path"],r["bytes"],r["sha256"]] for r in self.i.receipts],[165,60,285])

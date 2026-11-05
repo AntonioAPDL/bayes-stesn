@@ -1,0 +1,143 @@
+{
+  "absent_files": 0,
+  "blockers": [
+    {
+      "error_type": "BlockingIOError",
+      "reason": "scheduler_or_workers_not_verified_quiescent"
+    },
+    {
+      "reason": "writable_descriptor_or_unresolved_descriptor_check"
+    }
+  ],
+  "canonical_verification": [],
+  "cause_assessment": "Not established; no mechanism is inferred from staging filenames or timestamps.",
+  "completed_utc": "2026-11-05T04:07:42.638015+00:00",
+  "considered_existing_files": 7,
+  "deleted_allocated_bytes": 0,
+  "deleted_files": 0,
+  "deleted_logical_bytes": 0,
+  "eligible_files": 0,
+  "eligible_logical_bytes": 0,
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "files": [
+    {
+      "action": "retained",
+      "age_seconds": 7948.494380474091,
+      "allocated_bytes": 124522496,
+      "bytes": 124518400,
+      "fingerprint": [
+        27,
+        795016,
+        124518400,
+        1793843714141801739,
+        1793843716636482511
+      ],
+      "reason": "global_liveness_or_scope_blocker",
+      "relative_path": "incoming/.ks_prepared_v1.tar.gz.TEMAos"
+    },
+    {
+      "action": "retained",
+      "age_seconds": 7925.246542453766,
+      "allocated_bytes": 109318144,
+      "bytes": 109314048,
+      "fingerprint": [
+        27,
+        798422,
+        109314048,
+        1793843737389653749,
+        1793843739915404475
+      ],
+      "reason": "global_liveness_or_scope_blocker",
+      "relative_path": "incoming/.ks_prepared_v1.tar.gz.TEMAos.bolKbc"
+    },
+    {
+      "action": "retained",
+      "age_seconds": 7917.482597112656,
+      "allocated_bytes": 46137344,
+      "bytes": 46137344,
+      "fingerprint": [
+        27,
+        798424,
+        46137344,
+        1793843745153604604,
+        1793843746270661893
+      ],
+      "reason": "global_liveness_or_scope_blocker",
+      "relative_path": "incoming/.ks_prepared_v1.tar.gz.TEMAos.bolKbc.1UaF5e"
+    },
+    {
+      "action": "retained",
+      "age_seconds": 7883.394861459732,
+      "allocated_bytes": 129761280,
+      "bytes": 129761280,
+      "fingerprint": [
+        27,
+        798896,
+        129761280,
+        1793843779241388177,
+        1793843781995548716
+      ],
+      "reason": "global_liveness_or_scope_blocker",
+      "relative_path": "cache/data/ks/exports/.ks_prepared_v1.tar.gz.w7SgB5"
+    },
+    {
+      "action": "retained",
+      "age_seconds": 7871.030944347382,
+      "allocated_bytes": 126353408,
+      "bytes": 126353408,
+      "fingerprint": [
+        27,
+        798899,
+        126353408,
+        1793843791605309549,
+        1793843794349731852
+      ],
+      "reason": "global_liveness_or_scope_blocker",
+      "relative_path": "cache/data/ks/exports/.ks_prepared_v1.tar.gz.w7SgB5.SB6WtX"
+    },
+    {
+      "action": "retained",
+      "age_seconds": 5272.308909416199,
+      "allocated_bytes": 14155776,
+      "bytes": 14155776,
+      "fingerprint": [
+        27,
+        1050180,
+        14155776,
+        1793846390327372706,
+        1793846390957913863
+      ],
+      "reason": "global_liveness_or_scope_blocker",
+      "relative_path": "deliverables/.ks_validation_checkpoint_01.zip.7ZgKug"
+    },
+    {
+      "action": "retained",
+      "age_seconds": 5279.680865287781,
+      "allocated_bytes": 119017472,
+      "bytes": 119013376,
+      "fingerprint": [
+        27,
+        1050997,
+        119013376,
+        1793846382955420385,
+        1793846385428060406
+      ],
+      "reason": "global_liveness_or_scope_blocker",
+      "relative_path": "deliverables/.ks_validation_checkpoint_01.zip.tmp.BzkMur"
+    }
+  ],
+  "liveness_limitation": "Actual visible outer processes and descriptors are inspected. Relevant transfers or synchronization writers outside this view must already have finished.",
+  "minimum_age_seconds": 60.0,
+  "mode": "dry-run",
+  "policy_sha256": "69921d26b83c76eb2e8c486a1308c8670ee79995b409b1230d240673e934ff6f",
+  "recorded_file_count": 7,
+  "retained_files": 7,
+  "schema": "ks-archive-staging-cleanup/1",
+  "scope": "Seven exact recorded filenames only; canonical archives/checkpoints, raw data, fit/chain/phase states and all other files are protected.",
+  "started_utc": "2026-11-05T04:07:42.627277+00:00",
+  "state": "blocked",
+  "tool_sha256": "cbd77dbe8bd5a183fb89a1259928143dabe5d793686c7d78ddc54a80ffe803dc",
+  "unknown_staging_files_retained": [],
+  "unresolved_descriptor_checks": 198,
+  "writable_descriptors": []
+}

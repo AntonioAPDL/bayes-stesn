@@ -1,0 +1,61 @@
+{
+  "checks": [
+    {
+      "complete_trajectories": 17,
+      "failed_rollout_origins": 4,
+      "finite_divergent_origins": 2,
+      "finite_origins_in_main_score_population": 340,
+      "finite_successful_origins": 396,
+      "full_schedule_point_accuracy_defined": false,
+      "name": "full_schedule_known_answer",
+      "other_finite_origins_retained_in_census": 56,
+      "severe_rollout_union": 6
+    },
+    {
+      "bootstrap_interval_with_pending": null,
+      "failed_fit_placeholders": 20,
+      "failure_frequency_identified_bounds": [
+        0.25,
+        0.725
+      ],
+      "name": "pending_vs_failed_fit",
+      "observed_failed_rollouts": 0,
+      "observed_finite_origins": 22,
+      "pending_origins": 38,
+      "scheduled_origins": 80
+    },
+    {
+      "changed_origin_receipt_rejected": true,
+      "name": "stale_episode_summary",
+      "summary_recomputed_or_repaired": false
+    }
+  ],
+  "generated_utc": "2026-11-05T04:03:53.379104+00:00",
+  "model_fit_or_forecast_performed": false,
+  "numerical_model_or_configuration_modified": false,
+  "pdf_dependency_required": false,
+  "production_inputs_read": false,
+  "raw_junit_sha256": "e0240d7efe597630ad194014eaa5c471edf07f2825a240e40323c158fee27a1f",
+  "reproduce": "python -m pytest -q tests/test_ks_report_reliability.py",
+  "schema": "ks-report-reliability-acceptance/1",
+  "scope": "Report-only synthetic regression tests; no production dataset, fit, forecast or result receipts were read.",
+  "sources": [
+    {
+      "path": "src/bayes_stesn/applications/ks_report.py",
+      "sha256": "c58534b1b7d5fcf0ac79b8c19b74b33931bca04ed674dc81e4ae5ff1d5d85141"
+    },
+    {
+      "path": "tests/test_ks_report_reliability.py",
+      "sha256": "decb503385a990c5ba12d337b918072689ff25448d4ce18d97c078ce0bdbe17d"
+    }
+  ],
+  "status": "passed",
+  "synthetic_only": true,
+  "tests": {
+    "elapsed_seconds": 0.879,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 3
+  }
+}

@@ -1,4 +1,14 @@
 {
+  "combined_acceptance_run": {
+    "failures": 0,
+    "seconds": 0.55,
+    "test_files": [
+      "tests/test_ks_cache_advice.py",
+      "tests/test_ks_resource_observer.py",
+      "tests/test_ks_package.py"
+    ],
+    "tests": 10
+  },
   "core_test_labels_opened": false,
   "coverage": [
     "Streaming binary part boundaries and full verified round trip",
@@ -9,22 +19,23 @@
     "Traversal paths rejected before extraction",
     "Source/cache/staging/locks/symlinks excluded",
     "Active scheduler/worker refusal",
-    "Archived absolute job paths preserved without rewriting"
+    "Archived absolute job paths preserved without rewriting",
+    "Durable observer session histories included in verified round trip"
   ],
   "errors": 0,
   "failures": 0,
   "final_results_packaged": false,
   "fixture": "Synthetic complete results only; random regular-file payload; no KS model fitting or scientific results.",
   "numerical_source_or_configuration_changed": false,
-  "recorded_utc": "2026-11-05T03:22:56.054167+00:00",
+  "recorded_utc": "2026-11-05T03:59:57.715693+00:00",
   "schema": "ks-results-package-acceptance-1",
   "skipped": 0,
   "source_sha256": {
     "docs/applications/ks_backup_and_restore.md": "8f0533e6ee3c767bfc958fe1c0243243f264dff2a265e51df91ee95daaa63ec4",
-    "tests/test_ks_package.py": "68749d72e84fb399c8664754a2f08fed006ee5660dcbd2c2f829b79a0f604a61",
-    "tools/package_ks_results.py": "11211b34c580d6f797293e204adefd865af1987abf46d502f7c79d8f31da4f37"
+    "tests/test_ks_package.py": "a4f220759de852f96d2ed1fd1b52e4aea4cab079dbd9d6f2276da2db222f4fdd",
+    "tools/package_ks_results.py": "c4254135766169c19673027c584e0345854d2d105f6a495f791c9c9303089049"
   },
   "status": "tool_ready_final_study_not_packaged",
-  "test_seconds": 0.568,
+  "test_seconds": null,
   "tests": 4
 }

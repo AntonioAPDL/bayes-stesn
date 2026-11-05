@@ -19,6 +19,7 @@ import argparse
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 import hashlib
+import importlib.util
 import json
 import math
 import os
@@ -390,7 +391,7 @@ def collect(results, *, repo, workspace=None, published_commit=None, local_revis
     preflight = read(preflight_path) if preflight_path.exists() else None
     extra_acceptance = {}
     for name in ("ks_core_candidate_invariance.json", "ks_validation_audit_early.json", "ks_validation_promotion_A_audit.json",
-                 "ks_contiguous_history_check.json"):
+                 "ks_contiguous_history_check.json", "ks_memory_recovery_20261105.json"):
         path = repo/"docs/applications/evidence"/name
         if path.exists():
             value = read(path)
@@ -402,13 +403,23 @@ def collect(results, *, repo, workspace=None, published_commit=None, local_revis
                 raise ValueError("Additional acceptance evidence belongs to another experiment")
             extra_acceptance[name.removesuffix(".json")] = value
     external = None
-    path = results/"external_resources.json"
-    if path.exists():
-        raw = read(path)
+    observer_path = repo/"tools/watch_ks_resources.py"
+    observer_spec = importlib.util.spec_from_file_location("ks_reporting_observer", observer_path)
+    observer = importlib.util.module_from_spec(observer_spec)
+    observer_spec.loader.exec_module(observer)
+    records = observer.read_session_records(results, read=read)
+    if records:
+        if any(row.get("experiment_identity", experiment["identity"]) != experiment["identity"] for row in records):
+            raise ValueError("Observer session belongs to another experiment")
+        raw = observer.merge_sessions(records)
         external = {key: raw.get(key) for key in ("started_utc", "last_observed_utc", "status", "samples",
-            "combined_worker_rss_peak_bytes", "disk_free_min_bytes", "container_current_peak_bytes", "original_attempt_rss_valid")}
+            "combined_worker_rss_peak_bytes", "disk_free_min_bytes", "container_current_peak_bytes", "original_attempt_rss_valid",
+            "session_count", "sessions", "coverage_gaps", "retained_job_rows")}
         external["method"] = "exact absolute --job path matched in outer proc cmdline; same-entry VmRSS/VmHWM"
-        external["scope"] = "partial observation period beginning after campaign launch; earlier jobs have only fit-receipt RUSAGE_SELF peaks; container memory includes unrelated processes"
+        external["scope"] = ("Partial observation period beginning after campaign launch. Distinct session aggregates are merged by maxima and disk minima; "
+            "samples are summed only across distinct sessions. Missing per-job rows remain unavailable and use fit-receipt RUSAGE_SELF evidence; "
+            "retained_job_rows and observed_jobs count actual retained rows, not all jobs observed in sessions with incomplete records. "
+            "Container memory includes unrelated processes.")
         external["alerts_count"] = len(raw.get("alerts", []))
         external["jobs"] = {job: {key: value.get(key) for key in ("model", "track", "stage", "first_seen_utc", "last_seen_utc", "peak_rss_bytes", "peak_hwm_bytes")}
                             for job, value in raw.get("jobs", {}).items()}

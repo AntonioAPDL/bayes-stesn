@@ -47,6 +47,7 @@ def results(tmp_path, monkeypatch):
         "rows": [{"track": track, "pending_fits": 0, "pending_origins": 0} for track in ("A", "B")]})
     package_tool.atomic_json(root/"ledger"/"finished.json", {"state": "complete"})
     package_tool.atomic_json(root/"jobs"/"finished.json", {"output": str(root), "cache": "/synthetic/original/cache"})
+    package_tool.atomic_json(root/"observer_sessions"/"session_synthetic.json", {"samples": 12, "jobs": {}})
     (root/"reports").mkdir(); (root/"reports"/"report.md").write_text("Synthetic backup acceptance fixture only.\n")
     (root/"cache").mkdir(); (root/"cache"/"must_not_package.bin").write_bytes(b"outside study results")
     external = tmp_path/"external.bin"; external.write_bytes(b"not included")
@@ -72,6 +73,7 @@ def test_streamed_multipart_roundtrip_and_no_overwrite(results, backup):
     names = {r["name"] for r in manifest["members"]}
     assert not any(".bstesn-" in name or name.endswith(".lock") for name in names)
     assert "external_link" not in names and "cache/must_not_package.bin" not in names
+    assert "observer_sessions/session_synthetic.json" in names
     restored = results.parent/"restored"
     receipt = package_tool.restore(backup, restored)
     assert receipt["state"] == "complete_verified"

@@ -267,6 +267,286 @@ def matched_seed_sensitivity(episodes, frozen, *, episode_results_sha256, bootst
     return result
 
 
+RELIABILITY_COUNTS = (
+    "scheduled_origins", "observed_origins", "finite_successful_origins", "finite_divergent_origins",
+    "failed_rollout_origins", "fit_failure_placeholder_origins", "failed_origins", "pending_origins",
+    "severe_rollout_origins", "failure_or_divergence_origins", "qualified_successful_origins",
+    "inference_unqualified_successful_origins", "inference_unqualified_observed_origins",
+    "inference_unqualified_scheduled_origins", "finite_successful_origins_in_score_population",
+    "finite_successful_origins_excluded_incomplete_trajectories",
+)
+
+
+def _json_identity(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+
+
+def _reliability_schedule(frozen):
+    schedule = []
+    for track in ("A", "B", "C"):
+        selected = frozen["selected"]["A" if track == "C" else track]
+        for model in ORDER:
+            if model not in selected or (track == "C" and model not in frozen["robustness_methods"]):
+                continue
+            seeds = [frozen["model_seed"]] + (frozen["sensitivity_seeds"] if model in STOCHASTIC and track != "C" else [])
+            for seed in seeds:
+                trajectories = frozen["test_trajectories"] if seed == frozen["model_seed"] else frozen["sensitivity_trajectories"]
+                for trajectory in trajectories:
+                    schedule.append((track, model, seed, trajectory))
+    if len(set(schedule)) != len(schedule):
+        raise ValueError("Duplicate scheduled episode in reliability census")
+    return schedule
+
+
+def summarize_reliability(trajectories, frozen, *, source_manifest, episode_results_sha256, freeze_sha256,
+                          bootstrap_seed=20261105, resamples=2000):
+    """Report full-schedule incidence without changing complete-case accuracy.
+
+    Each input is a compact, validated trajectory census produced from saved
+    receipts. A failed fit blocks scheduled forecasts but is not called an
+    observed nonfinite rollout. Pending outcomes have identified frequency
+    bounds and no inferential interval; they are never treated as successes.
+    """
+    from .ks_metrics import cluster_summary
+
+    indexed = {}
+    for episode in trajectories:
+        key = tuple(episode[k] for k in ("track", "model", "seed", "trajectory"))
+        if key in indexed:
+            raise ValueError("Duplicate trajectory in reliability census")
+        for name in RELIABILITY_COUNTS:
+            value = episode[name]
+            if isinstance(value, bool) or not isinstance(value, (int, np.integer)) or value < 0:
+                raise ValueError("Reliability counts must be nonnegative integers")
+        n = episode["scheduled_origins"]
+        if (n != len(frozen["test_origins"]) or
+                episode["finite_successful_origins"]+episode["failed_origins"]+episode["pending_origins"] != n or
+                episode["failed_origins"] != episode["failed_rollout_origins"]+episode["fit_failure_placeholder_origins"] or
+                episode["observed_origins"] != episode["finite_successful_origins"]+episode["failed_rollout_origins"] or
+                episode["finite_divergent_origins"] > episode["finite_successful_origins"] or
+                episode["severe_rollout_origins"] != episode["finite_divergent_origins"]+episode["failed_rollout_origins"] or
+                episode["failure_or_divergence_origins"] != episode["finite_divergent_origins"]+episode["failed_origins"] or
+                episode["qualified_successful_origins"]+episode["inference_unqualified_successful_origins"] != episode["finite_successful_origins"]):
+            raise ValueError("Reliability outcomes do not exhaust their declared schedule")
+        complete = episode["finite_successful_origins"] == n
+        qualified_complete = complete and episode["qualified_successful_origins"] == n
+        if episode["complete"] != complete or episode["qualified_complete"] != qualified_complete:
+            raise ValueError("Reliability complete-episode eligibility is inconsistent")
+        included = n if complete else 0
+        if (episode["finite_successful_origins_in_score_population"] != included or
+                episode["finite_successful_origins_excluded_incomplete_trajectories"] != episode["finite_successful_origins"]-included):
+            raise ValueError("Reliability and complete-case accuracy populations disagree")
+        indexed[key] = episode
+    schedule = _reliability_schedule(frozen)
+    if set(indexed) != set(schedule):
+        raise ValueError("Reliability census must retain every frozen scheduled episode")
+    ordered = [indexed[key] for key in schedule]
+    groups = {}
+    for episode in ordered:
+        groups.setdefault((episode["track"], episode["model"], episode["seed"]), []).append(episode)
+    rows = []
+    frequency_events = {"failure_fraction": "failed_origins", "finite_divergence_fraction": "finite_divergent_origins",
+                        "severe_rollout_fraction": "severe_rollout_origins", "failure_or_divergence_fraction": "failure_or_divergence_origins"}
+    for (track, model, seed), values in groups.items():
+        candidate = frozen["selected"]["A" if track == "C" else track][model]
+        row = {"track": track, "model": model, "seed": seed, "selection_eligible": bool(candidate["selection_eligible"]),
+               "selected_config": candidate["id"], "scheduled_trajectories": len(values),
+               "complete_trajectories": sum(value["complete"] for value in values),
+               "qualified_complete_trajectories": sum(value["qualified_complete"] for value in values),
+               **{name: sum(value[name] for value in values) for name in RELIABILITY_COUNTS}}
+        row["inference_unqualified_complete_trajectories"] = row["complete_trajectories"]-row["qualified_complete_trajectories"]
+        row["fit_state_counts"] = {state: sum(value["fit_state"] == state for value in values)
+                                   for state in ("complete", "inference-unqualified", "failed", "pending")}
+        row["failure_type_counts"] = {}
+        for value in values:
+            for failure_type, count in value["failure_type_counts"].items():
+                row["failure_type_counts"][failure_type] = row["failure_type_counts"].get(failure_type, 0)+count
+        full = row["finite_successful_origins"] == row["scheduled_origins"]
+        row["full_schedule_point_score_defined"] = full
+        row["full_schedule_point_score_undefined_reason"] = None if full else "At least one scheduled origin failed or remains pending; no forecast clipping, imputation or finite-subset score is substituted for full-schedule accuracy."
+        row["full_schedule_probability_score_defined"] = (full and row["qualified_complete_trajectories"] == len(values)) if model in NATIVE else None
+        for name, event in frequency_events.items():
+            count, denominator, pending = row[event], row["scheduled_origins"], row["pending_origins"]
+            estimate = (cluster_summary([value[event]/value["scheduled_origins"] for value in values], seed=bootstrap_seed, resamples=resamples)
+                        if pending == 0 else {"n": len(values), "mean": count/denominator, "ci95": None,
+                                             "between_trajectory_standard_error": None,
+                                             "method": "Observed incident lower bound; no bootstrap interval with unresolved origins"})
+            estimate.update(known_count=count, scheduled_origins=denominator, pending_origins=pending,
+                            identified_bounds=[count/denominator, (count+pending)/denominator],
+                            status="terminal_schedule" if pending == 0 else "observed_lower_bound_with_pending")
+            row[name] = estimate
+        rows.append(row)
+    manifest = sorted(source_manifest, key=lambda receipt: receipt["path"])
+    if len({item["path"] for item in manifest}) != len(manifest):
+        raise ValueError("Duplicate source receipt path in reliability provenance")
+    result = {"schema": "ks-reliability-census/1", "freeze_identity": frozen["identity"], "freeze_sha256": freeze_sha256,
+              "experiment_identity": frozen["experiment_identity"], "source_episode_results_sha256": episode_results_sha256,
+              "source_manifest": manifest, "source_manifest_sha256": _json_identity(manifest),
+              "rows": rows, "trajectories": ordered,
+              "bootstrap": {"unit": "trajectory", "seed": int(bootstrap_seed), "resamples": int(resamples),
+                            "scope": "conditional on selected configurations; all scheduled origins retained per trajectory; no interval with pending outcomes or fewer than two trajectories"},
+              "definitions": {
+                  "finite_successful_origins": "Saved complete origin receipts with finite 100-lead point losses, including very large finite losses.",
+                  "finite_divergent_origins": "Subset of finite successful origins whose saved spatial RMSE/training SD exceeds 10 at any lead; saved flag verified against saved lead losses.",
+                  "failed_rollout_origins": "Observed failed forecast receipts caused by nonfinite or numerical failure; no score imputation.",
+                  "fit_failure_placeholder_origins": "Scheduled origins blocked by a failed fit, without an observed rollout; distinct from nonfinite forecast failures.",
+                  "severe_rollout_origins": "Disjoint union of finite-divergent successful rollouts and observed failed rollouts, over all scheduled origins.",
+                  "failure_or_divergence_origins": "Severe rollouts plus fit-failure placeholders; pending origins remain separate.",
+                  "pending_origins": "No forecast receipt and no failed fit; unresolved, not classified as successful or failed.",
+                  "inference_unqualified_successful_origins": "Finite successful receipts with an inference-unqualified fit; point outputs remain diagnostic and do not qualify a predictive distribution.",
+                  "score_population": "Unchanged main accuracy rule: only trajectories with every scheduled origin finite. Successful origins on incomplete trajectories remain in this reliability census but not in main accuracy estimates.",
+                  "frequency_uncertainty": "Trajectory-cluster percentile bootstrap for terminal schedules. With pending origins, known events/scheduled origins is only an observed lower bound; identified_bounds includes all possible unresolved outcomes and CI is null.",
+              }, "model_fit_or_forecast_performed": False, "main_score_population_changed": False}
+    result["identity"] = _json_identity(result)
+    return result
+
+
+def collect_reliability_census(results, frozen, experiment, episodes, *, episode_results_sha256, freeze_sha256):
+    """Read existing job/fit/origin receipts only; never load data or a model."""
+    from .ks_runner import forecast_key, forecast_path
+
+    results = Path(results).resolve()
+    sources = {}
+
+    def read(path, kind):
+        value, receipt = _read_json(path)
+        relative = str(path.relative_to(results))
+        sources[relative] = {"path": relative, "kind": kind, "bytes": receipt["bytes"], "sha256": receipt["sha256"]}
+        return value
+
+    if read(results/"freeze.json", "freeze") != frozen or sources["freeze.json"]["sha256"] != freeze_sha256:
+        raise ValueError("Frozen input changed during reliability reporting")
+    if read(results/"experiment.json", "experiment") != experiment:
+        raise ValueError("Experiment input changed during reliability reporting")
+    if (read(results/"episode_results.json", "episode_summary") != episodes or
+            sources["episode_results.json"]["sha256"] != episode_results_sha256):
+        raise ValueError("Episode input changed during reliability reporting")
+    access = read(results/"test_access.json", "test_access_gate")
+    if access.get("freeze_identity") != frozen["identity"] or not access.get("both_track_selection_complete"):
+        raise ValueError("Reliability census requires the completed matching test-access gate")
+    if experiment["identity"] != frozen["experiment_identity"]:
+        raise ValueError("Reliability experiment and freeze differ")
+    expected = set(_reliability_schedule(frozen))
+    by_episode = {tuple(value[k] for k in ("track", "model", "seed", "trajectory")): value for value in episodes}
+    if len(by_episode) != len(episodes) or set(by_episode) != expected:
+        raise ValueError("Episode summary does not exhaust the frozen reliability schedule")
+    fits, test_jobs = {}, {}
+    for path in sorted((results/"jobs").glob("*.json")):
+        value, receipt = _read_json(path)
+        key = tuple(value[k] for k in ("track", "model", "seed", "trajectory"))
+        if value.get("phase") != "core" or key not in expected:
+            continue
+        track, model, _, _ = key
+        candidate = frozen["selected"]["A" if track == "C" else track][model]
+        if value["config_id"] != candidate["id"] or value["config"] != candidate["config"]:
+            if value["partition"] == "test":
+                raise ValueError("Unselected configuration encountered in test reliability receipts")
+            continue
+        if value["experiment_identity"] != experiment["identity"] or value["source"] != frozen["source"]:
+            raise ValueError("Reliability job belongs to another numerical experiment")
+        if key in fits and fits[key] != value["fit_id"]:
+            raise ValueError("Multiple fitted identities for one frozen reliability episode")
+        fits[key] = value["fit_id"]
+        sources[str(path.relative_to(results))] = {"path": str(path.relative_to(results)), "kind": "job",
+                                                  "bytes": receipt["bytes"], "sha256": receipt["sha256"]}
+        if value["partition"] != "test":
+            continue
+        if (value["origins"] != frozen["test_origins"] or value["history"] != frozen["history"] or
+                value["horizon"] != frozen["horizon"] or value["paths"] != frozen["paths"] or
+                value["forecast_seed"] != experiment["config"]["forecast_seed"]):
+            raise ValueError("Reliability test job differs from frozen schedule or randomness")
+        if key in test_jobs:
+            previous = test_jobs[key]
+            if any(value[name] != previous[name] for name in ("fit_id", "origins", "history", "horizon", "paths", "forecast_seed")):
+                raise ValueError("Conflicting test jobs for one reliability episode")
+        test_jobs[key] = value
+    trajectory_rows = []
+    for key in _reliability_schedule(frozen):
+        track, model, seed, trajectory = key
+        fit_id, job = fits.get(key), test_jobs.get(key)
+        fit = None
+        if fit_id is not None:
+            path = results/"fits"/fit_id/"receipt.json"
+            if path.exists():
+                fit = read(path, "fit")
+                candidate = frozen["selected"]["A" if track == "C" else track][model]
+                if (fit["identity"] != fit_id or tuple(fit[name] for name in ("track", "model", "seed", "trajectory")) != key or
+                        fit["phase"] != "core" or fit["config"] != candidate["config"]):
+                    raise ValueError("Reliability fit receipt is incompatible with the selected episode")
+                if fit["state"] not in ("complete", "inference-unqualified", "failed"):
+                    raise ValueError("Unknown retained fit state in reliability census")
+        fit_state = "pending" if fit is None else fit["state"]
+        row = {"track": track, "model": model, "seed": seed, "trajectory": trajectory, "fit_id": fit_id,
+               "fit_state": fit_state, **{name: 0 for name in RELIABILITY_COUNTS}, "failure_type_counts": {},
+               "finite_divergent_first_targets": [], "failed_rollout_first_targets": [],
+               "fit_failure_placeholder_first_targets": [], "pending_first_targets": [],
+               "inference_unqualified_successful_first_targets": []}
+        row["scheduled_origins"] = len(frozen["test_origins"])
+        row["inference_unqualified_scheduled_origins"] = row["scheduled_origins"] if fit_state == "inference-unqualified" else 0
+        for origin in frozen["test_origins"]:
+            path = forecast_path(results, job, origin) if job is not None else None
+            if path is None or not path.exists():
+                outcome = "fit_failure_placeholder" if fit_state == "failed" else "pending"
+                row[outcome+"_origins"] += 1
+                row[outcome+"_first_targets"].append(origin)
+                continue
+            receipt = read(path, "forecast_origin")
+            if (fit is None or fit_state == "failed" or receipt["identity"] != forecast_key(job, origin) or
+                    receipt["fit_id"] != fit_id or tuple(receipt[name] for name in ("track", "model", "seed", "trajectory")) != key or
+                    receipt["phase"] != "core" or receipt["partition"] != "test" or receipt["first_target"] != origin or
+                    receipt["history"] != frozen["history"] or receipt["horizon"] != frozen["horizon"] or
+                    receipt["config_id"] != job["config_id"] or
+                    receipt["scheduled_paths"] != (frozen["paths"] if model in NATIVE else 0)):
+                raise ValueError("Reliability forecast receipt differs from its frozen job or retained fit")
+            qualified = receipt["qualified"]
+            if not isinstance(qualified, bool) or qualified != (fit_state == "complete"):
+                raise ValueError("Forecast and fit qualification disagree in reliability census")
+            row["observed_origins"] += 1
+            row["inference_unqualified_observed_origins"] += not qualified
+            if receipt["state"] == "complete":
+                scores = receipt["scores"]
+                lead_rmse = np.asarray(scores["rmse_by_horizon"], dtype=np.float64)
+                scale = float(receipt["training_scale"])
+                if lead_rmse.shape != (frozen["horizon"],) or not np.isfinite(lead_rmse).all() or np.any(lead_rmse < 0) or not np.isfinite(scale) or scale <= 0:
+                    raise ValueError("Complete reliability receipt lacks finite physical lead losses")
+                diverged = bool(np.any(lead_rmse/scale > 10.))
+                if not isinstance(scores["diverged"], bool) or scores["diverged"] != diverged:
+                    raise ValueError("Saved finite-divergence flag disagrees with saved normalized lead losses")
+                row["finite_successful_origins"] += 1
+                row["qualified_successful_origins"] += qualified
+                row["inference_unqualified_successful_origins"] += not qualified
+                if not qualified:
+                    row["inference_unqualified_successful_first_targets"].append(origin)
+                if diverged:
+                    row["finite_divergent_origins"] += 1
+                    row["finite_divergent_first_targets"].append(origin)
+            elif receipt["state"] == "failed":
+                row["failed_rollout_origins"] += 1
+                row["failed_rollout_first_targets"].append(origin)
+                error = receipt.get("error", "")
+                failure_type = ("floating_point_or_nonfinite" if error.startswith("FloatingPointError(") else
+                                "linear_algebra" if error.startswith("LinAlgError(") else
+                                "nonfinite_forecast_validation" if error.startswith("ValueError(") else "other_recorded_numerical_failure")
+                row["failure_type_counts"][failure_type] = row["failure_type_counts"].get(failure_type, 0)+1
+            else:
+                raise ValueError("Unexpected forecast state in reliability census")
+        row["failed_origins"] = row["failed_rollout_origins"]+row["fit_failure_placeholder_origins"]
+        row["severe_rollout_origins"] = row["finite_divergent_origins"]+row["failed_rollout_origins"]
+        row["failure_or_divergence_origins"] = row["finite_divergent_origins"]+row["failed_origins"]
+        row["complete"] = row["finite_successful_origins"] == row["scheduled_origins"]
+        row["qualified_complete"] = row["complete"] and row["qualified_successful_origins"] == row["scheduled_origins"]
+        row["finite_successful_origins_in_score_population"] = row["scheduled_origins"] if row["complete"] else 0
+        row["finite_successful_origins_excluded_incomplete_trajectories"] = row["finite_successful_origins"]-row["finite_successful_origins_in_score_population"]
+        summary = by_episode[key]
+        if (summary["successful_origins"] != row["finite_successful_origins"] or summary["failed_origins"] != row["failed_origins"] or
+                summary["pending_origins"] != row["pending_origins"] or
+                bool(summary["qualified"]) != (row["finite_successful_origins"] > 0 and row["qualified_successful_origins"] == row["finite_successful_origins"])):
+            raise ValueError("Origin receipts changed since episode summary; regenerate a coherent summary before reporting")
+        trajectory_rows.append(row)
+    return summarize_reliability(trajectory_rows, frozen, source_manifest=list(sources.values()),
+                                 episode_results_sha256=episode_results_sha256, freeze_sha256=freeze_sha256)
+
+
 @dataclass
 class Example:
     track: str
@@ -301,6 +581,7 @@ class Report:
                                            if receipt["name"] == "episode_results.json")
         self.curves = objects["horizon_curves.json"]
         self.frozen = objects["freeze.json"]
+        self.freeze_sha256 = next(receipt["sha256"] for receipt in self.input_receipts if receipt["name"] == "freeze.json")
         if self.summary.get("freeze_identity") != self.frozen.get("identity"):
             raise ValueError("Summary and frozen selection identities differ")
         self.experiment = objects["experiment.json"]
@@ -451,38 +732,80 @@ class Report:
         finite = np.concatenate([np.asarray(value).ravel() for value in arrays]) if arrays else np.empty(0)
         positive = finite[finite > 0]
         if len(positive) and positive.max() > max(10., 25*float(np.median(positive))):
-            threshold = max(.1, float(np.median(positive)))
-            axis.set_yscale("symlog", linthresh=threshold)
-            axis.set_ylabel(axis.get_ylabel() + "\n(symmetric log scale)")
+            if len(positive) == len(finite):
+                axis.set_yscale("log")
+                axis.set_ylabel(axis.get_ylabel() + "\n(log scale; all values retained)")
+            else:
+                threshold = max(.1, float(np.median(positive)))
+                axis.set_yscale("symlog", linthresh=threshold)
+                axis.set_ylabel(axis.get_ylabel() + "\n(symmetric log scale)")
+
+    @staticmethod
+    def _extreme_display_models(estimates):
+        """Choose an additional readable view, never a scoring population."""
+        peaks = {}
+        for model, estimate in estimates.items():
+            if estimate is None:
+                continue
+            values = [np.asarray(estimate["mean"], dtype=np.float64).reshape(-1)]
+            if estimate.get("ci95") is not None:
+                values.append(np.asarray(estimate["ci95"], dtype=np.float64).reshape(-1))
+            peaks[model] = float(np.max(np.concatenate(values)))
+        positive = [value for value in peaks.values() if value > 0]
+        if len(positive) < 3:
+            return set()
+        threshold = max(10., 100.*float(np.median(positive)))
+        return {model for model, value in peaks.items() if value > threshold}
 
     def error_curves(self, plt):
         for track in ("A", "B", "C"):
             models = [row["model"] for row in _ordered(self.primary_rows) if row["track"] == track]
-            figure, axes = plt.subplots(1, 2, figsize=(11, 5.2))
-            shown = False
-            for axis, metric, label in zip(axes, ("rmse", "nrmse"), ("RMSE (physical field units)", "RMSE / permitted training SD")):
-                arrays = []
-                for model in models:
-                    result = self.curve(track, model, metric)
-                    if result is not None:
-                        self._line(axis, result, model)
-                        arrays.append(result["mean"]); shown = True
-                axis.set_ylabel(label)
-                self._lead_axes(axis)
-                self._optional_symlog(axis, arrays)
-            axes[1].axhline(.4, color="#333333", linestyle="--", linewidth=.8)
-            axes[1].text(.98, .02, "VPT threshold = 0.4", transform=axes[1].transAxes, ha="right", fontsize=8)
-            if shown:
-                handles, labels = axes[0].get_legend_handles_labels()
-                figure.legend(handles, labels, loc="lower center", ncol=3, fontsize=7.5, frameon=False)
-                figure.subplots_adjust(left=.08, right=.98, bottom=.27, top=.78, wspace=.28)
-                figure.suptitle(f"{TRACKS[track]} · point error by lead", y=.99)
-                self._save_figure(figure, f"error_horizon_{track}", f"{TRACKS[track]}: point error",
-                    "Equal trajectory means, with pointwise 95% trajectory-cluster bootstrap bands. "
-                    "n is the number of complete trajectories; q is the qualified count for native probabilistic fits. "
-                    "Point curves include complete unqualified cases as labeled diagnostics; probability curves use qualified cases only. "
-                    "The horizontal 0.4 line is the prespecified VPT convention, not a Lyapunov normalization.", track)
-            plt.close(figure)
+            extreme = self._extreme_display_models({model: self.curve(track, model, "rmse") for model in models})
+            views = [(False, models)] + ([(True, [model for model in models if model not in extreme])] if extreme else [])
+            for companion, view_models in views:
+                figure, axes = plt.subplots(1, 2, figsize=(11, 5.4))
+                shown = False
+                for axis, metric, label in zip(axes, ("rmse", "nrmse"), ("RMSE (physical field units)", "RMSE / permitted training SD")):
+                    arrays = []
+                    for model in view_models:
+                        result = self.curve(track, model, metric)
+                        if result is not None:
+                            self._line(axis, result, model)
+                            arrays.append(result["mean"])
+                            if result["ci95"] is not None:
+                                arrays.append(result["ci95"])
+                            shown = True
+                    axis.set_ylabel(label); self._lead_axes(axis); self._optional_symlog(axis, arrays)
+                    if arrays and axis.get_yscale() != "log":
+                        axis.set_ylim(bottom=0)
+                axes[1].axhline(.4, color="#333333", linestyle="--", linewidth=.8)
+                axes[1].text(.98, .02, "VPT threshold = 0.4", transform=axes[1].transAxes, ha="right", fontsize=8)
+                if shown:
+                    handles, labels = axes[0].get_legend_handles_labels()
+                    figure.legend(handles, labels, loc="lower center", ncol=3, fontsize=7.5, frameon=False)
+                    figure.subplots_adjust(left=.08, right=.98, bottom=.27, top=.74, wspace=.28)
+                    names = ", ".join(LABELS[model] for model in ORDER if model in extreme)
+                    if companion:
+                        heading = f"{TRACKS[track]} · readable companion for other methods"
+                        note = "Separate full-range figure retains all values for: " + names
+                    else:
+                        heading = f"{TRACKS[track]} · full-range point error by lead"
+                        note = "All finite losses retained; accuracy uses complete trajectories (see full-schedule reliability census)."
+                    figure.suptitle(heading, y=.99, fontsize=12)
+                    figure.text(.5, .91, note, ha="center", fontsize=8)
+                    caption = ("Equal trajectory means, with pointwise 95% trajectory-cluster bootstrap bands. "
+                        "n is the number of complete trajectories; q is the qualified count for native probabilistic fits. "
+                        "Point curves include complete unqualified cases as labeled diagnostics; probability curves use qualified cases only. "
+                        "The horizontal 0.4 line is the prespecified VPT convention, not a Lyapunov normalization. ")
+                    if companion:
+                        caption += ("This additional display shows the other methods on a readable scale. " + names +
+                            " remains in the separate full-range figure and every numeric table, with its original losses and intervals unchanged. "
+                            "The display-only rule separates a method when its maximum mean/interval exceeds both 10 and 100 times the median model maximum. No model, trajectory or origin is removed from the study's score population.")
+                    else:
+                        caption += "All methods with eligible curves appear here, including extreme finite losses; nonfinite failures remain in the separate full-schedule census."
+                    suffix = f"error_horizon_comparison_{track}" if companion else f"error_horizon_{track}"
+                    self._save_figure(figure, suffix, heading, caption, track)
+                plt.close(figure)
 
     def probability_curves(self, plt):
         for track in ("A", "B", "C"):
@@ -611,34 +934,58 @@ class Report:
             plt.close(figure)
 
     def compute_plot(self, plt):
-        figure, axes = plt.subplots(1, 2, figsize=(11.4, 4.8))
-        shown = False
-        for axis, track in zip(axes, ("A", "B")):
-            for j, row in enumerate(_ordered([r for r in self.primary_rows if r["track"] == track])):
-                estimate = row.get("rmse", {})
-                seconds = float(row.get("fit_seconds", 0))
-                if estimate.get("mean") is None or seconds <= 0:
-                    continue
-                model = row["model"]; mean = float(estimate["mean"])
-                axis.scatter(seconds, mean, color=COLORS.get(model), s=42, zorder=3)
-                if estimate.get("ci95") is not None:
-                    axis.vlines(seconds, *estimate["ci95"], color=COLORS.get(model), linewidth=1.3)
-                axis.annotate(f"{LABELS.get(model, model)}\nn={estimate['n']}", (seconds, mean),
-                              xytext=(7, 5 if j % 2 == 0 else -17), textcoords="offset points", fontsize=7)
-                shown = True
-            axis.set_xscale("log"); axis.set_xlabel("Total selected-fit wall time (seconds; log scale)")
-            axis.set_ylabel("Trajectory-mean RMSE (physical units)")
-            axis.set_title(TRACKS[track]); axis.grid(alpha=.18)
-            axis.margins(x=.25, y=.25)
-        if shown:
-            figure.suptitle("Predictive accuracy versus recorded fitting cost", fontsize=12)
-            figure.subplots_adjust(left=.08, right=.95, bottom=.17, top=.85, wspace=.3)
-            self._save_figure(figure, "accuracy_compute", "Accuracy versus fitting cost",
-                "Costs sum selected-configuration fit-receipt wall times, including terminal failed fits where recorded. "
-                "They exclude earlier interrupted-attempt overhead and forecast time. Campaign attempt and screening costs, when collected, are reported separately. "
-                "RMSE summarizes complete trajectories only; labels show its actual n. "
-                "Vertical intervals are trajectory-cluster 95% intervals conditional on selection. Tracks remain separate.")
-        plt.close(figure)
+        from matplotlib.lines import Line2D
+
+        track_rows = {track: _ordered([row for row in self.primary_rows if row["track"] == track]) for track in ("A", "B")}
+        extremes = {track: self._extreme_display_models({row["model"]: row["rmse"] for row in rows if row.get("rmse", {}).get("mean") is not None})
+                    for track, rows in track_rows.items()}
+        for companion in ([False, True] if any(extremes.values()) else [False]):
+            figure, axes = plt.subplots(1, 2, figsize=(11.4, 5.5)); shown = False; shown_models = set()
+            for axis, track in zip(axes, ("A", "B")):
+                arrays = []
+                for j, row in enumerate(track_rows[track]):
+                    if companion and row["model"] in extremes[track]:
+                        continue
+                    estimate = row.get("rmse", {}); seconds = float(row.get("fit_seconds", 0))
+                    if estimate.get("mean") is None or seconds <= 0:
+                        continue
+                    model = row["model"]; mean = float(estimate["mean"])
+                    axis.scatter(seconds, mean, color=COLORS.get(model), s=42, zorder=3); arrays.append([mean])
+                    if estimate.get("ci95") is not None:
+                        axis.vlines(seconds, *estimate["ci95"], color=COLORS.get(model), linewidth=1.3)
+                        arrays.append(estimate["ci95"])
+                    offset = 7+11*(j % 3) if not companion and extremes[track] else (-15 if j % 2 == 0 else 7)
+                    axis.annotate(f"{ORDER.index(model)+1} (n={estimate['n']})", (seconds, mean),
+                                  xytext=(6, offset), textcoords="offset points", fontsize=7)
+                    shown = True; shown_models.add(model)
+                axis.set_xscale("log"); axis.set_xlabel("Total selected-fit wall time (seconds; log scale)")
+                axis.set_ylabel("Trajectory-mean RMSE (physical units)")
+                axis.set_title(TRACKS[track]); axis.grid(alpha=.18); axis.margins(x=.25, y=.08)
+                if not companion and extremes[track] and arrays and all(np.min(value) > 0 for value in arrays):
+                    axis.set_yscale("log"); axis.set_ylabel(axis.get_ylabel()+"\n(log scale; all values retained)")
+                else:
+                    self._optional_symlog(axis, arrays)
+                    if axis.get_yscale() != "log":
+                        axis.set_ylim(bottom=0)
+                if companion and extremes[track]:
+                    names = ", ".join(LABELS[model] for model in ORDER if model in extremes[track])
+                    axis.text(.02, .02, "Shown in full-range figure: " + names, transform=axis.transAxes, fontsize=7,
+                              bbox={"facecolor": "white", "alpha": .85, "edgecolor": "none"})
+            if shown:
+                title = "Accuracy versus fitting cost: readable companion" if companion else "Accuracy versus fitting cost: full range"
+                figure.suptitle(title, fontsize=12)
+                handles = [Line2D([], [], color=COLORS[model], marker="o", linestyle="none",
+                                  label=f"{ORDER.index(model)+1}: {LABELS[model]}") for model in ORDER if model in shown_models]
+                figure.legend(handles=handles, loc="lower center", ncol=3, fontsize=7.5, frameon=False)
+                figure.subplots_adjust(left=.08, right=.95, bottom=.28, top=.82, wspace=.4)
+                caption = ("Costs sum selected-configuration fit-receipt wall times, including terminal failed fits where recorded. "
+                    "They exclude earlier interrupted-attempt overhead and forecast time. Campaign attempt and screening costs, when collected, are reported separately. "
+                    "RMSE summarizes complete trajectories only; labels show its actual n. "
+                    "Vertical intervals are trajectory-cluster 95% intervals conditional on selection. Tracks remain separate. ")
+                caption += ("This additional view separates extreme-range methods only for readability; all their original values remain in the full-range figure and numeric tables. The display threshold is max(10, 100 times the median model mean/interval maximum), applied separately by track. No metric or scoring population changes."
+                            if companion else "All eligible methods and extreme finite errors are retained. Full-schedule failure/divergence counts appear separately, and incomplete finite-outcome populations do not define full-schedule accuracy.")
+                self._save_figure(figure, "accuracy_compute_comparison" if companion else "accuracy_compute", title, caption)
+            plt.close(figure)
 
     def animate(self, plt, enabled=True):
         if not enabled:
@@ -752,6 +1099,9 @@ class Report:
         lead_values = self.selected_horizons()
         self.matched_seeds = matched_seed_sensitivity(
             self.episodes, self.frozen, episode_results_sha256=self.episode_results_sha256)
+        self.reliability = collect_reliability_census(
+            self.results, self.frozen, self.experiment, self.episodes,
+            episode_results_sha256=self.episode_results_sha256, freeze_sha256=self.freeze_sha256)
         title = "Kuramoto–Sivashinsky: Bayesian ST-ESN and comparator study"
         status = ("All scheduled main-track origins have terminal outcomes." if completion["main_execution_terminal"]
                   else "Main-track execution is incomplete; pending work is explicitly retained below.")
@@ -781,6 +1131,7 @@ class Report:
             "Brackets are pointwise 95% trajectory-cluster bootstrap intervals conditional on the frozen validation-selected configurations. They do not treat sites, origins, MCMC draws or model seeds as independent scientific replicates, and they do not average over model selection. Differences use common eligible trajectories and are descriptive paired summaries without multiplicity adjustment.",
             "Valid prediction time (VPT) is the first lead at which spatial RMSE/training SD exceeds 0.4, right censored at 100. A normalized spatial RMSE above 10 is a separately flagged finite divergence. No forecast is silently clipped or replaced. CRPS scores the empirical predictive distribution; no iid unbiased finite-ensemble correction is claimed.",
             "Spatial energy uses the Euclidean norm divided by sqrt(target-site count), with a seeded 1,024-pair Monte Carlo approximation to the empirical path-pair term. Variogram score uses power 0.5 and at most 128 fixed geometry-only site pairs weighted by inverse circle-chord distance. These are spatial per-lead scores, not whole-temporal-path scores.",
+            "The separate reliability census retains every scheduled origin, including finite successful forecasts on trajectories excluded from complete-case accuracy. Finite divergence means spatial RMSE/training SD exceeds 10 at a lead; it is distinct from a numerical/nonfinite rollout failure. Their union is shown over the full schedule. A failed-fit placeholder is reported separately because no rollout was observed. Pending outcomes remain unresolved: event fractions then have identified bounds and no bootstrap interval.",
         ])
         issues = self.frozen.get("selection_issues", [])
         if issues:
@@ -961,6 +1312,30 @@ class Report:
                 "All failed/pending origins remain in the listed scheduled denominator. "
                 "A dash means no eligible estimate, not zero loss."
             ])
+            reliability = _ordered([row for row in self.reliability["rows"] if row["track"] == track and row["seed"] == self.seed])
+            add_table(["Model", "Scheduled origins", "Finite successful", "Finite divergence", "Failed rollout", "Fit-failure placeholders",
+                       "Pending", "Severe rollout union", "Inference-unqualified finite"], [
+                [LABELS.get(row["model"], row["model"]), row["scheduled_origins"], row["finite_successful_origins"],
+                 row["finite_divergent_origins"], row["failed_rollout_origins"], row["fit_failure_placeholder_origins"], row["pending_origins"],
+                 row["severe_rollout_origins"], row["inference_unqualified_successful_origins"]] for row in reliability])
+            add_table(["Model", "Complete / scheduled trajectories", "Finite origins in main score population", "Other finite origins retained in census",
+                       "Full-schedule point accuracy defined"], [
+                [LABELS.get(row["model"], row["model"]), f"{row['complete_trajectories']} / {row['scheduled_trajectories']}",
+                 row["finite_successful_origins_in_score_population"], row["finite_successful_origins_excluded_incomplete_trajectories"],
+                 "Yes; inference-unqualified native points remain diagnostic" if row["full_schedule_point_score_defined"] else "Undefined: at least one failed or pending origin"]
+                for row in reliability])
+            def frequency(row, metric):
+                estimate = row[metric]
+                if estimate["status"] != "terminal_schedule":
+                    lo, hi = estimate["identified_bounds"]
+                    return f"Pending: identified [{_number(lo, 4)}, {_number(hi, 4)}]; no CI"
+                return _estimate(row, metric, digits=4)
+            add_table(["Model", "Failure fraction [95% CI]", "Finite-divergence fraction [95% CI]", "Severe-rollout fraction [95% CI]",
+                       "Failure-or-divergence incl. fit placeholders [95% CI]"], [
+                [LABELS.get(row["model"], row["model"]), frequency(row, "failure_fraction"), frequency(row, "finite_divergence_fraction"),
+                 frequency(row, "severe_rollout_fraction"), frequency(row, "failure_or_divergence_fraction")] for row in reliability])
+            html_parts.append("<p>These reliability fractions use the entire scheduled origin denominator and resample whole trajectories. A terminal zero-event bootstrap interval is an empirical no-event summary, not a guarantee of zero population risk. The accuracy table below retains the frozen complete-trajectory rule. Large finite losses remain in its estimates and in full-range or separate-scale figures.</p>")
+            md_parts.append("These reliability fractions use the entire scheduled origin denominator and resample whole trajectories. A terminal zero-event bootstrap interval is an empirical no-event summary, not a guarantee of zero population risk. The accuracy table below retains the frozen complete-trajectory rule. Large finite losses remain in its estimates and in full-range or separate-scale figures.\n")
             add_table(["Model", "Selection eligible", "n / scheduled", "q", "Failed / pending / origins", "RMSE [95% CI]", "NRMSE [95% CI]", "MAE", "VPT steps"], [
                 [LABELS.get(row["model"], row["model"]), row.get("selection_eligible", False), f"{row['complete_trajectories']} / {row['scheduled_trajectories']}",
                  row["qualified_trajectories"], f"{row['failed_origins']} / {row['pending_origins']} / {row['scheduled_origins']}",
@@ -1033,10 +1408,10 @@ class Report:
                 for row in self.matched_seeds["paired_differences"]])
 
         section("Machine-readable episode results and evidence", [
-            "The attached JSON exports preserve every scheduled episode's completion, qualification and failure/pending counts. A missing eligible score remains absent rather than being replaced by zero. The run summary includes paired trajectory comparisons; seed_sensitivity_matched.json binds the matched subset and every scheduled seed contrast to the exact source episode-results hash and frozen identity. The reporting evidence contains compact per-fit effort and diagnostic records."
+            "The attached JSON exports preserve every scheduled episode's completion, qualification and failure/pending counts. A missing eligible score remains absent rather than being replaced by zero. The run summary includes paired trajectory comparisons; seed_sensitivity_matched.json binds the matched subset and every scheduled seed contrast to the exact source episode-results hash and frozen identity. reliability_census.json retains per-trajectory full-schedule counts, exceptional origin indices, and a hash manifest of every used job, fit and forecast receipt. The reporting evidence contains compact per-fit effort and diagnostic records."
         ])
         exports = [("episode_results.json", self.episodes), ("run_summary.json", self.summary),
-                   ("seed_sensitivity_matched.json", self.matched_seeds)]
+                   ("seed_sensitivity_matched.json", self.matched_seeds), ("reliability_census.json", self.reliability)]
         if self.evidence is not None:
             exports.append(("report_evidence.json", self.evidence))
         for name, value in exports:
@@ -1185,6 +1560,11 @@ def build_report(results, output, *, animations=True, dpi=200):
                     "freeze_identity": report.frozen["identity"],
                     "source_episode_results_sha256": report.episode_results_sha256,
                     "sha256": file_hash(report.output / "seed_sensitivity_matched.json")},
+                "reliability_census": {"path": "reliability_census.json", "identity": report.reliability["identity"],
+                    "freeze_identity": report.frozen["identity"], "freeze_sha256": report.freeze_sha256,
+                    "source_episode_results_sha256": report.episode_results_sha256,
+                    "source_manifest_sha256": report.reliability["source_manifest_sha256"],
+                    "sha256": file_hash(report.output / "reliability_census.json")},
                 "figures": report.figures, "animations": report.movies,
                 "notices": report.notices, "artifacts": artifacts,
                 "artifact_bytes": sum(item["bytes"] for item in artifacts),

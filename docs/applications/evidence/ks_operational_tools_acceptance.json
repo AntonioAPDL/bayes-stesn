@@ -1,0 +1,44 @@
+{
+  "collector_check": {
+    "first_session_incomplete_job_map_explicit": true,
+    "fits_performed": 0,
+    "sessions": 2,
+    "success": true,
+    "test_outputs_read": false
+  },
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "failures": 0,
+  "frozen_numerical_files_verified": 51,
+  "frozen_numerical_mismatches": [],
+  "limitations": [
+    "The active legacy observer was not interrupted; the new observer source takes effect on its next launch.",
+    "Cache advice applies only after verified quiescence; the live study received a dry-run only.",
+    "Archive staging cleanup remains deferred and has not passed final per-file redundancy verification."
+  ],
+  "live_cache_tool_dry_run": {
+    "eligible_files": 518,
+    "eligible_logical_bytes": 4208731174,
+    "files_advised": 0,
+    "files_deleted": 0,
+    "quiescent": false
+  },
+  "recorded_utc": "2026-11-05T04:00:11.407706+00:00",
+  "schema": "ks-operational-tools-acceptance/1",
+  "source_sha256": {
+    "docs/applications/ks_operational_recovery.md": "686dd24e04827077d23443411d9065a4458e12a6d0d0cd75a5e7a4cb1e0481d0",
+    "tests/test_ks_cache_advice.py": "6ee78d58fdaebaa6c6b10089d9d1f1d24cbe7bf2bb0e9485d263e856a0499a96",
+    "tests/test_ks_package.py": "a4f220759de852f96d2ed1fd1b52e4aea4cab079dbd9d6f2276da2db222f4fdd",
+    "tests/test_ks_resource_observer.py": "ad9395e046b2d96530bd7f81cf26d4d87eef4b82f080c0a3642721fa19d281f4",
+    "tools/collect_ks_report_evidence.py": "4f3c8ea3f447eb0cb3d4b1d81d270f4a1069dabe624f7cd511f4edc6a2ae60d5",
+    "tools/package_ks_results.py": "c4254135766169c19673027c584e0345854d2d105f6a495f791c9c9303089049",
+    "tools/reclaim_ks_file_cache.py": "01eea8b6735df9a8365965c7404b40b7affb96d6bb3512234d305cc5cea232f1",
+    "tools/watch_ks_resources.py": "da58afca652efa0f06b560b14631efb6528206b3a8c5cc8da0d47320ffccb481"
+  },
+  "test_files": [
+    "tests/test_ks_cache_advice.py",
+    "tests/test_ks_resource_observer.py",
+    "tests/test_ks_package.py"
+  ],
+  "test_seconds": 0.55,
+  "tests": 10
+}

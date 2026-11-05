@@ -1,0 +1,47 @@
+{
+  "coverage": [
+    "Exact shorter-prefix and full-copy verification plus canonical SHA and ZIP CRC",
+    "Only verified staging removed; mismatched/symlink/unknown files retained",
+    "Persistent one-pass marker prevents retry on reappearance",
+    "Scheduler lock, real writable self-descriptor and unresolved descriptor refusal",
+    "Canonical corruption rejected before deletion",
+    "File replacement after verification retained"
+  ],
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "failures": 0,
+  "frozen_numerical_files_verified": 51,
+  "frozen_numerical_mismatches": [],
+  "model_fit_performed": false,
+  "production_dry_run": {
+    "blockers": [
+      {
+        "error_type": "BlockingIOError",
+        "reason": "scheduler_or_workers_not_verified_quiescent"
+      },
+      {
+        "reason": "writable_descriptor_or_unresolved_descriptor_check"
+      }
+    ],
+    "canonical_payload_hashing_performed": false,
+    "considered_existing_files": 7,
+    "files_deleted": 0,
+    "receipt_sha256": "33f4b58b3e4d3a5a23b43ea9918aac78a97160141ff2fc9f155ca66a7bb67f33",
+    "recorded_file_count": 7,
+    "retained_logical_bytes": 669253632,
+    "state": "blocked",
+    "unresolved_descriptor_checks": 198,
+    "visible_writable_descriptors": 0
+  },
+  "recorded_utc": "2026-11-05T04:08:01.088531+00:00",
+  "schema": "ks-archive-staging-tool-acceptance/1",
+  "source_sha256": {
+    "docs/applications/ks_operational_recovery.md": "4206df40ef8f43b26560b7149c7b142d69dde8a33e61f1bac531f8d36538ee7c",
+    "tests/test_ks_archive_staging.py": "bf6a4e87dacffd09d8715a15a1db26032e318b98ae20a23fe647499ad9126502",
+    "tools/clean_ks_archive_staging.py": "cbd77dbe8bd5a183fb89a1259928143dabe5d793686c7d78ddc54a80ffe803dc"
+  },
+  "synthetic_scope": "Synthetic regular files only. Descriptor visibility was restricted explicitly to the test process so full logic could be tested despite unrelated inaccessible outer processes. Real writable self-descriptor and unresolved-check refusal were tested.",
+  "test_file": "tests/test_ks_archive_staging.py",
+  "test_labels_read": false,
+  "test_seconds": 0.06,
+  "tests": 4
+}

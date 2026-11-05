@@ -128,6 +128,8 @@ Named path-index streams make batches resumable. The primary point forecast is t
 
 ## Existing separable spatiotemporal GP
 
+The temporal state-space foundation is [Hartikainen and Särkkä (2010), *Kalman filtering and smoothing solutions to temporal Gaussian process regression models*](https://users.aalto.fi/~ssarkka/pub/gp-ts-kfrts.pdf), [DOI:10.1109/MLSP.2010.5589113](https://doi.org/10.1109/MLSP.2010.5589113). Section 4.1 derives exact finite-dimensional representations for Matérn smoothness \(\nu=p+1/2\); Section 5 specifies the stationary initial state and Kalman marginal likelihood. The repository uses the \(\nu=1/2\) and \(3/2\) temporal cases. Its separable spatial eigendecomposition, circle geometry, and joint unseen-site prediction are the declared repository adaptations; this application does not claim to reproduce that paper's experiments.
+
 This comparator retains the exact separable Matérn GP with a small temporal state representation. Its latent covariance is
 
 \[
@@ -143,6 +145,8 @@ At a forecast origin, the KS adapter starts from the stationary GP state prior a
 Uncertainty is the joint Gaussian predictive distribution conditional on fitted hyperparameters; it does not include a Bayesian hyperparameter posterior. Although the underlying implementation also supplies an analytic mean, primary KS point scores use the sample mean of the same complete paths used for empirical probabilistic scoring.
 
 ## Existing probabilistic basis GRU
+
+The gated recurrent unit is attributed to [Cho et al. (2014), *Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation*](https://aclanthology.org/D14-1179/), Section 2.3, equations 5–8. The actual implementation in `benchmark/basis_gru.py` uses `torch.nn.GRU(rank, hidden_size, batch_first=True)` followed by `torch.nn.Linear(hidden_size, rank)`. Its candidate-state equation follows the [PyTorch 2.15 GRU implementation](https://docs.pytorch.org/docs/2.15/generated/torch.nn.modules.rnn.GRU.html): the reset gate multiplies the hidden affine term \(W_{hn}h_{t-1}+b_{hn}\). Cho et al.'s original unit applies the reset gate to the hidden state before the hidden matrix multiplication. The coordinate basis, staged Gaussian spatial residual fitting, and KS ancestral recursion below are custom repository components, rather than components supplied by the original translation model.
 
 This is the existing custom matched control. Its geometry-only radial basis satisfies \(\Phi^{\mathsf T}\Phi/n=I\). Projected coefficients are
 

@@ -1,0 +1,6614 @@
+{
+  "aggregation": {
+    "mae": "Average saved spatial MAE over20 origins and100 leads per complete trajectory, then average trajectories.",
+    "native_probability": "Average CRPS and90% marginal coverage/width over all origins/leads within a qualified complete trajectory, then average qualified trajectories.",
+    "nrmse": "Trajectory RMSE divided by that trajectory permitted-training scalar SD, then average trajectories.",
+    "reliability": "Full400-origin denominators; huge finite errors retained; nonfinite failed origins yield undefined full-schedule RMSE, no imputation.",
+    "rmse": "For each trajectory with20 finite origin receipts, sqrt(mean of all20x100 saved spatial MSE values); then equal-weight mean across complete trajectories. Never average origin RMSEs to obtain trajectory RMSE.",
+    "uncertainty": "Independent NumPy trajectory bootstrap:2000 resamples,seed20261105; conditional on selected configurations and complete-case population.",
+    "vpt_steps": "Computed from the primary point forecast: the complete-path predictive mean for native probabilistic families and the deterministic rollout otherwise. Average its prespecified first threshold crossing over20 origins per complete trajectory, then average trajectories. Uncrossed horizon100 is right censored. This is not a distribution or average of per-predictive-path crossing times."
+  },
+  "audit_elapsed_seconds": 3.5405305029999,
+  "audit_peak_rss_bytes": 102559744,
+  "checks": {
+    "all_scheduled_origin_receipts_present": true,
+    "expected_origin_receipts": 3200,
+    "finite_origin_score_consistency_checks": 3196,
+    "forecasts_performed": 0,
+    "frozen_config_source_and_schedule_match": true,
+    "inference_and_training_transform_identities_match": true,
+    "largest_absolute_consistency_error": 0.0,
+    "model_fits_performed": 0,
+    "numerical_source_or_configuration_changes": 0,
+    "scheduler_summary_invoked": false,
+    "source_receipt_count": 3520,
+    "source_receipt_manifest_sha256": "3b583a56782b7ef5c0fb128be3fb9c20478f6c4f50d7b9beaf4d1f5b32658929",
+    "test_scores_after_gate": true
+  },
+  "comparison_to_scheduler_summary": {
+    "status": "pending_scheduler_summary",
+    "summary_present_at_audit": false
+  },
+  "created_utc": "2026-11-05T03:54:23.589524+00:00",
+  "episodes": [
+    {
+      "complete": true,
+      "coverage_0_9": 0.9292083333333332,
+      "crps": 0.7380561242145901,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9911502297897374,
+      "model": "bayes_stesn",
+      "nrmse": 1.0515777419828085,
+      "qualified": true,
+      "rmse": 1.253737708841229,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 0,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 5.05,
+      "width_0_9": 5.169536816554929
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9320833333333335,
+      "crps": 0.7453861183032652,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0323798197079466,
+      "model": "bayes_stesn",
+      "nrmse": 1.0898027535262222,
+      "qualified": true,
+      "rmse": 1.2989482133455104,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 1,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 6.15,
+      "width_0_9": 5.0623512289399075
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9464583333333332,
+      "crps": 0.7602701280262978,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0080412593743981,
+      "model": "bayes_stesn",
+      "nrmse": 1.0685392922646286,
+      "qualified": true,
+      "rmse": 1.2667745486757624,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 2,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 4.35,
+      "width_0_9": 5.804303593615754
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9077083333333335,
+      "crps": 0.7983793452176956,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.074790131915676,
+      "model": "bayes_stesn",
+      "nrmse": 1.138218093416463,
+      "qualified": true,
+      "rmse": 1.352185293252121,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 3,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 4.45,
+      "width_0_9": 5.150780344284575
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9251666666666667,
+      "crps": 0.8737764562886104,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.209121240333676,
+      "model": "bayes_stesn",
+      "nrmse": 1.250737311502028,
+      "qualified": true,
+      "rmse": 1.484902760179981,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 4,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 4.5,
+      "width_0_9": 5.842558102255611
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9279583333333334,
+      "crps": 0.797324372962214,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0486977948448406,
+      "model": "bayes_stesn",
+      "nrmse": 1.1139028226891405,
+      "qualified": true,
+      "rmse": 1.3158862070168174,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 5,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 3.65,
+      "width_0_9": 5.81780925070495
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8301666666666666,
+      "crps": 0.9295602392366368,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.3137905701408923,
+      "model": "bayes_stesn",
+      "nrmse": 1.3650700013592494,
+      "qualified": true,
+      "rmse": 1.6282153798765182,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 6,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 4.95,
+      "width_0_9": 4.767176029608355
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8620833333333333,
+      "crps": 1.0516228560219687,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.4306341024300795,
+      "model": "bayes_stesn",
+      "nrmse": 1.491242786614322,
+      "qualified": true,
+      "rmse": 1.7730786551241413,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 7,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 4.15,
+      "width_0_9": 5.718401821059279
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9194166666666665,
+      "crps": 0.7912431058331698,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0488640693423152,
+      "model": "bayes_stesn",
+      "nrmse": 1.1228800485803574,
+      "qualified": true,
+      "rmse": 1.3208769404149452,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 8,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 5.0,
+      "width_0_9": 5.664825444746715
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9492083333333335,
+      "crps": 0.7673756688037549,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0294145997196325,
+      "model": "bayes_stesn",
+      "nrmse": 1.086832497584604,
+      "qualified": true,
+      "rmse": 1.2922904370030948,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 9,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 5.15,
+      "width_0_9": 5.744236263201111
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9282499999999999,
+      "crps": 0.9345055352811811,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.2786473172478,
+      "model": "bayes_stesn",
+      "nrmse": 1.3344431179239182,
+      "qualified": true,
+      "rmse": 1.5771314985922795,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 10,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 3.75,
+      "width_0_9": 6.496447641266862
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9273333333333336,
+      "crps": 0.7354347228107431,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9834049364559883,
+      "model": "bayes_stesn",
+      "nrmse": 1.0305250066491976,
+      "qualified": true,
+      "rmse": 1.2342439883419691,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 11,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 4.8,
+      "width_0_9": 5.164377691943322
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8972916666666666,
+      "crps": 0.938883847351051,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.3048979987594782,
+      "model": "bayes_stesn",
+      "nrmse": 1.3532883868932297,
+      "qualified": true,
+      "rmse": 1.6185269624013316,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 12,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 4.15,
+      "width_0_9": 5.4282974543750475
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8852500000000003,
+      "crps": 1.3739156869874483,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.7005544168861348,
+      "model": "bayes_stesn",
+      "nrmse": 1.899622635715036,
+      "qualified": true,
+      "rmse": 2.2657610135758754,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 13,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 4.3,
+      "width_0_9": 8.726729153461083
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9269166666666667,
+      "crps": 0.7190842340240527,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9769403602947482,
+      "model": "bayes_stesn",
+      "nrmse": 1.0340878139774012,
+      "qualified": true,
+      "rmse": 1.2325949875586792,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 14,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 5.85,
+      "width_0_9": 5.21651728992805
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9065833333333334,
+      "crps": 0.7892416475828379,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0757271502594763,
+      "model": "bayes_stesn",
+      "nrmse": 1.1257491181223194,
+      "qualified": true,
+      "rmse": 1.3502184741891776,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 15,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 4.0,
+      "width_0_9": 5.074384813928179
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9103333333333333,
+      "crps": 0.7160300962992815,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9501481921613174,
+      "model": "bayes_stesn",
+      "nrmse": 1.003552446162829,
+      "qualified": true,
+      "rmse": 1.1996544914411635,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 16,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 4.65,
+      "width_0_9": 4.968386746744146
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9148333333333332,
+      "crps": 0.790043911866077,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0514269435831252,
+      "model": "bayes_stesn",
+      "nrmse": 1.1206058594206187,
+      "qualified": true,
+      "rmse": 1.339854655219499,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 17,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 4.4,
+      "width_0_9": 5.265497019690111
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.914875,
+      "crps": 0.8037868655587882,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0752209443971161,
+      "model": "bayes_stesn",
+      "nrmse": 1.1359078185872025,
+      "qualified": true,
+      "rmse": 1.3550635872241794,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 18,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 5.05,
+      "width_0_9": 5.414022083900191
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.9226666666666665,
+      "crps": 0.8406116696841133,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.1603965682813762,
+      "model": "bayes_stesn",
+      "nrmse": 1.219681630281304,
+      "qualified": true,
+      "rmse": 1.4360093053800862,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 19,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 4.9,
+      "width_0_9": 5.836690157755385
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8394166666666665,
+      "crps": 0.6230698710123903,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8424671538332711,
+      "model": "separable_gp",
+      "nrmse": 0.9746495603654816,
+      "qualified": true,
+      "rmse": 1.1620205125601706,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 0,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 15.35,
+      "width_0_9": 3.062163246112706
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8375416666666669,
+      "crps": 0.6242570111898649,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8581006225996213,
+      "model": "separable_gp",
+      "nrmse": 0.9668395692397463,
+      "qualified": true,
+      "rmse": 1.152387004888856,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 1,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 12.0,
+      "width_0_9": 3.050773240447235
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8330833333333333,
+      "crps": 0.6384420598952653,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8682269136304626,
+      "model": "separable_gp",
+      "nrmse": 1.0140865807750894,
+      "qualified": true,
+      "rmse": 1.2022197779521326,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 2,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 14.3,
+      "width_0_9": 3.075885644676482
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8311250000000001,
+      "crps": 0.6540904300983288,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9149927474943336,
+      "model": "separable_gp",
+      "nrmse": 1.0057650928337036,
+      "qualified": true,
+      "rmse": 1.1948332001242266,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 3,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 11.7,
+      "width_0_9": 3.0462233137174164
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8354999999999999,
+      "crps": 0.6388884246292164,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8817461007264414,
+      "model": "separable_gp",
+      "nrmse": 0.991154042641288,
+      "qualified": true,
+      "rmse": 1.1767198117038093,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 4,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 11.55,
+      "width_0_9": 3.0552508707294415
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8363333333333334,
+      "crps": 0.6062784636599939,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8069227295729171,
+      "model": "separable_gp",
+      "nrmse": 0.9749644329200745,
+      "qualified": true,
+      "rmse": 1.151754195679539,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 5,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 19.85,
+      "width_0_9": 3.048470329489224
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8280416666666668,
+      "crps": 0.6430001790972946,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8741586893410807,
+      "model": "separable_gp",
+      "nrmse": 1.001516667696489,
+      "qualified": true,
+      "rmse": 1.1945796478732753,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 6,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.3,
+      "width_0_9": 3.0378783673454666
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8462083333333332,
+      "crps": 0.5952020365991153,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8114472656630707,
+      "model": "separable_gp",
+      "nrmse": 0.9313548314005677,
+      "qualified": true,
+      "rmse": 1.1073752622484136,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 7,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 14.5,
+      "width_0_9": 3.051679800196325
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8219583333333332,
+      "crps": 0.6253999614606364,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8341439869444237,
+      "model": "separable_gp",
+      "nrmse": 0.9898732063944914,
+      "qualified": true,
+      "rmse": 1.1644170665550104,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 8,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 15.8,
+      "width_0_9": 3.0533992410172996
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8360000000000001,
+      "crps": 0.6251528518173123,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8362401726624816,
+      "model": "separable_gp",
+      "nrmse": 0.9878462173291485,
+      "qualified": true,
+      "rmse": 1.1745915057943546,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 9,
+      "vpt_censored_fraction": 0.05,
+      "vpt_steps": 20.8,
+      "width_0_9": 3.0615171133287062
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8218333333333334,
+      "crps": 0.6551085800765264,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8862010625375604,
+      "model": "separable_gp",
+      "nrmse": 1.0406283647690668,
+      "qualified": true,
+      "rmse": 1.229882151109751,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 10,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 14.2,
+      "width_0_9": 2.99119317256372
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8405833333333332,
+      "crps": 0.618363600095664,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8436264578007342,
+      "model": "separable_gp",
+      "nrmse": 0.9574895430941797,
+      "qualified": true,
+      "rmse": 1.1467705342802805,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 11,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 14.85,
+      "width_0_9": 3.0666753516657224
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8159583333333332,
+      "crps": 0.6500431309741093,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8704082810897344,
+      "model": "separable_gp",
+      "nrmse": 1.0092253029324392,
+      "qualified": true,
+      "rmse": 1.20702902629924,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 12,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 16.85,
+      "width_0_9": 3.0836338817270157
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8345,
+      "crps": 0.6408272011041346,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8829728630112714,
+      "model": "separable_gp",
+      "nrmse": 0.9885345016257665,
+      "qualified": true,
+      "rmse": 1.1790673011828183,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 13,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.1,
+      "width_0_9": 3.031300240632817
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.835875,
+      "crps": 0.6293163772513879,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8665528916668431,
+      "model": "separable_gp",
+      "nrmse": 0.9732404768201994,
+      "qualified": true,
+      "rmse": 1.1600671792115451,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 14,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.55,
+      "width_0_9": 3.019416063100195
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8150416666666667,
+      "crps": 0.649014841581946,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8828256269388678,
+      "model": "separable_gp",
+      "nrmse": 1.0014754664635226,
+      "qualified": true,
+      "rmse": 1.2011652103460468,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 15,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 12.6,
+      "width_0_9": 3.013855808998183
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.853,
+      "crps": 0.5945854992623929,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8023487576335826,
+      "model": "separable_gp",
+      "nrmse": 0.9302717029614117,
+      "qualified": true,
+      "rmse": 1.1120541143469078,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 16,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 11.7,
+      "width_0_9": 3.1009054307844894
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8269583333333334,
+      "crps": 0.637071302794969,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8758327462828308,
+      "model": "separable_gp",
+      "nrmse": 0.9886453432716005,
+      "qualified": true,
+      "rmse": 1.1820757980226928,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 17,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.95,
+      "width_0_9": 2.9919306780054873
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8238333333333333,
+      "crps": 0.6340464027380474,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8664414194574139,
+      "model": "separable_gp",
+      "nrmse": 0.9825988441221776,
+      "qualified": true,
+      "rmse": 1.1721760276063402,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 18,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 14.2,
+      "width_0_9": 3.0222307583155787
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.8365833333333335,
+      "crps": 0.6138969260943286,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8378265613717863,
+      "model": "separable_gp",
+      "nrmse": 0.9603990951973024,
+      "qualified": true,
+      "rmse": 1.1307393694728844,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 19,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.5,
+      "width_0_9": 3.0929333089873436
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6359166666666666,
+      "crps": 0.6225511282153924,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8019388627203106,
+      "model": "basis_gru",
+      "nrmse": 0.9258214283886459,
+      "qualified": true,
+      "rmse": 1.103805444032564,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 0,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 18.05,
+      "width_0_9": 1.796948025594491
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6955833333333333,
+      "crps": 0.6035505910538739,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7958231863389051,
+      "model": "basis_gru",
+      "nrmse": 0.9445739665164201,
+      "qualified": true,
+      "rmse": 1.1258483814701277,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 1,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 25.8,
+      "width_0_9": 2.0796687469795563
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6628333333333332,
+      "crps": 0.6540006664239209,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8505047162322973,
+      "model": "basis_gru",
+      "nrmse": 0.995324210994983,
+      "qualified": true,
+      "rmse": 1.1799766160185088,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 2,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 21.9,
+      "width_0_9": 2.0222247891013225
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6231666666666666,
+      "crps": 0.6736710246943598,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8584180412168244,
+      "model": "basis_gru",
+      "nrmse": 1.0330820951070434,
+      "qualified": true,
+      "rmse": 1.2272853715871428,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 3,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 25.8,
+      "width_0_9": 1.9289822204070197
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6122916666666667,
+      "crps": 0.6376358837617254,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8162675185912615,
+      "model": "basis_gru",
+      "nrmse": 0.9719929155581848,
+      "qualified": true,
+      "rmse": 1.153971301499304,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 4,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 26.25,
+      "width_0_9": 1.8331927927537088
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6607083333333332,
+      "crps": 0.60942321226004,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7866386062815295,
+      "model": "basis_gru",
+      "nrmse": 0.9795296099675009,
+      "qualified": true,
+      "rmse": 1.1571471737624885,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 5,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 28.1,
+      "width_0_9": 1.8842296524228068
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6315416666666668,
+      "crps": 0.6529344656823561,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8413876200559315,
+      "model": "basis_gru",
+      "nrmse": 1.0035234489094003,
+      "qualified": true,
+      "rmse": 1.19697327752718,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 6,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 24.0,
+      "width_0_9": 2.059756102798728
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.5725416666666667,
+      "crps": 0.7053892978408394,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8987525203287405,
+      "model": "basis_gru",
+      "nrmse": 1.0203314236089391,
+      "qualified": true,
+      "rmse": 1.21316789230601,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 7,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 17.9,
+      "width_0_9": 1.9660566110264441
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6915416666666667,
+      "crps": 0.5541510037595451,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7348596787252342,
+      "model": "basis_gru",
+      "nrmse": 0.9086354983871227,
+      "qualified": true,
+      "rmse": 1.0688547530783747,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 8,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 29.1,
+      "width_0_9": 1.9832915498282724
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6794583333333333,
+      "crps": 0.6167567810211827,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8202753753666991,
+      "model": "basis_gru",
+      "nrmse": 0.9653062463815185,
+      "qualified": true,
+      "rmse": 1.147790513948155,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 9,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 21.7,
+      "width_0_9": 2.046725391780953
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6295833333333333,
+      "crps": 0.6598894183954102,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8455224610432652,
+      "model": "basis_gru",
+      "nrmse": 0.9824080369062497,
+      "qualified": true,
+      "rmse": 1.1610735884235641,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 10,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 16.1,
+      "width_0_9": 1.8989380015453416
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6250416666666667,
+      "crps": 0.6329092060797152,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8170116786446726,
+      "model": "basis_gru",
+      "nrmse": 0.9332130496547534,
+      "qualified": true,
+      "rmse": 1.1176949505804132,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 11,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 20.65,
+      "width_0_9": 1.8155632636621317
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.5109166666666666,
+      "crps": 0.7220882774096951,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8946968734958611,
+      "model": "basis_gru",
+      "nrmse": 1.0021557501477778,
+      "qualified": true,
+      "rmse": 1.198573872242711,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 12,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 15.05,
+      "width_0_9": 1.5791672299736703
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.663375,
+      "crps": 0.5667955000326693,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7454058811473447,
+      "model": "basis_gru",
+      "nrmse": 0.8874726157319139,
+      "qualified": true,
+      "rmse": 1.0585264754884804,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 13,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 27.6,
+      "width_0_9": 1.8278702423783515
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6718333333333334,
+      "crps": 0.5892348551867518,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7718030268282987,
+      "model": "basis_gru",
+      "nrmse": 0.9067299813747836,
+      "qualified": true,
+      "rmse": 1.0807890925752244,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 14,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 22.6,
+      "width_0_9": 1.9907366059306058
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.61275,
+      "crps": 0.7054238350243263,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9093795732118578,
+      "model": "basis_gru",
+      "nrmse": 1.0039105172784026,
+      "qualified": true,
+      "rmse": 1.204085799439045,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 15,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 12.45,
+      "width_0_9": 1.916443564561709
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.5975,
+      "crps": 0.6429443964161029,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8188786959745871,
+      "model": "basis_gru",
+      "nrmse": 0.9665726770544583,
+      "qualified": true,
+      "rmse": 1.1554485844425413,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 16,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 23.9,
+      "width_0_9": 1.8196905225540974
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6101249999999998,
+      "crps": 0.6650146676636873,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8468835867436958,
+      "model": "basis_gru",
+      "nrmse": 0.9810240419470038,
+      "qualified": true,
+      "rmse": 1.1729633737276146,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 17,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 15.1,
+      "width_0_9": 1.7490970071039922
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.5888333333333333,
+      "crps": 0.7301391991555002,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.935771831009596,
+      "model": "basis_gru",
+      "nrmse": 1.0386373688066957,
+      "qualified": true,
+      "rmse": 1.23902631513777,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 18,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.0,
+      "width_0_9": 1.8910148439652086
+    },
+    {
+      "complete": true,
+      "coverage_0_9": 0.6582916666666667,
+      "crps": 0.6143706710798035,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7948441415762041,
+      "model": "basis_gru",
+      "nrmse": 0.9706450515521324,
+      "qualified": true,
+      "rmse": 1.1428025901550396,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 19,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 28.15,
+      "width_0_9": 1.932244053854065
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9254496779242685,
+      "model": "ridge_esn",
+      "nrmse": 1.1116593086509705,
+      "qualified": true,
+      "rmse": 1.3253696222327207,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 0,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 27.55
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8255185349190504,
+      "model": "ridge_esn",
+      "nrmse": 1.0202447673676707,
+      "qualified": true,
+      "rmse": 1.216041263851931,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 1,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 28.35
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0266129259004304,
+      "model": "ridge_esn",
+      "nrmse": 1.2044230877279054,
+      "qualified": true,
+      "rmse": 1.4278674864052925,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 2,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 21.4
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9919395092251192,
+      "model": "ridge_esn",
+      "nrmse": 1.180896159493834,
+      "qualified": true,
+      "rmse": 1.4028861682672473,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 3,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 22.4
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9032370936071793,
+      "model": "ridge_esn",
+      "nrmse": 1.1001932977407431,
+      "qualified": true,
+      "rmse": 1.3061736061786113,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 4,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 24.8
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0321111350262862,
+      "model": "ridge_esn",
+      "nrmse": 1.2233357575060424,
+      "qualified": true,
+      "rmse": 1.44516255553283,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 5,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 21.25
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9524368735783917,
+      "model": "ridge_esn",
+      "nrmse": 1.1345907516498417,
+      "qualified": true,
+      "rmse": 1.3533065043275803,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 6,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 23.6
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.2168207384622372,
+      "model": "ridge_esn",
+      "nrmse": 1.3593667255799617,
+      "qualified": true,
+      "rmse": 1.6162788160632287,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 7,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.85
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9718054665303404,
+      "model": "ridge_esn",
+      "nrmse": 1.143164562201838,
+      "qualified": true,
+      "rmse": 1.3447382124395226,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 8,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 20.35
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7737260157971041,
+      "model": "ridge_esn",
+      "nrmse": 0.9509608701206261,
+      "qualified": true,
+      "rmse": 1.1307332465234483,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 9,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 25.45
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9304664138366892,
+      "model": "ridge_esn",
+      "nrmse": 1.0806907424228909,
+      "qualified": true,
+      "rmse": 1.2772304695638523,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 10,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 17.05
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.776111689548369,
+      "model": "ridge_esn",
+      "nrmse": 0.9483110853349743,
+      "qualified": true,
+      "rmse": 1.1357776362540746,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 11,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 27.9
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0180071906027985,
+      "model": "ridge_esn",
+      "nrmse": 1.1840257628721242,
+      "qualified": true,
+      "rmse": 1.4160896080589325,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 12,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 15.3
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.883245059078841,
+      "model": "ridge_esn",
+      "nrmse": 1.0740032374265398,
+      "qualified": true,
+      "rmse": 1.2810095110807944,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 13,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 26.9
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8866468909068219,
+      "model": "ridge_esn",
+      "nrmse": 1.0853484119414725,
+      "qualified": true,
+      "rmse": 1.2936957521704897,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 14,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 28.4
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0579021160158173,
+      "model": "ridge_esn",
+      "nrmse": 1.1997973259382488,
+      "qualified": true,
+      "rmse": 1.439031564569768,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 15,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 14.45
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0246995411919526,
+      "model": "ridge_esn",
+      "nrmse": 1.1923778207241957,
+      "qualified": true,
+      "rmse": 1.4253778301234048,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 16,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 18.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0381383193219687,
+      "model": "ridge_esn",
+      "nrmse": 1.2099330605474647,
+      "qualified": true,
+      "rmse": 1.4466589033513206,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 17,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 20.9
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9109857761895352,
+      "model": "ridge_esn",
+      "nrmse": 1.1190902114036405,
+      "qualified": true,
+      "rmse": 1.335001283975815,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 18,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 25.15
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.02369117318607,
+      "model": "ridge_esn",
+      "nrmse": 1.192376170544537,
+      "qualified": true,
+      "rmse": 1.403860838685023,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 19,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 17.55
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.05,
+      "failed_origins": 0,
+      "finite_divergent_origins": 1,
+      "mae": 1.9474504311585585e+41,
+      "model": "pod_nvar",
+      "nrmse": 1.2033343617395615e+43,
+      "qualified": true,
+      "rmse": 1.4346686939308996e+43,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 0,
+      "vpt_censored_fraction": 0.05,
+      "vpt_steps": 67.15
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.05,
+      "failed_origins": 0,
+      "finite_divergent_origins": 1,
+      "mae": 430.95894019929017,
+      "model": "pod_nvar",
+      "nrmse": 23843.849734171778,
+      "qualified": true,
+      "rmse": 28419.753860289748,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 1,
+      "vpt_censored_fraction": 0.1,
+      "vpt_steps": 69.6
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.4244650197680825,
+      "model": "pod_nvar",
+      "nrmse": 0.6504579229955785,
+      "qualified": true,
+      "rmse": 0.7711307836785045,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 2,
+      "vpt_censored_fraction": 0.1,
+      "vpt_steps": 65.35
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.39682441770203186,
+      "model": "pod_nvar",
+      "nrmse": 0.6018181610136986,
+      "qualified": true,
+      "rmse": 0.7149505628505325,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 3,
+      "vpt_censored_fraction": 0.15,
+      "vpt_steps": 65.45
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.36437632745752374,
+      "model": "pod_nvar",
+      "nrmse": 0.551461300173012,
+      "qualified": true,
+      "rmse": 0.6547069470374705,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 4,
+      "vpt_censored_fraction": 0.05,
+      "vpt_steps": 65.5
+    },
+    {
+      "complete": false,
+      "failed_origins": 2,
+      "finite_divergent_origins": 0,
+      "model": "pod_nvar",
+      "qualified": true,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 18,
+      "track": "A",
+      "trajectory": 5
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.4426098323843343,
+      "model": "pod_nvar",
+      "nrmse": 0.6645424971645575,
+      "qualified": true,
+      "rmse": 0.7926467605232518,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 6,
+      "vpt_censored_fraction": 0.15,
+      "vpt_steps": 62.35
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.4180726836115759,
+      "model": "pod_nvar",
+      "nrmse": 0.6288100626616739,
+      "qualified": true,
+      "rmse": 0.7476513618308891,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 7,
+      "vpt_censored_fraction": 0.05,
+      "vpt_steps": 60.55
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.4117663708779788,
+      "model": "pod_nvar",
+      "nrmse": 0.6329370253175088,
+      "qualified": true,
+      "rmse": 0.7445425025885106,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 8,
+      "vpt_censored_fraction": 0.1,
+      "vpt_steps": 63.3
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.322502216930138,
+      "model": "pod_nvar",
+      "nrmse": 0.5151149707684649,
+      "qualified": true,
+      "rmse": 0.6124937855287093,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 9,
+      "vpt_censored_fraction": 0.2,
+      "vpt_steps": 74.35
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.3613203228046775,
+      "model": "pod_nvar",
+      "nrmse": 0.5368908810231473,
+      "qualified": true,
+      "rmse": 0.6345324940383423,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 10,
+      "vpt_censored_fraction": 0.05,
+      "vpt_steps": 66.35
+    },
+    {
+      "complete": false,
+      "failed_origins": 1,
+      "finite_divergent_origins": 0,
+      "model": "pod_nvar",
+      "qualified": true,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 19,
+      "track": "A",
+      "trajectory": 11
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.4912272752920629,
+      "model": "pod_nvar",
+      "nrmse": 0.6962713732338468,
+      "qualified": true,
+      "rmse": 0.8327375019557405,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 12,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 54.65
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.38158883809828453,
+      "model": "pod_nvar",
+      "nrmse": 0.5874963771520286,
+      "qualified": true,
+      "rmse": 0.7007320095799378,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 13,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 66.5
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.3965325552157072,
+      "model": "pod_nvar",
+      "nrmse": 0.5916762832421312,
+      "qualified": true,
+      "rmse": 0.7052565663418002,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 14,
+      "vpt_censored_fraction": 0.05,
+      "vpt_steps": 65.5
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.40765214297913593,
+      "model": "pod_nvar",
+      "nrmse": 0.5781042564884423,
+      "qualified": true,
+      "rmse": 0.6933756683016831,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 15,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 60.3
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.3178501654089074,
+      "model": "pod_nvar",
+      "nrmse": 0.48314679011492123,
+      "qualified": true,
+      "rmse": 0.5775574749510435,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 16,
+      "vpt_censored_fraction": 0.2,
+      "vpt_steps": 74.65
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.45153329549137394,
+      "model": "pod_nvar",
+      "nrmse": 0.6902399219604751,
+      "qualified": true,
+      "rmse": 0.8252867543769956,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 17,
+      "vpt_censored_fraction": 0.05,
+      "vpt_steps": 65.55
+    },
+    {
+      "complete": false,
+      "failed_origins": 1,
+      "finite_divergent_origins": 0,
+      "model": "pod_nvar",
+      "qualified": true,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 19,
+      "track": "A",
+      "trajectory": 18
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.39224102363354346,
+      "model": "pod_nvar",
+      "nrmse": 0.6049564174566556,
+      "qualified": true,
+      "rmse": 0.7122539384452298,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 19,
+      "vpt_censored_fraction": 0.05,
+      "vpt_steps": 64.3
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.6962462594912749,
+      "model": "linear_var",
+      "nrmse": 0.7852160171263333,
+      "qualified": true,
+      "rmse": 0.9361694251926249,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 0,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 20.4
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.6955670934226909,
+      "model": "linear_var",
+      "nrmse": 0.7760889091929194,
+      "qualified": true,
+      "rmse": 0.9250291382835567,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 1,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 18.7
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7557955643441481,
+      "model": "linear_var",
+      "nrmse": 0.839355460263755,
+      "qualified": true,
+      "rmse": 0.9950725649972919,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 2,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 18.75
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.762871773818058,
+      "model": "linear_var",
+      "nrmse": 0.8513996796152702,
+      "qualified": true,
+      "rmse": 1.0114495034952011,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 3,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 16.9
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7714148120762124,
+      "model": "linear_var",
+      "nrmse": 0.8482754346794298,
+      "qualified": true,
+      "rmse": 1.007091195541036,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 4,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 17.3
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7728197248106251,
+      "model": "linear_var",
+      "nrmse": 0.8910989247456739,
+      "qualified": true,
+      "rmse": 1.0526814011742434,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 5,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 19.1
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7264330067078276,
+      "model": "linear_var",
+      "nrmse": 0.8115145390715885,
+      "qualified": true,
+      "rmse": 0.9679506927806469,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 6,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 18.45
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7789557050762328,
+      "model": "linear_var",
+      "nrmse": 0.8628993034309212,
+      "qualified": true,
+      "rmse": 1.0259820534713204,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 7,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 17.8
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7416395765250325,
+      "model": "linear_var",
+      "nrmse": 0.8424820534414397,
+      "qualified": true,
+      "rmse": 0.9910365034191736,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 8,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 20.7
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7006252982046216,
+      "model": "linear_var",
+      "nrmse": 0.7940604912618573,
+      "qualified": true,
+      "rmse": 0.944171969038676,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 9,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 21.55
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7842877724001651,
+      "model": "linear_var",
+      "nrmse": 0.8669605135431645,
+      "qualified": true,
+      "rmse": 1.0246302113437997,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 10,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 17.15
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7323104347967405,
+      "model": "linear_var",
+      "nrmse": 0.8073222842813337,
+      "qualified": true,
+      "rmse": 0.9669175125295522,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 11,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 19.35
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8134059618837266,
+      "model": "linear_var",
+      "nrmse": 0.9013802739007751,
+      "qualified": true,
+      "rmse": 1.0780468456057217,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 12,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 17.35
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.729358695225377,
+      "model": "linear_var",
+      "nrmse": 0.8134307707460471,
+      "qualified": true,
+      "rmse": 0.970213606085838,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 13,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 18.6
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.70562586633922,
+      "model": "linear_var",
+      "nrmse": 0.7810648535255951,
+      "qualified": true,
+      "rmse": 0.9310008399682602,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 14,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 17.8
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.770379541435945,
+      "model": "linear_var",
+      "nrmse": 0.8523550446704939,
+      "qualified": true,
+      "rmse": 1.0223108411597213,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 15,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 19.45
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7428984046497545,
+      "model": "linear_var",
+      "nrmse": 0.8202710851709359,
+      "qualified": true,
+      "rmse": 0.9805585102076143,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 16,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 17.9
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7202040298776058,
+      "model": "linear_var",
+      "nrmse": 0.8025235389217206,
+      "qualified": true,
+      "rmse": 0.9595388873867149,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 17,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 19.25
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7659524606834693,
+      "model": "linear_var",
+      "nrmse": 0.8456811685186971,
+      "qualified": true,
+      "rmse": 1.0088422133463006,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 18,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 19.05
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.7709941019120266,
+      "model": "linear_var",
+      "nrmse": 0.8619144259912569,
+      "qualified": true,
+      "rmse": 1.0147870603571498,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 19,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 17.45
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8658374995508431,
+      "model": "persistence",
+      "nrmse": 0.9955535092941544,
+      "qualified": true,
+      "rmse": 1.186943129299996,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 0,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 15.6
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8770282647920945,
+      "model": "persistence",
+      "nrmse": 0.9848431666356393,
+      "qualified": true,
+      "rmse": 1.1738456960102712,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 1,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 12.05
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8937010018848208,
+      "model": "persistence",
+      "nrmse": 1.0400918691681929,
+      "qualified": true,
+      "rmse": 1.2330495637221428,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 2,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 14.05
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9388683800677363,
+      "model": "persistence",
+      "nrmse": 1.027707817718969,
+      "qualified": true,
+      "rmse": 1.2209008141037883,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 3,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 11.75
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.902870845938956,
+      "model": "persistence",
+      "nrmse": 1.0134953150716406,
+      "qualified": true,
+      "rmse": 1.203243860193195,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 4,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 11.9
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8310942495815697,
+      "model": "persistence",
+      "nrmse": 1.0008836697036798,
+      "qualified": true,
+      "rmse": 1.1823733533701624,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 5,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 20.35
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8982471914166936,
+      "model": "persistence",
+      "nrmse": 1.0243360108711703,
+      "qualified": true,
+      "rmse": 1.2217978897793311,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 6,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.25
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8311741793116822,
+      "model": "persistence",
+      "nrmse": 0.9509232600761127,
+      "qualified": true,
+      "rmse": 1.1306420056052762,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 7,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 14.1
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8528153184744579,
+      "model": "persistence",
+      "nrmse": 1.008814718497218,
+      "qualified": true,
+      "rmse": 1.1866985262574192,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 8,
+      "vpt_censored_fraction": 0.05,
+      "vpt_steps": 16.7
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8527257604028019,
+      "model": "persistence",
+      "nrmse": 1.0066168237626787,
+      "qualified": true,
+      "rmse": 1.1969105616237572,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 9,
+      "vpt_censored_fraction": 0.05,
+      "vpt_steps": 20.45
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9033117202603939,
+      "model": "persistence",
+      "nrmse": 1.0581393102823016,
+      "qualified": true,
+      "rmse": 1.2505777231937987,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 10,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 15.05
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8646362691650035,
+      "model": "persistence",
+      "nrmse": 0.9789094490747206,
+      "qualified": true,
+      "rmse": 1.172424827011415,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 11,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 15.05
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8897762335653053,
+      "model": "persistence",
+      "nrmse": 1.025975182599271,
+      "qualified": true,
+      "rmse": 1.2270618087573695,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 12,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 17.25
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9074901288204354,
+      "model": "persistence",
+      "nrmse": 1.0122870300412452,
+      "qualified": true,
+      "rmse": 1.2073979558327548,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 13,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.05
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8924842623394461,
+      "model": "persistence",
+      "nrmse": 0.9944155610384457,
+      "qualified": true,
+      "rmse": 1.18530710788661,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 14,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.55
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9096595905946294,
+      "model": "persistence",
+      "nrmse": 1.024407284874257,
+      "qualified": true,
+      "rmse": 1.228669531128078,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 15,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.85
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8267663603274613,
+      "model": "persistence",
+      "nrmse": 0.9547337319216803,
+      "qualified": true,
+      "rmse": 1.141296216266102,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 16,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 11.45
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8993965874452069,
+      "model": "persistence",
+      "nrmse": 1.010892080859853,
+      "qualified": true,
+      "rmse": 1.2086751546747077,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 17,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.15
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8950204295000246,
+      "model": "persistence",
+      "nrmse": 1.0101179015974588,
+      "qualified": true,
+      "rmse": 1.205004459746074,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 18,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 14.15
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.8609372056280767,
+      "model": "persistence",
+      "nrmse": 0.9866454782228036,
+      "qualified": true,
+      "rmse": 1.1616409173206592,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 19,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 13.3
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9523370789869223,
+      "model": "training_mean",
+      "nrmse": 0.9735490922787616,
+      "qualified": true,
+      "rmse": 1.1607084856099847,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 0,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9757632658974502,
+      "model": "training_mean",
+      "nrmse": 0.9915835661689705,
+      "qualified": true,
+      "rmse": 1.181879654359822,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 1,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0150027224831943,
+      "model": "training_mean",
+      "nrmse": 1.0349160444684222,
+      "qualified": true,
+      "rmse": 1.2269135207656119,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 2,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.997141776331529,
+      "model": "training_mean",
+      "nrmse": 1.0172720096434191,
+      "qualified": true,
+      "rmse": 1.2085032373260336,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 3,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9806296375597431,
+      "model": "training_mean",
+      "nrmse": 0.999534328088492,
+      "qualified": true,
+      "rmse": 1.1866690703348686,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 4,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0470107257436991,
+      "model": "training_mean",
+      "nrmse": 1.0666932707365553,
+      "qualified": true,
+      "rmse": 1.2601161730529233,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 5,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0223156632146755,
+      "model": "training_mean",
+      "nrmse": 1.0436337989048692,
+      "qualified": true,
+      "rmse": 1.24481572420744,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 6,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.017340378439103,
+      "model": "training_mean",
+      "nrmse": 1.0351076544806928,
+      "qualified": true,
+      "rmse": 1.2307367414545618,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 7,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0140928417263333,
+      "model": "training_mean",
+      "nrmse": 1.04995519332728,
+      "qualified": true,
+      "rmse": 1.2350932809682662,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 8,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0088035792173167,
+      "model": "training_mean",
+      "nrmse": 1.0240218187066683,
+      "qualified": true,
+      "rmse": 1.2176058468422175,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 9,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0735961050575333,
+      "model": "training_mean",
+      "nrmse": 1.085826947722854,
+      "qualified": true,
+      "rmse": 1.2833007703904702,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 10,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9726391156673009,
+      "model": "training_mean",
+      "nrmse": 0.9857152654109379,
+      "qualified": true,
+      "rmse": 1.1805760488105337,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 11,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.1077142577607813,
+      "model": "training_mean",
+      "nrmse": 1.1122097310790242,
+      "qualified": true,
+      "rmse": 1.3301979496987737,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 12,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9423870234478374,
+      "model": "training_mean",
+      "nrmse": 0.9677143509673534,
+      "qualified": true,
+      "rmse": 1.1542342186685894,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 13,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9773676247937124,
+      "model": "training_mean",
+      "nrmse": 0.9965582834361153,
+      "qualified": true,
+      "rmse": 1.1878611548944156,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 14,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9965622646384925,
+      "model": "training_mean",
+      "nrmse": 1.0059719273592787,
+      "qualified": true,
+      "rmse": 1.2065582455012023,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 15,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9698180726953811,
+      "model": "training_mean",
+      "nrmse": 0.9887655355369446,
+      "qualified": true,
+      "rmse": 1.1819781021157143,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 16,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0005565717975726,
+      "model": "training_mean",
+      "nrmse": 1.010193309398179,
+      "qualified": true,
+      "rmse": 1.2078396671676705,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 17,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 0.9862665694748756,
+      "model": "training_mean",
+      "nrmse": 1.0019022468905163,
+      "qualified": true,
+      "rmse": 1.1952037220837246,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 18,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    },
+    {
+      "complete": true,
+      "divergence_fraction": 0.0,
+      "failed_origins": 0,
+      "finite_divergent_origins": 0,
+      "mae": 1.0217566613925315,
+      "model": "training_mean",
+      "nrmse": 1.0452009763449432,
+      "qualified": true,
+      "rmse": 1.230582055808713,
+      "scheduled_origins": 20,
+      "seed": 20261105,
+      "successful_origins": 20,
+      "track": "A",
+      "trajectory": 19,
+      "vpt_censored_fraction": 0.0,
+      "vpt_steps": 1.0
+    }
+  ],
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "experiment_sha256": "a43f9a9ee865bd0d98124eb5093f7a77ae6c7ae3290b7f32d95a8a397b555bda",
+  "failed_origins": [
+    {
+      "error": "FloatingPointError('Nonfinite autonomous pod_nvar at lead 90')",
+      "first_target": 8000,
+      "model": "pod_nvar",
+      "receipt_sha256": "82558d1d498bca3a5d846daed734f40e0262da1c9266bee300e5056628fd4812",
+      "trajectory": 5
+    },
+    {
+      "error": "FloatingPointError('Nonfinite autonomous pod_nvar at lead 95')",
+      "first_target": 8200,
+      "model": "pod_nvar",
+      "receipt_sha256": "2d6b7af469091c0abfaaf8247e1dbc968a7144d5a6f4480ac0ad0815e2f1bf67",
+      "trajectory": 5
+    },
+    {
+      "error": "FloatingPointError('Nonfinite autonomous pod_nvar at lead 98')",
+      "first_target": 8800,
+      "model": "pod_nvar",
+      "receipt_sha256": "d57f5ce5534ec31a770729500c5f97c43d168516e78c84f2a5c11c7e8439b0a6",
+      "trajectory": 11
+    },
+    {
+      "error": "FloatingPointError('Nonfinite autonomous pod_nvar at lead 86')",
+      "first_target": 9000,
+      "model": "pod_nvar",
+      "receipt_sha256": "735416e14219a80852a9d73d287c4500e683ce92cda9dc07dadad9a0dc2ea5d7",
+      "trajectory": 18
+    }
+  ],
+  "finite_divergent_origins": [
+    {
+      "first_target": 9700,
+      "maximum_horizon_nrmse": 5.381474865021962e+44,
+      "model": "pod_nvar",
+      "receipt_sha256": "1d30bdc8c6c2d19ffd90012d5e0855e3805bdb45d2b395b369e0f591b93237bc",
+      "rmse": 6.416033449640663e+43,
+      "trajectory": 0
+    },
+    {
+      "first_target": 8300,
+      "maximum_horizon_nrmse": 1066326.5826996209,
+      "model": "pod_nvar",
+      "receipt_sha256": "5c851e415b9c3274fa973997f6d43da8008ff3b33b843e155c3b9cbf2d8b9aa8",
+      "rmse": 127097.00305034054,
+      "trajectory": 1
+    }
+  ],
+  "freeze_identity": "ca6d8dac49208767f0073a747a3fbc7ee37648715a22abc32e539378b75756dc",
+  "freeze_sha256": "90e9a5e82e077eae15c19ae887496f1ec4b4fc706925d961ae539852efd699e8",
+  "predeclared_horizon_audit": {
+    "causal_interpretation": "These are observed predictive outcomes. They do not identify the cause of deterioration; all selected native Track A final fits qualified under the frozen inference criterion. No general conclusion about Bayesian methods follows.",
+    "elapsed_seconds": 0.9107740240015119,
+    "horizons": [
+      1,
+      5,
+      10,
+      25,
+      50,
+      100
+    ],
+    "physical_elapsed_times": [
+      0.25,
+      1.25,
+      2.5,
+      6.25,
+      12.5,
+      25.0
+    ],
+    "point_error_rule": "For each lead and trajectory, take sqrt(mean spatial MSE over20 origins), then average trajectory root-MSE values. NRMSE uses each trajectory training SD before averaging.",
+    "point_population": "Same complete trajectories as the main aggregate;20 per family except17 for POD-NVAR. All finite extreme errors retained.",
+    "probability_rule": "Within each qualified complete trajectory average the saved lead CRPS and90% coverage/width over20 origins, then average qualified trajectories.",
+    "rows": [
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.6191562499999999,
+            0.6806510416666665
+          ],
+          "mean": 0.6502083333333333,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.05209285421794882,
+            0.06694476781777303
+          ],
+          "mean": 0.05916073969517257,
+          "n": 20
+        },
+        "elapsed_physical_time": 0.25,
+        "horizon": 1,
+        "mae": {
+          "ci95": [
+            0.06688618324779791,
+            0.08437922300415135
+          ],
+          "mean": 0.07519036481009503,
+          "n": 20
+        },
+        "model": "bayes_stesn",
+        "nrmse": {
+          "ci95": [
+            0.07880634762590946,
+            0.10176730337779809
+          ],
+          "mean": 0.0896280441418312,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            0.09364006120884662,
+            0.12093164577887155
+          ],
+          "mean": 0.1065998888323785,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            0.13991837415698924,
+            0.1766175821535109
+          ],
+          "mean": 0.15569307767281215,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.49395833333333333,
+            0.5550052083333333
+          ],
+          "mean": 0.5233333333333334,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.4627736472163984,
+            0.5988513013673744
+          ],
+          "mean": 0.5242813570538873,
+          "n": 20
+        },
+        "elapsed_physical_time": 1.25,
+        "horizon": 5,
+        "mae": {
+          "ci95": [
+            0.5774163026798167,
+            0.7328433513171995
+          ],
+          "mean": 0.6480913301061053,
+          "n": 20
+        },
+        "model": "bayes_stesn",
+        "nrmse": {
+          "ci95": [
+            0.6457258621376046,
+            0.8399830749713952
+          ],
+          "mean": 0.7297563800004023,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            0.7680044960523463,
+            1.0008101640231513
+          ],
+          "mean": 0.8679846384122725,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            0.9684165330200324,
+            1.2671393302254257
+          ],
+          "mean": 1.093542708835877,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.6549895833333332,
+            0.7072916666666667
+          ],
+          "mean": 0.6820833333333334,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.8345109377801625,
+            0.9467820891156479
+          ],
+          "mean": 0.8849662950585243,
+          "n": 20
+        },
+        "elapsed_physical_time": 2.5,
+        "horizon": 10,
+        "mae": {
+          "ci95": [
+            1.0907015781763798,
+            1.2445708190428804
+          ],
+          "mean": 1.1578454733563057,
+          "n": 20
+        },
+        "model": "bayes_stesn",
+        "nrmse": {
+          "ci95": [
+            1.17184066550246,
+            1.339555304536453
+          ],
+          "mean": 1.2431987051215194,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            1.3944805454598996,
+            1.5930442219074938
+          ],
+          "mean": 1.4788826258272487,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            2.7593892347934297,
+            3.268238015064017
+          ],
+          "mean": 2.9998077007331396,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.8995781249999999,
+            0.9454218750000001
+          ],
+          "mean": 0.9243749999999998,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.8484566605217921,
+            1.0411029176470523
+          ],
+          "mean": 0.9282110265716452,
+          "n": 20
+        },
+        "elapsed_physical_time": 6.25,
+        "horizon": 25,
+        "mae": {
+          "ci95": [
+            1.1567600006202647,
+            1.4014079329522828
+          ],
+          "mean": 1.261524777967717,
+          "n": 20
+        },
+        "model": "bayes_stesn",
+        "nrmse": {
+          "ci95": [
+            1.2099725401249926,
+            1.4814764885354297
+          ],
+          "mean": 1.3242177746189547,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            1.4409849626815403,
+            1.763002735710973
+          ],
+          "mean": 1.5754323069424863,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            5.422874370516655,
+            6.0622215132857145
+          ],
+          "mean": 5.7092739011700555,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.9577083333333334,
+            0.9850000000000001
+          ],
+          "mean": 0.9720833333333335,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.800528827592912,
+            0.9679024381029673
+          ],
+          "mean": 0.8717747090534876,
+          "n": 20
+        },
+        "elapsed_physical_time": 12.5,
+        "horizon": 50,
+        "mae": {
+          "ci95": [
+            1.081848714661789,
+            1.3043160722036342
+          ],
+          "mean": 1.1808541533506633,
+          "n": 20
+        },
+        "model": "bayes_stesn",
+        "nrmse": {
+          "ci95": [
+            1.1132042303332301,
+            1.3516383088787893
+          ],
+          "mean": 1.2171935140550745,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            1.32453182624088,
+            1.6099001825518693
+          ],
+          "mean": 1.4481522728132725,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            6.044363519692879,
+            6.772422349853515
+          ],
+          "mean": 6.347323979965668,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.9650000000000002,
+            0.9889583333333334
+          ],
+          "mean": 0.9785416666666666,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.7938186648216919,
+            0.9221360712151795
+          ],
+          "mean": 0.8536554325166937,
+          "n": 20
+        },
+        "elapsed_physical_time": 25.0,
+        "horizon": 100,
+        "mae": {
+          "ci95": [
+            1.0626947118972287,
+            1.2266201698801207
+          ],
+          "mean": 1.1409855290419844,
+          "n": 20
+        },
+        "model": "bayes_stesn",
+        "nrmse": {
+          "ci95": [
+            1.0916936992611246,
+            1.2530413763376156
+          ],
+          "mean": 1.1684044633735358,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            1.2978551266545442,
+            1.4906158927154245
+          ],
+          "mean": 1.3900946430932617,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            6.094319334309529,
+            7.082633969854525
+          ],
+          "mean": 6.477437031670833,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.9895833333333334,
+            0.9947916666666667
+          ],
+          "mean": 0.9922916666666668,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.045295068461229,
+            0.047102047885081884
+          ],
+          "mean": 0.046230716708281445,
+          "n": 20
+        },
+        "elapsed_physical_time": 0.25,
+        "horizon": 1,
+        "mae": {
+          "ci95": [
+            0.039071291520747245,
+            0.04244482005274682
+          ],
+          "mean": 0.040770497344245024,
+          "n": 20
+        },
+        "model": "separable_gp",
+        "nrmse": {
+          "ci95": [
+            0.048496512581639936,
+            0.05473203827619824
+          ],
+          "mean": 0.05171979135664554,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            0.057664171551084935,
+            0.06504883464455535
+          ],
+          "mean": 0.06153535537513496,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            0.5238473153243304,
+            0.5281118269504067
+          ],
+          "mean": 0.5259838457780225,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.9314531249999999,
+            0.9479166666666666
+          ],
+          "mean": 0.9391666666666666,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.14788437657312095,
+            0.1591004151237892
+          ],
+          "mean": 0.15386950570467736,
+          "n": 20
+        },
+        "elapsed_physical_time": 1.25,
+        "horizon": 5,
+        "mae": {
+          "ci95": [
+            0.18600584451819788,
+            0.20059698519718985
+          ],
+          "mean": 0.19369095919260382,
+          "n": 20
+        },
+        "model": "separable_gp",
+        "nrmse": {
+          "ci95": [
+            0.22891476091345087,
+            0.2558481039708074
+          ],
+          "mean": 0.24304635015653103,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            0.27232378451606015,
+            0.3043198778446802
+          ],
+          "mean": 0.28916918454655105,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            1.0958802532304128,
+            1.107036858212552
+          ],
+          "mean": 1.101579881418966,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.8731250000000002,
+            0.8941666666666667
+          ],
+          "mean": 0.8833333333333332,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.27337680761897154,
+            0.29508030883559266
+          ],
+          "mean": 0.2844331393968721,
+          "n": 20
+        },
+        "elapsed_physical_time": 2.5,
+        "horizon": 10,
+        "mae": {
+          "ci95": [
+            0.3604026788307773,
+            0.38651066182809823
+          ],
+          "mean": 0.374147851499088,
+          "n": 20
+        },
+        "model": "separable_gp",
+        "nrmse": {
+          "ci95": [
+            0.4349751709029763,
+            0.47988151601088586
+          ],
+          "mean": 0.4576131560083179,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            0.5171543348596069,
+            0.5710224182561792
+          ],
+          "mean": 0.5444713744752231,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            1.528602704898173,
+            1.5453979954170871
+          ],
+          "mean": 1.5370966419057681,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.7466666666666668,
+            0.77
+          ],
+          "mean": 0.7589583333333334,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.6076968403299432,
+            0.6412580314908126
+          ],
+          "mean": 0.6236931688406249,
+          "n": 20
+        },
+        "elapsed_physical_time": 6.25,
+        "horizon": 25,
+        "mae": {
+          "ci95": [
+            0.8046250246603075,
+            0.8405506223734324
+          ],
+          "mean": 0.8229031579164241,
+          "n": 20
+        },
+        "model": "separable_gp",
+        "nrmse": {
+          "ci95": [
+            0.9337470781504783,
+            0.9835246541189346
+          ],
+          "mean": 0.9572580759288772,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            1.1103695439545966,
+            1.170264629743129
+          ],
+          "mean": 1.1389091143316694,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            2.3570750640232494,
+            2.3815799720682493
+          ],
+          "mean": 2.369447014583726,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.7458281249999998,
+            0.7681302083333333
+          ],
+          "mean": 0.7570833333333333,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.7781692227039865,
+            0.810767635004459
+          ],
+          "mean": 0.7941943630945696,
+          "n": 20
+        },
+        "elapsed_physical_time": 12.5,
+        "horizon": 50,
+        "mae": {
+          "ci95": [
+            1.059967691092707,
+            1.1045548579460323
+          ],
+          "mean": 1.0827084158863483,
+          "n": 20
+        },
+        "model": "separable_gp",
+        "nrmse": {
+          "ci95": [
+            1.1466925351390929,
+            1.187593192375724
+          ],
+          "mean": 1.1659770167162524,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            1.364222473311356,
+            1.4125069004555424
+          ],
+          "mean": 1.3870866109757105,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            3.2301560280877233,
+            3.258944547010795
+          ],
+          "mean": 3.244074269191445,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.9054166666666665,
+            0.9208385416666667
+          ],
+          "mean": 0.9135416666666666,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.6717194457778828,
+            0.6974689538421841
+          ],
+          "mean": 0.6842645370147754,
+          "n": 20
+        },
+        "elapsed_physical_time": 25.0,
+        "horizon": 100,
+        "mae": {
+          "ci95": [
+            0.9264033218090238,
+            0.9706526553908281
+          ],
+          "mean": 0.9486822415600924,
+          "n": 20
+        },
+        "model": "separable_gp",
+        "nrmse": {
+          "ci95": [
+            1.0022445246027882,
+            1.0386430922947514
+          ],
+          "mean": 1.0204280065140083,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            1.1927769598696183,
+            1.2362208440989428
+          ],
+          "mean": 1.214011524706437,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            4.306836445377734,
+            4.338179427875478
+          ],
+          "mean": 4.322371984708062,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.8983333333333332,
+            0.9295833333333332
+          ],
+          "mean": 0.9141666666666666,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.03297581470367084,
+            0.050945739822264406
+          ],
+          "mean": 0.041527327892870655,
+          "n": 20
+        },
+        "elapsed_physical_time": 0.25,
+        "horizon": 1,
+        "mae": {
+          "ci95": [
+            0.044280281985555205,
+            0.06721949754137711
+          ],
+          "mean": 0.05508351944208042,
+          "n": 20
+        },
+        "model": "basis_gru",
+        "nrmse": {
+          "ci95": [
+            0.051025369983661154,
+            0.07793782338260064
+          ],
+          "mean": 0.06367488923279796,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            0.06068280520302051,
+            0.09293286363864572
+          ],
+          "mean": 0.0758580594376965,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            0.20735939077113835,
+            0.35540608907990556
+          ],
+          "mean": 0.2768146505030167,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.7114479166666667,
+            0.764375
+          ],
+          "mean": 0.7383333333333334,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.08905322844267315,
+            0.12309130817157522
+          ],
+          "mean": 0.10538914690995768,
+          "n": 20
+        },
+        "elapsed_physical_time": 1.25,
+        "horizon": 5,
+        "mae": {
+          "ci95": [
+            0.11707169359439114,
+            0.16251258789096215
+          ],
+          "mean": 0.1387716879946114,
+          "n": 20
+        },
+        "model": "basis_gru",
+        "nrmse": {
+          "ci95": [
+            0.1376444713500151,
+            0.19194100975955922
+          ],
+          "mean": 0.1634637270456561,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            0.16365108208721463,
+            0.22888042615341542
+          ],
+          "mean": 0.19467843339458973,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            0.30834548196900957,
+            0.4739650266776353
+          ],
+          "mean": 0.3870660866189373,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.610828125,
+            0.6589583333333333
+          ],
+          "mean": 0.635625,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.15915752249417542,
+            0.2164601637630576
+          ],
+          "mean": 0.18659370162241173,
+          "n": 20
+        },
+        "elapsed_physical_time": 2.5,
+        "horizon": 10,
+        "mae": {
+          "ci95": [
+            0.20374705919911443,
+            0.27791981796887466
+          ],
+          "mean": 0.23933739293702527,
+          "n": 20
+        },
+        "model": "basis_gru",
+        "nrmse": {
+          "ci95": [
+            0.2356541181497607,
+            0.3215566798900116
+          ],
+          "mean": 0.276954303151952,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            0.28024093113389137,
+            0.383580268400775
+          ],
+          "mean": 0.32981920011384014,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            0.4225165984694227,
+            0.6016541300134566
+          ],
+          "mean": 0.5088400999694349,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.5083333333333333,
+            0.5614687499999998
+          ],
+          "mean": 0.5354166666666667,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.3901531246641981,
+            0.5034017570842123
+          ],
+          "mean": 0.4442241814983259,
+          "n": 20
+        },
+        "elapsed_physical_time": 6.25,
+        "horizon": 25,
+        "mae": {
+          "ci95": [
+            0.49131349974022265,
+            0.6248175746729685
+          ],
+          "mean": 0.556350267165812,
+          "n": 20
+        },
+        "model": "basis_gru",
+        "nrmse": {
+          "ci95": [
+            0.5585426482607763,
+            0.7082011028749728
+          ],
+          "mean": 0.631066699888714,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            0.6642433339621726,
+            0.8440269033618916
+          ],
+          "mean": 0.7513016950913175,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            0.8666758498497211,
+            1.038735028319433
+          ],
+          "mean": 0.9499441624975171,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.5456197916666666,
+            0.6056250000000001
+          ],
+          "mean": 0.5764583333333334,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.7377846362166603,
+            0.8085212204870521
+          ],
+          "mean": 0.7737547876252878,
+          "n": 20
+        },
+        "elapsed_physical_time": 12.5,
+        "horizon": 50,
+        "mae": {
+          "ci95": [
+            0.9413872846740353,
+            1.018630720035513
+          ],
+          "mean": 0.979593416487277,
+          "n": 20
+        },
+        "model": "basis_gru",
+        "nrmse": {
+          "ci95": [
+            1.050491046869075,
+            1.133168403461635
+          ],
+          "mean": 1.0911291440958395,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            1.250216519805637,
+            1.3469399219946676
+          ],
+          "mean": 1.2980270135249252,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            1.8540407301646353,
+            1.9788006281238386
+          ],
+          "mean": 1.9149339782245096,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": [
+            0.7389583333333334,
+            0.7908333333333333
+          ],
+          "mean": 0.7654166666666666,
+          "n": 20
+        },
+        "crps": {
+          "ci95": [
+            0.8080807595066658,
+            0.8502125549401236
+          ],
+          "mean": 0.8294767937389882,
+          "n": 20
+        },
+        "elapsed_physical_time": 25.0,
+        "horizon": 100,
+        "mae": {
+          "ci95": [
+            1.0832455613281062,
+            1.133093654774271
+          ],
+          "mean": 1.1086268773526617,
+          "n": 20
+        },
+        "model": "basis_gru",
+        "nrmse": {
+          "ci95": [
+            1.1290965925133973,
+            1.1730459855306545
+          ],
+          "mean": 1.151660220776592,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 20,
+        "rmse": {
+          "ci95": [
+            1.3420453322738544,
+            1.3974441884409163
+          ],
+          "mean": 1.3702608344217468,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": [
+            3.255446896088915,
+            3.607040138931836
+          ],
+          "mean": 3.4361164648051483,
+          "n": 20
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 0.25,
+        "horizon": 1,
+        "mae": {
+          "ci95": [
+            0.09027461760697254,
+            0.09671011042837284
+          ],
+          "mean": 0.09337192680027015,
+          "n": 20
+        },
+        "model": "ridge_esn",
+        "nrmse": {
+          "ci95": [
+            0.09972603957782912,
+            0.10667655105842713
+          ],
+          "mean": 0.10313220124000869,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.11873749137094342,
+            0.1268866472893479
+          ],
+          "mean": 0.1226876634600784,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 1.25,
+        "horizon": 5,
+        "mae": {
+          "ci95": [
+            0.13998597381433503,
+            0.1605051648087953
+          ],
+          "mean": 0.15026489153154057,
+          "n": 20
+        },
+        "model": "ridge_esn",
+        "nrmse": {
+          "ci95": [
+            0.1622557274353595,
+            0.1860558253482273
+          ],
+          "mean": 0.17410874663436887,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.19288872250762432,
+            0.22151879979748956
+          ],
+          "mean": 0.2071301954322886,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 2.5,
+        "horizon": 10,
+        "mae": {
+          "ci95": [
+            0.22700140211563283,
+            0.2688036302746287
+          ],
+          "mean": 0.24747840225204074,
+          "n": 20
+        },
+        "model": "ridge_esn",
+        "nrmse": {
+          "ci95": [
+            0.27129365904597236,
+            0.32104583724451313
+          ],
+          "mean": 0.29594360320908747,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.3232557810178686,
+            0.3818626228608317
+          ],
+          "mean": 0.35207228258825063,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 6.25,
+        "horizon": 25,
+        "mae": {
+          "ci95": [
+            0.5597458481773318,
+            0.674572926557017
+          ],
+          "mean": 0.6150711266525325,
+          "n": 20
+        },
+        "model": "ridge_esn",
+        "nrmse": {
+          "ci95": [
+            0.6797447157087495,
+            0.8043176029205428
+          ],
+          "mean": 0.7414734843079779,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.8095440715284861,
+            0.9548950136790263
+          ],
+          "mean": 0.8819787100334698,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 12.5,
+        "horizon": 50,
+        "mae": {
+          "ci95": [
+            1.0427801190436168,
+            1.183060956005533
+          ],
+          "mean": 1.1101521488074662,
+          "n": 20
+        },
+        "model": "ridge_esn",
+        "nrmse": {
+          "ci95": [
+            1.1705901245565655,
+            1.2941954750060478
+          ],
+          "mean": 1.2308710640720086,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.3932574502525983,
+            1.5393599265144988
+          ],
+          "mean": 1.4642990094795274,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 25.0,
+        "horizon": 100,
+        "mae": {
+          "ci95": [
+            1.3491999993315962,
+            1.4386149760339588
+          ],
+          "mean": 1.396005706977408,
+          "n": 20
+        },
+        "model": "ridge_esn",
+        "nrmse": {
+          "ci95": [
+            1.4155538768128675,
+            1.4956708657236615
+          ],
+          "mean": 1.456645923006821,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.684183133163931,
+            1.7795706219257268
+          ],
+          "mean": 1.732962606741888,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 17,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 0.25,
+        "horizon": 1,
+        "mae": {
+          "ci95": [
+            0.08177968429560935,
+            0.08546569806669387
+          ],
+          "mean": 0.08353062051686361,
+          "n": 17
+        },
+        "model": "pod_nvar",
+        "nrmse": {
+          "ci95": [
+            0.08988825230963544,
+            0.09374888006514265
+          ],
+          "mean": 0.09173207826028561,
+          "n": 17
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.10690215322198338,
+            0.11151407491154651
+          ],
+          "mean": 0.10911514595874693,
+          "n": 17
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 17,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 1.25,
+        "horizon": 5,
+        "mae": {
+          "ci95": [
+            0.084464190056513,
+            0.08836112967286049
+          ],
+          "mean": 0.0863291444594156,
+          "n": 17
+        },
+        "model": "pod_nvar",
+        "nrmse": {
+          "ci95": [
+            0.09108850966127265,
+            0.09499824105497333
+          ],
+          "mean": 0.09298380762821226,
+          "n": 17
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.10843252778709543,
+            0.11293592233571455
+          ],
+          "mean": 0.11060111317590733,
+          "n": 17
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 17,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 2.5,
+        "horizon": 10,
+        "mae": {
+          "ci95": [
+            0.08991500871022458,
+            0.09395583154437795
+          ],
+          "mean": 0.09184271754080447,
+          "n": 17
+        },
+        "model": "pod_nvar",
+        "nrmse": {
+          "ci95": [
+            0.0964467890470002,
+            0.10014907054443768
+          ],
+          "mean": 0.09824450395463334,
+          "n": 17
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.1148743459158398,
+            0.1190038705945841
+          ],
+          "mean": 0.1168551649367074,
+          "n": 17
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 17,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 6.25,
+        "horizon": 25,
+        "mae": {
+          "ci95": [
+            0.12203791941164963,
+            0.13604800310981247
+          ],
+          "mean": 0.12822367220580003,
+          "n": 17
+        },
+        "model": "pod_nvar",
+        "nrmse": {
+          "ci95": [
+            0.1331477130848823,
+            0.15118233759826966
+          ],
+          "mean": 0.14135180612874657,
+          "n": 17
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.15831824478249915,
+            0.18013241657839046
+          ],
+          "mean": 0.16816350516271011,
+          "n": 17
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 17,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 12.5,
+        "horizon": 50,
+        "mae": {
+          "ci95": [
+            0.2704791615910785,
+            0.32191450176771097
+          ],
+          "mean": 0.2963940783475569,
+          "n": 17
+        },
+        "model": "pod_nvar",
+        "nrmse": {
+          "ci95": [
+            0.3397493296474571,
+            0.4237232331418417
+          ],
+          "mean": 0.3827578124630845,
+          "n": 17
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.4038943654186085,
+            0.5046280865536439
+          ],
+          "mean": 0.4553569082955363,
+          "n": 17
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 17,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 25.0,
+        "horizon": 100,
+        "mae": {
+          "ci95": [
+            1.0049992585585432,
+            3.4366772314562797e+42
+          ],
+          "mean": 1.1455590771520932e+42,
+          "n": 17
+        },
+        "model": "pod_nvar",
+        "nrmse": {
+          "ci95": [
+            1.1707903867692833,
+            2.1235312265992263e+43
+          ],
+          "mean": 7.07843742199742e+42,
+          "n": 17
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.3918654192575783,
+            2.53176828340747e+43
+          ],
+          "mean": 8.439227611358233e+42,
+          "n": 17
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 0.25,
+        "horizon": 1,
+        "mae": {
+          "ci95": [
+            0.08177103044991989,
+            0.08516015698053467
+          ],
+          "mean": 0.083422111632107,
+          "n": 20
+        },
+        "model": "linear_var",
+        "nrmse": {
+          "ci95": [
+            0.09025531237368814,
+            0.09379912603675965
+          ],
+          "mean": 0.09199533075800659,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.10738981395903278,
+            0.1115985606416094
+          ],
+          "mean": 0.10944702302659681,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 1.25,
+        "horizon": 5,
+        "mae": {
+          "ci95": [
+            0.09512459293099332,
+            0.09934815798863073
+          ],
+          "mean": 0.09729627936305671,
+          "n": 20
+        },
+        "model": "linear_var",
+        "nrmse": {
+          "ci95": [
+            0.10574704059598275,
+            0.11100624311759892
+          ],
+          "mean": 0.10841116812368748,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.12583495985244575,
+            0.13195535658214036
+          ],
+          "mean": 0.12896616599464614,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 2.5,
+        "horizon": 10,
+        "mae": {
+          "ci95": [
+            0.18617432717687601,
+            0.19528444539226267
+          ],
+          "mean": 0.19082455614611224,
+          "n": 20
+        },
+        "model": "linear_var",
+        "nrmse": {
+          "ci95": [
+            0.21628613272198932,
+            0.23417286804137755
+          ],
+          "mean": 0.22548857306009568,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.2573944748485514,
+            0.278541113718002
+          ],
+          "mean": 0.2682438660037858,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 6.25,
+        "horizon": 25,
+        "mae": {
+          "ci95": [
+            0.6458068255996633,
+            0.6747814645602715
+          ],
+          "mean": 0.6599007589556701,
+          "n": 20
+        },
+        "model": "linear_var",
+        "nrmse": {
+          "ci95": [
+            0.709079086545855,
+            0.7434343866073146
+          ],
+          "mean": 0.7260509880108732,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.844307935833458,
+            0.8835527772268322
+          ],
+          "mean": 0.863694210579698,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 12.5,
+        "horizon": 50,
+        "mae": {
+          "ci95": [
+            0.8883003042068178,
+            0.9326862018816763
+          ],
+          "mean": 0.9104355298109752,
+          "n": 20
+        },
+        "model": "linear_var",
+        "nrmse": {
+          "ci95": [
+            0.9256399524110123,
+            0.9695575501619615
+          ],
+          "mean": 0.9472685094618878,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.1019429180428224,
+            1.1523559651851032
+          ],
+          "mean": 1.1268561151460585,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 25.0,
+        "horizon": 100,
+        "mae": {
+          "ci95": [
+            0.9003618831995139,
+            0.9391723253070084
+          ],
+          "mean": 0.9197020396520147,
+          "n": 20
+        },
+        "model": "linear_var",
+        "nrmse": {
+          "ci95": [
+            0.9360658145033297,
+            0.9679996852206509
+          ],
+          "mean": 0.9521247123016815,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.1138081357364087,
+            1.1512295036430187
+          ],
+          "mean": 1.1327192140362465,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 0.25,
+        "horizon": 1,
+        "mae": {
+          "ci95": [
+            0.09594970205232269,
+            0.09886664883641572
+          ],
+          "mean": 0.09751597003836468,
+          "n": 20
+        },
+        "model": "persistence",
+        "nrmse": {
+          "ci95": [
+            0.10278929988916977,
+            0.10650856940880081
+          ],
+          "mean": 0.10468339402623654,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.12224538746629088,
+            0.12669140208082638
+          ],
+          "mean": 0.12454486537550616,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 1.25,
+        "horizon": 5,
+        "mae": {
+          "ci95": [
+            0.20518339277288122,
+            0.21812807183656036
+          ],
+          "mean": 0.21187751571285435,
+          "n": 20
+        },
+        "model": "persistence",
+        "nrmse": {
+          "ci95": [
+            0.2384159612621059,
+            0.2615093801671117
+          ],
+          "mean": 0.25048085589721714,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.28375369863880623,
+            0.3110663590888354
+          ],
+          "mean": 0.29801032308925757,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 2.5,
+        "horizon": 10,
+        "mae": {
+          "ci95": [
+            0.36423920841425655,
+            0.38724431527821723
+          ],
+          "mean": 0.3762092977740881,
+          "n": 20
+        },
+        "model": "persistence",
+        "nrmse": {
+          "ci95": [
+            0.4287298711127277,
+            0.469092170137937
+          ],
+          "mean": 0.4491859915494456,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            0.5097441220667913,
+            0.5584259460137359
+          ],
+          "mean": 0.5344379039507959,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 6.25,
+        "horizon": 25,
+        "mae": {
+          "ci95": [
+            0.8027893945389558,
+            0.8384106661953572
+          ],
+          "mean": 0.8211035443173282,
+          "n": 20
+        },
+        "model": "persistence",
+        "nrmse": {
+          "ci95": [
+            0.9223253891067427,
+            0.9703590331548629
+          ],
+          "mean": 0.9449881185812327,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.0970515226689916,
+            1.1542529026310893
+          ],
+          "mean": 1.1243079932654296,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 12.5,
+        "horizon": 50,
+        "mae": {
+          "ci95": [
+            1.0813190699382516,
+            1.1264573962656146
+          ],
+          "mean": 1.1039648002470734,
+          "n": 20
+        },
+        "model": "persistence",
+        "nrmse": {
+          "ci95": [
+            1.1660070936253961,
+            1.2072759989587616
+          ],
+          "mean": 1.1854835299259767,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.3873094655857336,
+            1.4357567394649742
+          ],
+          "mean": 1.410290761882657,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 25.0,
+        "horizon": 100,
+        "mae": {
+          "ci95": [
+            0.9846600540872811,
+            1.0324722768827526
+          ],
+          "mean": 1.0083979419231437,
+          "n": 20
+        },
+        "model": "persistence",
+        "nrmse": {
+          "ci95": [
+            1.065154294702257,
+            1.105891456796452
+          ],
+          "mean": 1.085536404509732,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.267949305694516,
+            1.3160419077530712
+          ],
+          "mean": 1.2914667011709466,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 0.25,
+        "horizon": 1,
+        "mae": {
+          "ci95": [
+            0.9788552849499689,
+            1.0149662877436743
+          ],
+          "mean": 0.9961521379651046,
+          "n": 20
+        },
+        "model": "training_mean",
+        "nrmse": {
+          "ci95": [
+            1.002699360244854,
+            1.0355031253860765
+          ],
+          "mean": 1.0184581496061231,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.192899868385401,
+            1.231620224417847
+          ],
+          "mean": 1.21164005487854,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 1.25,
+        "horizon": 5,
+        "mae": {
+          "ci95": [
+            0.979228695641634,
+            1.011301042509977
+          ],
+          "mean": 0.9948209161650332,
+          "n": 20
+        },
+        "model": "training_mean",
+        "nrmse": {
+          "ci95": [
+            1.0019916118761618,
+            1.0316838164637703
+          ],
+          "mean": 1.0167661053005232,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.1923631253489133,
+            1.2267676517544732
+          ],
+          "mean": 1.2096238756692919,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 2.5,
+        "horizon": 10,
+        "mae": {
+          "ci95": [
+            0.9741750099401556,
+            1.0082252077485128
+          ],
+          "mean": 0.9908095582863282,
+          "n": 20
+        },
+        "model": "training_mean",
+        "nrmse": {
+          "ci95": [
+            0.9959483241201751,
+            1.0252496718851074
+          ],
+          "mean": 1.0101873358316629,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.1851771731537404,
+            1.2192972227806593
+          ],
+          "mean": 1.201779070994046,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 6.25,
+        "horizon": 25,
+        "mae": {
+          "ci95": [
+            0.9869951914454271,
+            1.0303500325865456
+          ],
+          "mean": 1.0070390436040468,
+          "n": 20
+        },
+        "model": "training_mean",
+        "nrmse": {
+          "ci95": [
+            0.9998563349772697,
+            1.0395392937045842
+          ],
+          "mean": 1.018487399809386,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.1902064157401655,
+            1.236161291491844
+          ],
+          "mean": 1.211599144870454,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 12.5,
+        "horizon": 50,
+        "mae": {
+          "ci95": [
+            0.9922174067012023,
+            1.0308903514284602
+          ],
+          "mean": 1.0107597425986627,
+          "n": 20
+        },
+        "model": "training_mean",
+        "nrmse": {
+          "ci95": [
+            1.0057103798783504,
+            1.046268818262755
+          ],
+          "mean": 1.0252216464037613,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.19822831397848,
+            1.2429349329426305
+          ],
+          "mean": 1.219572328009505,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      },
+      {
+        "complete_trajectories": 20,
+        "coverage_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "crps": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        },
+        "elapsed_physical_time": 25.0,
+        "horizon": 100,
+        "mae": {
+          "ci95": [
+            0.9768480347650543,
+            1.0117881811297502
+          ],
+          "mean": 0.9935022585491777,
+          "n": 20
+        },
+        "model": "training_mean",
+        "nrmse": {
+          "ci95": [
+            1.0013984044960547,
+            1.0323639715601218
+          ],
+          "mean": 1.01637153146624,
+          "n": 20
+        },
+        "qualified_probability_trajectories": 0,
+        "rmse": {
+          "ci95": [
+            1.191537677805158,
+            1.2277856492211987
+          ],
+          "mean": 1.2091394147794765,
+          "n": 20
+        },
+        "seed": 20261105,
+        "track": "A",
+        "width_0_9": {
+          "ci95": null,
+          "mean": null,
+          "n": 0
+        }
+      }
+    ],
+    "source_receipt_manifest_sha256": "3b583a56782b7ef5c0fb128be3fb9c20478f6c4f50d7b9beaf4d1f5b32658929"
+  },
+  "protocol": {
+    "first_targets": [
+      8000,
+      8100,
+      8200,
+      8300,
+      8400,
+      8500,
+      8600,
+      8700,
+      8800,
+      8900,
+      9000,
+      9100,
+      9200,
+      9300,
+      9400,
+      9500,
+      9600,
+      9700,
+      9800,
+      9900
+    ],
+    "history": 128,
+    "horizon": 100,
+    "model_seed": 20261105,
+    "native_paths_per_origin": 512,
+    "permitted_training_sites": 39,
+    "physical_saved_cadence": 0.25,
+    "point_only_paths_per_origin": 0,
+    "test_sites": 12,
+    "track": "A",
+    "trajectories": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ]
+  },
+  "rows": [
+    {
+      "complete_trajectory_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "counts": {
+        "complete_trajectories": 20,
+        "failed_origins": 0,
+        "failure_or_divergence_origins": 0,
+        "finite_divergent_origins": 0,
+        "finite_successful_origins": 400,
+        "finite_successful_origins_excluded_incomplete_trajectories": 0,
+        "finite_successful_origins_in_score_population": 400,
+        "inference_unqualified_successful_origins": 0,
+        "pending_origins": 0,
+        "qualified_complete_trajectories": 20,
+        "qualified_fits": 20,
+        "scheduled_origins": 400,
+        "scheduled_trajectories": 20
+      },
+      "coverage_0_9": {
+        "ci95": [
+          0.9003721875000001,
+          0.9238506770833335
+        ],
+        "mean": 0.9131895833333334,
+        "n": 20
+      },
+      "crps": {
+        "ci95": [
+          0.7872197414083336,
+          0.9193583322690809
+        ],
+        "mean": 0.8447266316176888,
+        "n": 20
+      },
+      "divergence_fraction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 20
+      },
+      "fit_state_counts": {
+        "complete": 20
+      },
+      "full_schedule_point_score_defined": true,
+      "mae": {
+        "ci95": [
+          1.061965012708392,
+          1.2255278780549117
+        ],
+        "mean": 1.1372124322962875,
+        "n": 20
+      },
+      "model": "bayes_stesn",
+      "nrmse": {
+        "ci95": [
+          1.1201519068177523,
+          1.3022652478757522
+        ],
+        "mean": 1.2018133591626439,
+        "n": 20
+      },
+      "rmse": {
+        "ci95": [
+          1.3330441318224462,
+          1.5495191830393396
+        ],
+        "mean": 1.429797755382718,
+        "n": 20
+      },
+      "seed": 20261105,
+      "selected_config": "bayes_03",
+      "selection_eligible": true,
+      "source_receipt_count": 440,
+      "source_receipt_manifest_sha256": "a7e769b59b42baf89bcd02d428bdf8228607beafea5fd9f16e99797fa2037bbd",
+      "track": "A",
+      "vpt_censored_fraction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 20
+      },
+      "vpt_steps": {
+        "ci95": [
+          4.3925,
+          4.9375
+        ],
+        "mean": 4.6625000000000005,
+        "n": 20
+      },
+      "width_0_9": {
+        "ci95": [
+          5.322499886841373,
+          6.04021179293248
+        ],
+        "mean": 5.616666447398178,
+        "n": 20
+      }
+    },
+    {
+      "complete_trajectory_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "counts": {
+        "complete_trajectories": 20,
+        "failed_origins": 0,
+        "failure_or_divergence_origins": 0,
+        "finite_divergent_origins": 0,
+        "finite_successful_origins": 400,
+        "finite_successful_origins_excluded_incomplete_trajectories": 0,
+        "finite_successful_origins_in_score_population": 400,
+        "inference_unqualified_successful_origins": 0,
+        "pending_origins": 0,
+        "qualified_complete_trajectories": 20,
+        "qualified_fits": 20,
+        "scheduled_origins": 400,
+        "scheduled_trajectories": 20
+      },
+      "coverage_0_9": {
+        "ci95": [
+          0.8282351041666666,
+          0.8364688541666667
+        ],
+        "mean": 0.83246875,
+        "n": 20
+      },
+      "crps": {
+        "ci95": [
+          0.6221320228779479,
+          0.6370876567973286
+        ],
+        "mean": 0.6298027575716462,
+        "n": 20
+      },
+      "divergence_fraction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 20
+      },
+      "fit_state_counts": {
+        "complete": 20
+      },
+      "full_schedule_point_score_defined": true,
+      "mae": {
+        "ci95": [
+          0.8442994000557306,
+          0.8696908694776506
+        ],
+        "mean": 0.8571741525129365,
+        "n": 20
+      },
+      "model": "separable_gp",
+      "nrmse": {
+        "ci95": [
+          0.9724373216871558,
+          0.9942929567660296
+        ],
+        "mean": 0.9835279421426872,
+        "n": 20
+      },
+      "rmse": {
+        "ci95": [
+          1.1568111105274976,
+          1.1828007377029388
+        ],
+        "mean": 1.170096234862915,
+        "n": 20
+      },
+      "seed": 20261105,
+      "selected_config": "gp_00",
+      "selection_eligible": true,
+      "source_receipt_count": 440,
+      "source_receipt_manifest_sha256": "5f2a759c4243d19b4c46e3bf382a4164e00ba54cf7468435cc10037f9fc251c5",
+      "track": "A",
+      "vpt_censored_fraction": {
+        "ci95": [
+          0.0,
+          0.0075000000000000015
+        ],
+        "mean": 0.0025,
+        "n": 20
+      },
+      "vpt_steps": {
+        "ci95": [
+          13.41,
+          15.582625
+        ],
+        "mean": 14.382499999999999,
+        "n": 20
+      },
+      "width_0_9": {
+        "ci95": [
+          3.0355577586249822,
+          3.0601300116526624
+        ],
+        "mean": 3.0478657930920425,
+        "n": 20
+      }
+    },
+    {
+      "complete_trajectory_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "counts": {
+        "complete_trajectories": 20,
+        "failed_origins": 0,
+        "failure_or_divergence_origins": 0,
+        "finite_divergent_origins": 0,
+        "finite_successful_origins": 400,
+        "finite_successful_origins_excluded_incomplete_trajectories": 0,
+        "finite_successful_origins_in_score_population": 400,
+        "inference_unqualified_successful_origins": 0,
+        "pending_origins": 0,
+        "qualified_complete_trajectories": 20,
+        "qualified_fits": 20,
+        "scheduled_origins": 400,
+        "scheduled_trajectories": 20
+      },
+      "coverage_0_9": {
+        "ci95": [
+          0.6127630729166667,
+          0.6498298958333333
+        ],
+        "mean": 0.6316916666666668,
+        "n": 20
+      },
+      "crps": {
+        "ci95": [
+          0.6220716120921925,
+          0.6632367094393408
+        ],
+        "mean": 0.642943704057845,
+        "n": 20
+      },
+      "divergence_fraction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 20
+      },
+      "fit_state_counts": {
+        "complete": 20
+      },
+      "full_schedule_point_score_defined": true,
+      "mae": {
+        "ci95": [
+          0.8071322543513239,
+          0.8513433012873459
+        ],
+        "mean": 0.8292531937766559,
+        "n": 20
+      },
+      "model": "basis_gru",
+      "nrmse": {
+        "ci95": [
+          0.9527687801428892,
+          0.9883864918685656
+        ],
+        "mean": 0.9710444967136965,
+        "n": 20
+      },
+      "rmse": {
+        "ci95": [
+          1.1336089171198047,
+          1.1759439350867915
+        ],
+        "mean": 1.1552902683721131,
+        "n": 20
+      },
+      "seed": 20261105,
+      "selected_config": "gru_02",
+      "selection_eligible": true,
+      "source_receipt_count": 440,
+      "source_receipt_manifest_sha256": "fc8f1046aac6035550217cf3f0a6803b6cdfeb0bbd31ae9ab4f48b7be06dfc47",
+      "track": "A",
+      "vpt_censored_fraction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 20
+      },
+      "vpt_steps": {
+        "ci95": [
+          19.304937500000005,
+          23.853499999999993
+        ],
+        "mean": 21.66,
+        "n": 20
+      },
+      "width_0_9": {
+        "ci95": [
+          1.8485204547101932,
+          1.9525345072399198
+        ],
+        "mean": 1.9010920609111235,
+        "n": 20
+      }
+    },
+    {
+      "complete_trajectory_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "counts": {
+        "complete_trajectories": 20,
+        "failed_origins": 0,
+        "failure_or_divergence_origins": 0,
+        "finite_divergent_origins": 0,
+        "finite_successful_origins": 400,
+        "finite_successful_origins_excluded_incomplete_trajectories": 0,
+        "finite_successful_origins_in_score_population": 400,
+        "inference_unqualified_successful_origins": 0,
+        "pending_origins": 0,
+        "qualified_complete_trajectories": 20,
+        "qualified_fits": 20,
+        "scheduled_origins": 400,
+        "scheduled_trajectories": 20
+      },
+      "coverage_0_9": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      },
+      "crps": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      },
+      "divergence_fraction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 20
+      },
+      "fit_state_counts": {
+        "complete": 20
+      },
+      "full_schedule_point_score_defined": true,
+      "mae": {
+        "ci95": [
+          0.9139384798949368,
+          1.0036911980920598
+        ],
+        "mean": 0.9584776070424634,
+        "n": 20
+      },
+      "model": "ridge_esn",
+      "nrmse": {
+        "ci95": [
+          1.0935856400764112,
+          1.1765452531728833
+        ],
+        "mean": 1.1357394558597762,
+        "n": 20
+      },
+      "rmse": {
+        "ci95": [
+          1.300725614028048,
+          1.3986100807303334
+        ],
+        "mean": 1.3511145439827943,
+        "n": 20
+      },
+      "seed": 20261105,
+      "selected_config": "esn_04",
+      "selection_eligible": true,
+      "source_receipt_count": 440,
+      "source_receipt_manifest_sha256": "e052bf3b5201f629792fb543717085bad06c5ea5bc2b5fd7a515bd190ddfc6cd",
+      "track": "A",
+      "vpt_censored_fraction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 20
+      },
+      "vpt_steps": {
+        "ci95": [
+          19.942500000000003,
+          24.0050625
+        ],
+        "mean": 22.029999999999998,
+        "n": 20
+      },
+      "width_0_9": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      }
+    },
+    {
+      "complete_trajectory_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        9,
+        10,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        19
+      ],
+      "counts": {
+        "complete_trajectories": 17,
+        "failed_origins": 4,
+        "failure_or_divergence_origins": 6,
+        "finite_divergent_origins": 2,
+        "finite_successful_origins": 396,
+        "finite_successful_origins_excluded_incomplete_trajectories": 56,
+        "finite_successful_origins_in_score_population": 340,
+        "inference_unqualified_successful_origins": 0,
+        "pending_origins": 0,
+        "qualified_complete_trajectories": 17,
+        "qualified_fits": 20,
+        "scheduled_origins": 400,
+        "scheduled_trajectories": 20
+      },
+      "coverage_0_9": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      },
+      "crps": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      },
+      "divergence_fraction": {
+        "ci95": [
+          0.0,
+          0.014705882352941176
+        ],
+        "mean": 0.0058823529411764705,
+        "n": 17
+      },
+      "fit_state_counts": {
+        "complete": 20
+      },
+      "full_schedule_point_score_defined": false,
+      "mae": {
+        "ci95": [
+          0.3908612607286249,
+          3.43667723145628e+40
+        ],
+        "mean": 1.1455590771520933e+40,
+        "n": 17
+      },
+      "model": "pod_nvar",
+      "nrmse": {
+        "ci95": [
+          0.5914397688499087,
+          2.1235312265992262e+42
+        ],
+        "mean": 7.07843742199742e+41,
+        "n": 17
+      },
+      "rmse": {
+        "ci95": [
+          0.7030351416525814,
+          2.5317682834074698e+42
+        ],
+        "mean": 8.439227611358233e+41,
+        "n": 17
+      },
+      "seed": 20261105,
+      "selected_config": "nvar_06",
+      "selection_eligible": true,
+      "source_receipt_count": 440,
+      "source_receipt_manifest_sha256": "ad6802e3e4837133c5988c9e475a2fd888256fb7bfa1bb9f960b867d3603fea0",
+      "track": "A",
+      "vpt_censored_fraction": {
+        "ci95": [
+          0.05,
+          0.10882352941176471
+        ],
+        "mean": 0.07941176470588236,
+        "n": 17
+      },
+      "vpt_steps": {
+        "ci95": [
+          63.06455882352942,
+          67.60007352941176
+        ],
+        "mean": 65.37647058823529,
+        "n": 17
+      },
+      "width_0_9": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      }
+    },
+    {
+      "complete_trajectory_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "counts": {
+        "complete_trajectories": 20,
+        "failed_origins": 0,
+        "failure_or_divergence_origins": 0,
+        "finite_divergent_origins": 0,
+        "finite_successful_origins": 400,
+        "finite_successful_origins_excluded_incomplete_trajectories": 0,
+        "finite_successful_origins_in_score_population": 400,
+        "inference_unqualified_successful_origins": 0,
+        "pending_origins": 0,
+        "qualified_complete_trajectories": 20,
+        "qualified_fits": 20,
+        "scheduled_origins": 400,
+        "scheduled_trajectories": 20
+      },
+      "coverage_0_9": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      },
+      "crps": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      },
+      "divergence_fraction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 20
+      },
+      "fit_state_counts": {
+        "complete": 20
+      },
+      "full_schedule_point_score_defined": true,
+      "mae": {
+        "ci95": [
+          0.7331194849667458,
+          0.7611327613567883
+        ],
+        "mean": 0.7468893041840377,
+        "n": 20
+      },
+      "model": "linear_var",
+      "nrmse": {
+        "ci95": [
+          0.8176231706173059,
+          0.8492612428070258
+        ],
+        "mean": 0.8327647386049604,
+        "n": 20
+      },
+      "rmse": {
+        "ci95": [
+          0.9731319058334476,
+          1.009451477591871
+        ],
+        "mean": 0.9906740487692222,
+        "n": 20
+      },
+      "seed": 20261105,
+      "selected_config": "var_02",
+      "selection_eligible": true,
+      "source_receipt_count": 440,
+      "source_receipt_manifest_sha256": "e5bc6315cbb3064b3e3c4c244bb8fa4f69bdbeff7524aaddc2115fe1b79fe38a",
+      "track": "A",
+      "vpt_censored_fraction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 20
+      },
+      "vpt_steps": {
+        "ci95": [
+          18.1025,
+          19.2025625
+        ],
+        "mean": 18.65,
+        "n": 20
+      },
+      "width_0_9": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      }
+    },
+    {
+      "complete_trajectory_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "counts": {
+        "complete_trajectories": 20,
+        "failed_origins": 0,
+        "failure_or_divergence_origins": 0,
+        "finite_divergent_origins": 0,
+        "finite_successful_origins": 400,
+        "finite_successful_origins_excluded_incomplete_trajectories": 0,
+        "finite_successful_origins_in_score_population": 400,
+        "inference_unqualified_successful_origins": 0,
+        "pending_origins": 0,
+        "qualified_complete_trajectories": 20,
+        "qualified_fits": 20,
+        "scheduled_origins": 400,
+        "scheduled_trajectories": 20
+      },
+      "coverage_0_9": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      },
+      "crps": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      },
+      "divergence_fraction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 20
+      },
+      "fit_state_counts": {
+        "complete": 20
+      },
+      "full_schedule_point_score_defined": true,
+      "mae": {
+        "ci95": [
+          0.8665780429476426,
+          0.892243351883298
+        ],
+        "mean": 0.8796920739533819,
+        "n": 20
+      },
+      "model": "persistence",
+      "nrmse": {
+        "ci95": [
+          0.9946158676504275,
+          1.0160699602197343
+        ],
+        "mean": 1.0054894585655747,
+        "n": 20
+      },
+      "rmse": {
+        "ci95": [
+          1.1830405749975637,
+          1.2085424177626785
+        ],
+        "mean": 1.1962230550891455,
+        "n": 20
+      },
+      "seed": 20261105,
+      "selected_config": "persistence_00",
+      "selection_eligible": true,
+      "source_receipt_count": 440,
+      "source_receipt_manifest_sha256": "29e353e9359ae89172c8fc0a0fbefef43150f773c6ccfc889a64241ecd838007",
+      "track": "A",
+      "vpt_censored_fraction": {
+        "ci95": [
+          0.0,
+          0.0125
+        ],
+        "mean": 0.005,
+        "n": 20
+      },
+      "vpt_steps": {
+        "ci95": [
+          13.492437499999998,
+          15.717562500000001
+        ],
+        "mean": 14.502499999999998,
+        "n": 20
+      },
+      "width_0_9": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      }
+    },
+    {
+      "complete_trajectory_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "counts": {
+        "complete_trajectories": 20,
+        "failed_origins": 0,
+        "failure_or_divergence_origins": 0,
+        "finite_divergent_origins": 0,
+        "finite_successful_origins": 400,
+        "finite_successful_origins_excluded_incomplete_trajectories": 0,
+        "finite_successful_origins_in_score_population": 400,
+        "inference_unqualified_successful_origins": 0,
+        "pending_origins": 0,
+        "qualified_complete_trajectories": 20,
+        "qualified_fits": 20,
+        "scheduled_origins": 400,
+        "scheduled_trajectories": 20
+      },
+      "coverage_0_9": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      },
+      "crps": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      },
+      "divergence_fraction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 20
+      },
+      "fit_state_counts": {
+        "complete": 20
+      },
+      "full_schedule_point_score_defined": true,
+      "mae": {
+        "ci95": [
+          0.9876769071066723,
+          1.022906491440854
+        ],
+        "mean": 1.0039550968162991,
+        "n": 20
+      },
+      "model": "training_mean",
+      "nrmse": {
+        "ci95": [
+          1.0063859867500893,
+          1.0395089562972513
+        ],
+        "mean": 1.021816267547514,
+        "n": 20
+      },
+      "rmse": {
+        "ci95": [
+          1.1983995697393692,
+          1.2361304934223496
+        ],
+        "mean": 1.215568683503077,
+        "n": 20
+      },
+      "seed": 20261105,
+      "selected_config": "mean_00",
+      "selection_eligible": true,
+      "source_receipt_count": 440,
+      "source_receipt_manifest_sha256": "157c2d8795681aa2b5c8da55ee13b41a91d87f74c3562ecba79d4daa6ee732dc",
+      "track": "A",
+      "vpt_censored_fraction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 20
+      },
+      "vpt_steps": {
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "mean": 1.0,
+        "n": 20
+      },
+      "width_0_9": {
+        "ci95": null,
+        "mean": null,
+        "n": 0
+      }
+    }
+  ],
+  "schema": "ks-main-track-A-independent-audit/1",
+  "scope": "All eight terminal Track A main-seed families; no cross-track or unfinished Track B ranking",
+  "scored_utc_range": [
+    "2026-11-05T03:14:05.889331+00:00",
+    "2026-11-05T03:46:15.200144+00:00"
+  ],
+  "test_access_opened_utc": "2026-11-05T03:13:58.657531+00:00",
+  "test_access_sha256": "41beed49be49ac4dcf7298cc130b37968d36bfe9d3f93c3ca7407dbd205b4583"
+}

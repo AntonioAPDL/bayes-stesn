@@ -35,7 +35,7 @@ SHA = re.compile(r"[0-9a-f]{64}\Z")
 PART = re.compile(r"ks-results\.tar\.gz\.part([0-9]{6})\Z")
 DIRECTORIES = {"fits", "forecasts", "ledger", "jobs", "attempts", "selection",
     "precision_cases", "predictions", "reports", "figures", "plots", "animations",
-    "tables", "logs", "diagnostics", "evidence", "audits", "cleanup", "artifacts"}
+    "tables", "logs", "diagnostics", "evidence", "audits", "cleanup", "artifacts", "observer_sessions"}
 REQUIRED = {"experiment.json", "freeze.json", "test_access.json", "summary.json"}
 NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
 

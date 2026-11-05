@@ -1,0 +1,148 @@
+{
+  "admission_policy": {
+    "allowance_formula": "min(combined_worker_cap_bytes, 0.65 * max(0, headroom))",
+    "configuration_changed": false,
+    "container_limit_aware": true,
+    "gates_changed": false,
+    "headroom_formula": "(memory.max - memory.current) + 0.5 * inactive_file",
+    "reported_stop_allowance_approximate_bytes": 1430000000,
+    "reported_stop_required_bytes": 1650000000,
+    "required_formula": "1.5 * estimated_combined_worker_RSS <= allowance",
+    "timing_note": "The stop message and later before-reclamation cgroup snapshot have different times; the rounded stop allowance is not recomputed from that later snapshot."
+  },
+  "classification": "operational admission pause; not an observed out-of-memory event",
+  "event": "Conservative memory admission paused scheduling between final Track A and Track B; the frozen scheduler was resumed after read-only file-cache advice.",
+  "event_utc": "2026-11-05T03:49:46.836031+00:00",
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "interpretation": "Container accounting was dominated by file-backed cache. Advising only existing task files reduced file-backed accounting by 4168318976 bytes while anonymous memory changed by 503808 bytes. Resumed work passed the unchanged gate. Cgroup measurements include other activity, so the deltas are observations rather than a per-file attribution or a guaranteed reclamation amount.",
+  "model_fit_or_scoring_performed_by_audit": false,
+  "numerical_source_hashes": {
+    "configs/applications/ks_experiment.json": "daf3f5aa75adf46162be288b73e521b825866ebf7e8b1c4384f4227fe3a639a2",
+    "src/bayes_stesn/applications/ks_native.py": "dfb6e8c2d9baefa54cb87b162175ac3672f8bc17f9e8951272ba6e329798fd6e",
+    "src/bayes_stesn/applications/ks_runner.py": "4a5813c531908dfb5f697e039e02ada19ffe782166af5f3238b45458638ac998",
+    "src/bayes_stesn/applications/ks_runtime.py": "ff70f020dcb877975cf246e3264cafe01372121d1114532d34e18fa455eb9aa0"
+  },
+  "observer_recovery": {
+    "first_session_aggregate_exact": true,
+    "first_session_alerts": 0,
+    "first_session_combined_worker_rss_peak_bytes": 1008340992,
+    "first_session_container_current_peak_bytes": 8191492096,
+    "first_session_disk_free_min_bytes": 56911650816,
+    "first_session_ended_utc": "2026-11-05T03:46:18.223202+00:00",
+    "first_session_per_job_map_complete": false,
+    "first_session_retained_job_rows": 6,
+    "first_session_samples": 1821,
+    "first_session_started_utc": "2026-11-05T02:45:29.401291+00:00",
+    "first_session_total_observed_jobs": null,
+    "future_policy": "Durable per-session snapshots plus merged summaries; duplicate snapshots do not add samples, extrema are not summed, and coverage gaps remain explicit.",
+    "limitation": "The original observer overwrote its summary at restart. The exact first aggregate was recovered from final standard output, but its final per-job map was not preserved. Six earlier rows remain; missing peaks are not reconstructed. Fit-receipt RUSAGE_SELF values remain available.",
+    "retained_per_job_snapshot_end_utc": "2026-11-05T02:48:55.661493+00:00"
+  },
+  "recorded_utc": "2026-11-05T03:56:43.702669+00:00",
+  "recovery": {
+    "after": {
+      "active_file": 1070317568,
+      "anon": 99360768,
+      "current": 3417071616,
+      "file": 3072589824,
+      "inactive_file": 2002272256,
+      "limit": 8589934592
+    },
+    "anon_change_bytes": 503808,
+    "before": {
+      "active_file": 3968249856,
+      "anon": 98856960,
+      "current": 7700688896,
+      "file": 7240908800,
+      "inactive_file": 3272658944,
+      "limit": 8589934592
+    },
+    "container_current_reduction_bytes": 4283617280,
+    "eligible_root_labels": [
+      "cache",
+      "incoming",
+      "results",
+      "deliverables"
+    ],
+    "errors": 0,
+    "file_cache_reduction_bytes": 4168318976,
+    "file_content_changes": 0,
+    "files_advised": 504,
+    "files_deleted": 0,
+    "global_cache_operation": false,
+    "logical_file_bytes": 4167321724,
+    "min_file_bytes": 1048576,
+    "no_live_KS_workers_verified_before_operation": true,
+    "operation": "POSIX_FADV_DONTNEED on existing task-owned large regular files; no content changes or deletion"
+  },
+  "resume_audit": {
+    "all_160_track_A_final_jobs_terminal": true,
+    "by_stage_track": {
+      "final/A": {
+        "complete": 157,
+        "failed": 3
+      },
+      "final/B": {
+        "running": 2
+      },
+      "promote/A": {
+        "complete": 83,
+        "inference-unqualified": 1
+      },
+      "promote/B": {
+        "complete": 95,
+        "failed": 1
+      },
+      "refine/B": {
+        "complete": 11,
+        "failed": 1
+      },
+      "screen/A": {
+        "complete": 71,
+        "failed": 1
+      },
+      "screen/B": {
+        "complete": 77,
+        "failed": 3
+      }
+    },
+    "checkpoint_contents_rewritten": false,
+    "freeze_and_test_gate_present": true,
+    "ledger_jobs": 506,
+    "memory_events": {
+      "high": 0,
+      "low": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_group_kill": 0,
+      "oom_kill": 0
+    },
+    "scientific_failures_preserved": true,
+    "snapshot_utc": "2026-11-05T03:50:33.430578+00:00",
+    "states": {
+      "complete": 494,
+      "failed": 9,
+      "inference-unqualified": 1,
+      "pending": 0,
+      "running": 2
+    },
+    "track_B_resumed_jobs": [
+      {
+        "canonical_fit_present": true,
+        "fit_receipt_present": true,
+        "job_id": "2ed558bdf255eca5eb3179e4",
+        "model": "basis_gru",
+        "trajectory": 0
+      },
+      {
+        "canonical_fit_present": true,
+        "fit_receipt_present": true,
+        "job_id": "63f8dd7cacc80598cebc8400",
+        "model": "basis_gru",
+        "trajectory": 1
+      }
+    ]
+  },
+  "schema": "ks-memory-recovery/1",
+  "test_labels_read_by_audit": false
+}
