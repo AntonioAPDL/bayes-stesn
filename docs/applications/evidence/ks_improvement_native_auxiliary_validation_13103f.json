@@ -1,0 +1,154 @@
+{
+  "actual_chain_matches_completed_phase_sha256": false,
+  "all_native_chain_phase_internal_checksums_verified_by_load_state": true,
+  "candidate_id": "bayes_02",
+  "chain_progress": {
+    "0": {
+      "iteration": 3000,
+      "retained_draws": 2000
+    },
+    "1": {
+      "iteration": 3000,
+      "retained_draws": 2000
+    },
+    "2": {
+      "iteration": 3000,
+      "retained_draws": 2000
+    },
+    "3": {
+      "iteration": 2750,
+      "retained_draws": 1750
+    }
+  },
+  "comparison_counts": {
+    "array_comparisons": 7750,
+    "scalar_comparisons": 23250
+  },
+  "comparison_setup_note": "A prior isolated read aborted before comparisons because direct tuple/list config equality was stricter than portable JSON representation; this successful check uses the existing validator-compatible JSON normalization for configuration only. Exact retained array/value comparisons are unchanged.",
+  "created_utc": "2026-11-05T11:13:24.309488+00:00",
+  "elapsed_seconds": 1.4838907060038764,
+  "exact_completed_inference_restart_available_from_auxiliary_pair": false,
+  "files": {
+    "fit.npz": {
+      "bytes": 21365282,
+      "historical_migration_entry": {
+        "bytes": 21365282,
+        "sha256": "d35a1633d8ca3ac7016c298a5a36377a0e7b4ee62a9f9e7b0762808f08d36024"
+      },
+      "sha256": "d35a1633d8ca3ac7016c298a5a36377a0e7b4ee62a9f9e7b0762808f08d36024"
+    },
+    "fit.npz.chains.npz": {
+      "bytes": 1674467,
+      "historical_migration_entry": {
+        "bytes": 1674467,
+        "sha256": "ab80d1d69c93bf906d7d727a14c31f25a7a2906c43f7804e2b9762f8e5f6cfa7"
+      },
+      "sha256": "ab80d1d69c93bf906d7d727a14c31f25a7a2906c43f7804e2b9762f8e5f6cfa7"
+    },
+    "fit.npz.chains.npz.ks-fit-phase.npz": {
+      "bytes": 233779,
+      "historical_migration_entry": {
+        "bytes": 233779,
+        "sha256": "b237b2988a7c810f11e5fa7218a4782aff34c429e612de2ded02ad5ad2f7b9f6"
+      },
+      "sha256": "b237b2988a7c810f11e5fa7218a4782aff34c429e612de2ded02ad5ad2f7b9f6"
+    },
+    "receipt.json": {
+      "bytes": 890098,
+      "historical_migration_entry": {
+        "bytes": 890098,
+        "sha256": "2f4857abeaa646845495c6c452581686b983499b568f3c4e76fd242f289d9e26"
+      },
+      "sha256": "2f4857abeaa646845495c6c452581686b983499b568f3c4e76fd242f289d9e26"
+    }
+  },
+  "first_mismatch_paths": [],
+  "fit_key": "13103f3581fde7430a4128f52b3be460",
+  "fits_or_forecasts_run": false,
+  "frozen_source_and_runtime_match": true,
+  "historical_migration_receipt_sha256": "27c11e3d20b9316b6a2d69bb521bf290e6c9a2f3c9dea9915f8d83e2d92bc946",
+  "interpretation": "Current auxiliary chain is an exact retained-state and log-density prefix of the independently checksum-validated completed native posterior. The auxiliary chain does not satisfy the completed phase binding and must remain ineligible as exact final inference restart state. The completed native forecast state retains its existing qualification; no final RNG state is fabricated.",
+  "kind": "one isolated read-only full load_state and exact array-aware prefix comparison",
+  "native_final_chain_summaries": [
+    {
+      "adaptation_steps": 1000,
+      "chain": 0,
+      "iteration": 3000,
+      "proposal_log_scale": 0.053129672185476644
+    },
+    {
+      "adaptation_steps": 1000,
+      "chain": 1,
+      "iteration": 3000,
+      "proposal_log_scale": 0.05374558255108402
+    },
+    {
+      "adaptation_steps": 1000,
+      "chain": 2,
+      "iteration": 3000,
+      "proposal_log_scale": -0.03577663722896281
+    },
+    {
+      "adaptation_steps": 1000,
+      "chain": 3,
+      "iteration": 3000,
+      "proposal_log_scale": 0.28550511423183206
+    }
+  ],
+  "native_fit_identity": "86af080298a86d4048f4eecc11bab74441dcecb547f7532a557e48a83ecb1303",
+  "native_posterior_state_counts": [
+    2000,
+    2000,
+    2000,
+    2000
+  ],
+  "native_prepared_identity": "031a93fc0951f6ae500f3dc1adf7d9433d5e2bcdc50e51de85000d56fa459fd1",
+  "native_qualified": true,
+  "native_vs_chain_sampler_equal": true,
+  "phase": "complete",
+  "phase_checkpoint_binding": {
+    "chains": {
+      "0": {
+        "iteration": 3000,
+        "retained_draws": 2000
+      },
+      "1": {
+        "iteration": 3000,
+        "retained_draws": 2000
+      },
+      "2": {
+        "iteration": 3000,
+        "retained_draws": 2000
+      },
+      "3": {
+        "iteration": 3000,
+        "retained_draws": 2000
+      }
+    },
+    "complete_at_target": true,
+    "draw_target": 2000,
+    "sha256": "06a480dec6b43b128788337411d4f58888068f5eaee3cdecb6bf7578b886834f"
+  },
+  "phase_target_draws": 2000,
+  "process_peak_rss_bytes": 160960512,
+  "retained_log_density_prefix_equal_per_chain": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+  },
+  "retained_state_prefix_equal_per_chain": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+  },
+  "root_native_validation_receipt_sha256": "d9af2808273948864fb81dae0ade63ee75d9ac97420e72208befc2ad9d6517de",
+  "schema": "ks-native-versus-auxiliary-prefix-check/1",
+  "scientific_recomputation": false,
+  "seed": 20261105,
+  "source_experiment_identity": "2b805c3ee9c0b8fdb555fe1abc3e26d5fb80e32c2cab62ce1c36e40d20a705fa",
+  "source_files_unchanged_during_read": true,
+  "track": "A",
+  "trajectory": 0
+}

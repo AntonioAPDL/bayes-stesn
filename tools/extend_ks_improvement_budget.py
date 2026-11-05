@@ -8,6 +8,9 @@ Only experiment/output/job identities and their terminal bindings are rebased;
 an explicit --source-cache-path also permits relocating the byte-identical cache.
 Explicitly reviewed opaque fit sidecars can be preserved outside active fits
 using --fit-sidecar-manifest; unlisted unknown files still stop migration.
+One explicitly reviewed inconsistent inference-sidecar pair may be archived
+with --inference-sidecar-manifest while its verified completed native fit stays
+active; that archived pair is never declared an exact inference restart.
 The scientific freeze, original start, all attempt charges, forecasts and fits
 are preserved. No fitting, forecasting, selection, or resource-gate change runs.
 """
@@ -45,6 +48,7 @@ FORECAST_FIELDS = {"candidate_id", "first_target", "fit_key", "forecast_namespac
     "history", "identity", "native_fit", "partition", "paths", "qualified", "seconds", "seed",
     "stage_first_scored", "state", "track", "trajectory"}
 SCALAR = re.compile(r'^  "([^"\\]+)": (.*?)(?:,)?\n?$')
+COMPLETED_PHASE_CHAIN_ERROR = "Completed phase does not match its exact chain checkpoint"
 
 
 def utc():
@@ -226,6 +230,129 @@ def reviewed_fit_sidecars(source, experiment, manifest_path):
         "interpretation": "Opaque historical bytes, preserved by hash; never loaded or adopted as canonical checkpoint state."}
 
 
+def reviewed_inference_sidecars(source, experiment, manifest_path):
+    """Authorize archival of one exact, independently examined historical pair."""
+    if manifest_path is None:
+        return {}, None
+    manifest = read(manifest_path); historical_path = source/"migration"/"receipt.json"
+    if (manifest.get("schema") != "ks-reviewed-inference-sidecars/1"
+            or manifest.get("identity") != N.identity({k:v for k,v in manifest.items() if k != "identity"})
+            or manifest.get("source_experiment_identity") != experiment["identity"]
+            or manifest.get("historical_migration_receipt_sha256") != N.digest(historical_path)):
+        raise ValueError("Reviewed inference-sidecar manifest binding mismatch")
+    historical = read(historical_path)
+    entries = manifest.get("fits")
+    if historical.get("destination_experiment") != experiment["identity"] or not isinstance(entries,list) or len(entries) != 1:
+        raise ValueError("Exactly one historically bound inference-sidecar review is required")
+    entry = entries[0]; key = entry.get("fit_key")
+    if (not isinstance(key,str) or not N.FIT.fullmatch(key)
+            or entry.get("disposition") != "preserve_auxiliary_only_outside_active_fits"
+            or entry.get("inference_restart_state_available_after_archival") is not False
+            or entry.get("qualification_changed") is not False):
+        raise ValueError("Reviewed auxiliary disposition or fit identity is invalid")
+    for field, name in (("native",N.NATIVE),("chain",N.CHAIN),("phase",N.PHASE)):
+        record = entry[field]; relative = f"fits/{key}/{name}"
+        expected = {k:record.get(k) for k in ("bytes","sha256")}
+        if (record.get("path") != relative or not isinstance(expected["bytes"],int)
+                or isinstance(expected["bytes"],bool) or expected["bytes"] < 0
+                or not isinstance(expected["sha256"],str) or not N.SHA.fullmatch(expected["sha256"])
+                or entry.get("historical_entries",{}).get(relative) != expected
+                or historical.get("files",{}).get(relative) != expected
+                or N.safe_path(source/relative).stat().st_size != expected["bytes"]):
+            raise ValueError("Reviewed native/auxiliary historical bytes do not match")
+    native = entry["native"]; receipt_relative = f"fits/{key}/receipt.json"
+    if (native.get("receipt_path") != receipt_relative
+            or N.digest(N.safe_path(source/receipt_relative)) != native.get("receipt_sha256")
+            or historical.get("files",{}).get(receipt_relative,{}).get("sha256") != native.get("receipt_sha256")):
+        raise ValueError("Reviewed completed native receipt does not match")
+    comparison = entry["prefix_comparison"]; filename = comparison.get("receipt_file")
+    if (comparison.get("passed") is not True or not isinstance(filename,str)
+            or Path(filename).name != filename):
+        raise ValueError("An exact retained-prefix comparison receipt is required")
+    N.safe_member(filename); proof_path = N.safe_path(Path(manifest_path).parent/filename)
+    if N.digest(proof_path) != comparison.get("receipt_sha256"):
+        raise ValueError("Retained-prefix comparison receipt checksum mismatch")
+    proof = read(proof_path)
+    if (proof.get("schema") != "ks-native-versus-auxiliary-prefix-check/1"
+            or proof.get("source_experiment_identity") != experiment["identity"]
+            or proof.get("fit_key") != key or proof.get("native_fit_identity") != native["native_fit_identity"]
+            or proof.get("native_posterior_state_counts") != native["posterior_state_counts"]
+            or proof.get("native_qualified") != native["qualified"]
+            or proof.get("source_files_unchanged_during_read") is not True
+            or proof.get("all_native_chain_phase_internal_checksums_verified_by_load_state") is not True
+            or proof.get("native_vs_chain_sampler_equal") is not True
+            or proof.get("exact_completed_inference_restart_available_from_auxiliary_pair") is not False):
+        raise ValueError("Retained-prefix proof does not support this completed native artifact")
+    for field,name in (("native",N.NATIVE),("chain",N.CHAIN),("phase",N.PHASE)):
+        if any(proof.get("files",{}).get(name,{}).get(k) != entry[field][k] for k in ("bytes","sha256")):
+            raise ValueError("Retained-prefix proof binds different artifact bytes")
+    if proof.get("files",{}).get("receipt.json",{}).get("sha256") != native["receipt_sha256"]:
+        raise ValueError("Retained-prefix proof binds a different native receipt")
+    for name in ("retained_state_prefix_equal_per_chain","retained_log_density_prefix_equal_per_chain"):
+        values = proof.get(name,{})
+        if set(values) != set(entry["chain"]["progress"]) or not all(v is True for v in values.values()):
+            raise ValueError("Not every retained chain prefix was independently verified")
+    archives = {name:f"migration/source_records/inference_sidecars/{key}/{name}"
+        for name in (N.CHAIN,N.PHASE)}
+    return {key:{"entry":entry,"archives":archives,"proof_path":proof_path}}, {
+        "manifest_sha256":N.digest(manifest_path),"manifest_identity":manifest["identity"],
+        "historical_migration_receipt_sha256":manifest["historical_migration_receipt_sha256"]}
+
+
+def validate_reviewed_native_and_archival_pair(source, row, job, experiment, review):
+    """Keep the strict validator unchanged and recognize only its named failure."""
+    entry = review["entry"]
+    if not row["native_present"] or not row["receipt_present"]:
+        raise ValueError("Reviewed auxiliary archival requires a completed native fit and receipt")
+    try:
+        N.validate_fit(source,row,job,experiment,"all-fit-checkpoints")
+    except ValueError as error:
+        if str(error) != COMPLETED_PHASE_CHAIN_ERROR:
+            raise
+    else:
+        raise ValueError("Reviewed auxiliary pair no longer has its recorded consistency failure")
+    summary, checked = N.validate_fit(source,row,job,experiment,"selected-only")
+    if (not summary.get("native_receipt_verified") or not summary.get("forecast_state_available")
+            or summary["native_fit_identity"] != entry["native"]["native_fit_identity"]
+            or summary["qualified"] != entry["native"]["qualified"]
+            or checked[N.NATIVE]["sha256"] != entry["native"]["sha256"]):
+        raise ValueError("Reviewed native forecast authority failed independent verification")
+    states = {}
+    for field,name,kind in (("chain",N.CHAIN,"mcmc_checkpoint"),("phase",N.PHASE,"ks_bayes_fit_phase")):
+        value = N.validate_npz(source/"fits"/row["fit_key"]/name,kind)
+        if value["sha256"] != entry[field]["sha256"] or value["bytes"] != entry[field]["bytes"]:
+            raise ValueError("Reviewed inference-sidecar bytes changed")
+        states[field] = value["state"]
+        checked[name] = {k:v for k,v in value.items() if k != "state"}
+    chain = states["chain"]; phase = N.plain(states["phase"])
+    completed = N.validate_npz(source/"fits"/row["fit_key"]/N.NATIVE,"ks_native_fit")
+    native_core = completed["state"]["core"]
+    native_counts = [len(values) for values in native_core["posterior"]["states"]]
+    native_sampler = N.plain(native_core["sampler"])
+    if (completed["sha256"] != checked[N.NATIVE]["sha256"]
+            or native_counts != entry["native"]["posterior_state_counts"]
+            or len(native_counts) != native_sampler["chains"]
+            or any(count != native_sampler["draws"] for count in native_counts)
+            or native_sampler != N.plain(chain["config"])
+            or native_sampler["draws"] != entry["phase"]["target_draws"]):
+        raise ValueError("Reviewed native posterior counts/sampler target are not complete and identical")
+    progress = {key:{"iteration":value["iteration"],"retained_draws":len(value["retained_states"])}
+        for key,value in chain["chains"].items()}
+    if (progress != entry["chain"]["progress"] or phase["phase"] != "complete"
+            or phase["phase"] != entry["phase"]["phase"]
+            or phase["target_draws"] != entry["phase"]["target_draws"]
+            or phase["checkpoint"]["sha256"] != entry["phase"]["expected_chain_sha256"]
+            or not 1 <= len(phase["gates"]) <= 2
+            or bool(phase["gates"][-1]["passed"]) != summary["qualified"]
+            or bool(phase["gates"][-1]["passed"]) != entry["phase"]["qualified"]):
+        raise ValueError("Reviewed auxiliary progress/phase/qualification changed")
+    summary.pop("inference_sidecars_intentionally_excluded",None)
+    summary.update(inference_restart_state_available=False,inference_sidecars_archived_only=True,
+        reviewed_auxiliary_consistency_failure=COMPLETED_PHASE_CHAIN_ERROR,
+        archived_chain_progress=progress,qualification_changed=False)
+    return summary,checked
+
+
 def closure_proof(path, session_id, source, attempts, terminals):
     receipt = read(path)
     if receipt.get("source") != "actual_unified_exec_write_stdin_completion_results":
@@ -323,9 +450,10 @@ def validate_forecasts(source, jobs, terminals, native_summaries):
     return dict(counts)
 
 
-def inventory(source, jobs, sidecars=None):
+def inventory(source, jobs, sidecars=None, inference_sidecars=None):
     files = {}; skipped = []
     sidecars = sidecars or {}
+    inference_sidecars = inference_sidecars or {}
     def add(path, name, expected_sha256=None):
         N.safe_path(path); N.safe_member(name)
         if name in files:
@@ -336,7 +464,11 @@ def inventory(source, jobs, sidecars=None):
     for folder in sorted((source/"fits").iterdir()):
         N.safe_path(folder, directory=True)
         for p in sorted(folder.iterdir()):
-            if p.name in N.CANONICAL or p.name == "receipt.json" or re.fullmatch(r"synchronization_h[0-9]+\.json", p.name):
+            reviewed_pair = inference_sidecars.get(folder.name)
+            if reviewed_pair and p.name in (N.CHAIN,N.PHASE):
+                field = "chain" if p.name == N.CHAIN else "phase"
+                add(p,reviewed_pair["archives"][p.name],reviewed_pair["entry"][field]["sha256"])
+            elif p.name in N.CANONICAL or p.name == "receipt.json" or re.fullmatch(r"synchronization_h[0-9]+\.json", p.name):
                 add(p, p.relative_to(source).as_posix())
             elif p.relative_to(source).as_posix() in sidecars:
                 reviewed = sidecars[p.relative_to(source).as_posix()]
@@ -405,7 +537,7 @@ def publish_new(staging, destination):
     finally:os.close(descriptor)
 
 
-def migrate(source, destination, config, cache, closure, session_id, projection, decision, previous_config, *, apply=False, source_cache_path=None, fit_sidecar_manifest=None):
+def migrate(source, destination, config, cache, closure, session_id, projection, decision, previous_config, *, apply=False, source_cache_path=None, fit_sidecar_manifest=None, inference_sidecar_manifest=None):
     source = N.safe_path(source, directory=True); cache = N.safe_path(cache, directory=True)
     original_cache = cache if source_cache_path is None else recorded_cache_path(source_cache_path)
     cache_relocated = original_cache != cache
@@ -430,7 +562,8 @@ def migrate(source, destination, config, cache, closure, session_id, projection,
                 k: v for k, v in new_freeze.items() if k not in {"experiment_identity", "identity"}}:
             raise AssertionError("Scientific freeze changed")
         sidecars, sidecar_binding = reviewed_fit_sidecars(source, old, fit_sidecar_manifest)
-        files, skipped = inventory(source, jobs, sidecars)
+        inference_sidecars, inference_binding = reviewed_inference_sidecars(source, old, inference_sidecar_manifest)
+        files, skipped = inventory(source, jobs, sidecars, inference_sidecars)
         preparation = float(old["config"]["budget"].get("preparation_worker_seconds", 0))
         charge = sum(float(r["elapsed_seconds"]) for r in attempts.values())
         stats = {"schema": SCHEMA, "apply": apply, "source_experiment": old["identity"],
@@ -453,6 +586,11 @@ def migrate(source, destination, config, cache, closure, session_id, projection,
             "reviewed_fit_sidecar_bytes": sum(r["bytes"] for r in sidecars.values()),
             "reviewed_fit_sidecars": {"binding": sidecar_binding,
                 "files": list(sidecars.values()), "canonical_checkpoint_adoption": False},
+            "reviewed_inference_sidecars": {"binding":inference_binding,
+                "fits":[{"fit_key":key,"archive_paths":review["archives"],
+                    "native_sha256":review["entry"]["native"]["sha256"],
+                    "inference_restart_state_available":False,"qualification_changed":False}
+                    for key,review in inference_sidecars.items()]},
             "confirmation_score_objects_decoded": 0, "source_root_modified_or_deleted": False,
             "timing_receipt_sha256": N.digest(projection), "decision_receipt_sha256": N.digest(decision),
             "extended_configuration_sha256": N.digest(config), "binary_payload_reads": 0 if not apply else "guarded checksum validation and exact copy only"}
@@ -472,7 +610,10 @@ def migrate(source, destination, config, cache, closure, session_id, projection,
             row = {"fit_key": folder.name, "track": j["track"], "candidate_id": j["candidate"]["id"],
                 "trajectory": j["trajectory"], "seed": j["seed"], "roles": [],
                 "native_present": (folder/N.NATIVE).exists(), "receipt_present": (folder/"receipt.json").exists()}
-            summary, checked = N.validate_fit(source, row, j, old, "all-fit-checkpoints")
+            if folder.name in inference_sidecars:
+                summary, checked = validate_reviewed_native_and_archival_pair(source,row,j,old,inference_sidecars[folder.name])
+            else:
+                summary, checked = N.validate_fit(source, row, j, old, "all-fit-checkpoints")
             native_summaries[folder.name] = summary
             for name, check in checked.items():known[f"fits/{folder.name}/{name}"] = check["sha256"]
         forecast_counts = validate_forecasts(source, jobs, terminals, native_summaries)
@@ -518,6 +659,10 @@ def migrate(source, destination, config, cache, closure, session_id, projection,
                            ("extended_configuration.json", config)]
         if fit_sidecar_manifest is not None:
             extra_evidence.append(("reviewed_fit_sidecars.json", fit_sidecar_manifest))
+        if inference_sidecar_manifest is not None:
+            extra_evidence.append(("reviewed_inference_sidecars.json",inference_sidecar_manifest))
+            extra_evidence.extend(("inference_sidecar_proofs/"+r["proof_path"].name,r["proof_path"])
+                for r in inference_sidecars.values())
         for name, path in extra_evidence:
             p = Path(path);row = {"source": p, "bytes": p.stat().st_size, "fingerprint": N.fingerprint(p.stat())}
             hashes["migration/"+name] = copy_verified(row, staging/"migration"/name, reserve)
@@ -552,6 +697,8 @@ def main(argv=None):
         help="Explicit absolute cache path recorded in source jobs; may be missing. --cache must verify as the identical restored cache.")
     parser.add_argument("--fit-sidecar-manifest", type=Path,
         help="Explicit size/hash-bound review of opaque historical fit sidecars to preserve outside active fits.")
+    parser.add_argument("--inference-sidecar-manifest",type=Path,
+        help="One exact reviewed inconsistent auxiliary pair to archive while retaining its independently verified completed native fit.")
     parser.add_argument("--closed-session-id", type=int, required=True)
     parser.add_argument("--previous-config", type=Path, default=Path(__file__).resolve().parents[1]/"configs/applications/ks_improvement_v1.json")
     parser.add_argument("--apply", action="store_true")
@@ -559,7 +706,7 @@ def main(argv=None):
     result = migrate(args.source, args.destination, args.config, args.cache, args.closed_session_receipt,
         args.closed_session_id, args.projection_receipt, args.decision_receipt, args.previous_config,
         apply=args.apply, source_cache_path=args.source_cache_path,
-        fit_sidecar_manifest=args.fit_sidecar_manifest)
+        fit_sidecar_manifest=args.fit_sidecar_manifest,inference_sidecar_manifest=args.inference_sidecar_manifest)
     print(json.dumps(result, indent=2, sort_keys=True))
 
 

@@ -12,6 +12,7 @@ import unittest
 from unittest.mock import patch
 
 import numpy as np
+from bayes_stesn.io import load_state, save_state
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -145,6 +146,63 @@ def opaque_sidecar_fixture(args, job):
     manifest["identity"]=M.N.identity(manifest)
     manifest_path=source.parent/"reviewed-sidecars.json";write(manifest_path,manifest)
     return path,manifest_path
+
+
+def inference_sidecar_fixture(args, job, *, complete_chain=False, incompatible_chain=False):
+    source=args[0];folder=source/"fits"/job["fit_key"];cfg=M.N.expected_config(job)
+    native=load_state(folder/M.N.NATIVE,kind="ks_native_fit")
+    samples=[{"value":np.array([float(i)])} for i in range(cfg["sampler"]["draws"])]
+    native["core"].update(posterior={"states":[samples]},sampler=copy.deepcopy(cfg["sampler"]))
+    save_state(folder/M.N.NATIVE,native,kind="ks_native_fit")
+    receipt=M.read(folder/"receipt.json");receipt.update(fit_sha256=M.N.digest(folder/M.N.NATIVE),fit_bytes=(folder/M.N.NATIVE).stat().st_size)
+    write(folder/"receipt.json",receipt)
+    retained=cfg["sampler"]["draws"] if complete_chain else cfg["sampler"]["draws"]-1
+    state={"schema_version":1,"signature":"b"*64,"chain_index":0,"schedule":"collapsed",
+        "iteration":cfg["sampler"]["warmup"]+retained*cfg["sampler"]["thin"],"current_log_target":0.,
+        "vector":np.zeros(1),"nu":1.5,"prior_state":{},"C":None,"sigma2":None,
+        "rng_state":np.random.default_rng(17).bit_generator.state,"proposal":{"scale":1.},
+        "initialization":{},"initial_vector":np.zeros(1),"retained_states":samples[:retained],
+        "retained_log_density":[0.]*retained,"accepted_total":0,"accepted_sampling":0,"proposals_sampling":retained}
+    chain={"identity":native["core"]["prepared"]["identity"],"config":copy.deepcopy(cfg["sampler"]),"chains":{"0":state}}
+    if incompatible_chain:chain["config"]["seed"]+=1
+    save_state(folder/M.N.CHAIN,chain,kind="mcmc_checkpoint")
+    transition=copy.deepcopy(cfg["sampler"]);transition.pop("checkpoint_every",None)
+    target=cfg["sampler"]["draws"]
+    phase={"schema":"ks-bayes-fit-phase-1","initial_draws":target,"maximum_draws":target+cfg["continuation_draws"],
+        "target_draws":target,"phase":"complete","gates":[{"passed":True}],
+        "checkpoint":{"sha256":M.N.digest(folder/M.N.CHAIN) if complete_chain else "f"*64}}
+    phase["identity"]=M.N.identity({"schema":phase["schema"],"prepared":chain["identity"],"initial_sampler":transition,
+        "continuation_draws":cfg["continuation_draws"],"diagnostics":cfg["diagnostics"],
+        "diagnostic_seed":M.N.seed_for(job["seed"],"diagnostics"),"computation":job["source"]["native"]})
+    save_state(folder/M.N.PHASE,phase,kind="ks_bayes_fit_phase")
+    records={name:{"bytes":(folder/name).stat().st_size,"sha256":M.N.digest(folder/name)}
+        for name in (M.N.NATIVE,M.N.CHAIN,M.N.PHASE,"receipt.json")}
+    historical_path=source/"migration/receipt.json";historical=M.read(historical_path)
+    historical.setdefault("files",{}).update({f"fits/{job['fit_key']}/{name}":value for name,value in records.items()})
+    write(historical_path,historical)
+    proof={"schema":"ks-native-versus-auxiliary-prefix-check/1","source_experiment_identity":job["experiment_identity"],
+        "fit_key":job["fit_key"],"native_fit_identity":native["identity"],"native_posterior_state_counts":[target],
+        "native_qualified":True,"source_files_unchanged_during_read":True,
+        "all_native_chain_phase_internal_checksums_verified_by_load_state":True,"native_vs_chain_sampler_equal":True,
+        "exact_completed_inference_restart_available_from_auxiliary_pair":False,"files":records,
+        "retained_state_prefix_equal_per_chain":{"0":True},"retained_log_density_prefix_equal_per_chain":{"0":True}}
+    proof_path=source.parent/"prefix-proof.json";write(proof_path,proof)
+    entry={"fit_key":job["fit_key"],"disposition":"preserve_auxiliary_only_outside_active_fits",
+        "inference_restart_state_available_after_archival":False,"qualification_changed":False,
+        "native":{**records[M.N.NATIVE],"path":f"fits/{job['fit_key']}/{M.N.NATIVE}",
+            "receipt_path":f"fits/{job['fit_key']}/receipt.json","receipt_sha256":records["receipt.json"]["sha256"],
+            "native_fit_identity":native["identity"],"qualified":True,"posterior_state_counts":[target]},
+        "chain":{**records[M.N.CHAIN],"path":f"fits/{job['fit_key']}/{M.N.CHAIN}",
+            "progress":{"0":{"iteration":state["iteration"],"retained_draws":retained}}},
+        "phase":{**records[M.N.PHASE],"path":f"fits/{job['fit_key']}/{M.N.PHASE}",
+            "expected_chain_sha256":phase["checkpoint"]["sha256"],"target_draws":target,"phase":"complete","qualified":True},
+        "historical_entries":{f"fits/{job['fit_key']}/{name}":value for name,value in records.items() if name!="receipt.json"},
+        "prefix_comparison":{"passed":True,"receipt_file":proof_path.name,"receipt_sha256":M.N.digest(proof_path)}}
+    manifest={"schema":"ks-reviewed-inference-sidecars/1","source_experiment_identity":job["experiment_identity"],
+        "historical_migration_receipt_sha256":M.N.digest(historical_path),"fits":[entry]}
+    manifest["identity"]=M.N.identity(manifest)
+    manifest_path=source.parent/"reviewed-inference-sidecars.json";write(manifest_path,manifest)
+    return manifest_path,records
 
 
 class BudgetExtensionContracts(unittest.TestCase):
@@ -379,6 +437,50 @@ class BudgetExtensionContracts(unittest.TestCase):
                     M.migrate(*args,fit_sidecar_manifest=manifest,apply=True)
             self.assertFalse(args[1].exists())
             self.assertEqual(sidecar.read_bytes(),changed)
+
+    def test_only_reviewed_inconsistent_pair_is_archived_with_native_unchanged(self):
+        with tempfile.TemporaryDirectory() as folder:
+            args,jobs,_,_=fixture(folder);job=jobs["complete"]
+            manifest,records=inference_sidecar_fixture(args,job)
+            with patch.object(M,"verify_runtime_cache",return_value={"fixture":True}):
+                with self.assertRaisesRegex(ValueError,M.COMPLETED_PHASE_CHAIN_ERROR):M.migrate(*args,apply=True)
+                result=M.migrate(*args,inference_sidecar_manifest=manifest,apply=True)
+            source,destination=args[:2];key=job["fit_key"]
+            self.assertEqual(result["carried_worker_seconds"],191.500000000001)
+            reviewed=result["reviewed_inference_sidecars"]["fits"][0]
+            self.assertFalse(reviewed["inference_restart_state_available"])
+            self.assertFalse(reviewed["qualification_changed"])
+            for name in (M.N.NATIVE,"receipt.json"):
+                self.assertEqual(M.N.digest(destination/"fits"/key/name),records[name]["sha256"])
+            for name in (M.N.CHAIN,M.N.PHASE):
+                self.assertFalse((destination/"fits"/key/name).exists())
+                self.assertEqual(M.N.digest(destination/reviewed["archive_paths"][name]),records[name]["sha256"])
+                self.assertEqual(M.N.digest(source/"fits"/key/name),records[name]["sha256"])
+            self.assertTrue((destination/"migration/inference_sidecar_proofs/prefix-proof.json").exists())
+            # An unrelated partial restart checkpoint stays canonical and intact.
+            other=jobs["pending"]["fit_key"]
+            self.assertEqual(M.N.digest(destination/"fits"/other/M.N.CHAIN),M.N.digest(source/"fits"/other/M.N.CHAIN))
+
+    def test_reviewed_auxiliary_archival_requires_present_unmodified_native_authority(self):
+        for missing in ("native","receipt"):
+            with self.subTest(missing=missing),tempfile.TemporaryDirectory() as folder:
+                args,jobs,_,_=fixture(folder);job=jobs["complete"]
+                manifest,_=inference_sidecar_fixture(args,job)
+                path=args[0]/"fits"/job["fit_key"]/(M.N.NATIVE if missing=="native" else "receipt.json")
+                path.unlink()
+                with self.assertRaises((ValueError,FileNotFoundError)):
+                    M.migrate(*args,inference_sidecar_manifest=manifest,apply=True)
+                self.assertFalse(args[1].exists())
+
+    def test_reviewed_auxiliary_flag_never_waives_other_strict_checks_or_archives_a_valid_pair(self):
+        for complete,incompatible,message in [(True,False,"no longer has"),(False,True,"transition/target mismatch")]:
+            with self.subTest(complete=complete,incompatible=incompatible),tempfile.TemporaryDirectory() as folder:
+                args,jobs,_,_=fixture(folder)
+                manifest,_=inference_sidecar_fixture(args,jobs["complete"],complete_chain=complete,incompatible_chain=incompatible)
+                with patch.object(M,"verify_runtime_cache",return_value={"fixture":True}):
+                    with self.assertRaisesRegex(ValueError,message):
+                        M.migrate(*args,inference_sidecar_manifest=manifest,apply=True)
+                self.assertFalse(args[1].exists())
 
 
 if __name__=="__main__":unittest.main()

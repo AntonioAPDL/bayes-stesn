@@ -58,12 +58,49 @@ document. The campaign itself audits the complete restored cache before use.
 
 The executed scientific source files and package versions are hashed into every
 job. A checkpoint with an incompatible identity is refused. Keep the numerical
-source and configuration unchanged while resuming. The actual running workspace
-used the following v1-budget/run_v2 paths; substitute only equivalent verified roots when moving
-the complete workspace, using the explicit migration tool if job output paths
-must change. After the separately documented budget-only migration below, use
-the v2 budget configuration with the new run_v3 root. Do not point a changed
-configuration at a root bound to the original experiment identity.
+source and configuration unchanged while resuming.
+
+### Restored authoritative workspace; migration pending
+
+The repository, verified cache and compatible project interpreter have been
+restored under `/data`. The original scratch paths are historical provenance,
+not paths to recreate with symlinks. Use:
+
+| Component | Restored path |
+|---|---|
+| Repository | `/data/ks_improvement_20261105/repo` |
+| Verified delivered cache | `/data/ks_improvement_20261105/cache` |
+| Project Python | `/data/ks_improvement_20261105/env/bin/python` |
+| Original comparator-selection freeze | `/data/ks_improvement_20261105/recovered_original_evidence/ks_frozen_specification_full.json` |
+| Preserved source campaign | `/data/ks_improvement_20261105/run_v2` |
+| Prospective migration destination | `/data/ks_improvement_20261105/run_v3` |
+
+```bash
+cd /data/ks_improvement_20261105/repo
+export PYTHONPATH="$PWD/src"
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
+export PYTHONHASHSEED=0 MPLBACKEND=Agg
+KS_PYTHON=/data/ks_improvement_20261105/env/bin/python
+KS_CACHE_ROOT=/data/ks_improvement_20261105/cache
+KS_ORIGINAL_FREEZE=/data/ks_improvement_20261105/recovered_original_evidence/ks_frozen_specification_full.json
+```
+
+`KS_ORIGINAL_FREEZE` supplies `--original-freeze` to the fixed point-reference
+tool. The improvement campaign's own selected models remain bound separately
+by `freeze.json` in the active run root.
+
+At this documentation revision, migration application is **not claimed**. The
+destination becomes the active run only after its guarded migration receipt
+passes. Use the v2 budget configuration with that verified run_v3 destination;
+do not point a changed configuration at the still-bound run_v2 source.
+
+### Historical v1/run_v2 invocation
+
+The following preserves the earlier invocation and its scratch paths for
+provenance. It is not a current command for the restored workspace. Relocation
+uses the explicit reviewed migration below, rather than editing old jobs or
+recreating missing source paths.
 
 ```bash
 export PYTHONPATH="$PWD/src"
@@ -157,11 +194,14 @@ The tool acquires the existing locks and rejects active writers. It preserves
 the source root and uses a new destination; no history is reset in place.
 
 ```bash
-python tools/extend_ks_improvement_budget.py \
+"$KS_PYTHON" tools/extend_ks_improvement_budget.py \
   --source /data/ks_improvement_20261105/run_v2 \
   --destination /data/ks_improvement_20261105/run_v3 \
   --config configs/applications/ks_improvement_v2_budget.json \
-  --cache /workspace/scratch/ks_recovery_20261105T0615/cache \
+  --source-cache-path /workspace/scratch/ks_recovery_20261105T0615/cache \
+  --cache /data/ks_improvement_20261105/cache \
+  --fit-sidecar-manifest /data/ks_improvement_20261105/operations/reviewed_fit_sidecars.json \
+  --inference-sidecar-manifest /data/ks_improvement_20261105/operations/reviewed_inference_sidecars.json \
   --closed-session-receipt FRESH_CLOSED_SESSION_RECEIPT \
   --closed-session-id OBSERVED_LATEST_SESSION_ID \
   --projection-receipt TIMING_RECEIPT \
@@ -175,9 +215,45 @@ operational experiment/job bindings and corresponding freeze identity change;
 the original freeze time and selected rows do not. Old and new identities remain
 linked by the migration receipt.
 
+`--source-cache-path` names the old path recorded in source jobs; it does not
+require recreating or reading a second cache there. `--cache` supplies the
+restored, independently verified cache. The two sidecar manifests are exact
+reviewed allowlists, not general permission to ignore unexpected files. The
+fit-sidecar manifest covers six reviewed opaque ancillary files. The inference
+manifest covers only the separately validated historical pair described next;
+unknown additional sidecars remain rejected.
+
+#### One historical auxiliary sampler pair
+
+The strict migration check identified one historical mismatch for unselected
+candidate `bayes_02`, track A, trajectory 0, seed 20261105, fit key
+`13103f3581fde7430a4128f52b3be460`. Its completed `fit.npz` independently passes
+the original source/runtime, configuration, receipt and internal checksum
+checks, contains four chains with 2,000 retained states each, and retains its
+recorded inference qualification. Its auxiliary chain file instead contains
+2,000, 2,000, 2,000 and 1,750 retained states, while the phase file declares the
+completed target and a different chain checksum.
+
+The [read-only prefix validation](evidence/ks_improvement_native_auxiliary_validation_13103f.json)
+verified that **all 7,750 retained auxiliary state arrays and their log-density
+prefixes match the completed native posterior exactly**, with zero mismatches.
+The earlier migration receipt already recorded the same bytes. The creator and
+cause of the auxiliary mismatch remain unproven. This verification performed no
+model fit, forecast or extra MCMC draws.
+
+The reviewed migration is authorized to preserve this pair as **archive-only
+evidence outside active fit storage**, retaining the validated completed native
+checkpoint unchanged. Application remains pending until a passed migration
+receipt records it. Exact completed inference restart from this auxiliary pair
+is unavailable; no final RNG state is invented and no partial chain is relabeled
+as complete. Existing completed native forecasting state, selected models,
+qualification, scores and failures are unchanged. The proof receipt's SHA-256 is
+`594e82111eee09987002388c5ffdeb16413569dfbd452578963b9feec4fb09c3`.
+
 After the destination receipt passes, resume with
 `--config configs/applications/ks_improvement_v2_budget.json` and
-`--output /data/ks_improvement_20261105/run_v3`, retaining the same cache. Use
+`--output /data/ks_improvement_20261105/run_v3` and the restored
+`--cache /data/ks_improvement_20261105/cache`. Use
 `--stage confirm` and, after its coordinator exits, `--stage sensitivity` as
 documented above. Keep every historical root included in any bounded cache-advice
 inventory covered by genuine closure evidence. The new elapsed deadline is five
@@ -331,7 +407,10 @@ For the recorded workspace, use its compatible Python and the thread settings
 above. Set these task-specific paths once:
 
 ```bash
-KS_PYTHON=/workspace/scratch/ks_recovery_20261105T0615/env/bin/python
+KS_PYTHON=/data/ks_improvement_20261105/env/bin/python
+KS_CACHE_ROOT=/data/ks_improvement_20261105/cache
+KS_ORIGINAL_FREEZE=/data/ks_improvement_20261105/recovered_original_evidence/ks_frozen_specification_full.json
+# Preserved source until the reviewed destination migration receipt passes:
 KS_RUN_ROOT=/data/ks_improvement_20261105/run_v2
 KS_EXPORT_ROOT=/data/ks_improvement_20261105/exports
 KS_REPORT_ROOT=/data/ks_improvement_20261105/report
