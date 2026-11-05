@@ -1,0 +1,381 @@
+{
+  "actions_by_this_auditor": {
+    "fit_or_forecast_run": false,
+    "jobs_terminated": false,
+    "live_jobs_mutated": false,
+    "source_modified": false,
+    "status_reconciliation_executed": false,
+    "validation_outcomes_read": false
+  },
+  "affected_jobs": [
+    {
+      "artifact_bytes": 29062,
+      "artifact_path": "preflight/8f0482044f053ee9a123b6bd7fb7d304.json",
+      "artifact_sha256": "9ca433d1e69491e905623f3a7ccf3bf9e494764ee89598c3f293b576ce6b2a3a",
+      "attempt_elapsed_seconds": 2.0100614219991257,
+      "attempt_finished_utc": "2026-11-05T07:39:31.117488+00:00",
+      "attempt_returncode": 0,
+      "attempt_sha256": "2a698239f165d50d2b0b80f2f3d2162952a4e4e60f1392a369768d42034601e0",
+      "attempt_state": "complete",
+      "candidate_effective_hash": "c51968bd1f323906949ce4a0313b01773ec52048df86998541e207b6042468b2",
+      "candidate_id": "imp_b_joint_008_c51968bd",
+      "checks": {
+        "candidate": true,
+        "experiment": true,
+        "fit_key": true,
+        "job_hash": true,
+        "one_exit0_attempt": true,
+        "passing512": true,
+        "prepared_identity_consistent": true,
+        "recorded_source": true,
+        "training_bounds": true,
+        "training_protocol": true,
+        "training_trajectory": true
+      },
+      "dimensions": {
+        "likelihood_rows": 4976,
+        "readout": 2440,
+        "spatial": 8,
+        "temporal": 305
+      },
+      "fit_key": "8f0482044f053ee9a123b6bd7fb7d304",
+      "job_id": "2c8bec834d1cefc9945d28f1",
+      "last_history_time": 1499.75,
+      "ledger_file_ctime_ns": 1793864372609369781,
+      "ledger_file_ctime_utc": "2026-11-05T07:39:32.609370+00:00",
+      "ledger_file_mtime_ns": 1793864370001314955,
+      "ledger_file_mtime_utc": "2026-11-05T07:39:30.001315+00:00",
+      "ledger_payload_updated_utc": "2026-11-05T07:39:30.000635+00:00",
+      "observed_ledger_sha256": "ef9b5787ace5639b8b1a1aa5ba606a08e068bcd4f1e1eb5fcd4005766a659122",
+      "observed_ledger_state": "running",
+      "passing_histories": [
+        256,
+        512,
+        1024,
+        2048
+      ],
+      "permitted_training_rows": 6000,
+      "prepared_identity": "0eb859390a9983e3f98dc2f106ef2ce5703bae12554439fbaeda565cce927046",
+      "scheduler_end_state": "complete",
+      "track": "B",
+      "training_identity_sha256": "6bd0451d8cd2b48a209f83e7d87d1e0f0195c2a304f2520c2e437a6557dc4617",
+      "trajectory": 0
+    },
+    {
+      "artifact_bytes": 29340,
+      "artifact_path": "preflight/80f1d30e2ca1ae08f06015b2edb99d67.json",
+      "artifact_sha256": "f16f5bca41bd1d65062f4c12f3f14bf51493ea348a9421ee6bde07f020ff1672",
+      "attempt_elapsed_seconds": 1.7621342149977863,
+      "attempt_finished_utc": "2026-11-05T07:39:39.059211+00:00",
+      "attempt_returncode": 0,
+      "attempt_sha256": "37175f967d39a7e98e4afea0bda8e3bf22d501e57c11aff11ef731051ef72dc3",
+      "attempt_state": "complete",
+      "candidate_effective_hash": "61ef2b24d7981689dae4852b48bf4f7daa7dbee66089fe2bf1e3ef4b33c0a29d",
+      "candidate_id": "bayes_01",
+      "checks": {
+        "candidate": true,
+        "experiment": true,
+        "fit_key": true,
+        "job_hash": true,
+        "one_exit0_attempt": true,
+        "passing512": true,
+        "prepared_identity_consistent": true,
+        "recorded_source": true,
+        "training_bounds": true,
+        "training_protocol": true,
+        "training_trajectory": true
+      },
+      "dimensions": {
+        "likelihood_rows": 5488,
+        "readout": 2260,
+        "spatial": 20,
+        "temporal": 113
+      },
+      "fit_key": "80f1d30e2ca1ae08f06015b2edb99d67",
+      "job_id": "374fcd6cc2c2ecd6a9863ea4",
+      "last_history_time": 1499.75,
+      "ledger_file_ctime_ns": 1793864380845306788,
+      "ledger_file_ctime_utc": "2026-11-05T07:39:40.845307+00:00",
+      "ledger_file_mtime_ns": 1793864378127883895,
+      "ledger_file_mtime_utc": "2026-11-05T07:39:38.127884+00:00",
+      "ledger_payload_updated_utc": "2026-11-05T07:39:38.127270+00:00",
+      "observed_ledger_sha256": "95a74663c91f3238e2f58a88e41c4774f4624caa43f254bb94f99a835df37d64",
+      "observed_ledger_state": "running",
+      "passing_histories": [
+        128,
+        256,
+        512,
+        1024,
+        2048
+      ],
+      "permitted_training_rows": 6000,
+      "prepared_identity": "eea27f6c03e9bb5f3f25b0b4b8647389fa72318e62f06f81963ecc067b61e6e8",
+      "scheduler_end_state": "complete",
+      "track": "C",
+      "training_identity_sha256": "a44d4f2d7dbfa3c65be401561238651f26d75fcc21c0ff4956d390f6678fbf03",
+      "trajectory": 5
+    },
+    {
+      "artifact_bytes": 32000,
+      "artifact_path": "preflight/1d4309a8480015688b20a795de77ccee.json",
+      "artifact_sha256": "0960356b4b82c9f31426a462ec085812fc7addca4aa327e06f9fae9175be82c7",
+      "attempt_elapsed_seconds": 1.75735297799838,
+      "attempt_finished_utc": "2026-11-05T07:38:57.137233+00:00",
+      "attempt_returncode": 0,
+      "attempt_sha256": "357c207283f9b4cdcd128958acd413a44d97949d89f9953a470f44bd46f5b0f2",
+      "attempt_state": "complete",
+      "candidate_effective_hash": "8fa05c12a96433b3db43eafa0ecbd8b268eb132ea218cfa2657423f5b3877c8d",
+      "candidate_id": "imp_b_scalar_leak_010_8fa05c12",
+      "checks": {
+        "candidate": true,
+        "experiment": true,
+        "fit_key": true,
+        "job_hash": true,
+        "one_exit0_attempt": true,
+        "passing512": true,
+        "prepared_identity_consistent": true,
+        "recorded_source": true,
+        "training_bounds": true,
+        "training_protocol": true,
+        "training_trajectory": true
+      },
+      "dimensions": {
+        "likelihood_rows": 5488,
+        "readout": 2260,
+        "spatial": 20,
+        "temporal": 113
+      },
+      "fit_key": "1d4309a8480015688b20a795de77ccee",
+      "job_id": "76d0ad9661e62bbbd93e7722",
+      "last_history_time": 1499.75,
+      "ledger_file_ctime_ns": 1793864337073631263,
+      "ledger_file_ctime_utc": "2026-11-05T07:38:57.073631+00:00",
+      "ledger_file_mtime_ns": 1793864336020976208,
+      "ledger_file_mtime_utc": "2026-11-05T07:38:56.020976+00:00",
+      "ledger_payload_updated_utc": "2026-11-05T07:38:56.020465+00:00",
+      "observed_ledger_sha256": "9950c93f08424b0d9e6f5476d8ece204ad9441754df476ba484d6d4668e6fa89",
+      "observed_ledger_state": "running",
+      "passing_histories": [
+        256,
+        512,
+        1024,
+        2048
+      ],
+      "permitted_training_rows": 6000,
+      "prepared_identity": "b9c7a3e256b59cf8d0fa48abea03fa17cbe9c0349c9e7a3a2423f74ae701ce0f",
+      "scheduler_end_state": "running",
+      "track": "B",
+      "training_identity_sha256": "07a0fd66cab172c1b399f1c24d5360649ce986c56ab5f024bee93a4a8159e05c",
+      "trajectory": 5
+    },
+    {
+      "artifact_bytes": 31943,
+      "artifact_path": "preflight/e6402a49546316464dde7cc0ed665602.json",
+      "artifact_sha256": "03549456a24e71c809da128046ac28f436f3eba9cb0bd074d0b23833e6453941",
+      "attempt_elapsed_seconds": 2.009198362000461,
+      "attempt_finished_utc": "2026-11-05T07:39:06.304732+00:00",
+      "attempt_returncode": 0,
+      "attempt_sha256": "e8ed3c4ce065097a3bc442d81a6f074b40890c6ada72b5b32baafaf706296320",
+      "attempt_state": "complete",
+      "candidate_effective_hash": "6c7bc70786c4af3f7cd1779954fae87ef3babf4543c5ed3bda0b457527f12a6f",
+      "candidate_id": "imp_b_operator_norm_098_6c7bc707",
+      "checks": {
+        "candidate": true,
+        "experiment": true,
+        "fit_key": true,
+        "job_hash": true,
+        "one_exit0_attempt": true,
+        "passing512": true,
+        "prepared_identity_consistent": true,
+        "recorded_source": true,
+        "training_bounds": true,
+        "training_protocol": true,
+        "training_trajectory": true
+      },
+      "dimensions": {
+        "likelihood_rows": 5488,
+        "readout": 2260,
+        "spatial": 20,
+        "temporal": 113
+      },
+      "fit_key": "e6402a49546316464dde7cc0ed665602",
+      "job_id": "aaadccf8c398deb3ec9b9971",
+      "last_history_time": 1499.75,
+      "ledger_file_ctime_ns": 1793864348017552160,
+      "ledger_file_ctime_utc": "2026-11-05T07:39:08.017552+00:00",
+      "ledger_file_mtime_ns": 1793864345173594842,
+      "ledger_file_mtime_utc": "2026-11-05T07:39:05.173595+00:00",
+      "ledger_payload_updated_utc": "2026-11-05T07:39:05.172834+00:00",
+      "observed_ledger_sha256": "d9c689133418a6a881d2c6e0a8100b413d87990cdcaee433ca0369428b0eb280",
+      "observed_ledger_state": "running",
+      "passing_histories": [
+        128,
+        256,
+        512,
+        1024,
+        2048
+      ],
+      "permitted_training_rows": 6000,
+      "prepared_identity": "5f26a85b6672f6d4a0d67e544b3c5b857ea68fa106c60c08e3eb590a2316efbe",
+      "scheduler_end_state": "complete",
+      "track": "B",
+      "training_identity_sha256": "6bd0451d8cd2b48a209f83e7d87d1e0f0195c2a304f2520c2e437a6557dc4617",
+      "trajectory": 0
+    }
+  ],
+  "artifact_manifest_sha256": "e3923246c7d73df0a76dcb1c78f884e2058d61d1865b86248050dab530c45d4a",
+  "audited_utc": "2026-11-05T07:49:49.140680+00:00",
+  "causal_assessment": {
+    "established": "Successful training-only artifacts and zero-exit attempts were present, while four mutable status records were stale. Three were observed complete by the scheduler before becoming running again.",
+    "mechanism": "Stale-file replacement or visibility is consistent with the evidence; a specific synchronization service, platform action or writer is not established.",
+    "not_a_scientific_failure": "None of the four candidates failed the saved synchronization criterion. Restoring their eligibility preserves the common history of 512.",
+    "orchestration_weaknesses": [
+      "The original batch gate blocked pending states but accepted running after an exit-zero process.",
+      "The original preflight aggregation trusted ledger.state and did not reconcile a completed standalone artifact.",
+      "The original ledger uses read/merge/atomic replacement without an immutable terminal receipt or terminal-state monotonicity check."
+    ],
+    "responsible_actor": "unknown"
+  },
+  "census": {
+    "all_artifacts_pass_a_permitted_history": 208,
+    "common_minimum_history": 512,
+    "common_passing_histories": [
+      512,
+      1024,
+      2048
+    ],
+    "complete_ledger_results_exactly_equal_artifacts": 204,
+    "cross_binding_mismatches": [],
+    "eligible_candidates_from_verified_artifacts": 104,
+    "existing_policy_checked_jobs": 208,
+    "existing_policy_excluded_candidates": {
+      "B/imp_b_joint_008_c51968bd": "training_preflight_failed",
+      "B/imp_b_operator_norm_098_6c7bc707": "training_preflight_failed",
+      "B/imp_b_scalar_leak_010_8fa05c12": "training_preflight_failed",
+      "C/bayes_01": "training_preflight_failed"
+    },
+    "existing_policy_passed_jobs": 200,
+    "ledger_states": {
+      "complete": 204,
+      "running": 4
+    },
+    "parseable_preflight_artifacts": 208,
+    "passing_history_sets": [
+      {
+        "histories": [
+          128,
+          256,
+          512,
+          1024,
+          2048
+        ],
+        "jobs": 182
+      },
+      {
+        "histories": [
+          256,
+          512,
+          1024,
+          2048
+        ],
+        "jobs": 12
+      },
+      {
+        "histories": [
+          512,
+          1024,
+          2048
+        ],
+        "jobs": 14
+      }
+    ],
+    "preflight_jobs": 208,
+    "unique_exit_zero_complete_process_attempts": 208,
+    "unique_preflight_fit_keys": 208
+  },
+  "current_application_source_matches": {
+    "ks_data.py": true,
+    "ks_improvement_candidates.py": true,
+    "ks_improvement_diagnostics.py": true,
+    "ks_improvement_runner.py": false,
+    "ks_metrics.py": true,
+    "ks_runtime.py": true
+  },
+  "current_native_source_and_runtime_match": true,
+  "observed_reversion_evidence": {
+    "campaign_named_file_bytes": 58305,
+    "campaign_named_file_ctime_utc": "2026-11-05T07:40:04.453133+00:00",
+    "campaign_named_file_mtime_utc": "2026-11-05T07:40:02.281147+00:00",
+    "filesystem_observation": "The workspace and proposed data-root path resolve to the same overlay mount. The separate data-root cross-agent probe was readable; relocation changes pathname and possible synchronization scope, not the underlying filesystem.",
+    "process_descriptors": "Reading the live scheduler/worker stdout, stderr, cwd and PID-namespace links was denied. No access-control workaround was attempted; stream/path inode divergence was not verified.",
+    "scheduler_already_saw_running_after_exit_zero_jobs": [
+      "76d0ad9661e62bbbd93e7722"
+    ],
+    "scheduler_end_complete_but_current_ledger_running_jobs": [
+      "2c8bec834d1cefc9945d28f1",
+      "374fcd6cc2c2ecd6a9863ea4",
+      "aaadccf8c398deb3ec9b9971"
+    ],
+    "timing_interpretation": "For the three logged-complete jobs, current ledger payload and modification time describe the earlier running state; current inode metadata-change time is later than recorded process completion. This establishes state reversion relative to the scheduler log, without identifying the actor."
+  },
+  "original_experiment_identity": "11ff6d75880dfdbc190edb21f934a1cc9d22823fcc2c3514336ca9a3d6a1bb30",
+  "original_history_policy_sha256": "62f1cf6fe727290fd9c9064ce5644584fc717084cb4fe1d630f383084436b8a4",
+  "original_registry_identity": "6b0b8cb1768e1d09a846a38630212a0825e9ea3b7c289cb82b32accdf19be43b",
+  "original_source": {
+    "application": {
+      "ks_data.py": "b928534eca0c8507c64c51caf562f335899d7aa75ba993d6ca0fcda3b583ea00",
+      "ks_improvement_candidates.py": "f2b1d96b3ef0e2ea575e070c5bece2c48600c01bf05d7405b91983705da2d41c",
+      "ks_improvement_diagnostics.py": "de639b9fd3acf214a0d6e4530860cd609286aaf01a128c61521d5b1a01c8cc19",
+      "ks_improvement_runner.py": "51a25ebe4292e266a91b33981511b3f59d3c86947f47e3255422b68502a58baa",
+      "ks_metrics.py": "0a4f709931cbd91f42e76e8e34497ac539f302d79113ba9720972f33edb90400",
+      "ks_runtime.py": "ff70f020dcb877975cf246e3264cafe01372121d1114532d34e18fa455eb9aa0"
+    },
+    "native": {
+      "runtime": {
+        "blas": [
+          {
+            "architecture": "SkylakeX",
+            "internal_api": "openblas",
+            "num_threads": 1,
+            "version": "0.3.30"
+          },
+          {
+            "architecture": "SkylakeX",
+            "internal_api": "openblas",
+            "num_threads": 1,
+            "version": "0.3.30"
+          }
+        ],
+        "blas_threads": {
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1"
+        },
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+        "python": "3.12.14",
+        "scipy": "1.17.0"
+      },
+      "source_sha256": "ee8f7273bc4d3f7e8f523680e77681406dd5a5848e5909bf118497734f3a5319"
+    },
+    "packages": {
+      "h5py": "3.16.0",
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "threadpoolctl": "3.6.0"
+    }
+  },
+  "run_label": "run_v1",
+  "safe_reconciliation_contract": [
+    "Preserve original jobs, attempts, artifacts, history policy and their hashes as the incident record.",
+    "Reconcile all 208 unique artifacts using verified original job ID/hash, fit key, candidate record, experiment/source binding, data identity, trajectory/protocol, training bounds and paired prepared identities.",
+    "Require unchanged native computation/runtime, candidate effective parameters, preprocessing, data and geometry diagnostic implementation. Keep the orchestration-only source migration explicit.",
+    "Create a new immutable terminal receipt under each new job identity, embedding the original artifact result and hashes of the original job, artifact and process attempt; label the state artifact-reconciled rather than rerun.",
+    "Recompute the common-history intersection from verified results: 512 is still the minimum, and no candidate is excluded by these preflights.",
+    "Retain process-attempt elapsed as process timing. Do not invent missing worker RSS or terminal-ledger timing for the four stale records.",
+    "Repair exclusion state before promotion/selection and resume only verified matching fitted artifacts/forecast receipts; retain the original campaign start and consumed-work budget."
+  ],
+  "schema": "ks-improvement-preflight-status-recovery/1",
+  "scope": "Read-only audit of completed training-only preflight artifacts; no fitting, forecast generation, validation-outcome inspection or selection. Only this new audit receipt was written.",
+  "source_change_note": "The orchestration runner was being repaired by the coordinator during this audit. Native computation, candidates, geometry diagnostics, data adapter, metrics and resource/ledger helper match the original run bindings."
+}
