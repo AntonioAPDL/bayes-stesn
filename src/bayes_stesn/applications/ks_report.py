@@ -1062,7 +1062,7 @@ class Report:
             for axis, model in zip(axes, ANIMATION_MODELS):
                 example = self.examples.get((track, model))
                 axis.set_xlim(0, 22); axis.set_ylim(-1.08*limit, 1.08*limit)
-                axis.set_xticks([0, 5.5, 11, 16.5, 22]); axis.set_xlabel("Physical periodic coordinate x")
+                axis.set_xticks([0, 5.5, 11, 16.5, 22]); axis.set_xlabel("Physical periodic coordinate x", labelpad=15)
                 axis.grid(alpha=.16)
                 if limit > 12:
                     axis.set_yscale("symlog", linthresh=2.)
@@ -1074,7 +1074,7 @@ class Report:
                 style = {"linestyle": "none", "marker": "o", "markersize": 4} if track == "A" else {"linewidth": 1.5}
                 truth_line, = axis.plot(example.x, example.truth[0], color="black", label="Truth", **style)
                 mean_line, = axis.plot(example.x, example.mean[0], color=COLORS[model], label="Forecast mean", **style)
-                axis.plot(example.input_x, np.full(len(example.input_x), -.10), "|", color="#777777", markersize=4,
+                axis.plot(example.input_x, np.full(len(example.input_x), -.15), "|", color="#777777", markersize=4,
                           transform=axis.get_xaxis_transform(), clip_on=False)
                 qualifier = "\nInference unqualified; point diagnostic" if model in NATIVE and not example.qualified else ""
                 axis.set_title(LABELS[model] + qualifier, fontsize=9)
@@ -1084,16 +1084,14 @@ class Report:
             target_count = 12 if track == "A" else 64
             note = f"Predeclared trajectory 0 / first target 8000 · {target_count} official target sites only · gray rug: permitted input coordinates"
             figure.text(.5, .025, note, ha="center", fontsize=8)
+            figure.text(.5, .875, "Black: clean truth · colored: forecast mean", ha="center", fontsize=8)
             figure.subplots_adjust(left=.07, right=.98, bottom=.23, top=.78, wspace=.17)
-            for axis in reversed(axes):
-                if axis.get_legend_handles_labels()[0]:
-                    axis.legend(loc="lower right", fontsize=8, frameon=False)
-                    break
             destination = self.output / "animations" / f"ks_{track}_t00_a8000.mp4"
             temporary = destination.with_name("." + destination.stem + ".tmp.mp4")
             try:
                 writer = FFMpegWriter(fps=10, codec="libx264", bitrate=1400,
-                    extra_args=["-pix_fmt", "yuv420p", "-movflags", "+faststart", "-preset", "veryfast"])
+                    extra_args=["-pix_fmt", "yuv420p", "-movflags", "+faststart", "-preset", "veryfast",
+                                "-threads", "1", "-filter_threads", "1"])
                 with writer.saving(figure, str(temporary), dpi=100):
                     for frame in range(100):
                         title.set_text(f"{TRACKS[track]} · lead {frame+1}/100 · elapsed physical time {(frame+1)*DT:.2f}")

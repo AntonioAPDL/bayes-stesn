@@ -1,0 +1,81 @@
+{
+  "checks": {
+    "all_observed_input_count": 64,
+    "all_observed_target_count": 64,
+    "best_case_selection_performed": false,
+    "curve_or_label_clipping_observed": false,
+    "fixed_amplitude_scale_across_panels_and_time": true,
+    "physical_times_at_inspected_leads": [
+      0.25,
+      12.5,
+      25.0
+    ],
+    "predeclared_first_target": 8000,
+    "predeclared_trajectory": 0,
+    "prespecified_models": [
+      "bayes_stesn",
+      "basis_gru",
+      "ridge_esn"
+    ],
+    "same_truth_and_coordinates_across_model_panels": true,
+    "strict_input_rug_count": 39,
+    "strict_input_target_overlap": 0,
+    "strict_target_count": 12,
+    "strict_track_target_markers_only": true
+  },
+  "conservative_self_plus_child_peak_bound_bytes": 275775488,
+  "encoder_threads": 1,
+  "filter_threads": 1,
+  "final_production_artifact_qa_complete": false,
+  "freeze_identity": "ca6d8dac49208767f0073a747a3fbc7ee37648715a22abc32e539378b75756dc",
+  "full_frame_dumps_created": false,
+  "generated_utc": "2026-11-05T05:20:29.906327+00:00",
+  "git_diff_check": "passed",
+  "maximum_child_peak_rss_bytes": 137887744,
+  "memory_budget_bytes": 300000000,
+  "model_fit_or_forecast_performed": false,
+  "movie_count": 2,
+  "movie_properties": [
+    {
+      "bytes": 432805,
+      "codec": "h264",
+      "duration_seconds": 10.0,
+      "frames": 100,
+      "frames_per_second": 10,
+      "height": 400,
+      "pixel_format": "yuv420p",
+      "sha256": "c550a65e07002057800ef1079730b32ea23b940cfdc9eb2392da2487a3025d58",
+      "track": "A",
+      "width": 1200
+    },
+    {
+      "bytes": 1360347,
+      "codec": "h264",
+      "duration_seconds": 10.0,
+      "frames": 100,
+      "frames_per_second": 10,
+      "height": 400,
+      "pixel_format": "yuv420p",
+      "sha256": "a88dc3488f6491d64e90015e1614f5cf967455dfe863c8bdced79d7a992129c2",
+      "track": "B",
+      "width": 1200
+    }
+  ],
+  "numeric_threads_per_library": 1,
+  "numerical_results_or_configuration_modified": false,
+  "previous_static_readiness_receipt_sha256": "933d47f98f6e2f3742b67a6b2e81c950318fc737d718f2d4096e102295f94d4e",
+  "private_qa_receipt_sha256": "466f7f04ede867976a8b07a90b3f87d6d9fb90a988af3c22accc9b3e7b3bb68a",
+  "process_peak_rss_bytes": 137887744,
+  "production_report_rendered": false,
+  "render_seconds": 9.983638785999574,
+  "report_source": {
+    "path": "src/bayes_stesn/applications/ks_report.py",
+    "sha256": "7059d6bed5ecc85c8962345fd5fba9954f63530a917777e171c24f1e497de337"
+  },
+  "representative_frames_inspected": 6,
+  "schema": "ks-animation-readiness-acceptance/1",
+  "scope": "Two private, frozen-case animation previews; final production artifact rendering and QA remain pending.",
+  "status": "passed",
+  "subsequent_source_changes": "Only Report.animate: explicit single-thread encoder/filter and visual spacing/key corrections.",
+  "transient_frames_removed_after_verification": 6
+}

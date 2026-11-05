@@ -691,11 +691,37 @@ class Writer:
                 self.p(f"{label(row['model'])} has an accuracy estimate from only {row['complete_trajectories']}/{row['scheduled_trajectories']} complete trajectories. "
                        f"Its {row['failed_origins']} failed and {row['pending_origins']} pending origins remain in the full {row['scheduled_origins']}-origin schedule. "
                        "The full-schedule RMSE is undefined. A lower complete-case RMSE cannot establish superiority over a family evaluated on all scheduled trajectories; the descriptive minimum above excludes this incomplete accuracy population.")
+        self.seed_sensitivity_findings()
         if i.frozen.get("selection_issues"):
             self.h("Qualification limitations frozen before testing", 2)
             for issue in i.frozen["selection_issues"]:
                 self.p("- "+issue)
         self.p("The paired comparisons later in the report preserve trajectory matching. A confidence interval that includes zero does not establish equivalence. Additional reservoir/network seeds are sensitivity fits and are not extra scientific trajectories or posterior samples. Unqualified probabilistic results are excluded from the probability table, while their point forecasts, when finite, remain explicitly labeled diagnostic outcomes.")
+
+    def seed_sensitivity_findings(self):
+        matched=self.i.matched_seeds
+        if matched is None:
+            return
+        seeds=[matched["main_seed"]]+matched["alternative_seeds"]
+        by_id={(r["track"],r["model"],r["seed"]):r for r in matched["rows"]}
+        records=[]; cnn_values=None
+        for track,model in [("A","bayes_stesn"),("B","bayes_stesn"),("B","periodic_cnn")]:
+            selected=[by_id.get((track,model,seed)) for seed in seeds]
+            if any(r is None or r["pending_origins"] or r["complete_trajectories"]!=len(matched["trajectories"])
+                   or r.get("rmse",{}).get("n")!=len(matched["trajectories"]) for r in selected):
+                continue
+            values=[r["rmse"]["mean"] for r in selected]
+            records.append([track+" / "+label(model)]+[number(v,6) for v in values])
+            if model=="periodic_cnn":
+                cnn_values=values
+        if not records:
+            return
+        self.h("Matched model-seed sensitivity",2)
+        self.p("The following RMSE means use exactly the same "+str(len(matched["trajectories"]))+" frozen trajectories "+str(matched["trajectories"])+" for every model seed, including the main seed. The main result tables retain their separate 20-trajectory population. These rows describe seed sensitivity conditional on the selected configuration; they do not select a preferred seed.")
+        self.table(["Track / family"]+[str(seed)+(" (main)" if seed==matched["main_seed"] else "") for seed in seeds],records,[180]+[330/len(seeds)]*len(seeds))
+        if cnn_values is not None:
+            self.p("On this matched subset, the CNN's mean RMSE ranges from "+number(min(cnn_values),6)+" to "+number(max(cnn_values),6)+" across the fixed seeds. Its favorable main-track result therefore accompanies observable seed sensitivity. The detailed section reports paired alternate-minus-main differences, trajectory-bootstrap intervals and full denominators; four trajectory clusters provide limited descriptive evidence.")
+        self.p("Model seeds are distinct from sampler chains and predictive paths. The three fitted models are not pooled into a Bayesian predictive distribution or treated as additional independent trajectories.","small")
 
     def main_tables(self):
         self.h("2. Main-track results", page=True)
