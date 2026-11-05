@@ -391,7 +391,8 @@ def collect(results, *, repo, workspace=None, published_commit=None, local_revis
     preflight = read(preflight_path) if preflight_path.exists() else None
     extra_acceptance = {}
     for name in ("ks_core_candidate_invariance.json", "ks_validation_audit_early.json", "ks_validation_promotion_A_audit.json",
-                 "ks_contiguous_history_check.json", "ks_memory_recovery_20261105.json"):
+                 "ks_contiguous_history_check.json", "ks_memory_recovery_20261105.json",
+                 "ks_memory_recovery_20261105_event2.json"):
         path = repo/"docs/applications/evidence"/name
         if path.exists():
             value = read(path)

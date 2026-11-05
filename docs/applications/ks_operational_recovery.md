@@ -32,6 +32,46 @@ Exact measurements and the resume census are in
 The public report collector exposes this receipt as
 `extra_acceptance.ks_memory_recovery_20261105`.
 
+### Second pause: recorded memory-limit pressure
+
+A second admission stop occurred at 04:44 UTC during Track A seed sensitivity,
+after all eight additional GRU fits and the four fits for the first additional
+Bayesian seed had completed. The required safety-adjusted estimate was
+900,000,000 bytes, exceeding the then-current allowance of 473,687,552 bytes.
+After confirming no live workers and acquiring the existing scheduler and fit
+locks, the operator used the guarded cache-advice tool at 04:46:07 UTC. It advised
+660 files covering 5,040,298,737 logical bytes, with zero errors, content changes,
+or deletions. The frozen study resumed with the same memory gates; the resumed
+invocation used a two-hour wall-time cap.
+
+| Cgroup quantity | Before advice | After advice |
+|---|---:|---:|
+| Current accounted bytes | 8,583,749,632 | 3,525,160,960 |
+| File-backed accounted bytes | 8,173,711,360 | 3,132,698,624 |
+| Anonymous accounted bytes | 150,716,416 | 155,820,032 |
+| Configured limit, bytes | 8,589,934,592 | 8,589,934,592 |
+| Cumulative `memory.events:max` | 5,842 | 5,868 |
+| Cumulative `memory.events:oom` | 0 | 0 |
+| Cumulative `memory.events:oom_kill` | 0 | 0 |
+
+This event involved actual memory-limit pressure: the before-advice accounting
+was only 6,184,960 bytes below the limit. The recorded cgroup peak was
+8,590,311,424 bytes. The zero OOM counters do not imply an absence of pressure.
+The [Linux cgroup v2 documentation](https://docs.kernel.org/admin-guide/cgroup-v2.html)
+defines `max` as occasions when usage was about to exceed the maximum boundary,
+separately from the OOM and process-kill counters; these event counters are
+hierarchical. The before/after difference is not attributed exclusively to the
+advice call or to the KS workers, because the cgroup includes other activity.
+
+The independently checked resume snapshot retained 698 ledger entries: 686
+complete, nine failed, one inference-unqualified, and two running. Previously
+recorded scientific failures were preserved. All 51 experiment-bound numerical
+Python files still matched their frozen hashes. The event-1 receipt is unchanged;
+the appended event has its own evidence file,
+[`evidence/ks_memory_recovery_20261105_event2.json`](evidence/ks_memory_recovery_20261105_event2.json),
+exposed as `extra_acceptance.ks_memory_recovery_20261105_event2`. No additional
+cache advice or deletion was performed by this documentation audit.
+
 ### Reusable guarded command
 
 `tools/reclaim_ks_file_cache.py` defaults to a dry-run. It checks the existing
@@ -80,6 +120,15 @@ reads both these durable records and the current legacy observer summary, so
 the active old-code observer need not be interrupted. A new observer refuses
 to overlap another observer for the same results root. Final result packages
 include the durable session records.
+
+At the second restart, the new observer correctly archived the entire previous
+legacy session before beginning another session. The archive is byte-identical
+to the separately retained final summary: 1,634 samples from 03:49:58 to 04:44:31
+UTC and all 169 recorded per-job rows. Its combined-worker RSS peak was
+1,065,906,176 bytes, container-accounting peak was 8,589,918,208 bytes, and minimum
+free disk was 55,894,646,784 bytes. This successful preservation does not repair
+the earlier session's missing job rows. The third observer session started at
+04:46:20 UTC and maintains the durable-session format.
 
 ## Deferred final staging cleanup
 

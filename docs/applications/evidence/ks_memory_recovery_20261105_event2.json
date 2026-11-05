@@ -1,0 +1,203 @@
+{
+  "admission_policy": {
+    "allowance_formula": "min(combined_worker_cap_bytes, 0.65 * max(0, headroom))",
+    "configuration_changed": false,
+    "gates_changed": false,
+    "headroom_formula": "(memory.max - memory.current) + 0.5 * inactive_file",
+    "reported_stop_allowance_bytes": 473687552,
+    "reported_stop_required_bytes": 900000000,
+    "required_formula": "1.5 * estimated_combined_worker_RSS <= allowance",
+    "timing_note": "The scheduler rejection and later recovery snapshots occur at different times; do not recompute the stop allowance from the later before-advice snapshot."
+  },
+  "cache_advice_or_deletion_performed_by_audit": false,
+  "classification": "Observed cgroup memory-limit pressure and a conservative scheduling pause; no recorded OOM event or OOM kill.",
+  "collector_acceptance": {
+    "both_event_receipts_loaded": true,
+    "first_session_gap_still_explicit": true,
+    "model_fit_or_scoring_performed": false,
+    "observer_sessions": 3,
+    "second_session_rows_complete": 169,
+    "success": true,
+    "test_outputs_read": false
+  },
+  "event": "Second conservative memory-admission pause during Track A seed sensitivity after the first extra Bayesian seed and both extra GRU seeds completed; resumed after guarded task-file cache advice.",
+  "event_index": 2,
+  "event_utc": "2026-11-05T04:46:07.760294+00:00",
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "freeze_identity": "ca6d8dac49208767f0073a747a3fbc7ee37648715a22abc32e539378b75756dc",
+  "frozen_numerical_files_verified": 51,
+  "frozen_numerical_mismatches": [],
+  "interpretation": "Before advice, accounted memory was within 6184960 bytes of the configured 8 GiB limit and was dominated by file-backed accounting. The cumulative memory.events max counter was 5842 before and 5868 after; these are genuine recorded limit events and must not be described as an absence of memory pressure. Both recorded oom and oom_kill counters remained zero. The cache-advice intervention coincided with a 5041012736-byte reduction in file-backed accounting while anonymous memory increased by 5103616 bytes. Cgroup values include other activity, and the event-counter change is not attributed exclusively to the advice operation or the KS workers.",
+  "kernel_counter_reference": {
+    "interpretation": "max counts occasions when usage was about to exceed the maximum boundary; it differs from the oom and oom_kill counters. The counters are hierarchical.",
+    "section": "memory.events",
+    "url": "https://docs.kernel.org/admin-guide/cgroup-v2.html"
+  },
+  "model_fit_or_scoring_performed_by_audit": false,
+  "numerical_source_hashes": {
+    "configs/applications/ks_experiment.json": "daf3f5aa75adf46162be288b73e521b825866ebf7e8b1c4384f4227fe3a639a2",
+    "src/bayes_stesn/applications/ks_native.py": "dfb6e8c2d9baefa54cb87b162175ac3672f8bc17f9e8951272ba6e329798fd6e",
+    "src/bayes_stesn/applications/ks_runner.py": "4a5813c531908dfb5f697e039e02ada19ffe782166af5f3238b45458638ac998",
+    "src/bayes_stesn/applications/ks_runtime.py": "ff70f020dcb877975cf246e3264cafe01372121d1114532d34e18fa455eb9aa0"
+  },
+  "observer_recovery": {
+    "alerts_count": 0,
+    "archive_relative_path": "observer_sessions/session_c9b99ca2102be4b306d9.json",
+    "archive_sha256": "8c8eee4c58480611d79e6fd542031852d42d4208ad53e9d478d37579a84ac8b4",
+    "archived_file_byte_identical_to_saved_final_summary": true,
+    "archived_json_semantically_equal_to_saved_final_summary": true,
+    "claim": "The updated observer automatically archived the complete previous legacy session before starting its new session. This does not repair the first session missing per-job map.",
+    "combined_worker_rss_peak_bytes": 1065906176,
+    "container_current_peak_bytes": 8589918208,
+    "disk_free_min_bytes": 55894646784,
+    "ended_utc": "2026-11-05T04:44:31.236794+00:00",
+    "first_session_limitation_preserved": true,
+    "next_session_started_utc": "2026-11-05T04:46:20.015810+00:00",
+    "per_job_map_complete": true,
+    "retained_job_rows": 169,
+    "samples": 1634,
+    "session_index": 2,
+    "started_utc": "2026-11-05T03:49:58.436255+00:00"
+  },
+  "prior_event": {
+    "relative_path": "ks_memory_recovery_20261105.json",
+    "sha256": "f1ee5bb880a69378e61c5b538e6c03a8898c8fa45ab3daabd7dc8db72e6e51f1",
+    "unchanged": true
+  },
+  "private_source_receipt_sha256": "36c05daf08a2375ebd3cb304e4971422b3a0e2ce900da8a2df7270d32598ece9",
+  "recorded_utc": "2026-11-05T04:48:40.693812+00:00",
+  "recovery": {
+    "after": {
+      "active_file": 2787147776,
+      "anon": 155820032,
+      "current": 3525160960,
+      "file": 3132698624,
+      "inactive_file": 345440256,
+      "limit": 8589934592,
+      "peak": 8590311424
+    },
+    "anon_change_bytes": 5103616,
+    "before": {
+      "active_file": 7663656960,
+      "anon": 150716416,
+      "current": 8583749632,
+      "file": 8173711360,
+      "inactive_file": 510046208,
+      "limit": 8589934592,
+      "peak": 8590311424
+    },
+    "before_current_fraction_of_limit": 0.9992799758911133,
+    "before_raw_headroom_bytes": 6184960,
+    "container_current_reduction_bytes": 5058588672,
+    "errors": 0,
+    "file_cache_reduction_bytes": 5041012736,
+    "file_content_changes": 0,
+    "files_advised": 660,
+    "files_deleted": 0,
+    "global_cache_operation": false,
+    "guarded_tool_state": "applied",
+    "logical_file_bytes": 5040298737,
+    "memory_events_after": {
+      "high": 0,
+      "low": 0,
+      "max": 5868,
+      "oom": 0,
+      "oom_group_kill": 0,
+      "oom_kill": 0
+    },
+    "memory_events_before": {
+      "high": 0,
+      "low": 0,
+      "max": 5842,
+      "oom": 0,
+      "oom_group_kill": 0,
+      "oom_kill": 0
+    },
+    "min_file_bytes": 1048576,
+    "no_live_KS_workers_verified_before_operation": true,
+    "operation": "POSIX_FADV_DONTNEED on existing regular task files",
+    "tool": "tools/reclaim_ks_file_cache.py"
+  },
+  "resume_audit": {
+    "by_stage_track": {
+      "final/A": {
+        "complete": 157,
+        "failed": 3
+      },
+      "final/B": {
+        "complete": 180
+      },
+      "promote/A": {
+        "complete": 83,
+        "inference-unqualified": 1
+      },
+      "promote/B": {
+        "complete": 95,
+        "failed": 1
+      },
+      "refine/B": {
+        "complete": 11,
+        "failed": 1
+      },
+      "screen/A": {
+        "complete": 71,
+        "failed": 1
+      },
+      "screen/B": {
+        "complete": 77,
+        "failed": 3
+      },
+      "sensitivity/A": {
+        "complete": 12,
+        "running": 2
+      }
+    },
+    "checkpoints_rewritten_by_audit": false,
+    "freeze_identity_matches_pre_second_pause_report": true,
+    "ledger_jobs": 698,
+    "resume_cli_wall_hours": 2,
+    "running_jobs": [
+      {
+        "job_id": "28a11cef2aa9661d0b4dadb2",
+        "model": "bayes_stesn",
+        "seed": 20261107,
+        "stage": "sensitivity",
+        "track": "A",
+        "trajectory": 0
+      },
+      {
+        "job_id": "c50e2ebf85b809f7ca1f1c4d",
+        "model": "bayes_stesn",
+        "seed": 20261107,
+        "stage": "sensitivity",
+        "track": "A",
+        "trajectory": 5
+      }
+    ],
+    "same_experiment_and_freeze_retained": true,
+    "scientific_failure_states_preserved": true,
+    "sensitivity_by_track_model_seed": {
+      "A/basis_gru/20261106": {
+        "complete": 4
+      },
+      "A/basis_gru/20261107": {
+        "complete": 4
+      },
+      "A/bayes_stesn/20261106": {
+        "complete": 4
+      },
+      "A/bayes_stesn/20261107": {
+        "running": 2
+      }
+    },
+    "snapshot_utc": "2026-11-05T04:48:40.693812+00:00",
+    "states": {
+      "complete": 686,
+      "failed": 9,
+      "inference-unqualified": 1,
+      "running": 2
+    }
+  },
+  "schema": "ks-memory-recovery/1",
+  "test_labels_read_by_audit": false
+}

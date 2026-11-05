@@ -402,7 +402,14 @@ class Inputs:
         self.early_audit = extra.get("ks_validation_audit_early") or self.read(self.repo/"docs/applications/evidence/ks_validation_audit_early.json", optional=True) or {}
         self.promotion_audit = extra.get("ks_validation_promotion_A_audit") or self.read(self.repo/"docs/applications/evidence/ks_validation_promotion_A_audit.json", optional=True) or {}
         self.contiguous_history = extra.get("ks_contiguous_history_check") or self.read(self.repo/"docs/applications/evidence/ks_contiguous_history_check.json", optional=True) or {}
-        self.memory_recovery = extra.get("ks_memory_recovery_20261105") or self.read(self.repo/"docs/applications/evidence/ks_memory_recovery_20261105.json", optional=True) or {}
+        recovery_paths = {p.stem: p for p in (self.repo/"docs/applications/evidence").glob("ks_memory_recovery_*.json")}
+        recovery_names = set(recovery_paths) | {name for name in extra if name.startswith("ks_memory_recovery_")}
+        self.memory_recoveries = []
+        for name in recovery_names:
+            receipt = extra.get(name) or (self.read(recovery_paths[name]) if name in recovery_paths else None)
+            if receipt:
+                self.memory_recoveries.append((name, receipt))
+        self.memory_recoveries.sort(key=lambda item: (item[1].get("event_utc", ""), item[0]))
         self.main_audit = extra.get("ks_main_tracks_audit_v2") or self.read(self.repo/"docs/applications/evidence/ks_main_tracks_audit_v2.json", optional=True) or {}
         self.cfg = self.experiment["config"]
         self.seed, self.rows = self.frozen["model_seed"], self.summary["rows"]
@@ -418,8 +425,11 @@ class Inputs:
             raise ValueError("Report evidence belongs to a different experiment")
         if self.precision.get("experiment_identity") not in (None, self.experiment["identity"]):
             raise ValueError("Precision receipt belongs to a different experiment")
-        if self.memory_recovery.get("experiment_identity") not in (None,self.experiment["identity"]):
-            raise ValueError("Operational memory-recovery receipt belongs to a different experiment")
+        for name, receipt in self.memory_recoveries:
+            if (receipt.get("schema") != "ks-memory-recovery/1" or
+                    receipt.get("experiment_identity") != self.experiment["identity"] or
+                    receipt.get("freeze_identity") not in (None, identity)):
+                raise ValueError("Operational memory-recovery receipt is incompatible: " + name)
         if self.main_audit:
             verify_main_audit_receipt(self.main_audit, self.frozen, self.summary,
                 self.episodes, self.read(self.results/"horizon_curves.json"))
@@ -996,16 +1006,29 @@ class Writer:
         if external:
             self.h("Validated external resource observations",2)
             self.table(["Watchdog field", "Measured value"],[[k,compact(v)] for k,v in external.items() if k != "jobs"],[220,290])
-        if i.memory_recovery:
-            event=i.memory_recovery; recovery=event.get("recovery",{}); policy=event.get("admission_policy",{})
-            self.h("Recorded memory-admission pause and recovery",2)
-            self.p("After Track A finished, the conservative container-aware memory gate paused scheduling before Track B. The recorded recovery used POSIX_FADV_DONTNEED advice on "+str(recovery.get("files_advised"))+" existing task-owned large files after confirming no live KS workers. The receipt records "+str(recovery.get("files_deleted"))+" deleted files and "+str(recovery.get("file_content_changes"))+" file-content changes. The same frozen configuration and admission rules were then resumed. The recorded memory-event counters show no observed out-of-memory event.")
+        for event_number, (receipt_name, event) in enumerate(i.memory_recoveries, start=1):
+            recovery=event.get("recovery",{}); policy=event.get("admission_policy",{})
+            self.h("Recorded memory recovery "+str(event.get("event_index",event_number))+" / "+event.get("event_utc","time unavailable"),2)
+            self.p(event.get("event","Operational recovery event"))
+            self.p(event.get("classification",""),"small")
+            self.p("The recorded operation advised "+str(recovery.get("files_advised"))+" existing task-owned files. Its receipt records "+str(recovery.get("files_deleted"))+" deleted files, "+str(recovery.get("file_content_changes"))+" file-content changes, and "+str(recovery.get("errors"))+" operation errors. No live KS workers were verified before the operation: "+number(recovery.get("no_live_KS_workers_verified_before_operation"))+". Scientific configuration changed: "+number(policy.get("configuration_changed"))+"; admission rules changed: "+number(policy.get("gates_changed"))+".")
             self.table(["Cgroup quantity", "Before advice (MiB)", "After advice (MiB)"],[[name,mib(recovery.get("before",{}).get(key)),mib(recovery.get("after",{}).get(key))] for name,key in (("Container current memory","current"),("File-backed accounting","file"),("Anonymous memory","anon"),("Container limit","limit"))],[220,145,145])
+            before_events=recovery.get("memory_events_before",{})
+            after_events=recovery.get("memory_events_after",{}) or event.get("resume_audit",{}).get("memory_events",{})
+            if before_events or after_events:
+                self.table(["Cumulative memory.events counter", "Before advice", "After / resume snapshot"],[[name,before_events.get(name,"unavailable"),after_events.get(name,"unavailable")] for name in ("max","oom","oom_kill","oom_group_kill")],[240,110,160])
+                if max(before_events.get("max",0),after_events.get("max",0))>0:
+                    self.p("Nonzero max counters record actual memory-limit pressure. They are distinct from OOM events and OOM kills; zero OOM counters do not establish absence of pressure. These hierarchical counters and cgroup snapshots cover other activity as well as this task, so their changes are not attributed exclusively to KS workers or to the advice operation.","small")
             self.p(event.get("interpretation",""),"small")
             self.p(policy.get("timing_note",""),"small")
+            self.table(["Admission / recovery evidence", "Recorded value"],[["Required admission bytes",policy.get("reported_stop_required_bytes","unavailable")],["Reported allowance bytes",policy.get("reported_stop_allowance_bytes",policy.get("reported_stop_allowance_approximate_bytes","unavailable"))],["Receipt",receipt_name],["Operation",recovery.get("operation","")]],[210,300])
+            if event.get("kernel_counter_reference",{}).get("url"):
+                self.p("Counter definition source: "+event["kernel_counter_reference"]["url"],"small")
             observer=event.get("observer_recovery",{})
-            if observer:
+            if "first_session_per_job_map_complete" in observer:
                 self.p("Observer coverage limitation: "+observer.get("limitation","")+" The recovered first-session aggregate has "+str(observer.get("first_session_samples"))+" samples; its full observed-job count is unknown. Retained per-job rows are not presented as a complete census, and missing worker peaks are not reconstructed from unrelated processes.","small")
+            elif observer:
+                self.p("Observer session "+str(observer.get("session_index","unavailable"))+" retains "+str(observer.get("samples","unavailable"))+" samples and "+str(observer.get("retained_job_rows","unavailable"))+" per-job rows. Complete per-job map: "+number(observer.get("per_job_map_complete"))+"; byte-identical archive verified: "+number(observer.get("archived_file_byte_identical_to_saved_final_summary"))+". "+observer.get("claim",""),"small")
         if p.get("resources"):
             self.h("Initial measured resources and allocation",2)
             self.table(["Resource/allocation", "Value"],flatten(p["resources"]),[250,260])
