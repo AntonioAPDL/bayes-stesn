@@ -129,6 +129,24 @@ def fixture(folder):
     return args,jobs,exp,frozen
 
 
+def opaque_sidecar_fixture(args, job):
+    source=args[0];path=source/"fits"/job["fit_key"]/".fit.npz.A1b2C3"
+    path.write_bytes(b"opaque historical bytes; not a native checkpoint")
+    relative=path.relative_to(source).as_posix()
+    entry={"path":relative,"bytes":path.stat().st_size,"sha256":M.N.digest(path),
+        "disposition":"preserve_opaque_outside_active_fits"}
+    historical_path=source/"migration/receipt.json";historical=M.read(historical_path)
+    historical.setdefault("files",{})[relative]={k:entry[k] for k in ("bytes","sha256")}
+    write(historical_path,historical)
+    manifest={"schema":"ks-reviewed-fit-sidecars/1",
+        "source_experiment_identity":M.read(source/"experiment.json")["identity"],
+        "historical_migration_receipt_sha256":M.N.digest(historical_path),
+        "files":[entry],"creator":"unproven","rationale":"Synthetic preservation fixture"}
+    manifest["identity"]=M.N.identity(manifest)
+    manifest_path=source.parent/"reviewed-sidecars.json";write(manifest_path,manifest)
+    return path,manifest_path
+
+
 class BudgetExtensionContracts(unittest.TestCase):
     def test_all_states_payloads_freeze_and_historical_charges_survive_rebinding(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -309,6 +327,58 @@ class BudgetExtensionContracts(unittest.TestCase):
                     checked[0]=replacement
                     with self.assertRaisesRegex(ValueError,"cache identity changed"):
                         M.verify_runtime_cache(old,cache)
+
+    def test_reviewed_opaque_sidecar_is_archived_and_never_adopted_as_a_checkpoint(self):
+        with tempfile.TemporaryDirectory() as folder:
+            args,jobs,_,_=fixture(folder)
+            sidecar,manifest=opaque_sidecar_fixture(args,jobs["complete"])
+            before=sidecar.read_bytes()
+            with self.assertRaisesRegex(ValueError,"Unknown fit sidecar"):
+                M.migrate(*args)
+            with patch.object(M,"verify_runtime_cache",side_effect=AssertionError("runtime read")),patch.object(M.N,"validate_fit",side_effect=AssertionError("payload read")):
+                planned=M.migrate(*args,fit_sidecar_manifest=manifest)
+            self.assertEqual(planned["reviewed_fit_sidecar_count"],1)
+            self.assertEqual(planned["reviewed_fit_sidecar_bytes"],len(before))
+            self.assertEqual(planned["binary_payload_reads"],0)
+            self.assertFalse(args[1].exists())
+            with patch.object(M,"verify_runtime_cache",return_value={"fixture":True}):
+                result=M.migrate(*args,fit_sidecar_manifest=manifest,apply=True)
+            reviewed=result["reviewed_fit_sidecars"]
+            self.assertFalse(reviewed["canonical_checkpoint_adoption"])
+            archive=args[1]/reviewed["files"][0]["archive_path"]
+            self.assertEqual(archive.read_bytes(),before)
+            self.assertEqual(sidecar.read_bytes(),before)
+            self.assertFalse((args[1]/sidecar.relative_to(args[0])).exists())
+            self.assertEqual(M.N.digest(args[1]/"migration/reviewed_fit_sidecars.json"),M.N.digest(manifest))
+            self.assertEqual(result["carried_worker_seconds"],191.500000000001)
+
+    def test_unlisted_or_incompatibly_reviewed_sidecars_still_stop_migration(self):
+        for change in ("unlisted","hash","experiment","canonical","unsafe"):
+            with self.subTest(change=change),tempfile.TemporaryDirectory() as folder:
+                args,jobs,_,_=fixture(folder)
+                sidecar,manifest_path=opaque_sidecar_fixture(args,jobs["complete"])
+                manifest=M.read(manifest_path)
+                if change=="unlisted":sidecar.with_name(".fit.npz.Z9y8X7").write_bytes(b"unreviewed")
+                elif change=="hash":manifest["files"][0]["sha256"]="0"*64
+                elif change=="experiment":manifest["source_experiment_identity"]="wrong-experiment"
+                elif change=="canonical":manifest["files"][0]["path"]=sidecar.with_name("fit.npz").relative_to(args[0]).as_posix()
+                else:manifest["files"][0]["path"]="fits/../../outside"
+                manifest["identity"]=M.N.identity({k:v for k,v in manifest.items() if k!="identity"})
+                write(manifest_path,manifest)
+                with self.assertRaisesRegex(ValueError,"Unknown fit sidecar|sidecar|Sidecar"):
+                    M.migrate(*args,fit_sidecar_manifest=manifest_path)
+                self.assertFalse(args[1].exists())
+
+    def test_reviewed_opaque_bytes_must_match_the_expected_hash_before_publication(self):
+        with tempfile.TemporaryDirectory() as folder:
+            args,jobs,_,_=fixture(folder)
+            sidecar,manifest=opaque_sidecar_fixture(args,jobs["complete"])
+            changed=b"X"*sidecar.stat().st_size;sidecar.write_bytes(changed)
+            with patch.object(M,"verify_runtime_cache",return_value={"fixture":True}):
+                with self.assertRaisesRegex(ValueError,"byte count/hash/fingerprint mismatch"):
+                    M.migrate(*args,fit_sidecar_manifest=manifest,apply=True)
+            self.assertFalse(args[1].exists())
+            self.assertEqual(sidecar.read_bytes(),changed)
 
 
 if __name__=="__main__":unittest.main()

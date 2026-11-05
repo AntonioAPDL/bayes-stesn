@@ -6,6 +6,8 @@ existing source locks. --apply verifies current numerical source/runtime/cache,
 then copies canonical checkpoint and evidence bytes to a new atomic run root.
 Only experiment/output/job identities and their terminal bindings are rebased;
 an explicit --source-cache-path also permits relocating the byte-identical cache.
+Explicitly reviewed opaque fit sidecars can be preserved outside active fits
+using --fit-sidecar-manifest; unlisted unknown files still stop migration.
 The scientific freeze, original start, all attempt charges, forecasts and fits
 are preserved. No fitting, forecasting, selection, or resource-gate change runs.
 """
@@ -179,6 +181,51 @@ def source_records(source, cache):
     return old, frozen, jobs, terminals, attempts, ledgers
 
 
+def reviewed_fit_sidecars(source, experiment, manifest_path):
+    """Bind opaque historical bytes without interpreting them as checkpoints."""
+    if manifest_path is None:
+        return {}, None
+    manifest = read(manifest_path)
+    historical_path = source/"migration"/"receipt.json"
+    if (manifest.get("schema") != "ks-reviewed-fit-sidecars/1"
+            or manifest.get("identity") != N.identity({k: v for k, v in manifest.items() if k != "identity"})
+            or manifest.get("source_experiment_identity") != experiment["identity"]
+            or manifest.get("historical_migration_receipt_sha256") != N.digest(historical_path)):
+        raise ValueError("Reviewed sidecar manifest/source/historical receipt binding mismatch")
+    historical = read(historical_path)
+    if historical.get("destination_experiment") != experiment["identity"]:
+        raise ValueError("Historical sidecar receipt belongs to a different experiment")
+    entries = manifest.get("files")
+    if not isinstance(entries, list) or not entries:
+        raise ValueError("Reviewed sidecar manifest must list its exact opaque files")
+    result = {}
+    for entry in entries:
+        name = entry.get("path")
+        size = entry.get("bytes"); digest = entry.get("sha256")
+        if (not isinstance(name, str)
+                or not re.fullmatch(r"fits/[0-9a-f]{32}/\.fit\.npz\.[A-Za-z0-9]{6}", name)
+                or name in result or not isinstance(size, int) or isinstance(size, bool) or size < 0
+                or not isinstance(digest, str) or not N.SHA.fullmatch(digest)
+                or entry.get("disposition") != "preserve_opaque_outside_active_fits"):
+            raise ValueError("Sidecar listing must name unique reviewed noncanonical fit bytes")
+        prior = historical.get("files", {}).get(name, {})
+        if prior.get("bytes") != size or prior.get("sha256") != digest:
+            raise ValueError("Reviewed sidecar bytes/hash differ from the historical receipt")
+        path = N.safe_path(source/name)
+        if path.stat().st_size != size:
+            raise ValueError("Reviewed sidecar byte count changed")
+        archive = "migration/source_records/fit_sidecars/"+path.parent.name+"/"+path.name[1:]+".opaque"
+        N.safe_member(archive)
+        result[name] = {"source_path": name, "archive_path": archive,
+            "bytes": size, "sha256": digest,
+            "disposition": "preserve_opaque_outside_active_fits"}
+    return result, {"manifest_sha256": N.digest(manifest_path),
+        "manifest_identity": manifest["identity"],
+        "historical_migration_receipt_sha256": manifest["historical_migration_receipt_sha256"],
+        "creator": manifest.get("creator", "unproven"),
+        "interpretation": "Opaque historical bytes, preserved by hash; never loaded or adopted as canonical checkpoint state."}
+
+
 def closure_proof(path, session_id, source, attempts, terminals):
     receipt = read(path)
     if receipt.get("source") != "actual_unified_exec_write_stdin_completion_results":
@@ -276,18 +323,24 @@ def validate_forecasts(source, jobs, terminals, native_summaries):
     return dict(counts)
 
 
-def inventory(source, jobs):
+def inventory(source, jobs, sidecars=None):
     files = {}; skipped = []
-    def add(path, name):
+    sidecars = sidecars or {}
+    def add(path, name, expected_sha256=None):
         N.safe_path(path); N.safe_member(name)
         if name in files:
             raise ValueError("Duplicate migration destination")
         files[name] = {"source": path, "bytes": path.stat().st_size, "fingerprint": N.fingerprint(path.stat())}
+        if expected_sha256 is not None:
+            files[name]["expected_sha256"] = expected_sha256
     for folder in sorted((source/"fits").iterdir()):
         N.safe_path(folder, directory=True)
         for p in sorted(folder.iterdir()):
             if p.name in N.CANONICAL or p.name == "receipt.json" or re.fullmatch(r"synchronization_h[0-9]+\.json", p.name):
                 add(p, p.relative_to(source).as_posix())
+            elif p.relative_to(source).as_posix() in sidecars:
+                reviewed = sidecars[p.relative_to(source).as_posix()]
+                add(p, reviewed["archive_path"], reviewed["sha256"])
             elif p.name == "writer.lock" or (p.name.startswith(".") and (".bstesn-" in p.name or p.name.endswith(".tmp"))):
                 skipped.append(p.relative_to(source).as_posix())
             else:
@@ -352,7 +405,7 @@ def publish_new(staging, destination):
     finally:os.close(descriptor)
 
 
-def migrate(source, destination, config, cache, closure, session_id, projection, decision, previous_config, *, apply=False, source_cache_path=None):
+def migrate(source, destination, config, cache, closure, session_id, projection, decision, previous_config, *, apply=False, source_cache_path=None, fit_sidecar_manifest=None):
     source = N.safe_path(source, directory=True); cache = N.safe_path(cache, directory=True)
     original_cache = cache if source_cache_path is None else recorded_cache_path(source_cache_path)
     cache_relocated = original_cache != cache
@@ -376,7 +429,8 @@ def migrate(source, destination, config, cache, closure, session_id, projection,
         if {k: v for k, v in frozen.items() if k not in {"experiment_identity", "identity"}} != {
                 k: v for k, v in new_freeze.items() if k not in {"experiment_identity", "identity"}}:
             raise AssertionError("Scientific freeze changed")
-        files, skipped = inventory(source, jobs)
+        sidecars, sidecar_binding = reviewed_fit_sidecars(source, old, fit_sidecar_manifest)
+        files, skipped = inventory(source, jobs, sidecars)
         preparation = float(old["config"]["budget"].get("preparation_worker_seconds", 0))
         charge = sum(float(r["elapsed_seconds"]) for r in attempts.values())
         stats = {"schema": SCHEMA, "apply": apply, "source_experiment": old["identity"],
@@ -395,6 +449,10 @@ def migrate(source, destination, config, cache, closure, session_id, projection,
                 "source_job_cache": str(original_cache), "destination_cache": str(cache),
                 "expected_cache_identity": old["cache_identity"],
                 "same_verified_cache_and_runtime_required": True},
+            "reviewed_fit_sidecar_count": len(sidecars),
+            "reviewed_fit_sidecar_bytes": sum(r["bytes"] for r in sidecars.values()),
+            "reviewed_fit_sidecars": {"binding": sidecar_binding,
+                "files": list(sidecars.values()), "canonical_checkpoint_adoption": False},
             "confirmation_score_objects_decoded": 0, "source_root_modified_or_deleted": False,
             "timing_receipt_sha256": N.digest(projection), "decision_receipt_sha256": N.digest(decision),
             "extended_configuration_sha256": N.digest(config), "binary_payload_reads": 0 if not apply else "guarded checksum validation and exact copy only"}
@@ -424,7 +482,7 @@ def migrate(source, destination, config, cache, closure, session_id, projection,
         staging = Path(tempfile.mkdtemp(prefix="."+destination.name+"-budget-extension-", dir=destination.parent))
         hashes = {}
         for name, row in sorted(files.items()):
-            hashes[name] = copy_verified(row, staging/name, reserve, known.get(name))
+            hashes[name] = copy_verified(row, staging/name, reserve, known.get(name, row.get("expected_sha256")))
         # Source jobs/terminals remain verbatim under migration/source_records.
         mapping = {}; destination_states = Counter()
         for old_id, j in sorted(jobs.items()):
@@ -455,9 +513,12 @@ def migrate(source, destination, config, cache, closure, session_id, projection,
             target = staging/"fits"/folder.name; target.mkdir(parents=True, exist_ok=True)
             (target/"writer.lock").touch(exist_ok=False)
         (staging/"scheduler.lock").touch(exist_ok=False)
-        for name, path in (("budget_extension_decision.json", decision), ("timing_projection.json", projection),
+        extra_evidence = [("budget_extension_decision.json", decision), ("timing_projection.json", projection),
                            ("closed_sessions.json", closure), ("previous_configuration.json", previous_config),
-                           ("extended_configuration.json", config)):
+                           ("extended_configuration.json", config)]
+        if fit_sidecar_manifest is not None:
+            extra_evidence.append(("reviewed_fit_sidecars.json", fit_sidecar_manifest))
+        for name, path in extra_evidence:
             p = Path(path);row = {"source": p, "bytes": p.stat().st_size, "fingerprint": N.fingerprint(p.stat())}
             hashes["migration/"+name] = copy_verified(row, staging/"migration"/name, reserve)
         after_attempts = {p.name: read(p) for p in sorted((staging/"attempts").glob("*.json"))}
@@ -489,13 +550,16 @@ def main(argv=None):
         parser.add_argument("--"+name, type=Path, required=True)
     parser.add_argument("--source-cache-path", type=Path,
         help="Explicit absolute cache path recorded in source jobs; may be missing. --cache must verify as the identical restored cache.")
+    parser.add_argument("--fit-sidecar-manifest", type=Path,
+        help="Explicit size/hash-bound review of opaque historical fit sidecars to preserve outside active fits.")
     parser.add_argument("--closed-session-id", type=int, required=True)
     parser.add_argument("--previous-config", type=Path, default=Path(__file__).resolve().parents[1]/"configs/applications/ks_improvement_v1.json")
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args(argv)
     result = migrate(args.source, args.destination, args.config, args.cache, args.closed_session_receipt,
         args.closed_session_id, args.projection_receipt, args.decision_receipt, args.previous_config,
-        apply=args.apply, source_cache_path=args.source_cache_path)
+        apply=args.apply, source_cache_path=args.source_cache_path,
+        fit_sidecar_manifest=args.fit_sidecar_manifest)
     print(json.dumps(result, indent=2, sort_keys=True))
 
 
