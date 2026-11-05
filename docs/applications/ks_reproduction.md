@@ -61,6 +61,14 @@ Before scheduling, inspect the current CPU quota/affinity, cgroup memory limit/c
 
 The measured initial allocation is four active wall hours with at most two single-thread workers, eight cumulative worker hours, and at most 2.5 worker hours for screening. A `--wall-hours` argument bounds one invocation; it does not reset the cumulative worker budget across resumes. The current configuration reserves 12,463,156,428 bytes of disk and applies combined-worker admission with a 1.5 multiplier on estimated peak RSS. The [protocol](ks_protocol.md) records the pilot timings and 1.5–3.5-hour initial estimate. These limits are not a promise that every configuration will converge within that time.
 
+This executor exposed a nested process-ID namespace while mounting the outer namespace's `/proc`. The original scheduler's `Popen` PID therefore did not reliably identify the corresponding `/proc` status entry. Its attempt-level RSS samples must not be presented as measured worker peaks; fit receipts' process-local `RUSAGE_SELF` peaks remain valid. Cgroup-headroom and disk guards remain valid. After `experiment.json` exists, the optional independent observer can run in a second terminal alongside the scheduler:
+
+```bash
+python tools/watch_ks_resources.py --results "$RESULTS" --interval 2
+```
+
+It matches the exact absolute job-file argument in the outer process command line, reads RSS/HWM from that same process entry, and writes `external_resources.json`. It is read-only and records alerts; it does not terminate models or change numerical state. Its coverage begins when it is launched and must be reported as partial for earlier jobs. Container memory includes unrelated processes and is not a substitute for the simultaneous identified-worker RSS sum.
+
 ## 3. Retrieve only the four authorized delivery objects
 
 Use the existing authorized Drive connection and the private delivery instructions supplied separately. Verify that the presently connected account can read the completed collection, then download the **complete binary objects** below into `DOWNLOAD_DIR`, preserving these basenames. Public repository files intentionally contain no private account details, Drive object identifiers, or collection URLs. The local verifier does not authenticate, download, or prove present account access.
@@ -205,13 +213,19 @@ All attempt worker times count toward cumulative limits, including interrupted w
 python -m bayes_stesn.applications.ks_runner summarize \
   --config "$CONFIG" --cache "$CACHE_ROOT" --output "$RESULTS"
 
+python tools/collect_ks_report_evidence.py \
+  --results "$RESULTS" --workspace "$KS_WORKSPACE" \
+  --published-commit "$PUBLISHED_COMMIT" --local-revision "$LOCAL_REVISION"
+
 python -m bayes_stesn.applications.ks_report \
   --results "$RESULTS" --output "$RESULTS/report"
 ```
 
 Summarization does not fit models or select new settings. Its complete-trajectory score population and all failure/pending denominators are explicit. Point/probability tables, episode results, paired trajectory differences and lead curves are saved in `summary.json`, `episode_results.json` and `horizon_curves.json`. Probability metrics use qualified complete trajectories only. Trajectory-cluster intervals are conditional on the selected configurations; origins, sites and posterior draws are not independent replicates.
 
-The report command renders saved outputs without reading the dataset or running a model. It produces publication PNG/PDF figures, `selected_horizons.json`, offline `report.html`, `report.md`, optional streamed MP4s and `report_manifest.json`. Use `--no-animations` when static exports suffice. Examples are fixed at trajectory 0, first target 8000. Strict heatmaps show the 12 official target sites with a separate observed-site rug; unavailable cases are not replaced by favorable ones.
+Set `PUBLISHED_COMMIT` to the verified full commit identifier available on the authorized remote and `LOCAL_REVISION` to the full local revision used for this handoff. The evidence collector accepts these as explicit provenance; it does not fetch, push or change Git history. It records the observed checkout separately, along with changed-entry count and source hashes. Refresh `report_evidence.json` after execution and after report-source edits. The collector reads only configuration, validation/acceptance metadata, attempt/fit receipts, the independent observer and filesystem metadata; it never opens test summaries, forecast receipts, prediction arrays or datasets. An interim collection before freezing is explicitly unfrozen and cannot be reused as final reporting evidence.
+
+The report command requires matching experiment, freeze and test-access identities, and renders saved outputs without reading the dataset or running a model. It produces publication PNG/PDF figures, `selected_horizons.json`, offline `report.html`, `report.md`, optional streamed MP4s and `report_manifest.json`. It includes episode JSON, compact fit/resource evidence, selection eligibility and qualification separately. Use `--no-animations` when static exports suffice. Examples are fixed at trajectory 0, first target 8000. Strict heatmaps show the 12 official target sites with a separate observed-site rug; unavailable cases are not replaced by favorable ones.
 
 Inspect representative PNG/PDF layouts and MP4 frames before declaring visual QA complete. The manifest initially labels that inspection as pending. Actual scientific conclusions, final resource measurements, selected configurations and completed counts must come from the saved results; the renderer never turns partial execution into a completion claim.
 
@@ -227,6 +241,7 @@ Inspect representative PNG/PDF layouts and MP4 frames before declaring visual QA
 | `test_access.json` | Evidence that test scoring began only after both main selections |
 | `predictions/` | Compact predeclared physical-unit examples |
 | `summary.json`, `episode_results.json`, `horizon_curves.json` | Aggregate, episode-level and lead-specific results with eligibility counts |
+| `external_resources.json`, `report_evidence.json` | Partial-period validated process observation, attempt costs, inference effort, acceptance and public provenance |
 | `report/` | Figures, compact animations, offline report and checksums |
 
 Retain code, configuration, diagnostics, compact metrics, selected predictions, receipts and the final report. Public Git artifacts must exclude bulk data, environments, private manifests and credentials. Any larger durable artifact copy should use already authorized private storage and include checksums.

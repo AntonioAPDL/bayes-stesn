@@ -1,0 +1,8 @@
+# Observed CPython 3.12 document runtime. Reporting only; never upgrade a
+# running scientific environment to render a report. Reuse compatible packages
+# or install in a separate document venv. No model or deep-learning package.
+reportlab==4.4.9
+pypdf==6.10.0
+matplotlib==3.10.8
+numpy==2.3.5
+Pillow==13.0.0

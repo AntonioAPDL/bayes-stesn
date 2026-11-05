@@ -225,6 +225,7 @@ forecast constructors retain defensive-copy semantics.
 
 ## Documentation
 
+- [Kuramoto–Sivashinsky application](docs/applications/ks_protocol.md): isolated clean-data unseen-site and all-observed experiments, with the [model registry](docs/applications/ks_model_registry.md), [preserved native-model audit](docs/applications/ks_native_audit.md), [reproduction and resume commands](docs/applications/ks_reproduction.md), and [verified preflight evidence](docs/applications/evidence/ks_preflight.json). This is a custom, literature-grounded experiment; its application results are separate from the frozen simulation study.
 - [v0.3 current findings](docs/results_v03.md): completed scientific evidence, exact populations and uncertainty, timing gaps, and pending gates.
 - [v0.3 reproduction](docs/reproduction_v03.md), [report synthesis](report/v03/README.md), and [delivery](docs/release_v03.md): ordered saved-evidence commands and source-bound verification.
 - [PRO implementation plan and execution prompt](docs/plans/PRO_IMPLEMENTATION_PLAN.md): staged improvements, resource budgets, acceptance gates, experiments, and publication requirements; implementation and evidence status are tracked separately in the [P0–P8 requirements map](docs/plans/v03_requirements.yaml).

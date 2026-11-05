@@ -98,6 +98,15 @@ def _estimate(row, key, *, digits=3, interval=True):
     return value
 
 
+def _range(value, *, digits=1):
+    """Format a recorded per-fit distribution without inventing missing data."""
+    if not value or not value.get("n"):
+        return "—"
+    if value["min"] == value["max"]:
+        return _number(value["min"], digits)
+    return f"{_number(value['median'], digits)} ({_number(value['min'], digits)}–{_number(value['max'], digits)})"
+
+
 def _ordered(values):
     rank = {model: index for index, model in enumerate(ORDER)}
     return sorted(values, key=lambda item: (rank.get(item["model"], len(rank)), item["model"]))
@@ -167,7 +176,7 @@ class Report:
         self.dpi = int(dpi)
         self.input_receipts = []
         objects = {}
-        for name in ("summary.json", "episode_results.json", "horizon_curves.json", "freeze.json"):
+        for name in ("summary.json", "episode_results.json", "horizon_curves.json", "freeze.json", "experiment.json", "test_access.json"):
             objects[name], receipt = _read_json(self.results / name)
             self.input_receipts.append(receipt)
         self.summary = objects["summary.json"]
@@ -176,6 +185,15 @@ class Report:
         self.frozen = objects["freeze.json"]
         if self.summary.get("freeze_identity") != self.frozen.get("identity"):
             raise ValueError("Summary and frozen selection identities differ")
+        self.experiment = objects["experiment.json"]
+        access = objects["test_access.json"]
+        if self.frozen.get("experiment_identity") != self.experiment.get("identity"):
+            raise ValueError("Frozen selection and experiment identities differ")
+        if access.get("freeze_identity") != self.frozen.get("identity") or not access.get("both_track_selection_complete"):
+            raise ValueError("Reporting test results requires the matching completed two-track test-access gate")
+        declared = {(case["track"], case["trajectory"], case["first_target"]) for case in self.frozen.get("plot_cases", [])}
+        if any((track, CASE_TRAJECTORY, CASE_FIRST_TARGET) not in declared for track in ("A", "B")):
+            raise ValueError("The report's example cases were not declared in the frozen specification")
         self.seed = int(self.frozen["model_seed"])
         self.rows = self.summary["rows"]
         self.primary_rows = [row for row in self.rows if row["seed"] == self.seed]
@@ -187,11 +205,19 @@ class Report:
         self.figures, self.movies, self.notices = [], [], []
         self.artifact_paths = set()
         self.curve_cache = {}
-        self.experiment = None
-        path = self.results / "experiment.json"
+        self.evidence = None
+        path = self.results / "report_evidence.json"
         if path.exists():
-            self.experiment, receipt = _read_json(path)
+            self.evidence, receipt = _read_json(path)
             self.input_receipts.append(receipt)
+            binding = self.evidence.get("binding", {})
+            if (binding.get("experiment_identity") != self.experiment["identity"] or
+                    binding.get("freeze_identity") != self.frozen["identity"]):
+                raise ValueError("Reporting evidence is stale or belongs to another run; refresh the evidence collector")
+            if binding.get("report_source_sha256") != file_hash(__file__):
+                raise ValueError("Report source changed since evidence collection; refresh the report-only evidence collector")
+        else:
+            self.notices.append("Campaign cost, diagnostics, storage and published-revision evidence were not collected; run tools/collect_ks_report_evidence.py before the final handoff.")
         for row in self.rows:
             observed = self.records(row["track"], row["model"], row["seed"])
             if len(observed) != row["complete_trajectories"]:
@@ -255,6 +281,14 @@ class Report:
                                                    qualified=qualified, levels=levels, quantiles=quantiles)
             self.input_receipts.append({"name": str(path.relative_to(self.results)),
                                         "bytes": path.stat().st_size, "sha256": file_hash(path)})
+        for track in ("A", "B"):
+            examples = [example for (key, _), example in self.examples.items() if key == track]
+            if examples:
+                reference = examples[0]
+                for example in examples[1:]:
+                    for name in ("truth", "x", "input_x", "times", "site_ids"):
+                        if not np.array_equal(getattr(reference, name), getattr(example, name)):
+                            raise ValueError(f"Saved predeclared {track} cases disagree on their official truth/geometry/time domain")
 
     def _save_figure(self, figure, stem, title, caption, track=None):
         paths = []
@@ -262,7 +296,8 @@ class Report:
             destination = self.output / "figures" / f"{stem}.{suffix}"
             temporary = destination.with_name("." + destination.stem + ".tmp." + suffix)
             try:
-                figure.savefig(temporary, format=suffix, dpi=self.dpi, bbox_inches="tight", facecolor="white")
+                options = {"metadata": {"CreationDate": None, "ModDate": None, "Creator": "bayes-stesn KS report"}} if suffix == "pdf" else {}
+                figure.savefig(temporary, format=suffix, dpi=self.dpi, bbox_inches="tight", facecolor="white", **options)
                 os.replace(temporary, destination)
             finally:
                 temporary.unlink(missing_ok=True)
@@ -481,8 +516,9 @@ class Report:
             figure.suptitle("Predictive accuracy versus recorded fitting cost", fontsize=12)
             figure.subplots_adjust(left=.08, right=.95, bottom=.17, top=.85, wspace=.3)
             self._save_figure(figure, "accuracy_compute", "Accuracy versus fitting cost",
-                "Costs are summed selected-configuration fit wall times recorded by the runner, including recorded failed fit attempts. "
-                "They exclude screening and forecast time, which are separately reported. RMSE summarizes complete trajectories only; labels show its actual n. "
+                "Costs sum selected-configuration fit-receipt wall times, including terminal failed fits where recorded. "
+                "They exclude earlier interrupted-attempt overhead and forecast time. Campaign attempt and screening costs, when collected, are reported separately. "
+                "RMSE summarizes complete trajectories only; labels show its actual n. "
                 "Vertical intervals are trajectory-cluster 95% intervals conditional on selection. Tracks remain separate.")
         plt.close(figure)
 
@@ -618,6 +654,7 @@ class Report:
             "Track A fits and conditions on 39 interleaved training sites and scores 12 never-trained test sites. Track B fits, conditions and scores all 64 observation-panel sites. Each core trajectory has separate parameters fitted using training times [0,6000); validation [6000,8000) selected configurations; test [8000,10000) is evaluation-only. The two tracks are never combined into one ranking.",
             "Each test trajectory has 20 autonomous 100-step forecasts, starting at 8000,8100,...,9900. Later origins may use permitted observations available by that origin; no parameters are refitted and no within-window future observations update a rollout. The frozen history length is " + str(self.frozen["history"]) + " saved states.",
             "All displayed values are in physical field units after the delivered training-only inverse transform. Native statistical residual/nugget terms represent model discrepancy for the clean field. They are retained in predictive paths; no added measurement-noise view or arbitrary interval floor is used.",
+            "Track C is the separate contiguous robustness experiment: 40 permitted training/input sites and 12 test sites. It transfers the interleaved-validation-selected configuration and refits transforms, features and parameters on the contiguous training partition. The methods were prespecified before main-test rankings; this is not fresh tuning on contiguous test outcomes.",
         ])
         section("Aggregation, qualification and uncertainty", [
             "Origin losses are summarized within trajectories before equally weighted trajectory aggregation. Point estimates use means of complete predictive paths for probabilistic families. Complete-trajectory successful-only point scores remain explicitly labeled; failed and pending origins remain in scheduled denominators. Probability scores use qualified complete trajectories only.",
@@ -625,6 +662,130 @@ class Report:
             "Valid prediction time (VPT) is the first lead at which spatial RMSE/training SD exceeds 0.4, right censored at 100. A normalized spatial RMSE above 10 is a separately flagged finite divergence. No forecast is silently clipped or replaced. CRPS scores the empirical predictive distribution; no iid unbiased finite-ensemble correction is claimed.",
             "Spatial energy uses the Euclidean norm divided by sqrt(target-site count), with a seeded 1,024-pair Monte Carlo approximation to the empirical path-pair term. Variogram score uses power 0.5 and at most 128 fixed geometry-only site pairs weighted by inverse circle-chord distance. These are spatial per-lead scores, not whole-temporal-path scores.",
         ])
+        issues = self.frozen.get("selection_issues", [])
+        if issues:
+            section("Validation-selection qualification issues", [
+                "These families did not have a fully eligible candidate on all promotion cases. Their retained outputs remain labeled diagnostic/provisional even if individual later fits qualify. The final fit gate and successful validation selection are separate facts."
+            ] + list(issues))
+        if self.evidence is not None:
+            evidence = self.evidence; binding = evidence["binding"]; campaign = evidence["campaign"]
+            section("Execution cost and provenance", [
+                "This evidence snapshot was collected at " + evidence["generated_utc"] + ". " + campaign["accounting"] + ". "
+                "Selected-fit receipts count one retained fit per identity; campaign attempts also include startup, interrupted work, validation forecasting and scoring. These measures must not be added together as disjoint costs.",
+                "The original attempt-level /proc RSS samples are unavailable for reporting because child PIDs were not validated against the mounted /proc namespace. Fit receipts use valid process-local RUSAGE_SELF high-water marks. The independent external observer, when present, covers only its stated observation period; whole-container memory includes unrelated workspace processes.",
+            ])
+            add_table(["Provenance", "Recorded identifier"], [
+                ["Published remote commit", binding.get("published_remote_commit") or "Not supplied"],
+                ["Declared local tree revision", binding.get("local_tree_revision") or "Not supplied"],
+                ["Observed checkout revision", binding.get("observed_checkout_revision") or "Unavailable"],
+                ["Branch", binding.get("branch") or "Unavailable"],
+                ["Changed working-tree entries at collection", binding.get("working_tree_changed_entries")],
+                ["Experiment identity", binding["experiment_identity"]],
+                ["Frozen selection identity", binding["freeze_identity"]],
+            ])
+            add_table(["Accounting scope", "Attempts", "Worker hours", "Active wall hours", "Running", "Interrupted/reconciled"], [
+                [label, item["attempts"], _number(item["worker_seconds"]/3600), _number(item["active_wall_seconds"]/3600),
+                 item["running_attempts"], item["interrupted_attempts"]]
+                for label, item in (("Whole recorded campaign", campaign), ("Screening, refinement and precision", campaign["screening"]))])
+            add_table(["Stage", "Track", "Family", "Attempts", "Worker seconds", "Active wall seconds", "External observed jobs", "External worker HWM MiB"], [
+                [row["stage"], row["track"], LABELS.get(row["model"], row["model"]), row["attempts"],
+                 _number(row["worker_seconds"], 1), _number(row["active_wall_seconds"], 1), row.get("externally_observed_jobs", 0),
+                 _number(row["external_peak_hwm_bytes"]/1024**2, 1) if row.get("external_peak_hwm_bytes") is not None else "Unavailable"]
+                for row in campaign["stage_rows"]])
+            section("Search opportunity, fitted dimensions and actual effort", [
+                "Candidate counts are distinct effective configurations with a terminal fit receipt, including failed fits. Counts are not an assertion of equal optimization effort or universal optimality. Dimension/effort entries summarize selected primary-seed fits and give a median with a range when they vary. Parameter counts follow each family's declared definition; fixed random reservoir coordinates and learned POD bases are not interchangeable with trainable neural parameters.",
+                "Training-target counts reflect conditioning, lags or washout. For GP the count is fitted observation times; for GRU it is the residual/next-state target count. Bayesian retained draws and conditional diagnostic draws are distinct quantities."
+            ])
+            add_table(["Track", "Family", "Initial / evaluated candidates", "Selection eligible", "Selected fit receipts", "Training sites", "Usable targets", "Declared parameter count", "Screening worker seconds"], [
+                [row["track"], LABELS.get(row["model"], row["model"]), f"{row['initial_candidates']} / {row['evaluated_candidates']}",
+                 row["selection_eligible"], row["selected_primary_fit_count"], _range(row["supplied_training_sites"], digits=0),
+                 _range(row["usable_training_targets"], digits=0), _range(row["parameter_count"], digits=0),
+                 _number(row["screening"]["worker_seconds"], 1)] for row in evidence["family_rows"]])
+            effort = []
+            for row in evidence["family_rows"]:
+                for key, value in row["effort"].items():
+                    if key in ("chains", "warmup_per_chain", "retained_draws_per_chain", "continuations", "selection_epochs", "refit_epochs",
+                               "epochs_completed", "optimization_updates", "iterations", "function_evaluations", "covariance_iterations"):
+                        effort.append([row["track"], LABELS.get(row["model"], row["model"]), key.replace("_", " "), _range(value, digits=0), value["n"]])
+            if effort:
+                add_table(["Track", "Family", "Recorded effort", "Median (range)", "Fit receipts"], effort)
+            diagnostics = []
+            for row in evidence["family_rows"]:
+                for block, value in row["bayesian_diagnostics"].items():
+                    diagnostics.append([row["track"], block, f"{value['passed_fits']} / {value['fits']}",
+                        _range(value["parameters"], digits=0), _number(value["max_rhat"]["max"], 4),
+                        _number(value["min_ess_bulk"]["min"], 1), _number(value["min_ess_tail"]["min"], 1),
+                        value["failed_parameters_across_fits"], _number(value["undefined_rhat"]["max"], 0)])
+            if diagnostics:
+                section("Bayesian final-gate diagnostic extrema", [
+                    "Extrema summarize the final retained gate across selected primary fits, including inference-unqualified cases. Undefined diagnostics are counted separately and never treated as a pass. Every coefficient is monitored at the declared retained-state subset; hyperparameters use all retained hyperstates. These diagnostics assess inference, not scientific replicate uncertainty."
+                ])
+                add_table(["Track", "Monitoring block", "Passed / checked fits", "Quantities per fit", "Worst finite R-hat", "Smallest bulk ESS", "Smallest tail ESS", "Failed quantities across fits", "Max undefined R-hat per fit"], diagnostics)
+            precision = evidence.get("predictive_precision")
+            if precision:
+                section("Validation predictive-simulation precision", [
+                    "Independent predictive RNG ensembles assess simulation error conditional on the retained posterior or plug-in fit. They do not establish MCMC convergence, independent scientific replicates or Bayesian averaging over model selection. A common path count is frozen for both tracks; unchecked origins can have different Monte Carlo error."
+                ])
+                add_table(["State", "Checked cases", "Skipped cases", "Unresolved cases", "All checked thresholds passed", "Frozen paths"], [[
+                    precision["state"], precision["cases"], precision["skipped_cases"], precision["unresolved_cases"],
+                    precision["all_checked_cases_passed"], precision["selected_paths"]]])
+            current = evidence["current_resources"]
+            section("Storage and resource snapshot", [
+                "Filesystem sizes are metadata-only observations at evidence collection. Hardlinks are deduplicated within each listed root; roots should not be summed if they overlap. This report may add artifact bytes after that snapshot. Cgroup current/peak values describe the shared container, not memory attributable solely to KS workers."
+            ])
+            add_table(["Artifact group", "Files", "Logical GiB", "Allocated GiB"], [
+                [name, item["files"], _number(item["logical_bytes"]/1024**3), _number(item["allocated_bytes"]/1024**3)]
+                for name, item in evidence["storage"].items()])
+            add_table(["Current resource", "Value"], [
+                ["Available disk GiB", _number(current["disk_available_bytes"]/1024**3)],
+                ["Reserved disk GiB", _number(evidence["budget"]["disk_reserve_bytes"]/1024**3)],
+                ["Available inodes", current["inodes_available"]],
+                ["Cgroup memory current bytes", current["cgroup"].get("memory.current", "Unavailable")],
+                ["Cgroup memory limit bytes", current["cgroup"].get("memory.max", "Unavailable")],
+                ["CPU quota / period", current["cgroup"].get("cpu.max", "Unavailable")],
+                ["Observed process-/proc namespace mismatch", current.get("observed_pid_namespace_mismatch")],
+            ])
+            external = evidence.get("external_resources")
+            if external:
+                add_table(["External observer", "Recorded value"], [
+                    ["Status / samples / observed jobs", f"{external['status']} / {external['samples']} / {external['observed_jobs']}"],
+                    ["Observation started", external["started_utc"]], ["Last observation", external["last_observed_utc"]],
+                    ["Peak simultaneous observed-worker RSS MiB", _number(external["combined_worker_rss_peak_bytes"]/1024**2, 1)],
+                    ["Minimum disk free GiB during observation", _number(external["disk_free_min_bytes"]/1024**3)],
+                    ["Resource alerts", external["alerts_count"]],
+                ])
+                html_parts.append("<p>"+html.escape(external["scope"])+".</p>"); md_parts.append(external["scope"]+".\n")
+            preflight = evidence.get("preflight")
+            if preflight:
+                section("Delivery and targeted acceptance evidence", [
+                    "The local verifier checked four exact files and the complete catalog, selecting only KS data v1 plus source/metadata v2. Present account access was checked by the separate authorized retrieval route; the offline verifier does not authenticate. Preflight checks are implementation and data evidence, not final comparative results."
+                ])
+                add_table(["Delivery object", "Verified bytes", "SHA-256"], [
+                    [item["name"], item["bytes"], item["sha256"]] for item in preflight["delivery"]["files"]])
+                add_table(["Acceptance suite", "Checks/tests", "Failures", "Errors", "Skipped"], [
+                    [name, item.get("tests", item.get("checks", 0)), item.get("failures", 0), item.get("errors", 0), item.get("skipped", 0)]
+                    for name, item in preflight["tests"].items()])
+                add_table(["Cache phase", "Trajectories", "Verified raw files", "External links", "Recomputed transforms"], [
+                    [name, item["trajectories"], item["verified_raw_files_passed"], item["external_links_verified"], item["transforms_recomputed"]]
+                    for name, item in preflight["cache"]["phase_counts"].items()])
+            extra = evidence.get("extra_acceptance", {})
+            invariant = extra.get("ks_core_candidate_invariance")
+            if invariant:
+                section("Core fixed-fit information-boundary acceptance", [
+                    "This checks actual core Bayesian candidate fits with fitted preprocessing and randomness fixed. Future and forbidden histories are perturbed without refitting, selecting or calibrating. It establishes output invariance of the adapter/forecast, while the unchanged facade may still construct evaluation labels internally. The small diagnostic ensembles are not the final scientific predictive ensembles."
+                ])
+                add_table(["State", "Passed / expected fits", "Failed fits", "H100 perturbation checks", "New model fits", "Core test labels opened"], [[
+                    invariant["state"], f"{invariant['passed_cases']} / {invariant['expected_cases']}", invariant["failed_cases"],
+                    invariant["perturbation_checks"], invariant["new_model_fits"], invariant["core_test_labels_opened"]]])
+            early = extra.get("ks_validation_audit_early")
+            if early:
+                section("Independent early validation audit", [
+                    "This is an explicitly early campaign snapshot, separate from the final result tables. Its arithmetic, boundary and failure-handling checks do not constitute a completed application or a test ranking. The complete public audit receipt is retained in the reporting evidence."
+                ])
+                checks = early["independent_arithmetic_checks"]
+                add_table(["Snapshot UTC", "Status", "Origin receipts checked", "Candidate rows checked", "Arithmetic mismatches", "Core test labels opened"], [[
+                    early["snapshot_utc"], early["status"], checks["validation_origin_receipts_checked"],
+                    checks["screening_candidate_rows_checked"], checks["mismatches"], early["audit_scope"]["core_test_labels_opened"]]])
         for track in ("A", "B", "C"):
             rows = _ordered([row for row in self.primary_rows if row["track"] == track])
             if not rows:
@@ -634,29 +795,29 @@ class Report:
                 "All failed/pending origins remain in the listed scheduled denominator. "
                 "A dash means no eligible estimate, not zero loss."
             ])
-            add_table(["Model", "n / scheduled", "q", "Failed / pending / origins", "RMSE [95% CI]", "NRMSE [95% CI]", "MAE", "VPT steps"], [
-                [LABELS.get(row["model"], row["model"]), f"{row['complete_trajectories']} / {row['scheduled_trajectories']}",
+            add_table(["Model", "Selection eligible", "n / scheduled", "q", "Failed / pending / origins", "RMSE [95% CI]", "NRMSE [95% CI]", "MAE", "VPT steps"], [
+                [LABELS.get(row["model"], row["model"]), row.get("selection_eligible", False), f"{row['complete_trajectories']} / {row['scheduled_trajectories']}",
                  row["qualified_trajectories"], f"{row['failed_origins']} / {row['pending_origins']} / {row['scheduled_origins']}",
                  _estimate(row, "rmse"), _estimate(row, "nrmse"), _estimate(row, "mae", interval=False),
                  _estimate(row, "vpt_steps", digits=1, interval=False)] for row in rows])
             native = [row for row in rows if row["model"] in NATIVE]
             if native:
-                add_table(["Qualified distribution", "q", "CRPS [95% CI]", "90% coverage", "90% width", "Spatial energy", "Spatial variogram"], [
-                    [LABELS[row["model"]], row.get("crps", {}).get("n", 0), _estimate(row, "crps"),
+                add_table(["Qualified distribution", "Selection eligible", "q", "CRPS [95% CI]", "90% coverage", "90% width", "Spatial energy", "Spatial variogram"], [
+                    [LABELS[row["model"]], row.get("selection_eligible", False), row.get("crps", {}).get("n", 0), _estimate(row, "crps"),
                      _estimate(row, "coverage_0.9", interval=False), _estimate(row, "width_0.9", interval=False),
                      _estimate(row, "spatial_energy", interval=False), _estimate(row, "spatial_variogram", interval=False)] for row in native])
                 add_table(["Model", "Central level", "Eligible trajectories", "Coverage [95% CI]", "Width [95% CI]"], [
                     [LABELS[row["model"]], f"{100*level:g}%", row.get(f"coverage_{level}", {}).get("n", 0),
                      _estimate(row, f"coverage_{level}"), _estimate(row, f"width_{level}")]
                     for row in native for level in (.5, .8, .9, .95)])
-            add_table(["Model", "Selected config", "Fit seconds", "Forecast seconds", "Peak worker MiB", "Finite divergence fraction", "VPT censored fraction"], [
+            add_table(["Model", "Selected config", "Fit-receipt seconds", "Forecast seconds", "Fit-receipt peak RSS MiB", "Finite divergence fraction", "VPT censored fraction"], [
                 [LABELS.get(row["model"], row["model"]), row["selected_config"], _number(row["fit_seconds"], 1),
                  _number(row["forecast_seconds"], 1), _number(row["peak_worker_rss_bytes"] / 1024**2, 1),
                  _estimate(row, "divergence_fraction", interval=False), _estimate(row, "vpt_censored_fraction", interval=False)] for row in rows])
             if any("inference_unqualified_fits" in row for row in rows):
-                add_table(["Model", "Scheduled fits", "Inference-unqualified fits", "Failed fits", "Pending fits"], [
+                add_table(["Model", "Scheduled fits", "Qualified fits", "Inference-unqualified fits", "Failed fits", "Pending fits"], [
                     [LABELS.get(row["model"], row["model"]), row["scheduled_trajectories"],
-                     row.get("inference_unqualified_fits", "—"), row.get("failed_fits", "—"),
+                     row.get("qualified_fits", "—"), row.get("inference_unqualified_fits", "—"), row.get("failed_fits", "—"),
                      row.get("pending_fits", "—")] for row in rows])
             leads = [item for item in lead_values if item["track"] == track]
             lead_html, lead_md = _table(
@@ -686,6 +847,18 @@ class Report:
                  f"{row['complete_trajectories']} / {row['scheduled_trajectories']}", row["qualified_trajectories"],
                  f"{row['failed_origins']} / {row['pending_origins']}", _estimate(row, "rmse"), _estimate(row, "crps")]
                 for row in sensitivity])
+
+        section("Machine-readable episode results and evidence", [
+            "The attached JSON exports preserve every scheduled episode's completion, qualification and failure/pending counts. A missing eligible score remains absent rather than being replaced by zero. The run summary includes paired trajectory comparisons; the reporting evidence contains compact per-fit effort and diagnostic records."
+        ])
+        exports = [("episode_results.json", self.episodes), ("run_summary.json", self.summary)]
+        if self.evidence is not None:
+            exports.append(("report_evidence.json", self.evidence))
+        for name, value in exports:
+            destination = self.output/name; atomic_json(destination, value); self.artifact_paths.add(name)
+            encoded = base64.b64encode(destination.read_bytes()).decode("ascii")
+            html_parts.append(f'<p><a download="{name}" href="data:application/json;base64,{encoded}">{name}</a></p>')
+            md_parts.append(f"[{name}]({name})\n")
 
         section("Figures and predeclared examples", [
             "All example fields and traces use core trajectory 0 and first target 8000, fixed independently of model performance. Strict-site heatmaps contain exactly the 12 official test sites; the static rug distinguishes permitted input sites. No best-looking case was substituted. Lead bands resample trajectories. PDF figures are separate vector/raster publication exports of the same plots."
@@ -734,6 +907,7 @@ python -m bayes_stesn.applications.ks_runner sensitivity --config "$CONFIG" --ca
 python -m bayes_stesn.applications.ks_runner robustness --config "$CONFIG" --cache "$CACHE_ROOT" --output "$RESULTS"
 python -m bayes_stesn.applications.ks_runner resume --config "$CONFIG" --cache "$CACHE_ROOT" --output "$RESULTS"
 python -m bayes_stesn.applications.ks_runner summarize --config "$CONFIG" --cache "$CACHE_ROOT" --output "$RESULTS"
+python tools/collect_ks_report_evidence.py --results "$RESULTS" --workspace "$KS_WORKSPACE" --published-commit "$PUBLISHED_COMMIT" --local-revision "$LOCAL_REVISION"
 python -m bayes_stesn.applications.ks_report --results "$RESULTS" --output "$RESULTS/report"'''
         html_parts.append("<pre>" + html.escape(commands) + "</pre>"); md_parts.append("```bash\n" + commands + "\n```\n")
         section("Primary methodological references")
@@ -792,6 +966,10 @@ def build_report(results, output, *, animations=True, dpi=200):
                   "sha256": file_hash(report.output / relative)} for relative in sorted(report.artifact_paths)]
     manifest = {"schema": "ks-report/1", "generated_utc": now(),
                 "freeze_identity": report.frozen["identity"], "model_seed": report.seed,
+                "experiment_identity": report.experiment["identity"],
+                "report_source_sha256": file_hash(__file__),
+                "revision_binding": report.evidence["binding"] if report.evidence is not None else {
+                    "published_remote_commit": None, "local_tree_revision": None, "status": "reporting_evidence_not_collected"},
                 "completion": completion, "inputs": report.input_receipts,
                 "figures": report.figures, "animations": report.movies,
                 "notices": report.notices, "artifacts": artifacts,
@@ -800,7 +978,8 @@ def build_report(results, output, *, animations=True, dpi=200):
                 "case": {"phase": "core", "trajectory": CASE_TRAJECTORY,
                          "first_target": CASE_FIRST_TARGET},
                 "curve_uncertainty": "pointwise trajectory-cluster bootstrap, 2000 resamples, seed 20261105",
-                "visual_qa_status": "requires_rendered_figure_and_video_inspection"}
+                "visual_qa_status": "requires_rendered_figure_and_video_inspection",
+                "visual_qa_policy": "Inspect representative A/B heatmaps, lead/interval plots and PDF layouts; decode MP4 frames 0/50/99 without retaining a full frame dump; save an independent QA receipt naming checked artifact hashes. Automated generation alone is not a visual inspection."}
     atomic_json(report.output / "report_manifest.json", manifest)
     return manifest
 

@@ -1,0 +1,905 @@
+{
+  "audit_scope": {
+    "core_test_access_gate_present_at_snapshot": false,
+    "core_test_labels_opened": false,
+    "inputs": "existing completed validation metrics, fit diagnostic receipts, job ledgers and screening receipts",
+    "new_fits": 0,
+    "sampler_reruns": 0,
+    "snapshot_consistency": "file-based observation of an active campaign; completed fit receipts reconstructed by their completion timestamps; worker ledger counts captured live",
+    "source_or_configuration_changes": 0
+  },
+  "base_revision": "4bae378922b824e0e934a3aaf08a9d8a1a65046e",
+  "bayesian_qualification": {
+    "criterion": "four chains; rank-normalized split/folded R-hat strictly below 1.01; bulk and tail ESS at least 400; finite diagnostics",
+    "fits": [
+      {
+        "candidate": "bayes_00",
+        "chains": 4,
+        "continuations": 0,
+        "fit_identity": "25ddeb7282cc5bf016a79beed59e1fb5e0bf3436f26664631debe5c9ca09ebee",
+        "fit_receipt_sha256": "75726a6ccdd43c3741cd56c58e2cb6fcb69ed33b3e28e23363bbe21d6caf50c2",
+        "fit_state": "complete",
+        "gates": [
+          {
+            "coefficients": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0051891183516442,
+              "minimum_bulk_ess": 1540.9775829867822,
+              "minimum_tail_ess": 1407.593492194681,
+              "passed": true,
+              "quantity_count": 780
+            },
+            "diagnostic_seconds": 3.057237787000304,
+            "functionals": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0042653899720935,
+              "minimum_bulk_ess": 716.9534768311456,
+              "minimum_tail_ess": 1015.92837233042,
+              "passed": true,
+              "quantity_count": 10
+            },
+            "hyperparameters": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0095251905917038,
+              "minimum_bulk_ess": 714.037603602261,
+              "minimum_tail_ess": 1050.3544497738594,
+              "passed": true,
+              "quantity_count": 3
+            },
+            "passed": true
+          }
+        ],
+        "initial_retained_draws_per_chain": 2000,
+        "readout_coefficients": 780,
+        "track": "A",
+        "trajectory": 0,
+        "warmup_per_chain": 1000
+      },
+      {
+        "candidate": "bayes_00",
+        "chains": 4,
+        "continuations": 0,
+        "fit_identity": "7d8963f3d9ef6db12a9a3f695bd17667fb6f8569ef1d68f0132d419f50154f26",
+        "fit_receipt_sha256": "237cbdfb92819c42b6e549545179041fbeb90b9216fc157c50708445d245b4c9",
+        "fit_state": "complete",
+        "gates": [
+          {
+            "coefficients": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0053846795667933,
+              "minimum_bulk_ess": 986.8881722519992,
+              "minimum_tail_ess": 1093.6891464315656,
+              "passed": true,
+              "quantity_count": 780
+            },
+            "diagnostic_seconds": 3.09909067999979,
+            "functionals": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0019758387976925,
+              "minimum_bulk_ess": 714.4967138834254,
+              "minimum_tail_ess": 1150.55743473253,
+              "passed": true,
+              "quantity_count": 10
+            },
+            "hyperparameters": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0051070821752477,
+              "minimum_bulk_ess": 692.637550606004,
+              "minimum_tail_ess": 796.9764613770124,
+              "passed": true,
+              "quantity_count": 3
+            },
+            "passed": true
+          }
+        ],
+        "initial_retained_draws_per_chain": 2000,
+        "readout_coefficients": 780,
+        "track": "A",
+        "trajectory": 5,
+        "warmup_per_chain": 1000
+      },
+      {
+        "candidate": "bayes_01",
+        "chains": 4,
+        "continuations": 0,
+        "fit_identity": "72befbe315b006f3964f4012ea6a3eb33514f65fe6604d4e5026e6c2f46e2337",
+        "fit_receipt_sha256": "d58c1f88aaffce410a4ecc272b9e08af638b282323830666612beec318a26ce8",
+        "fit_state": "complete",
+        "gates": [
+          {
+            "coefficients": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0059713528077,
+              "minimum_bulk_ess": 1394.5953753752735,
+              "minimum_tail_ess": 1333.0854194053727,
+              "passed": true,
+              "quantity_count": 2260
+            },
+            "diagnostic_seconds": 5.991504518000511,
+            "functionals": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0020360497422478,
+              "minimum_bulk_ess": 823.3039626749556,
+              "minimum_tail_ess": 965.2106704194836,
+              "passed": true,
+              "quantity_count": 10
+            },
+            "hyperparameters": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.005150277095116,
+              "minimum_bulk_ess": 711.2980161546609,
+              "minimum_tail_ess": 872.5537336307036,
+              "passed": true,
+              "quantity_count": 3
+            },
+            "passed": true
+          }
+        ],
+        "initial_retained_draws_per_chain": 2000,
+        "readout_coefficients": 2260,
+        "track": "A",
+        "trajectory": 0,
+        "warmup_per_chain": 1000
+      },
+      {
+        "candidate": "bayes_01",
+        "chains": 4,
+        "continuations": 0,
+        "fit_identity": "c70c4e144b6617524e4883fe762e5ae8bbfbaf605c91761da0e9b3513f01d4f1",
+        "fit_receipt_sha256": "f3d80056be7f90bce89ec857321bed4e0a99b391ebc7f9b9096a46b25208104d",
+        "fit_state": "complete",
+        "gates": [
+          {
+            "coefficients": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0063839334722868,
+              "minimum_bulk_ess": 1197.2335152875048,
+              "minimum_tail_ess": 1482.1136973600721,
+              "passed": true,
+              "quantity_count": 2260
+            },
+            "diagnostic_seconds": 5.821034818000044,
+            "functionals": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0021268013260294,
+              "minimum_bulk_ess": 813.4616195719528,
+              "minimum_tail_ess": 940.4215312640717,
+              "passed": true,
+              "quantity_count": 10
+            },
+            "hyperparameters": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0053064057756191,
+              "minimum_bulk_ess": 721.563330964864,
+              "minimum_tail_ess": 857.5145470397102,
+              "passed": true,
+              "quantity_count": 3
+            },
+            "passed": true
+          }
+        ],
+        "initial_retained_draws_per_chain": 2000,
+        "readout_coefficients": 2260,
+        "track": "A",
+        "trajectory": 5,
+        "warmup_per_chain": 1000
+      },
+      {
+        "candidate": "bayes_02",
+        "chains": 4,
+        "continuations": 0,
+        "fit_identity": "58695e92c65626eb9682868ffcfdf2d40d674aef6656ca5268d630a1b539838f",
+        "fit_receipt_sha256": "2a710401a27b9eac4271d914a4363be9c729750edb3c6e4586a047de4a2237bc",
+        "fit_state": "complete",
+        "gates": [
+          {
+            "coefficients": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0063854364142026,
+              "minimum_bulk_ess": 1448.5477756584319,
+              "minimum_tail_ess": 1392.234981014653,
+              "passed": true,
+              "quantity_count": 2580
+            },
+            "diagnostic_seconds": 5.924767751999752,
+            "functionals": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0021729984434102,
+              "minimum_bulk_ess": 820.1710950195843,
+              "minimum_tail_ess": 939.6699026967794,
+              "passed": true,
+              "quantity_count": 10
+            },
+            "hyperparameters": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0040696946243153,
+              "minimum_bulk_ess": 715.2320940452656,
+              "minimum_tail_ess": 764.3490615885487,
+              "passed": true,
+              "quantity_count": 3
+            },
+            "passed": true
+          }
+        ],
+        "initial_retained_draws_per_chain": 2000,
+        "readout_coefficients": 2580,
+        "track": "A",
+        "trajectory": 0,
+        "warmup_per_chain": 1000
+      },
+      {
+        "candidate": "bayes_02",
+        "chains": 4,
+        "continuations": 0,
+        "fit_identity": "f0857d2944e479b6dcc2e0ebca39524628a3fdd76c09ff4cbf38aeeb5c643bbf",
+        "fit_receipt_sha256": "14acbfbeb9d1c316d8ae7eb06d82231cf207b84605302c8b72cdea883ccd42f4",
+        "fit_state": "complete",
+        "gates": [
+          {
+            "coefficients": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.006622725625034,
+              "minimum_bulk_ess": 1484.7488416702047,
+              "minimum_tail_ess": 1347.7165842475065,
+              "passed": true,
+              "quantity_count": 2580
+            },
+            "diagnostic_seconds": 5.739628058000562,
+            "functionals": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0030650263085814,
+              "minimum_bulk_ess": 823.2229269593239,
+              "minimum_tail_ess": 966.6997961697915,
+              "passed": true,
+              "quantity_count": 10
+            },
+            "hyperparameters": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0061408146013318,
+              "minimum_bulk_ess": 741.7342832800666,
+              "minimum_tail_ess": 846.3702726670882,
+              "passed": true,
+              "quantity_count": 3
+            },
+            "passed": true
+          }
+        ],
+        "initial_retained_draws_per_chain": 2000,
+        "readout_coefficients": 2580,
+        "track": "A",
+        "trajectory": 5,
+        "warmup_per_chain": 1000
+      },
+      {
+        "candidate": "bayes_03",
+        "chains": 4,
+        "continuations": 0,
+        "fit_identity": "5d53d036c33a862f26600a48956abb1282d0e5368282290d4aa7ab13ce76b280",
+        "fit_receipt_sha256": "c901946b8630c274091dcfd8a231cde845b75f0b9fc98089291e2c95dcea1bd6",
+        "fit_state": "complete",
+        "gates": [
+          {
+            "coefficients": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.008378131086203,
+              "minimum_bulk_ess": 1448.6341932303208,
+              "minimum_tail_ess": 1259.7930385062482,
+              "passed": true,
+              "quantity_count": 7200
+            },
+            "diagnostic_seconds": 14.7793248830003,
+            "functionals": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0041929913940595,
+              "minimum_bulk_ess": 703.4452232018627,
+              "minimum_tail_ess": 1195.9561093262325,
+              "passed": true,
+              "quantity_count": 10
+            },
+            "hyperparameters": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.009115317371234,
+              "minimum_bulk_ess": 624.7861726456962,
+              "minimum_tail_ess": 1032.506099117608,
+              "passed": true,
+              "quantity_count": 3
+            },
+            "passed": true
+          }
+        ],
+        "initial_retained_draws_per_chain": 2000,
+        "readout_coefficients": 7200,
+        "track": "A",
+        "trajectory": 0,
+        "warmup_per_chain": 1000
+      },
+      {
+        "candidate": "bayes_03",
+        "chains": 4,
+        "continuations": 0,
+        "fit_identity": "36011a114ade8fc86725c52e308a5973364ba472d3a53ccf6c9493dcca645e99",
+        "fit_receipt_sha256": "db54f6ff24500b4cbd5fa3d7ec84c89e548ea241476fd57b38947a624e35bf3a",
+        "fit_state": "complete",
+        "gates": [
+          {
+            "coefficients": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0065245084958212,
+              "minimum_bulk_ess": 1489.0301577052853,
+              "minimum_tail_ess": 1298.1919104381614,
+              "passed": true,
+              "quantity_count": 7200
+            },
+            "diagnostic_seconds": 15.057814251999844,
+            "functionals": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0026283784207497,
+              "minimum_bulk_ess": 740.2855636564319,
+              "minimum_tail_ess": 1100.56478646099,
+              "passed": true,
+              "quantity_count": 10
+            },
+            "hyperparameters": {
+              "failed_quantity_count": 0,
+              "maximum_rhat": 1.0067641076015226,
+              "minimum_bulk_ess": 670.3262103161525,
+              "minimum_tail_ess": 1058.0738334180837,
+              "passed": true,
+              "quantity_count": 3
+            },
+            "passed": true
+          }
+        ],
+        "initial_retained_draws_per_chain": 2000,
+        "readout_coefficients": 7200,
+        "track": "A",
+        "trajectory": 5,
+        "warmup_per_chain": 1000
+      }
+    ],
+    "fits_requiring_continuation": 0,
+    "monitoring": "all three sampled hyperparameters; every readout coefficient at 512 conditional draws per chain; ten scale/readout/one-step predictive functionals",
+    "qualified_fits": 8,
+    "strict_track_completed_fits": 8
+  },
+  "configuration_content_hash": "cc2925a7d28f22555bb2ed28c3ae804a2b8fdd727dfdfe7298fef696d347fddc",
+  "counts": {
+    "completed_fit_receipts": 76,
+    "failed_validation_origins": 2,
+    "fit_receipts_failed": 0,
+    "fit_receipts_inference_unqualified": 0,
+    "fit_receipts_state_complete": 76,
+    "fits_by_family": {
+      "basis_gru": 12,
+      "bayes_stesn": 8,
+      "linear_var": 16,
+      "persistence": 2,
+      "pod_nvar": 16,
+      "ridge_esn": 16,
+      "separable_gp": 4,
+      "training_mean": 2
+    },
+    "fits_by_track": {
+      "A": 72,
+      "B": 4
+    },
+    "successful_validation_origins": 302,
+    "worker_jobs_complete": 75,
+    "worker_jobs_failed": 1,
+    "worker_jobs_running": 2
+  },
+  "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+  "failure_handling": {
+    "affected_candidate": "A/pod_nvar/nvar_00",
+    "affected_trajectory": 0,
+    "candidate_eligible": false,
+    "candidate_retained_in_denominator": true,
+    "failed_origins_retained": true,
+    "replacement_seed_or_refit_used": false
+  },
+  "independent_arithmetic_checks": {
+    "checked_at_utc": "2026-11-05T02:38:16.738153+00:00",
+    "checks": [
+      "Recompute equal weights over horizons 1-10, 11-25, 26-50, 51-100 from stored per-horizon losses.",
+      "Recompute equal trajectory weighting from each candidate's complete permitted validation origins.",
+      "Verify incomplete/unqualified candidates retain failure counts and cannot become eligible.",
+      "Verify the full 6000 training states and 39 strict or 64 all-observed input sites.",
+      "Verify fitted candidate/model seed identity and permitted validation origins.",
+      "Check completed scheduled fits for duplicate effective configuration/trajectory/model seed identities."
+    ],
+    "mismatches": 0,
+    "numeric_comparison_atol": 1e-12,
+    "numeric_comparison_rtol": 1e-12,
+    "screening_candidate_rows_checked": 33,
+    "successful_origin_horizon_aggregates_checked": 262,
+    "validation_origin_receipts_checked": 264
+  },
+  "narrative": [
+    "No pipeline arithmetic or identity error requiring intervention was identified in this pass. The campaign was still screening; these observations are not final selected-model or test results.",
+    "All eight strict-track Bayesian fits passed the strengthened inference gate on the initial retained-draw budget. The largest candidate monitored all 7200 readout coefficients; no coefficient monitoring was silently dropped.",
+    "The two nonfinite NVAR rollouts were retained as explicit failures and made that candidate ineligible. No replacement seed, clipping or selective omission was observed.",
+    "The current strict-track Bayesian promotion leader is the largest profiled candidate. Its capacity boundary remains a limitation of the finite search, not evidence of universal optimality.",
+    "Native probabilistic families select by validation CRPS and point-only families by validation squared error. Their raw selection losses do not form a shared cross-family ranking.",
+    "Resource costs stayed within the observed pilot-informed admission estimates and margins. The audit did not change the run budget or schedule."
+  ],
+  "numerical_source_sha256": {
+    "__init__.py": "a4105a3d5fe082d6f21bc704975d5fbdb436d28fbfd61063e9c45f274d73253b",
+    "__main__.py": "23bb93dfa82b94036fce266f0a5b99f353ebebb2bb71dd25eb3379875a9fc557",
+    "_reservoir.py": "7187fc3ac65fb85d885245b00ec74f2895f1f4b2c942789dfa2cd34973046965",
+    "applications/ks_baselines.py": "d643db33b0491125f998061ffe9bd48625f8bb7dfb6a60f24377a7ec1fb629bb",
+    "applications/ks_cnn.py": "5462b1422146798553104b327d0e0d6ce0fe8294dd8ad9e73d8cc9c8353de866",
+    "applications/ks_data.py": "b928534eca0c8507c64c51caf562f335899d7aa75ba993d6ca0fcda3b583ea00",
+    "applications/ks_metrics.py": "0a4f709931cbd91f42e76e8e34497ac539f302d79113ba9720972f33edb90400",
+    "applications/ks_native.py": "dfb6e8c2d9baefa54cb87b162175ac3672f8bc17f9e8951272ba6e329798fd6e",
+    "applications/ks_precision.py": "1b0d1c28aaa0fec7fc50ac46ba68cf96adff5b6970e5828869be2cd83817ed54",
+    "applications/ks_runner.py": "4a5813c531908dfb5f697e039e02ada19ffe782166af5f3238b45458638ac998",
+    "applications/ks_runtime.py": "ff70f020dcb877975cf246e3264cafe01372121d1114532d34e18fa455eb9aa0",
+    "assessment.py": "56964b25ce7e85d7ae27f58a307e485f3c5cf91743230848e123d9e144f61765",
+    "basis.py": "a8a74582d711d7e506c208acbb10562334b41cd0b0ea632d16f92790a4901376",
+    "benchmark/__init__.py": "0175a9202d471ab857a172a937b001fc91ba5611c4abbb88e9e699935b89ac94",
+    "benchmark/basis_gru.py": "3f5e9d94065bcf0c3e5c803ac452050ce0692ec8a1284be616c598082f98e0e4",
+    "benchmark/calibration.py": "a3782d414e431fa74f3d1687010832eec107f93af52f9ffc3e76ae214d2e1603",
+    "benchmark/classical.py": "7505f849a3b4ddbcde00bf2c2db9eee936c6dde4a014105f3a03ef321213e290",
+    "benchmark/cli.py": "d0b3b6516de23dfb12b91eabf1ee4f4c66d25ac6f5daafd7ae47f57139aa2f6a",
+    "benchmark/contracts.py": "1da8dac38583a2cfa138d01eeb8270e3adc0679159a19aafe5c80d00dda3692f",
+    "benchmark/esn.py": "b1c6ce1e50d50959e72eca6f5157cd7f4afca3c420b04e8a1f1ffe417de2015e",
+    "benchmark/execution.py": "c2eb89974e42dbea850022728169f040d4b9a7cdf72345d94a26725daf7b5f14",
+    "benchmark/gaussian_gp.py": "a071b418e903ec1982766449bcb6291b8f5b66d23de78b306212d2a3c4dd93dc",
+    "benchmark/generators.py": "b62436a7b35a3f30ffb4b7492ef912b90df5b69dd4956b2d5659f547e1d06713",
+    "benchmark/linear_state.py": "cd8dc910fe6b1c666b4565ae0ba3a373109abcb6d484a90209f051d8a79ad330",
+    "benchmark/metrics.py": "9b7f947b50ab6fed93d371f5b11e8dbe06fe09f84891be55f86248bb1220678f",
+    "benchmark/neural.py": "2614c0a5fb45d8ee8dc3cbe06427ba0ace9454f4b4dbb653fcff1f5a835c1ed7",
+    "benchmark/optimization.py": "350cc6bea6d68d7adb1e7d48befe8a13c6ced13f254bec9c0355b259173bc853",
+    "benchmark/protocol.py": "cb92e90606902392cb956feccee1eacc17c7591e2cfffaf2536c543c28898162",
+    "benchmark/registry.py": "60117b52be395ec9ca687bf0116977cf286bdb5cdb182b895ae60c0acce76946",
+    "benchmark/report.py": "ce387151b4e85e4d1a001afddd39b15eea1728077907babb370b1bb4a95e495c",
+    "benchmark/reservoir.py": "6f3255fdba00a325b6993dfcaf0d31aec98c3205ee374317f3f8d7c9b97ead7b",
+    "benchmark/runner.py": "f375b3f9d07d4d0219583238e71711f4364c95b05a063af686f33d82fee449d8",
+    "benchmark/studies.py": "52e539c9b62d06d55de519b85b8292d525651c81763a7c940a130175404df44a",
+    "calibration.py": "a760de481ea809fb2f53ca24264dd44d04f2184043ffb1408102c74e4c2a8f93",
+    "cli.py": "f4fb9be77b1237d67d225926ec73351f2c619e8da38af438541af9cc6c230535",
+    "data.py": "fe16df21bd03dc74a6d245395743e31568b763342d46333ebd538774b6c55544",
+    "diagnostics.py": "fce574e158be3d3c839c22dae2e6d4939d507e552cdb78f4941dcc9c80b107e5",
+    "dynamics.py": "4076f5e00a85d401053a4287ed3e913e786844b5b88dfb65ec102f219cf6b2d8",
+    "ensemble.py": "d55242ae356977a94354d07966e17e16a48c8336a1328151505c162aadc6e0ea",
+    "features.py": "a45f922584d9f1898e83b1080cf4ae5ba3e4230b040977ac02c247c7001211ee",
+    "gaussian.py": "c7f78b8de89e4e50f58cd91e91d62cd6c8076f0c41b894bee9eec618e64d20c7",
+    "index_model.py": "11fdd5e93e98c9ada2ae72c206aa0adf4d75c827d9de82b1d55e65ffe8a1c3de",
+    "io.py": "794886f56f586c9679841f69d2d0329ea541f01c68bd1418d29972b1828e69e6",
+    "model.py": "6916ab1e62666994d1e19d260113fb76290dc5f4e2ba4574264dce3365ecaa64",
+    "prediction.py": "140d888376f1798a376adbae978760f6ff88a85664b91af480c2429392c6b2ed",
+    "priors.py": "50537b601cc35d9bfc14e3009229e5dd852e230052c61eea58811448a34783b6",
+    "sampling.py": "dc6420b42043bb8e0e14b0f456d2722daa799fab8de39af17e083be1b9cac9cb",
+    "scoring.py": "030ecbfa5ee47c7d2658aeba312cc16cca5a54c6a8eb273bf9141c66b9ca2822",
+    "simulation.py": "269aa649a9f10b9c0178427f191a3a3b930019ce970483f511a10977b54f9efc",
+    "spatial.py": "2d8249e03aa3b65fe0774a60e1e463d96b184160ca0e93d252708f510fdf1bd0",
+    "workflow.py": "36046a84e6170e8d57bfff9263164fabb3a5dce6dc1ba2829c7ad719b5f51673"
+  },
+  "observed_fit_costs": [
+    {
+      "completed_fits": 12,
+      "maximum_fit_seconds": 24.300086340000234,
+      "maximum_process_peak_rss_bytes": 472748032,
+      "minimum_fit_seconds": 2.7451917719999983,
+      "model": "basis_gru"
+    },
+    {
+      "completed_fits": 8,
+      "maximum_fit_seconds": 40.60214796499986,
+      "maximum_process_peak_rss_bytes": 294092800,
+      "minimum_fit_seconds": 29.560971080000854,
+      "model": "bayes_stesn"
+    },
+    {
+      "completed_fits": 16,
+      "maximum_fit_seconds": 0.15552861000014673,
+      "maximum_process_peak_rss_bytes": 118063104,
+      "minimum_fit_seconds": 0.09992127299938147,
+      "model": "linear_var"
+    },
+    {
+      "completed_fits": 2,
+      "maximum_fit_seconds": 0.10718001199984428,
+      "maximum_process_peak_rss_bytes": 116092928,
+      "minimum_fit_seconds": 0.10606344499956322,
+      "model": "persistence"
+    },
+    {
+      "completed_fits": 16,
+      "maximum_fit_seconds": 0.26007592600035423,
+      "maximum_process_peak_rss_bytes": 125566976,
+      "minimum_fit_seconds": 0.1248678239999208,
+      "model": "pod_nvar"
+    },
+    {
+      "completed_fits": 16,
+      "maximum_fit_seconds": 1.1052344250001624,
+      "maximum_process_peak_rss_bytes": 147861504,
+      "minimum_fit_seconds": 0.3669614000000365,
+      "model": "ridge_esn"
+    },
+    {
+      "completed_fits": 4,
+      "maximum_fit_seconds": 36.68518712200057,
+      "maximum_process_peak_rss_bytes": 122785792,
+      "minimum_fit_seconds": 13.494177637000575,
+      "model": "separable_gp"
+    },
+    {
+      "completed_fits": 2,
+      "maximum_fit_seconds": 0.08791072899930441,
+      "maximum_process_peak_rss_bytes": 116092928,
+      "minimum_fit_seconds": 0.08570073699956993,
+      "model": "training_mean"
+    }
+  ],
+  "observed_strict_native_forecast_costs": {
+    "basis_gru": {
+      "maximum_seconds": 0.9178610179997122,
+      "mean_seconds": 0.5817179983437768,
+      "origins": 32
+    },
+    "bayes_stesn": {
+      "maximum_seconds": 2.841603695000231,
+      "mean_seconds": 2.243415645656171,
+      "origins": 32
+    },
+    "horizon": 100,
+    "predictive_paths": 256
+  },
+  "optimizer_disclosures": {
+    "all_observed_gru_completed_fits": 4,
+    "all_observed_gru_noise_sd_boundary_fits": 2,
+    "fits": [
+      {
+        "boundary_hits": [],
+        "candidate": "gru_00",
+        "fit_receipt_sha256": "13a11b4490e7428ab9e9e6cf0ac3ee116a5fe62d8a10e0b08c5c2b1e291bbc20",
+        "iterations": 31,
+        "model": "basis_gru",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 8.282950106366581,
+        "qualified": true,
+        "track": "A",
+        "trajectory": 0
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gru_00",
+        "fit_receipt_sha256": "2bef32cbc8600c3d2c1746f377dec476442f79f86183d67affa52d624a8b1c2f",
+        "iterations": 24,
+        "model": "basis_gru",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 0.3987224752537673,
+        "qualified": true,
+        "track": "A",
+        "trajectory": 5
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gru_01",
+        "fit_receipt_sha256": "954d4ec5ce1dd15a68dbc6e32fbcbde5dc63b4429b26dd0e8020a479b49fc7d0",
+        "iterations": 28,
+        "model": "basis_gru",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 0.2561137095757802,
+        "qualified": true,
+        "track": "A",
+        "trajectory": 0
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gru_01",
+        "fit_receipt_sha256": "9314edc7cb3d8f02129e95164f4a4ee8255eeaf8214f537d8cae7dbdf3538556",
+        "iterations": 25,
+        "model": "basis_gru",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 2.3748725797026893,
+        "qualified": true,
+        "track": "A",
+        "trajectory": 5
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gru_02",
+        "fit_receipt_sha256": "80fe2108c029224cd56134c15a71ba8e089d06464c9ef62e9fdd0c8ed02a2b86",
+        "iterations": 25,
+        "model": "basis_gru",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 2.1071173378734644,
+        "qualified": true,
+        "track": "A",
+        "trajectory": 0
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gru_02",
+        "fit_receipt_sha256": "91ef36a4b1b448ef3f95c7bf72ea5a2fa4c88889863529e0631cd81bdd82ceae",
+        "iterations": 26,
+        "model": "basis_gru",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 1.6181729832287932,
+        "qualified": true,
+        "track": "A",
+        "trajectory": 5
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gru_03",
+        "fit_receipt_sha256": "4550690c396fb71c6af374b2c54a6f6baff32bc26918af5c4057eb57a1e91960",
+        "iterations": 25,
+        "model": "basis_gru",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 0.3259629010608078,
+        "qualified": true,
+        "track": "A",
+        "trajectory": 0
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gru_03",
+        "fit_receipt_sha256": "3db8c4774db0c1cc888f3672989943d48a0f189aa5eadbe144eee57bf9e66ebf",
+        "iterations": 26,
+        "model": "basis_gru",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 0.17462298380166832,
+        "qualified": true,
+        "track": "A",
+        "trajectory": 5
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gp_00",
+        "fit_receipt_sha256": "9b18f2b358c757cae6200411ad204c20075e7f2261103e8e97e133a4287954c8",
+        "iterations": 21,
+        "model": "separable_gp",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 10.174699133029614,
+        "qualified": true,
+        "track": "A",
+        "trajectory": 0
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gp_00",
+        "fit_receipt_sha256": "a4d1aaf52218618dd0e1eba5291929f0c646ee7297c1303608fbb97a32b87ea2",
+        "iterations": 23,
+        "model": "separable_gp",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 5.424953999990619,
+        "qualified": true,
+        "track": "A",
+        "trajectory": 5
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gp_01",
+        "fit_receipt_sha256": "a4e7cf613b6c32ff367f3893d4405b0ab586f1dfc8b236dae2fc067eb0eacbd8",
+        "iterations": 17,
+        "model": "separable_gp",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 706.1520634294399,
+        "qualified": true,
+        "track": "A",
+        "trajectory": 0
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gp_01",
+        "fit_receipt_sha256": "0b3196358db057d5dab625467f5f7bd7742040b29d48d62ed496335c28d3e5aa",
+        "iterations": 18,
+        "model": "separable_gp",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 97.43962387953378,
+        "qualified": true,
+        "track": "A",
+        "trajectory": 5
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gru_00",
+        "fit_receipt_sha256": "f24e342a9289cd31d7b637d630d0f15e1a51da4359c41996771f4cbc6fa75cfb",
+        "iterations": 21,
+        "model": "basis_gru",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 5.844049158788177,
+        "qualified": true,
+        "track": "B",
+        "trajectory": 0
+      },
+      {
+        "boundary_hits": [],
+        "candidate": "gru_00",
+        "fit_receipt_sha256": "d9a3a774ae0a76809b442f43de7b49951aac951a95c6c9e0806ae6fa258fe5fc",
+        "iterations": 27,
+        "model": "basis_gru",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 18.801074484946028,
+        "qualified": true,
+        "track": "B",
+        "trajectory": 5
+      },
+      {
+        "boundary_hits": [],
+        "candidate": "gru_01",
+        "fit_receipt_sha256": "5db4500bd8482e854445ecfee65cf260fd333fabf5464901e03d21af78821c8c",
+        "iterations": 28,
+        "model": "basis_gru",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 13.236422091801098,
+        "qualified": true,
+        "track": "B",
+        "trajectory": 0
+      },
+      {
+        "boundary_hits": [
+          "noise_sd"
+        ],
+        "candidate": "gru_01",
+        "fit_receipt_sha256": "1e1f809b0177fba5894f3f67b0cea7567f690f3aabb914bf6088a0d346e75fe1",
+        "iterations": 24,
+        "model": "basis_gru",
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "projected_gradient_infinity_norm": 2.724118517062235,
+        "qualified": true,
+        "track": "B",
+        "trajectory": 5
+      }
+    ],
+    "interpretation": "Accepted native likelihood optimizer gate used relative objective convergence. Boundary hits and projected-gradient norms do not establish a near-stationary or global optimum. No gate was changed by this audit.",
+    "strict_gp_completed_fits": 4,
+    "strict_gp_noise_sd_boundary_fits": 4,
+    "strict_gru_completed_fits": 8,
+    "strict_gru_noise_sd_boundary_fits": 7
+  },
+  "schema": "ks-validation-audit-early-1",
+  "scientific_rollout_failures": [
+    {
+      "config_id": "nvar_00",
+      "error": "FloatingPointError('Nonfinite autonomous pod_nvar at lead 61')",
+      "first_target": 7500,
+      "model": "pod_nvar",
+      "track": "A",
+      "trajectory": 0
+    },
+    {
+      "config_id": "nvar_00",
+      "error": "FloatingPointError('Nonfinite autonomous pod_nvar at lead 53')",
+      "first_target": 6500,
+      "model": "pod_nvar",
+      "track": "A",
+      "trajectory": 0
+    }
+  ],
+  "snapshot_utc": "2026-11-05T02:39:35.977974+00:00",
+  "status": "early_running_campaign_snapshot_not_final_results",
+  "strict_track_stage_one": [
+    {
+      "candidate_count": 4,
+      "completed_utc": "2026-11-05T02:34:22.473092+00:00",
+      "eligible_candidates": 4,
+      "model": "basis_gru",
+      "promotion_candidates": [
+        "gru_02",
+        "gru_01"
+      ],
+      "selection_receipt_sha256": "768c47cfb03525d9b7a93a2916d94cddbb54324e65d4b0292433d40402596a98",
+      "stage": "screen",
+      "track": "A"
+    },
+    {
+      "candidate_count": 4,
+      "completed_utc": "2026-11-05T02:37:20.039853+00:00",
+      "eligible_candidates": 4,
+      "model": "bayes_stesn",
+      "promotion_candidates": [
+        "bayes_03",
+        "bayes_02"
+      ],
+      "selection_receipt_sha256": "cdd76f79c12b7efee95c36aa35e97d71f7131b247ef43543986623e5a483124c",
+      "stage": "screen",
+      "track": "A"
+    },
+    {
+      "candidate_count": 8,
+      "completed_utc": "2026-11-05T02:37:34.322235+00:00",
+      "eligible_candidates": 8,
+      "model": "linear_var",
+      "promotion_candidates": [
+        "var_02",
+        "var_03"
+      ],
+      "selection_receipt_sha256": "6d3269216d4cd6bd8c7725468e88aa52eb30cc666e5270a039dd1a8919bc43a2",
+      "stage": "screen",
+      "track": "A"
+    },
+    {
+      "candidate_count": 1,
+      "completed_utc": "2026-11-05T02:37:36.045094+00:00",
+      "eligible_candidates": 1,
+      "model": "persistence",
+      "promotion_candidates": [
+        "persistence_00"
+      ],
+      "selection_receipt_sha256": "0dac3ea3877d68cfa5bd71fca877a8d0e8e27a81d4b286c94b6764a03fc6eded",
+      "stage": "screen",
+      "track": "A"
+    },
+    {
+      "candidate_count": 8,
+      "completed_utc": "2026-11-05T02:37:49.937981+00:00",
+      "eligible_candidates": 7,
+      "model": "pod_nvar",
+      "promotion_candidates": [
+        "nvar_06",
+        "nvar_05"
+      ],
+      "selection_receipt_sha256": "54db1da80cc1d547f819c6205a38f3322d6a9051cfd6ab6d10350e26c5ad55b9",
+      "stage": "screen",
+      "track": "A"
+    },
+    {
+      "candidate_count": 8,
+      "completed_utc": "2026-11-05T02:38:08.495478+00:00",
+      "eligible_candidates": 8,
+      "model": "ridge_esn",
+      "promotion_candidates": [
+        "esn_07",
+        "esn_04"
+      ],
+      "selection_receipt_sha256": "8509b2755cc0128158b1e6a4fddfc56985f8bbaf3a5ab09e6258bbd9d09c431c",
+      "stage": "screen",
+      "track": "A"
+    },
+    {
+      "candidate_count": 2,
+      "completed_utc": "2026-11-05T02:39:03.292192+00:00",
+      "eligible_candidates": 2,
+      "model": "separable_gp",
+      "promotion_candidates": [
+        "gp_00",
+        "gp_01"
+      ],
+      "selection_receipt_sha256": "2cc6cbb73fff1bd53da3f4df59de45c1488dd583176aafbb720eb3de13d3407d",
+      "stage": "screen",
+      "track": "A"
+    },
+    {
+      "candidate_count": 1,
+      "completed_utc": "2026-11-05T02:39:04.733742+00:00",
+      "eligible_candidates": 1,
+      "model": "training_mean",
+      "promotion_candidates": [
+        "mean_00"
+      ],
+      "selection_receipt_sha256": "3238d407db119db39cf7b0b0176b6b65e492bac1e5af45f4c3e5c09c348dce1f",
+      "stage": "screen",
+      "track": "A"
+    }
+  ],
+  "written_utc": "2026-11-05T02:43:54.605527+00:00"
+}
