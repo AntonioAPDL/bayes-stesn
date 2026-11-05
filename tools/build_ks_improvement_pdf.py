@@ -72,6 +72,53 @@ def role(row):
                        "sensitivity": "Prior sensitivity"}.get(x, x) for x in row.get("roles", []))
 
 
+LEADS = (1, 5, 10, 25, 50, 100)
+DIAGNOSTIC_BLOCKS = ("hyperparameters", "coefficients", "functionals")
+
+
+def percent_interval(stat):
+    """Format an already aggregated proportion; never estimate a new interval."""
+    return interval({"mean": None if stat.get("mean") is None else 100 * stat["mean"],
+                     "ci95": None if stat.get("ci95") is None else [100 * x for x in stat["ci95"]]}, 1)
+
+
+def diagnostic_summary(rows, block=None):
+    """Summarize compact fit receipts only, counting reused fits once."""
+    unique = {}
+    for row in rows:
+        key = row["fit_key"]
+        if key in unique and unique[key] != row:
+            raise ValueError("Conflicting compact diagnostics for the same fitted artifact")
+        unique[key] = row
+    diagnostics = [r.get("diagnostics", {}) for r in unique.values()]
+    names = (block,) if block else DIAGNOSTIC_BLOCKS
+    blocks = [d.get("blocks", {}).get(name, {}) for d in diagnostics for name in names]
+
+    def finite_values(key):
+        return [float(b[key]) for b in blocks
+                if b.get(key) is not None and math.isfinite(float(b[key]))]
+
+    def extreme(key, operation):
+        values = finite_values(key)
+        return operation(values) if values else None
+
+    continuations = [d["continuations"] for d in diagnostics if d.get("continuations") is not None]
+    checked = [b["monitored"] for b in blocks if b.get("monitored") is not None]
+    failed = [b["failed_quantities"] for b in blocks if b.get("failed_quantities") is not None]
+    return {"fits": len(unique), "qualified": sum(d.get("qualified") is True for d in diagnostics),
+            "unqualified": sum(d.get("qualified") is False for d in diagnostics),
+            "unknown_qualification": sum(d.get("qualified") is None for d in diagnostics),
+            "continued": sum(n > 0 for n in continuations), "continuation_known": len(continuations),
+            "continuation_events": sum(continuations), "expected_blocks": len(blocks),
+            "monitored_blocks": len(checked), "monitored": sum(checked) if checked else None,
+            "failed_blocks_known": len(failed), "failed_quantities": sum(failed) if failed else None,
+            "max_rhat": extreme("max_rhat", max), "min_bulk_ess": extreme("min_bulk_ess", min),
+            "min_tail_ess": extreme("min_tail_ess", min),
+            "extrema_blocks": min(len(finite_values(k)) for k in ("max_rhat", "min_bulk_ess", "min_tail_ess")),
+            "chains": sorted(set(int(x) for x in finite_values("chains"))),
+            "diagnostic_draws": sorted(set(int(x) for x in finite_values("diagnostic_draws")))}
+
+
 class Renderer:
     def __init__(self, source, output, revision):
         self.source, self.output, self.revision = Path(source), Path(output), revision
@@ -86,7 +133,14 @@ class Renderer:
         self.dynamics = load(self.source / "realized_dynamics.json")
         self.seed = load(self.source / "seed_sensitivity.json")
         self.fits = load(self.source / "fit_diagnostics.json")
-        source_manifest = load(self.source / "source_manifest.json")
+        self.horizons = load(self.source / "horizon_curves.json")
+        self.horizon_index = {}
+        for row in self.horizons:
+            key = (row["track"], row["candidate_id"], row["seed"])
+            if key in self.horizon_index:
+                raise ValueError("Duplicate cohort in compact horizon curves")
+            self.horizon_index[key] = row
+        self.source_manifest = source_manifest = load(self.source / "source_manifest.json")
         diagnosis_path = Path(__file__).resolve().parents[1] / "docs/applications/evidence/ks_improvement_initial_diagnosis.json"
         self.diagnosis = None
         if source_manifest.get("initial_diagnosis_sha256"):
@@ -251,10 +305,39 @@ class Renderer:
         self.p("Selection minimizes episode-balanced CRPS, with equal weights for the mean losses in leads 1-10, 11-25, "
                "26-50 and 51-100. Reported ordinary 100-step CRPS and RMSE are distinct summaries. MCMC keeps four chains, "
                "1000 warmup and 2000 retained states per chain, with one bounded 2000-draw continuation. Qualification "
-               "requires rank-normalized split R-hat below 1.01 and bulk/tail ESS ≥ 400 for monitored quantities [3].")
+               "requires rank-normalized split R-hat at most 1.01 and bulk/tail ESS ≥ 400 for monitored quantities [3].")
         self.p("All sampled hyperstates are checked. All readout coefficients and ten scale/readout/predictive functionals "
                "are checked using 512 evenly spaced retained states per chain. Predictive precision repetitions measure "
                "conditional simulation variability; they are not substitutes for chain convergence or trajectory-level uncertainty.")
+
+    def metric_definitions(self):
+        self.heading("3. Reading the scores and reliability tables")
+        self.p("All field values, errors, interval widths and unnormalized scores use the physical units of the clean "
+               "simulated field. Native point forecasts are means of complete posterior predictive paths. Point references "
+               "have no predictive distribution: their CRPS, coverage, width and joint distribution scores are explicitly undefined.")
+        self.table(["Quantity", "Exact interpretation in this experiment"], [
+            ["RMSE and nRMSE", "Pool squared errors over origins, horizons and target sites within each trajectory, then take its square root. Average these trajectory RMSEs equally. For nRMSE, first divide each trajectory's RMSE by its permitted training standard deviation. This is not an aggregate RMSE divided by one pooled scale."],
+            ["MAE and CRPS", "Average site/horizon/origin losses within each trajectory, then trajectories equally. CRPS is the empirical V-statistic: mean |X-y| minus one half of the mean over all ordered path pairs |X-X'|, including diagonal pairs. No iid finite-ensemble bias correction is claimed [4]."],
+            ["50%, 80%, 90%, 95% intervals", "Central empirical predictive quantiles. Coverage is the fraction of clean targets between the inclusive endpoints; width is the mean upper-minus-lower endpoint. These are marginal site/lead intervals, not simultaneous field or path bands."],
+            ["Spatial energy", "At each lead, [mean ||X-y||₂ minus one half mean ||X-X'||₂] divided by sqrt(number of target sites). The second term uses 1024 independently sampled path-index pairs, with replacement and diagonal pairs allowed, seed 20261105. It approximates the empirical energy score and can be slightly negative from Monte Carlo error [4]."],
+            ["Spatial variogram", "Weighted sum over fixed geometry-only site pairs of (|y_i-y_j|^0.5 minus mean |X_i-X_j|^0.5)². Up to 128 unordered pairs use normalized inverse unit-circle chord-distance weights; pair seed 20261105. Smaller is better. The score assesses spatial increments and is insensitive to a common additive field shift [8]."],
+        ], [1.1, 4.1])
+        self.p("Prediction time and censoring", "h2")
+        self.p("At each origin, valid prediction time (VPT) is the first lead h whose spatial RMSE, divided by that "
+               "trajectory's permitted training standard deviation, exceeds 0.4. The reported physical time is 0.25h. "
+               "If no crossing occurs by lead 100, the stored time is 25 and the outcome is right-censored. A crossing "
+               "at lead 100 also has time 25 but is not censored. Tables report the <b>mean horizon-restricted VPT</b> "
+               "and the censored-origin fraction, averaged over the same complete trajectories. This is not an uncensored "
+               "mean first-crossing time, a survival-model estimate or a Lyapunov-time normalization.")
+        self.p("Reliability and interval populations", "h2")
+        self.p("Finite divergence means that at least one lead's spatial RMSE exceeds 10 training standard deviations. "
+               "It is distinct from a nonfinite/numerical rollout failure; finite extreme losses remain in the scores. "
+               "Accuracy requires all scheduled origins of a trajectory to be available and, for native distributions, "
+               "inference-qualified. The full-schedule census separately retains failed, unqualified and pending outcomes.")
+        self.p("Square-bracket intervals around aggregate metrics are 95% trajectory-cluster bootstrap intervals, "
+               "conditional on the selected configurations and complete trajectories. They are not the 50–95% predictive "
+               "interval levels. An observed zero-event bootstrap interval does not establish zero event probability "
+               "on new trajectories. Metric definitions are implemented in applications/ks_metrics.py and scoring.py.", "small")
 
     def result_pages(self):
         for track in self.r["tracks"]:
@@ -284,6 +367,39 @@ class Renderer:
                    "equally. Successful-only accuracy excludes an entire trajectory if any scheduled origin is unavailable; "
                    "the census above retains those missing outcomes. A method with fewer complete trajectories cannot be "
                    "declared generally superior from its successful-only mean.", "small")
+            self.extended_track_metrics(track, rows)
+
+    def extended_track_metrics(self, track, rows):
+        self.heading(f"3{track} continued. Scale, spatial dependence and prediction time")
+        self.p("Means and 95% trajectory-bootstrap intervals use each method's complete-trajectory population. "
+               "The complete count and the preceding full-schedule census must accompany every accuracy comparison. "
+               "No missing score is replaced with zero.", "small")
+        self.table(["Method / role", "Complete", "nRMSE", "Spatial energy", "Spatial variogram"], [
+            [role(r), f"{r['complete_trajectories']}/{r['scheduled_trajectories']}",
+             interval(r["metrics"]["nrmse"]),
+             "Point only" if "cheap_anchor" in r.get("roles", []) else interval(r["metrics"]["spatial_energy"]),
+             "Point only" if "cheap_anchor" in r.get("roles", []) else interval(r["metrics"]["spatial_variogram"])]
+            for r in rows], [1.9, .65, 1.5, 1.5, 1.5])
+        self.table(["Method / role", "Complete", "Mean restricted VPT (physical time)", "Censored origins (%)"], [
+            [role(r), f"{r['complete_trajectories']}/{r['scheduled_trajectories']}",
+             interval(r["metrics"]["vpt_physical"], 3),
+             percent_interval(r["metrics"]["vpt_censoring_fraction"])] for r in rows], [1.9, .65, 1.75, 1.45])
+        self.p("Restricted VPT is capped at 25 physical time units. Its censoring fraction is the proportion of "
+               "included origins without a threshold crossing by lead 100. A large censored fraction requires "
+               "particular care: the uncensored mean beyond this horizon is not identified here.", "small")
+        self.heading(f"3{track} continued. Marginal interval calibration")
+        native = [r for r in rows if "cheap_anchor" not in r.get("roles", [])]
+        if native:
+            self.table(["Method / role", "Complete", "Nominal level", "Coverage (%)", "Mean width"], [
+                [role(r), f"{r['complete_trajectories']}/{r['scheduled_trajectories']}", f"{level}%",
+                 percent_interval(r["metrics"][f"coverage{level}"]),
+                 interval(r["metrics"][f"width{level}"])] for r in native for level in (50, 80, 90, 95)],
+                [1.9, .65, .75, 1.55, 1.55])
+        else:
+            self.p("No native predictive-distribution cohort is present in this snapshot.")
+        self.p("Coverage refers to clean field values and width uses physical field units. Brackets are 95% "
+               "trajectory-bootstrap intervals for the aggregate, while the nominal column identifies the distinct "
+               "predictive interval level. Point-only anchors have no interval coverage or width; none is manufactured.", "small")
 
     def parameter_pages(self):
         if not self.freeze:
@@ -377,6 +493,155 @@ class Renderer:
                     self.heading(title)
                     self.figure(name, 605, caption)
 
+    def selected_lead_values(self, cohort, metric, *, percent=False):
+        key = (cohort["track"], cohort["candidate_id"], cohort["seed"])
+        row = self.horizon_index.get(key)
+        if row is None:
+            if cohort["complete_trajectories"]:
+                raise ValueError("A completed cohort has no bound horizon summary")
+            return ["Undefined"] * len(LEADS)
+        if row["complete_trajectory_ids"] != cohort["complete_trajectory_ids"]:
+            raise ValueError("Horizon and aggregate score populations disagree")
+        curve = row["curves"].get(metric)
+        if curve is None:
+            raise ValueError("Requested metric is absent from a bound horizon summary")
+        mean = curve.get("mean")
+        expected_n = cohort["metrics"][metric]["n"]
+        if curve["n"] != expected_n:
+            raise ValueError("Horizon and aggregate metric denominators disagree")
+        if mean is None:
+            if expected_n:
+                raise ValueError("A populated horizon summary has no values")
+            return ["Undefined"] * len(LEADS)
+        if len(mean) != 100:
+            raise ValueError("The selected-lead appendix requires the frozen 100-lead curve")
+        return [fmt(mean[h-1] * (100 if percent else 1), 1 if percent else 4) for h in LEADS]
+
+    def horizon_appendix(self):
+        for track in self.r["tracks"]:
+            rows = [r for r in self.r["confirmation"] if r["track"] == track
+                    and any(x in r["roles"] for x in ("main", "anchor", "cheap_anchor"))]
+            self.heading(f"Appendix A. Track {track}: predeclared forecast leads")
+            if not rows:
+                self.p("Confirmation horizon summaries are pending. No values are substituted.")
+                continue
+            headings = ["Method / metric"] + [f"h={h}\ntime={.25*h:g}" for h in LEADS]
+            point_rows = []
+            for r in rows:
+                for metric in ("rmse", "mae"):
+                    point_rows.append([f"{role(r)}\n{metric.upper()} | n={r['complete_trajectories']}/"
+                                       f"{r['scheduled_trajectories']}"] + self.selected_lead_values(r, metric))
+            self.table(headings, point_rows, [2.25] + [1] * len(LEADS))
+            self.p("Saved trajectory-first horizon means are shown; time = 0.25 × lead in physical units. "
+                   "At a fixed lead, RMSE first pools that trajectory's origin/site squared errors and takes their square "
+                   "root, then averages trajectories. Pointwise 95% trajectory-bootstrap intervals are retained in "
+                   "horizon_curves.json and the horizon figures. The rows retain each method's complete count; this "
+                   "table does not replace the paired comparisons or full-schedule census.", "small")
+            native = [r for r in rows if "cheap_anchor" not in r["roles"]]
+            if native:
+                self.heading(f"Appendix A. Track {track}: native distribution scores by lead")
+                labels = (("crps", "CRPS", False), ("coverage90", "90% coverage (%)", True),
+                          ("width90", "90% width", False))
+                self.table(headings, [[f"{role(r)}\n{label} | n={r['complete_trajectories']}/"
+                                       f"{r['scheduled_trajectories']}"]
+                                     + self.selected_lead_values(r, metric, percent=percent)
+                                     for r in native for metric, label, percent in labels], [2.25] + [1] * len(LEADS))
+                self.p("These are saved marginal CRPS, coverage and interval-width means at the same six leads. "
+                       "Point-only references have no corresponding predictive-distribution values. All four interval "
+                       "levels appear in the per-track aggregate calibration tables; all 100-lead curves remain available "
+                       "in the bound compact JSON. Prior sensitivity remains a separate analysis.", "small")
+
+    def inference_appendix(self):
+        self.heading("Appendix B. Actual inference qualification and effort")
+        self.p("The following summaries read only fit_diagnostics.json. A reused fitted artifact is counted once by "
+               "fit_key. The all-fit population includes screening, promotion, confirmation and seed sensitivity "
+               "artifacts available in this snapshot; it is not a denominator of independent scientific replicates. "
+               "Qualification is a numerical diagnostic and does not establish predictive accuracy.")
+        groups = [(track, [r for r in self.fits if r["track"] == track]) for track in self.r["tracks"]]
+        self.table(["All available fits", "Unique fits", "Qualified", "Unqualified", "Unknown", "Continued / known"], [
+            [track, (d := diagnostic_summary(rows))["fits"], d["qualified"], d["unqualified"],
+             d["unknown_qualification"], f"{d['continued']}/{d['continuation_known']}"] for track, rows in groups],
+            [1.25, .8, .9, .95, .75, 1.25])
+        rows = []
+        for track, fits in groups:
+            for block in DIAGNOSTIC_BLOCKS:
+                d = diagnostic_summary(fits, block)
+                rows.append([f"{track}: {block}", f"{d['monitored_blocks']}/{d['expected_blocks']}",
+                             "Unknown" if d["monitored"] is None else f"{d['monitored']:,}",
+                             fmt(d["max_rhat"]), fmt(d["min_bulk_ess"], 1), fmt(d["min_tail_ess"], 1),
+                             "Unknown" if d["failed_quantities"] is None else d["failed_quantities"]])
+        self.table(["Track / block", "Receipts / fits", "Checks", "Max R-hat", "Min bulk ESS", "Min tail ESS", "Failed checks"],
+                   rows, [1.7, .85, 1, 1, 1, 1, .85])
+        self.p("Checks sum the numbers of monitored scalar quantities across distinct fitted artifacts. Failed checks "
+               "are recorded per quantity and block, not failed forecasts. Extrema include unqualified fits; they are "
+               "not asserted to meet the gate. Missing compact diagnostics remain unknown. These are post-continuation "
+               "diagnostics when a continuation was used.", "small")
+        observed = []
+        for block in DIAGNOSTIC_BLOCKS:
+            d = diagnostic_summary(self.fits, block)
+            observed.append([block, ", ".join(map(str, d["chains"])) or "Unknown",
+                             ", ".join(map(str, d["diagnostic_draws"])) or "Unknown",
+                             f"{d['extrema_blocks']}/{d['expected_blocks']}"])
+        self.table(["Block", "Recorded chain counts", "Diagnostic states per chain", "Finite extrema / block receipts"],
+                   observed, [1.3, 1.1, 1.7, 1.7])
+        self.p("The gate requires four chains, rank-normalized split R-hat ≤ 1.01 and bulk/tail ESS ≥ 400. "
+               "Hyperparameters use all retained sampled states. Every readout coefficient and the ten monitored "
+               "functionals are checked on 512 evenly spaced retained states per chain; this disclosed diagnostic "
+               "subsample does not exclude coefficient directions. The one allowed continuation adds 2000 retained "
+               "states per chain to the original 2000. Warmup, chains, diagnostic states, predictive paths and model "
+               "seeds are separate quantities; no HMC-specific diagnostics apply to this sampler.", "small")
+        selected = [r for r in self.r["confirmation"] if "cheap_anchor" not in r["roles"]]
+        self.heading("Appendix B continued. Selected confirmation fits")
+        if not selected:
+            self.p("Selected confirmation fits are pending in this snapshot; the preceding screening-inclusive "
+                   "counts must not be read as final selected-model qualification.")
+            return
+        summaries = []
+        for r in selected:
+            fits = [f for f in self.fits if (f["track"], f["candidate_id"], f["seed"]) ==
+                    (r["track"], r["candidate_id"], r["seed"])
+                    and f["trajectory"] in self.r["confirmation_roster"]]
+            d = diagnostic_summary(fits)
+            if d["fits"] != r["fits_available"] or d["qualified"] != r["qualified_fits"]:
+                raise ValueError("Selected confirmation compact fit counts disagree with the score census")
+            summaries.append((r, d))
+        self.table(["Track / role", "Fits /14", "Qualified", "Unqualified / unknown", "Continued / known"], [
+            [f"{r['track']}: {role(r)}", f"{d['fits']}/{r['scheduled_trajectories']}", d["qualified"],
+             f"{d['unqualified']} / {d['unknown_qualification']}", f"{d['continued']}/{d['continuation_known']}"]
+            for r, d in summaries], [2.4, .8, .8, 1.2, 1.2])
+        self.table(["Track / role", "Checks", "Max R-hat", "Min bulk ESS", "Min tail ESS", "Failed checks"], [
+            [f"{r['track']}: {role(r)}", "Unknown" if d["monitored"] is None else f"{d['monitored']:,}",
+             fmt(d["max_rhat"]), fmt(d["min_bulk_ess"], 1), fmt(d["min_tail_ess"], 1),
+             "Unknown" if d["failed_quantities"] is None else d["failed_quantities"]]
+            for r, d in summaries], [2.4, 1.1, 1, 1, 1, .9])
+        self.p("These rows restrict the compact fits to the frozen confirmation roster and each cohort's seed/configuration. "
+               "They include available unqualified fits, even when no predictive score is eligible. Missing or failed "
+               "fits are not added to the diagnostic extrema; their blocked-origin counts remain in the main reliability "
+               "census. Fixed point references require no MCMC qualification.", "small")
+
+    def fixed_reference_appendix(self):
+        anchors = self.source_manifest.get("anchors")
+        if not anchors:
+            return
+        self.heading("Appendix C. Exact fixed point-reference configurations")
+        self.p("These references retain the original experiment's selected settings and receive no new tuning. "
+               "The contiguous track transfers the declared A configuration and refits permitted C training data. "
+               "All origins use the common 512-state history. Vector recurrences advance their native observed/latent "
+               "state; the periodic decoder is applied to outputs, without hidden-truth feedback or repeated smoothing projection.")
+        plan = anchors["plan"]
+        rows = []
+        for track in plan["tracks"]:
+            for model in plan["models"]:
+                c = plan["configurations"][track][model]
+                rows.append([f"{track}: {MODEL_NAMES.get(model, model)}", c["id"],
+                             c["original_source_track"], str(plan["model_seeds"][model]),
+                             json.dumps(c["config"], sort_keys=True, separators=(", ", ": "))])
+        self.table(["Track / reference", "Original ID", "Original track", "Seed", "Exact effective configuration"],
+                   rows, [1.55, .9, .6, .85, 3.1])
+        self.p("A deterministic family's seed is an unused identity field, not a replicated fit. Exact configuration "
+               "objects and the fixed-reference plan identity are retained in source_manifest.json. No Gaussian "
+               "distribution is added to these point forecasts.", "small")
+
     def operations(self):
         self.heading("10. Computation, acceptance and limitations")
         ops = self.r["operations"]
@@ -398,11 +663,10 @@ class Renderer:
                "carrying their identities and prior time forward, and adopting immutable terminal receipts as authority. "
                "The responsible external mechanism was not established. No scientific candidate, prior, data, forecast "
                "or score was changed by that recovery. The original run remains evidence.")
-        acceptance = self.source / "selected_invariance.json"
-        if acceptance.exists():
-            a = load(acceptance)
+        a = self.r.get("selected_invariance")
+        if a:
             self.p(f"<b>Selected-artifact acceptance:</b> {a['passed_cases']}/{a['expected_cases']} cases passed; "
-                   f"failed={a['failed_cases']}, pending={len(a['pending'])}. Tests fix fitted parameters and randomness, "
+                   f"failed={a['failed_cases']}, complete={a['complete']}. Tests fix fitted parameters and randomness, "
                    "perturb hidden histories and future labels, and separately refit preprocessing/features on unchanged "
                    "permitted training inputs. They establish output separation, not future-free physical disk access.")
         self.p("The finite search can leave important settings at a search boundary. Conditional confirmation can "
@@ -445,6 +709,7 @@ class Renderer:
             ("5", "Li et al. (2018). Hyperband: A Novel Bandit-Based Approach to Hyperparameter Optimization.", "https://www.jmlr.org/papers/v18/16-558.html"),
             ("6", "Bergstra and Bengio (2012). Random Search for Hyper-Parameter Optimization.", "https://www.jmlr.org/papers/v13/bergstra12a.html"),
             ("7", "Gauthier et al. (2021). Next generation reservoir computing.", "https://arxiv.org/abs/2106.07688"),
+            ("8", "Scheuerer and Hamill (2015). Variogram-Based Proper Scoring Rules for Probabilistic Forecasts of Multivariate Quantities.", "https://repository.library.noaa.gov/view/noaa/22327/"),
         ]
         for number, title, url in refs:
             self.p(f"[{number}] {html.escape(title)} <link href='{url}' color='#116a70'>{html.escape(url)}</link>", "small")
@@ -462,8 +727,9 @@ class Renderer:
         canvas.restoreState()
 
     def build(self):
-        self.introduction(); self.contract(); self.search(); self.result_pages()
-        self.parameter_pages(); self.sensitivity_pages(); self.figure_pages(); self.operations(); self.references()
+        self.introduction(); self.contract(); self.search(); self.metric_definitions(); self.result_pages()
+        self.parameter_pages(); self.sensitivity_pages(); self.figure_pages(); self.operations()
+        self.horizon_appendix(); self.inference_appendix(); self.fixed_reference_appendix(); self.references()
         self.output.parent.mkdir(parents=True, exist_ok=True)
         temporary = self.output.with_suffix(".tmp.pdf")
         doc = SimpleDocTemplate(str(temporary), pagesize=A4, rightMargin=40, leftMargin=40,
