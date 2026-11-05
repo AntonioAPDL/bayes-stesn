@@ -1,0 +1,127 @@
+{
+  "applied_migration_receipt": {
+    "bytes": 2228543,
+    "created_utc": "2026-11-05T11:31:25.644123+00:00",
+    "member": "migration/receipt.json",
+    "passed": true,
+    "sha256": "95099d0c7d7eeaea0b9a82357912fcd012b86a45559c30ecb8c43eb0ab94a751"
+  },
+  "budget_accounting": {
+    "active_new_attempt_charges_intentionally_outside_this_snapshot": true,
+    "active_total_worker_seconds_cap": 54000,
+    "active_wall_seconds_cap": 18000,
+    "attempt_elapsed_seconds": 31048.42515946799,
+    "attempt_stage_counts": {
+      "confirm": 68,
+      "precision": 60,
+      "preflight": 208,
+      "promote": 108,
+      "screen": 236
+    },
+    "attempt_states": {
+      "complete": 678,
+      "interrupted": 2
+    },
+    "attempts_with_historical_job_ids_not_in_source_current_mapping_preserved": 236,
+    "carried_worker_seconds": 31138.42515946799,
+    "exact_charge_equality": true,
+    "immutable_attempt_bytes_verified": 221240,
+    "immutable_attempt_files_byte_verified": 680,
+    "original_campaign_started_utc": "2026-11-05T07:38:04.272689+00:00",
+    "original_total_worker_seconds_cap": 43200,
+    "original_wall_seconds_cap": 14400,
+    "preparation_worker_seconds": 90.0,
+    "summation_order": "sorted immutable source attempt filenames, matching migration implementation",
+    "unchanged_search_worker_seconds_cap": 21600,
+    "unchanged_threads_per_worker": 1,
+    "unchanged_workers": 4
+  },
+  "created_utc": "2026-11-05T11:36:08.578061+00:00",
+  "identities": {
+    "cache_identity_unchanged": "398cc9ffbd9025573be430c2dbe67a7e5e84c786d70ce031a46cfff890cae465",
+    "current_source_and_runtime_independently_equal_to_both_experiments": true,
+    "destination_experiment": "067aaf08f46d7a21895ce15876d482a4a837d58627026a59e07a63db37f5c376",
+    "destination_freeze": "96774e83e2f737ceed30abc232b3a328b79894b0173a8e7a629c0289f0c3f4d2",
+    "native_source_sha256": "ee8f7273bc4d3f7e8f523680e77681406dd5a5848e5909bf118497734f3a5319",
+    "source_experiment": "2b805c3ee9c0b8fdb555fe1abc3e26d5fb80e32c2cab62ce1c36e40d20a705fa",
+    "source_freeze": "6c07b2a7473ad161cd781d873e68bd72e4c0fcc7b692149cc1a6fcc03183bf18"
+  },
+  "migration_snapshot_counts": {
+    "complete_terminal_jobs": 644,
+    "copy_bytes_recorded": 12354826252,
+    "copy_files_recorded": 8432,
+    "forecast_receipts": 3138,
+    "inference_unqualified_terminal_jobs": 6,
+    "jobs": 652,
+    "native_and_forecast_counts_independently_counted_in_immutable_copy_manifest": true,
+    "native_checkpoints": 348,
+    "opaque_sidecar_bytes_recorded": 185860096,
+    "opaque_sidecar_payloads_not_rehashed_in_this_review": true,
+    "opaque_sidecars_recorded": 6,
+    "pending_jobs": 2,
+    "source_locks_recorded_by_migrator": 349
+  },
+  "passed": true,
+  "review_elapsed_seconds": 0.43447721699340036,
+  "reviewed_auxiliary_pair": {
+    "checks": [
+      {
+        "absent_from_destination_active_fit_directory": true,
+        "archived_copy_verified": true,
+        "artifact": "fit.npz.chains.npz",
+        "bytes": 1674467,
+        "sha256": "ab80d1d69c93bf906d7d727a14c31f25a7a2906c43f7804e2b9762f8e5f6cfa7",
+        "source_retained": true
+      },
+      {
+        "absent_from_destination_active_fit_directory": true,
+        "archived_copy_verified": true,
+        "artifact": "fit.npz.chains.npz.ks-fit-phase.npz",
+        "bytes": 233779,
+        "sha256": "b237b2988a7c810f11e5fa7218a4782aff34c429e612de2ded02ad5ad2f7b9f6",
+        "source_retained": true
+      }
+    ],
+    "creator_and_cause": "unproven",
+    "exact_inference_restart_available_from_archived_pair": false,
+    "fit_key": "13103f3581fde7430a4128f52b3be460",
+    "manifest_sha256": "167537909f3f32638a49187cf166ad7112c0662ed3cc5c058e50a4e2d33a49a4",
+    "native_payload_independently_matches_bound_hash": true,
+    "native_qualification_unchanged": true,
+    "native_receipt_sha256": "2f4857abeaa646845495c6c452581686b983499b568f3c4e76fd242f289d9e26",
+    "native_sha256": "d35a1633d8ca3ac7016c298a5a36377a0e7b4ee62a9f9e7b0762808f08d36024",
+    "prefix_proof_sha256": "594e82111eee09987002388c5ffdeb16413569dfbd452578963b9feec4fb09c3"
+  },
+  "schema": "ks-improvement-applied-migration-independent-review/1",
+  "scientific_contract_preserved": {
+    "archived_original_experiment_and_freeze_byte_identical": true,
+    "changed_budget_keys": [
+      "extension_reason",
+      "operational_extension",
+      "total_worker_seconds_cap",
+      "wall_seconds_cap"
+    ],
+    "configuration_equal_except_budget": true,
+    "freeze_created_utc": "2026-11-05T10:03:57.054419+00:00",
+    "freeze_equal_except_experiment_and_identity": true,
+    "history_and_selection_files_byte_verified": 10,
+    "previous_and_extended_configuration_files_match_published_repo_bytes": true
+  },
+  "scope": "Independent review of immutable applied migration evidence while the destination coordinator is active. Counts describe the migration snapshot, not current campaign completion.",
+  "scope_limits": {
+    "active_scheduler_or_writer_locks_acquired": false,
+    "all_large_payloads_rehashed": false,
+    "cache_data_reaudited": false,
+    "confirmation_performance_objects_decoded": false,
+    "fits_or_forecasts_run": false,
+    "live_job_or_attempt_directories_enumerated": false,
+    "new_destination_attempts_read_or_counted": false,
+    "numerical_or_run_artifacts_modified": false,
+    "only_reviewed_archived_pair_and_one_canonical_native_payload_rehashed": true
+  },
+  "validation_provenance": {
+    "bulk_fit_and_forecast_payload_validation": "Preserved from the hash-bound successful migration receipt; only migration-listed counts inspected here.",
+    "cache_content_identity_verification": "Preserved from the hash-bound successful migration receipt; large cache not reaudited during active execution.",
+    "proof_of_apply": "Applied receipt passed and actual destination immutable metadata, carried attempt bytes, native artifact and archived pair independently verified."
+  }
+}

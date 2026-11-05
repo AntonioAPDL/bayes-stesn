@@ -60,7 +60,7 @@ The executed scientific source files and package versions are hashed into every
 job. A checkpoint with an incompatible identity is refused. Keep the numerical
 source and configuration unchanged while resuming.
 
-### Restored authoritative workspace; migration pending
+### Restored authoritative workspace; run_v3 migration applied
 
 The repository, verified cache and compatible project interpreter have been
 restored under `/data`. The original scratch paths are historical provenance,
@@ -73,7 +73,7 @@ not paths to recreate with symlinks. Use:
 | Project Python | `/data/ks_improvement_20261105/env/bin/python` |
 | Original comparator-selection freeze | `/data/ks_improvement_20261105/recovered_original_evidence/ks_frozen_specification_full.json` |
 | Preserved source campaign | `/data/ks_improvement_20261105/run_v2` |
-| Prospective migration destination | `/data/ks_improvement_20261105/run_v3` |
+| Active campaign after verified migration | `/data/ks_improvement_20261105/run_v3` |
 
 ```bash
 cd /data/ks_improvement_20261105/repo
@@ -84,16 +84,72 @@ export PYTHONHASHSEED=0 MPLBACKEND=Agg
 KS_PYTHON=/data/ks_improvement_20261105/env/bin/python
 KS_CACHE_ROOT=/data/ks_improvement_20261105/cache
 KS_ORIGINAL_FREEZE=/data/ks_improvement_20261105/recovered_original_evidence/ks_frozen_specification_full.json
+KS_RUN_ROOT=/data/ks_improvement_20261105/run_v3
 ```
 
 `KS_ORIGINAL_FREEZE` supplies `--original-freeze` to the fixed point-reference
 tool. The improvement campaign's own selected models remain bound separately
 by `freeze.json` in the active run root.
 
-At this documentation revision, migration application is **not claimed**. The
-destination becomes the active run only after its guarded migration receipt
-passes. Use the v2 budget configuration with that verified run_v3 destination;
-do not point a changed configuration at the still-bound run_v2 source.
+The guarded migration **passed and was applied** on 2026-11-05. Its receipt,
+`run_v3/migration/receipt.json`, was created at 11:31:25.644123 UTC and has SHA-256
+`95099d0c7d7eeaea0b9a82357912fcd012b86a45559c30ecb8c43eb0ab94a751`.
+It preserves 348 completed native checkpoints, 3,138 complete forecast receipts,
+and 31,138.42515946799 cumulative worker seconds, including the original
+90-second preparation charge. No scientific computation was performed by the
+migration, and the source run_v2 was neither modified nor deleted.
+These are counts at the migration frontier, not a claim that confirmation,
+seed sensitivity, or the auxiliary reference and acceptance schedules finished.
+
+| Binding | Active run_v3 value |
+|---|---|
+| Experiment identity | `067aaf08f46d7a21895ce15876d482a4a837d58627026a59e07a63db37f5c376` |
+| Freeze identity | `96774e83e2f737ceed30abc232b3a328b79894b0173a8e7a629c0289f0c3f4d2` |
+| Original selection time, preserved | `2026-11-05T10:03:57.054419+00:00` |
+| Original elapsed-budget start, preserved | `2026-11-05T07:38:04.272689+00:00` |
+
+Use the v2 budget configuration with run_v3. Do not point it at the differently
+bound run_v2 source, rerun migration into the existing destination, or reset the
+elapsed-budget start.
+
+### Recorded first run_v3 continuation
+
+The first confirmation continuation began at 11:32:20.623753 UTC, under observed
+coordinator session 48611. Its immutable launcher record is
+`operations/bounded_launches/20261105T113220_524a265d73/invocation.json`.
+The command below records that launch; do not start a second coordinator while
+the existing one is active.
+
+```bash
+"$KS_PYTHON" tools/run_ks_improvement_bounded.py \
+  --stage confirm \
+  --config configs/applications/ks_improvement_v2_budget.json \
+  --cache "$KS_CACHE_ROOT" \
+  --output "$KS_RUN_ROOT" \
+  --additional-run /data/ks_improvement_20261105/run_v2 \
+  --closed-session-receipt /data/ks_improvement_20261105/operations/closed_sessions_before_budget_extension.json \
+  --minimum-mib 0.0625 --include-fit-receipts \
+  --max-retries 6 --execute
+```
+
+This first launch deliberately omits `--reclaim-first`: no previous run_v3
+coordinator had been observed to finish. Its supplied closure receipt covers
+the preserved run_v2 source only. If its own child later ends with the exact
+memory-admission failure, the wrapper can perform the existing bounded cache
+advice and retry under its unchanged guards. Any later launch requesting initial
+advice must instead supply fresh, genuine closure evidence for the latest
+coordinator of **every** declared root, including run_v3; the historical source
+closure receipt alone is insufficient. Do not fabricate a destination closure
+or reuse a stale session number.
+
+Current status, without scheduling fits:
+
+```bash
+"$KS_PYTHON" -m bayes_stesn.applications.ks_improvement_runner status \
+  --config configs/applications/ks_improvement_v2_budget.json \
+  --cache "$KS_CACHE_ROOT" \
+  --output "$KS_RUN_ROOT"
+```
 
 ### Historical v1/run_v2 invocation
 
@@ -144,9 +200,10 @@ Two explicit options extend file-cache advice without changing that sequence:
 | `--minimum-mib 0.0625` | Includes eligible files of at least 64 KiB. The default remains 1 MiB; the supplied cutoff must be finite and at least 0.0625 MiB. |
 | `--include-fit-receipts` | Also permits closed JSON files under the explicitly listed run roots' `fits/` directories. Without it, only NPZ and HDF5 files are eligible. |
 
-For example, add `--stage confirm --minimum-mib 0.0625
---include-fit-receipts` to the resume command above, then use the same command
-with `--stage sensitivity` after confirmation has exited. Every existing
+The recorded run_v3 continuation above includes these cache-advice options.
+After confirmation has exited, invoke `--stage sensitivity` using the same
+active configuration, cache, and output root, with any required closure proof
+refreshed to the actual latest coordinator. Every existing
 scheduler and fit-writer lock must be acquired before inventory and advice.
 Eligible files must be regular, owned by the current user, and reached without
 symlinks. The tool checks file identity, flushes each existing file, and issues
@@ -175,7 +232,7 @@ consumption rather than describe admission checks as exact running-job cutoffs.
 An expired scheduling budget deliberately leaves unfinished work pending.
 Starting another wrapper invocation does not reset it.
 
-### One prospective budget-only extension
+### The single prospective budget decision and applied migration
 
 The extension uses receipt timing and remaining-work estimates, not confirmation
 performance scores. Its complete reason, authorization time, timing-receipt
@@ -187,8 +244,11 @@ The selected models and original selection timestamp are retained. No candidate,
 prior, likelihood, numerical source, forecast schedule, score definition or
 failure record is changed by this operational extension.
 
-Migration must wait until the coordinator and every writer have actually exited.
-Supply a fresh, genuine closure receipt for the latest observed coordinator;
+The migration described here has already been applied. The following command
+documents its guarded procedure; it is **not a current continuation command**
+and must not be applied again to the existing run_v3 destination. Any future
+relocation must wait until the coordinator and every writer have actually exited.
+It requires a fresh, genuine closure receipt for the latest observed coordinator;
 neither a stale process number nor an invented receipt establishes quiescence.
 The tool acquires the existing locks and rejects active writers. It preserves
 the source root and uses a new destination; no history is reset in place.
@@ -208,9 +268,10 @@ the source root and uses a new destination; no history is reset in place.
   --decision-receipt docs/applications/evidence/ks_improvement_budget_extension_decision.json
 ```
 
-The command above is a metadata-only dry run after acquiring locks. Add
-`--apply` to perform the authorized migration. Its receipt must verify all carried
-attempt time, unchanged scientific content and retained artifact bytes. Only the
+Without `--apply`, the command is a metadata-only dry run after acquiring locks.
+The recorded authorized migration used `--apply`; its passed receipt verifies
+all carried attempt time, unchanged scientific content and retained artifact
+bytes. Only the
 operational experiment/job bindings and corresponding freeze identity change;
 the original freeze time and selected rows do not. Old and new identities remain
 linked by the migration receipt.
@@ -241,16 +302,18 @@ The earlier migration receipt already recorded the same bytes. The creator and
 cause of the auxiliary mismatch remain unproven. This verification performed no
 model fit, forecast or extra MCMC draws.
 
-The reviewed migration is authorized to preserve this pair as **archive-only
-evidence outside active fit storage**, retaining the validated completed native
-checkpoint unchanged. Application remains pending until a passed migration
-receipt records it. Exact completed inference restart from this auxiliary pair
+The applied migration preserves this pair as **archive-only evidence outside
+active fit storage**, under
+`run_v3/migration/source_records/inference_sidecars/13103f3581fde7430a4128f52b3be460/`,
+and retains the validated completed native checkpoint unchanged. Its passed
+receipt records `inference_restart_state_available: false` and
+`qualification_changed: false`. Exact completed inference restart from this auxiliary pair
 is unavailable; no final RNG state is invented and no partial chain is relabeled
 as complete. Existing completed native forecasting state, selected models,
 qualification, scores and failures are unchanged. The proof receipt's SHA-256 is
 `594e82111eee09987002388c5ffdeb16413569dfbd452578963b9feec4fb09c3`.
 
-After the destination receipt passes, resume with
+The current continuation uses
 `--config configs/applications/ks_improvement_v2_budget.json` and
 `--output /data/ks_improvement_20261105/run_v3` and the restored
 `--cache /data/ks_improvement_20261105/cache`. Use
@@ -410,8 +473,8 @@ above. Set these task-specific paths once:
 KS_PYTHON=/data/ks_improvement_20261105/env/bin/python
 KS_CACHE_ROOT=/data/ks_improvement_20261105/cache
 KS_ORIGINAL_FREEZE=/data/ks_improvement_20261105/recovered_original_evidence/ks_frozen_specification_full.json
-# Preserved source until the reviewed destination migration receipt passes:
-KS_RUN_ROOT=/data/ks_improvement_20261105/run_v2
+# Active destination; its guarded migration receipt passed on 2026-11-05:
+KS_RUN_ROOT=/data/ks_improvement_20261105/run_v3
 KS_EXPORT_ROOT=/data/ks_improvement_20261105/exports
 KS_REPORT_ROOT=/data/ks_improvement_20261105/report
 
@@ -572,10 +635,10 @@ KS_ACCEPTANCE_RECEIPT=/absolute/path/to/completed/selected_invariance.json
   --acceptance "$KS_ACCEPTANCE_RECEIPT"
 ```
 
-The variables above are placeholders until bound completed artifacts exist;
-use their recorded paths. After the budget-only migration passes, the recorded
-campaign's `KS_RUN_ROOT` must refer to its verified run_v3 destination rather
-than the historical run_v2 source. The report's `source_manifest.json` and
+The auxiliary variables above are placeholders until bound completed artifacts
+exist; use their recorded paths. The recorded campaign's `KS_RUN_ROOT` is its
+verified active run_v3 destination; run_v2 remains the historical source. The
+report's `source_manifest.json` and
 `artifact_manifest.json` bind the numerical receipts and retained examples used
 by the animation tool. Generating a report does not fit, forecast, or rerun
 selection.
