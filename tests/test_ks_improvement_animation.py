@@ -131,3 +131,24 @@ def test_ffprobe_contract_requires_all_100_frames_and_browser_codec():
         changed["streams"][0][key] = value
         with pytest.raises(ValueError, match="contract"):
             tool.validate_probe(changed, fps=8)
+
+
+def test_short_signed_error_axis_ticks_remain_readable_without_changing_values():
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    fig, axis = plt.subplots(figsize=(5., 1.))
+    values = np.array([-10000., -100., -1., 0., 1., 100., 10000.])
+    line, = axis.plot(values)
+    axis.set_ylim(-10600., 10600.)
+    axis.set_yscale("symlog", linthresh=2.75)
+    limits = axis.get_ylim()
+    tool.sparse_symlog_ticks(axis)
+    ticks = axis.get_yticks()
+    transform = axis.yaxis.get_transform()
+    span = np.diff(transform.transform(np.asarray(limits)))[0]
+    assert 0. in ticks and ticks[0] < 0 < ticks[-1]
+    assert np.all(np.diff(transform.transform(ticks)) >= .20 * span)
+    assert axis.get_ylim() == limits
+    np.testing.assert_array_equal(line.get_ydata(), values)
+    plt.close(fig)

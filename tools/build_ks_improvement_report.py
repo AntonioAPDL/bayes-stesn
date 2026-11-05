@@ -796,11 +796,32 @@ def label(row):
 
 def readable_scale(axis, arrays):
     parts = [np.asarray(a, float).ravel() for a in arrays if a is not None]
-    magnitudes = np.abs(np.concatenate(parts)) if parts else np.array([])
-    magnitudes = magnitudes[np.isfinite(magnitudes) & (magnitudes > 0)]
-    if len(magnitudes) and magnitudes.max() > 50 * np.median(magnitudes):
-        axis.set_yscale("symlog", linthresh=max(float(np.median(magnitudes)), 1e-8))
-        axis.text(.01, .99, "symlog; every finite value retained", transform=axis.transAxes, va="top", fontsize=7)
+    groups = [np.abs(part[np.isfinite(part) & (part != 0)]) for part in parts]
+    groups = [part for part in groups if len(part)]
+    magnitudes = np.concatenate(groups) if groups else np.array([])
+    typical = [float(np.median(part)) for part in groups]
+    between_series = bool(typical and max(typical) > 50 * min(typical))
+    if len(magnitudes) and (magnitudes.max() > 50 * np.median(magnitudes) or between_series):
+        # A majority of very large curves must not flatten a smaller model's
+        # curve. This changes only the display transform, never signed data.
+        threshold = min(typical) if between_series else float(np.median(magnitudes))
+        axis.set_yscale("symlog", linthresh=max(threshold, 1e-8))
+        axis.yaxis.get_major_locator().set_params(numticks=7)
+        axis.autoscale(enable=True, axis="y")
+        axis.margins(y=.08)
+        low, high = axis.get_ylim()
+        ticks = np.asarray([x for x in axis.get_yticks() if low <= x <= high], float)
+        if len(ticks):
+            transform = axis.yaxis.get_transform()
+            span = abs(float(np.diff(transform.transform(np.array([low, high])))[0]))
+            chosen = [0.] if low <= 0 <= high else []
+            for tick in sorted(ticks, key=abs, reverse=True):
+                if all(abs(float(transform.transform(tick) - transform.transform(other))) >= .14 * span
+                       for other in chosen):
+                    chosen.append(float(tick))
+            axis.set_yticks(sorted(chosen))
+        axis.text(.01, .99, f"symlog (linear ±{threshold:.3g}); all finite values retained",
+                  transform=axis.transAxes, va="top", fontsize=7)
 
 
 def plot_report(reader, cohorts, search_rows, output):
@@ -842,18 +863,23 @@ def plot_report(reader, cohorts, search_rows, output):
             fig.tight_layout(rect=(0, .055 + .025 * len(handles), 1, .93))
             path = output / f"horizon_{track}.png"
             save_figure(fig, path); plt.close(fig); paths.append(path.name)
-            fig, ax = plt.subplots(figsize=(7.5, 5.0))
+            fig, ax = plt.subplots(figsize=(7.5, 6.7))
             for row in rows:
                 if not row["complete_trajectories"] or row["fits_available"] == 0:
                     continue
                 mean = row["metrics"]["rmse"]["mean"]
                 ax.scatter(row["fit_seconds"] / row["fits_available"], mean, s=45, label=label(row))
             ax.set_xscale("log")
-            readable_scale(ax, [[r["metrics"]["rmse"]["mean"] for r in rows if r["metrics"]["rmse"]["mean"] is not None]])
+            readable_scale(ax, [[r["metrics"]["rmse"]["mean"]] for r in rows if r["metrics"]["rmse"]["mean"] is not None])
+            if ax.get_yscale() == "symlog":
+                ax.set_ylim(bottom=0)  # RMSE is nonnegative; avoid stale linear padding.
             ax.set(xlabel="Mean fitted-model wall seconds (all available fits)", ylabel="Mean trajectory RMSE (complete cases)",
                    title=f"{track} · Accuracy and fitting cost; forecast/search cost reported separately")
-            ax.grid(alpha=.2); ax.legend(fontsize=7, loc="best")
-            fig.tight_layout(); path = output / f"compute_{track}.png"
+            ax.grid(alpha=.2)
+            handles, legends = ax.get_legend_handles_labels()
+            fig.legend(handles, legends, loc="lower center", fontsize=7, ncol=1)
+            fig.tight_layout(rect=(0, .035 + .027 * len(handles), 1, 1))
+            path = output / f"compute_{track}.png"
             save_figure(fig, path); plt.close(fig); paths.append(path.name)
         raw = [r for r in search_rows if r["track"] == track]
         if raw:
@@ -873,7 +899,7 @@ def plot_report(reader, cohorts, search_rows, output):
                 ax.set_xlabel("Configuration index within this stage (plot_index in search_candidates.csv)", fontsize=10)
                 ax.set_ylabel("Band-balanced validation CRPS", fontsize=10)
                 vals = [r["band_crps"] for r in stage_rows if r["band_crps"] is not None]
-                if vals: readable_scale(ax, [vals])
+                if vals: readable_scale(ax, [[value] for value in vals])
                 ax.grid(axis="y", alpha=.2)
             fig.suptitle(f"{track} · Bounded staged search; exact candidate IDs and eligibility remain in search_candidates.csv\nBlue: preserved prior · orange: prior sensitivity · gray: other reference", fontsize=11)
             fig.tight_layout(); path = output / f"search_{track}.png"
@@ -937,8 +963,24 @@ def plot_examples(reader, output):
                                   cmap="RdBu_r", norm=error_norm if col == 2 else color_norm)
                 ticks = np.arange(len(xs)) if len(xs) <= 13 else np.arange(0, len(xs), 8)
                 ax.set_yticks(ticks, [f"{xs[order[i]]:.2f}" for i in ticks], fontsize=7)
-                ax.set(xlabel="Physical forecast lead", ylabel="Scored coordinate x (categorical rows)", title=f"{cid}\n{title}")
-                fig.colorbar(image, ax=ax, fraction=.045, pad=.025, label="Physical u" + (" (symlog color)" if use_log else ""))
+                ax.set_title(f"{cid}\n{title}")
+                if row == len(examples) - 1:
+                    ax.set_xlabel("Physical forecast lead")
+                else:
+                    ax.tick_params(axis="x", labelbottom=False)
+                if col == 0:
+                    ax.set_ylabel("Scored coordinate x (categorical rows)")
+                else:
+                    ax.tick_params(axis="y", labelleft=False)
+                colorbar = fig.colorbar(image, ax=ax, fraction=.045, pad=.025,
+                                       label="Physical u" + (" (symlog color)" if use_log else ""))
+                if use_log:
+                    # Display-only ticks spaced in color coordinates: preserve the
+                    # exact signed norm endpoints and zero without crowding +/-1.
+                    color_ticks = np.asarray(image.norm.inverse(np.linspace(0., 1., 5)))
+                    color_ticks[2] = 0.
+                    colorbar.set_ticks(color_ticks, labels=[f"{value:.2g}" for value in color_ticks])
+                    colorbar.ax.tick_params(labelsize=7)
         rug = fig.add_subplot(grid[-1, :])
         data = examples[0][1]
         rug.plot(physical_x(data["input_coordinates"]), np.zeros(len(data["input_coordinates"])), "|", ms=10, color="black", label="Permitted input sites")

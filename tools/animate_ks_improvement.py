@@ -247,6 +247,21 @@ def probe_movie(path, fps):
     return validate_probe(json.loads(completed.stdout), fps=fps)
 
 
+def sparse_symlog_ticks(axis, minimum_fraction=.20):
+    """Space signed tick labels in display coordinates without changing limits."""
+    limits = axis.get_ylim()
+    transform = axis.yaxis.get_transform()
+    span = abs(float(np.diff(transform.transform(np.asarray(limits)))[0]))
+    candidates = [float(t) for t in axis.get_yticks() if limits[0] <= t <= limits[1]]
+    chosen = [0.] if limits[0] <= 0 <= limits[1] else []
+    for tick in sorted(candidates, key=abs, reverse=True):
+        if all(abs(float(transform.transform(tick) - transform.transform(other))) >= minimum_fraction * span
+               for other in chosen):
+            chosen.append(tick)
+    axis.set_yticks(sorted(chosen))
+    axis.set_ylim(limits)
+
+
 def render_movie(path, track, panels, fps):
     import matplotlib
     matplotlib.use("Agg")
@@ -270,6 +285,7 @@ def render_movie(path, track, panels, fps):
             item.set_xticks([0, 5.5, 11., 16.5, 22.])
             if scaling == "symlog":
                 item.set_yscale("symlog", linthresh=policy["linear_threshold"])
+                sparse_symlog_ticks(item)
             item.grid(alpha=.17)
             item.spines[["top", "right"]].set_visible(False)
             item.tick_params(labelsize=8)

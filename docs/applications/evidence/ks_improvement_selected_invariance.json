@@ -1,0 +1,1007 @@
+{
+  "cases": [
+    {
+      "artifact_file_unchanged": true,
+      "candidate": "bayes_03",
+      "completed_utc": "2026-11-05T12:29:12.144570+00:00",
+      "elapsed_seconds": 2.2589279419989907,
+      "fit_identity": "31ed706dc9abc19821f7d11b60afecd9aa43096ce5ee064e1b7b42627c7d92c1",
+      "fit_qualified": true,
+      "fit_sha256": "cfe7b6598deaf76beb7198232ac8a98c17eb22861956cf811808b78ea0d38049",
+      "fitted_state_unchanged": true,
+      "forbidden_observation_panel_sites": 25,
+      "forecast_seed": 11772440228039792604,
+      "hidden_history_check": "performed",
+      "input_data_identity_sha256": "cec8a5f2e0408cb38f00c6459bdf4b2016bc6632a1fe3ea524f96ab3bd9e5b3b",
+      "mean_is_average_of_complete_paths": true,
+      "native_fit_identity": "31ed706dc9abc19821f7d11b60afecd9aa43096ce5ee064e1b7b42627c7d92c1",
+      "passed": true,
+      "periodic_embedding_seam": true,
+      "perturbations": [
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 0,
+          "passed": true,
+          "perturbation": "future",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        },
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 0,
+          "modified_hidden_history_values": 25600,
+          "passed": true,
+          "perturbation": "hidden",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        },
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 25600,
+          "passed": true,
+          "perturbation": "both",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        }
+      ],
+      "preprocessing_refit": {
+        "checks": {
+          "delivered_transform_identical": true,
+          "feature_fingerprint_identical": true,
+          "permitted_training_values_bitwise_equal": true,
+          "prepared_identity_identical": true,
+          "spatial_basis_bitwise_equal": true,
+          "temporal_features_bitwise_equal": true,
+          "training_identity_identical": true
+        },
+        "passed": true,
+        "perturbation_counts": {
+          "modified_future_values": 0,
+          "modified_hidden_values": 150000,
+          "read_calls": 1
+        },
+        "scope": "preprocessing/features refitted only; no likelihood or posterior refit; validation selection remains frozen"
+      },
+      "roles": [
+        "anchor"
+      ],
+      "samples_shape": [
+        16,
+        100,
+        13
+      ],
+      "track": "A",
+      "trajectory": 0
+    },
+    {
+      "artifact_file_unchanged": true,
+      "candidate": "imp_a_joint_007_257c8c1b",
+      "completed_utc": "2026-11-05T12:29:14.614395+00:00",
+      "elapsed_seconds": 1.6963114659956773,
+      "fit_identity": "b38f0301d03489ab4d7ee2f471198aec97152ba01aa0fb7a4fac7f5b146c0cfa",
+      "fit_qualified": true,
+      "fit_sha256": "80ae307ad64ae5b1d99f77708a086e92fbfdedeb0d92af5152387aafa67d7fc0",
+      "fitted_state_unchanged": true,
+      "forbidden_observation_panel_sites": 25,
+      "forecast_seed": 17872906478785962869,
+      "hidden_history_check": "performed",
+      "input_data_identity_sha256": "cec8a5f2e0408cb38f00c6459bdf4b2016bc6632a1fe3ea524f96ab3bd9e5b3b",
+      "mean_is_average_of_complete_paths": true,
+      "native_fit_identity": "b38f0301d03489ab4d7ee2f471198aec97152ba01aa0fb7a4fac7f5b146c0cfa",
+      "passed": true,
+      "periodic_embedding_seam": true,
+      "perturbations": [
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 0,
+          "passed": true,
+          "perturbation": "future",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        },
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 0,
+          "modified_hidden_history_values": 25600,
+          "passed": true,
+          "perturbation": "hidden",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        },
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 25600,
+          "passed": true,
+          "perturbation": "both",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        }
+      ],
+      "preprocessing_refit": {
+        "checks": {
+          "delivered_transform_identical": true,
+          "feature_fingerprint_identical": true,
+          "permitted_training_values_bitwise_equal": true,
+          "prepared_identity_identical": true,
+          "spatial_basis_bitwise_equal": true,
+          "temporal_features_bitwise_equal": true,
+          "training_identity_identical": true
+        },
+        "passed": true,
+        "perturbation_counts": {
+          "modified_future_values": 0,
+          "modified_hidden_values": 150000,
+          "read_calls": 1
+        },
+        "scope": "preprocessing/features refitted only; no likelihood or posterior refit; validation selection remains frozen"
+      },
+      "roles": [
+        "main"
+      ],
+      "samples_shape": [
+        16,
+        100,
+        13
+      ],
+      "track": "A",
+      "trajectory": 0
+    },
+    {
+      "artifact_file_unchanged": true,
+      "candidate": "imp_a_prior_range_x2_0bcaed57",
+      "completed_utc": "2026-11-05T12:29:17.574909+00:00",
+      "elapsed_seconds": 2.3125894460026757,
+      "fit_identity": "3e7d89950bea5cb4b64883b44b179f0e1f710c2b1507d6a9362739d5fd9184ea",
+      "fit_qualified": true,
+      "fit_sha256": "da7512721838ca9aed00b8d918ddd14f0ba38919c1fad97d00d220affe87d918",
+      "fitted_state_unchanged": true,
+      "forbidden_observation_panel_sites": 25,
+      "forecast_seed": 9008050954196356891,
+      "hidden_history_check": "performed",
+      "input_data_identity_sha256": "cec8a5f2e0408cb38f00c6459bdf4b2016bc6632a1fe3ea524f96ab3bd9e5b3b",
+      "mean_is_average_of_complete_paths": true,
+      "native_fit_identity": "3e7d89950bea5cb4b64883b44b179f0e1f710c2b1507d6a9362739d5fd9184ea",
+      "passed": true,
+      "periodic_embedding_seam": true,
+      "perturbations": [
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 0,
+          "passed": true,
+          "perturbation": "future",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        },
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 0,
+          "modified_hidden_history_values": 25600,
+          "passed": true,
+          "perturbation": "hidden",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        },
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 25600,
+          "passed": true,
+          "perturbation": "both",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        }
+      ],
+      "preprocessing_refit": {
+        "checks": {
+          "delivered_transform_identical": true,
+          "feature_fingerprint_identical": true,
+          "permitted_training_values_bitwise_equal": true,
+          "prepared_identity_identical": true,
+          "spatial_basis_bitwise_equal": true,
+          "temporal_features_bitwise_equal": true,
+          "training_identity_identical": true
+        },
+        "passed": true,
+        "perturbation_counts": {
+          "modified_future_values": 0,
+          "modified_hidden_values": 150000,
+          "read_calls": 1
+        },
+        "scope": "preprocessing/features refitted only; no likelihood or posterior refit; validation selection remains frozen"
+      },
+      "roles": [
+        "sensitivity"
+      ],
+      "samples_shape": [
+        16,
+        100,
+        13
+      ],
+      "track": "A",
+      "trajectory": 0
+    },
+    {
+      "artifact_file_unchanged": true,
+      "candidate": "bayes_01",
+      "completed_utc": "2026-11-05T12:29:19.952226+00:00",
+      "elapsed_seconds": 1.6816931150024175,
+      "fit_identity": "df2f954a4d783a2dccd1b154ed6d19f55398244a15712aae98b5e334011770ad",
+      "fit_qualified": true,
+      "fit_sha256": "3dbf74959e47f790e34e491657a0b762f229d802054854e600c01c3c99907290",
+      "fitted_state_unchanged": true,
+      "forbidden_observation_panel_sites": 0,
+      "forecast_seed": 5007060332428510649,
+      "hidden_history_check": "not_applicable_all_64_sites_are_permitted",
+      "input_data_identity_sha256": "6bd0451d8cd2b48a209f83e7d87d1e0f0195c2a304f2520c2e437a6557dc4617",
+      "mean_is_average_of_complete_paths": true,
+      "native_fit_identity": "df2f954a4d783a2dccd1b154ed6d19f55398244a15712aae98b5e334011770ad",
+      "passed": true,
+      "periodic_embedding_seam": true,
+      "perturbations": [
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 0,
+          "passed": true,
+          "perturbation": "future",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        }
+      ],
+      "preprocessing_refit": {
+        "checks": {
+          "delivered_transform_identical": true,
+          "feature_fingerprint_identical": true,
+          "permitted_training_values_bitwise_equal": true,
+          "prepared_identity_identical": true,
+          "spatial_basis_bitwise_equal": true,
+          "temporal_features_bitwise_equal": true,
+          "training_identity_identical": true
+        },
+        "passed": true,
+        "perturbation_counts": {
+          "modified_future_values": 0,
+          "modified_hidden_values": 0,
+          "read_calls": 1
+        },
+        "scope": "preprocessing/features refitted only; no likelihood or posterior refit; validation selection remains frozen"
+      },
+      "roles": [
+        "anchor"
+      ],
+      "samples_shape": [
+        16,
+        100,
+        64
+      ],
+      "track": "B",
+      "trajectory": 0
+    },
+    {
+      "artifact_file_unchanged": true,
+      "candidate": "imp_b_lag_1_886dd32b",
+      "completed_utc": "2026-11-05T12:29:23.248349+00:00",
+      "elapsed_seconds": 2.620347338001011,
+      "fit_identity": "9d318eef2658ac3526141afcc27ed1fb319e56d1daf0b01420c5a3dd5c3f80b5",
+      "fit_qualified": true,
+      "fit_sha256": "e0e35e702e141ffccee6eb3c27e359a743ed3385422a3bb3d04d63893b6b703a",
+      "fitted_state_unchanged": true,
+      "forbidden_observation_panel_sites": 0,
+      "forecast_seed": 5526208977217090238,
+      "hidden_history_check": "not_applicable_all_64_sites_are_permitted",
+      "input_data_identity_sha256": "6bd0451d8cd2b48a209f83e7d87d1e0f0195c2a304f2520c2e437a6557dc4617",
+      "mean_is_average_of_complete_paths": true,
+      "native_fit_identity": "9d318eef2658ac3526141afcc27ed1fb319e56d1daf0b01420c5a3dd5c3f80b5",
+      "passed": true,
+      "periodic_embedding_seam": true,
+      "perturbations": [
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 0,
+          "passed": true,
+          "perturbation": "future",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        }
+      ],
+      "preprocessing_refit": {
+        "checks": {
+          "delivered_transform_identical": true,
+          "feature_fingerprint_identical": true,
+          "permitted_training_values_bitwise_equal": true,
+          "prepared_identity_identical": true,
+          "spatial_basis_bitwise_equal": true,
+          "temporal_features_bitwise_equal": true,
+          "training_identity_identical": true
+        },
+        "passed": true,
+        "perturbation_counts": {
+          "modified_future_values": 0,
+          "modified_hidden_values": 0,
+          "read_calls": 1
+        },
+        "scope": "preprocessing/features refitted only; no likelihood or posterior refit; validation selection remains frozen"
+      },
+      "roles": [
+        "main"
+      ],
+      "samples_shape": [
+        16,
+        100,
+        64
+      ],
+      "track": "B",
+      "trajectory": 0
+    },
+    {
+      "artifact_file_unchanged": true,
+      "candidate": "imp_b_prior_precision_x01_e2eaa754",
+      "completed_utc": "2026-11-05T12:29:25.501437+00:00",
+      "elapsed_seconds": 1.6465962270012824,
+      "fit_identity": "03a3bd126e250617931cfd722910ad5efaa52454aa95d8394960fb60efbd3a91",
+      "fit_qualified": true,
+      "fit_sha256": "98316f3690fcf73a180fcc63f82170d7022e96da86cea87f18976b046dd6cb01",
+      "fitted_state_unchanged": true,
+      "forbidden_observation_panel_sites": 0,
+      "forecast_seed": 14313919176502109730,
+      "hidden_history_check": "not_applicable_all_64_sites_are_permitted",
+      "input_data_identity_sha256": "6bd0451d8cd2b48a209f83e7d87d1e0f0195c2a304f2520c2e437a6557dc4617",
+      "mean_is_average_of_complete_paths": true,
+      "native_fit_identity": "03a3bd126e250617931cfd722910ad5efaa52454aa95d8394960fb60efbd3a91",
+      "passed": true,
+      "periodic_embedding_seam": true,
+      "perturbations": [
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 0,
+          "passed": true,
+          "perturbation": "future",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        }
+      ],
+      "preprocessing_refit": {
+        "checks": {
+          "delivered_transform_identical": true,
+          "feature_fingerprint_identical": true,
+          "permitted_training_values_bitwise_equal": true,
+          "prepared_identity_identical": true,
+          "spatial_basis_bitwise_equal": true,
+          "temporal_features_bitwise_equal": true,
+          "training_identity_identical": true
+        },
+        "passed": true,
+        "perturbation_counts": {
+          "modified_future_values": 0,
+          "modified_hidden_values": 0,
+          "read_calls": 1
+        },
+        "scope": "preprocessing/features refitted only; no likelihood or posterior refit; validation selection remains frozen"
+      },
+      "roles": [
+        "sensitivity"
+      ],
+      "samples_shape": [
+        16,
+        100,
+        64
+      ],
+      "track": "B",
+      "trajectory": 0
+    },
+    {
+      "artifact_file_unchanged": true,
+      "candidate": "bayes_03",
+      "completed_utc": "2026-11-05T12:29:28.269173+00:00",
+      "elapsed_seconds": 2.071965431001445,
+      "fit_identity": "47a8b261b5a5ac589b4668abbd9c3b3af3c8c77575f487a15b577102bbb6a4e5",
+      "fit_qualified": true,
+      "fit_sha256": "8e40b5e808cf2a9b872bb71ac342e8f5e12855d6f32c0367d37499e355172e04",
+      "fitted_state_unchanged": true,
+      "forbidden_observation_panel_sites": 24,
+      "forecast_seed": 9656049266291907866,
+      "hidden_history_check": "performed",
+      "input_data_identity_sha256": "a6e23c6996ff039422bf2c735852e08bc3c938915da0c97801947174799ffed9",
+      "mean_is_average_of_complete_paths": true,
+      "native_fit_identity": "47a8b261b5a5ac589b4668abbd9c3b3af3c8c77575f487a15b577102bbb6a4e5",
+      "passed": true,
+      "periodic_embedding_seam": true,
+      "perturbations": [
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 0,
+          "passed": true,
+          "perturbation": "future",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        },
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 0,
+          "modified_hidden_history_values": 24576,
+          "passed": true,
+          "perturbation": "hidden",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        },
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 24576,
+          "passed": true,
+          "perturbation": "both",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        }
+      ],
+      "preprocessing_refit": {
+        "checks": {
+          "delivered_transform_identical": true,
+          "feature_fingerprint_identical": true,
+          "permitted_training_values_bitwise_equal": true,
+          "prepared_identity_identical": true,
+          "spatial_basis_bitwise_equal": true,
+          "temporal_features_bitwise_equal": true,
+          "training_identity_identical": true
+        },
+        "passed": true,
+        "perturbation_counts": {
+          "modified_future_values": 0,
+          "modified_hidden_values": 144000,
+          "read_calls": 1
+        },
+        "scope": "preprocessing/features refitted only; no likelihood or posterior refit; validation selection remains frozen"
+      },
+      "roles": [
+        "anchor"
+      ],
+      "samples_shape": [
+        16,
+        100,
+        12
+      ],
+      "track": "C",
+      "trajectory": 0
+    },
+    {
+      "artifact_file_unchanged": true,
+      "candidate": "imp_c_joint_003_c09e9d65",
+      "completed_utc": "2026-11-05T12:29:31.338244+00:00",
+      "elapsed_seconds": 2.3860481750016334,
+      "fit_identity": "12750df22b2210a2ce52c0a6ff24b00aa8ab519079f751687a07b3a8053af8cf",
+      "fit_qualified": true,
+      "fit_sha256": "da2fe384706f16d695dc824fcd9e753dc522c7a2935cea4aa73f26a0cdf0cbd1",
+      "fitted_state_unchanged": true,
+      "forbidden_observation_panel_sites": 24,
+      "forecast_seed": 1372925214525636080,
+      "hidden_history_check": "performed",
+      "input_data_identity_sha256": "a6e23c6996ff039422bf2c735852e08bc3c938915da0c97801947174799ffed9",
+      "mean_is_average_of_complete_paths": true,
+      "native_fit_identity": "12750df22b2210a2ce52c0a6ff24b00aa8ab519079f751687a07b3a8053af8cf",
+      "passed": true,
+      "periodic_embedding_seam": true,
+      "perturbations": [
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 0,
+          "passed": true,
+          "perturbation": "future",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        },
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 0,
+          "modified_hidden_history_values": 24576,
+          "passed": true,
+          "perturbation": "hidden",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        },
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 24576,
+          "passed": true,
+          "perturbation": "both",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        }
+      ],
+      "preprocessing_refit": {
+        "checks": {
+          "delivered_transform_identical": true,
+          "feature_fingerprint_identical": true,
+          "permitted_training_values_bitwise_equal": true,
+          "prepared_identity_identical": true,
+          "spatial_basis_bitwise_equal": true,
+          "temporal_features_bitwise_equal": true,
+          "training_identity_identical": true
+        },
+        "passed": true,
+        "perturbation_counts": {
+          "modified_future_values": 0,
+          "modified_hidden_values": 144000,
+          "read_calls": 1
+        },
+        "scope": "preprocessing/features refitted only; no likelihood or posterior refit; validation selection remains frozen"
+      },
+      "roles": [
+        "main"
+      ],
+      "samples_shape": [
+        16,
+        100,
+        12
+      ],
+      "track": "C",
+      "trajectory": 0
+    },
+    {
+      "artifact_file_unchanged": true,
+      "candidate": "imp_c_prior_range_x05_1eff16da",
+      "completed_utc": "2026-11-05T12:29:34.719778+00:00",
+      "elapsed_seconds": 2.5418918979994487,
+      "fit_identity": "6b1795398af30255c0a80dd3b371e852a71aba51296623c8d5db92cf7beb847d",
+      "fit_qualified": true,
+      "fit_sha256": "03093fe7e19ab31dda4104c67063db9368f805fb9d89818c4893e515c3501ded",
+      "fitted_state_unchanged": true,
+      "forbidden_observation_panel_sites": 24,
+      "forecast_seed": 656142385910846665,
+      "hidden_history_check": "performed",
+      "input_data_identity_sha256": "a6e23c6996ff039422bf2c735852e08bc3c938915da0c97801947174799ffed9",
+      "mean_is_average_of_complete_paths": true,
+      "native_fit_identity": "6b1795398af30255c0a80dd3b371e852a71aba51296623c8d5db92cf7beb847d",
+      "passed": true,
+      "periodic_embedding_seam": true,
+      "perturbations": [
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 0,
+          "passed": true,
+          "perturbation": "future",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        },
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 0,
+          "modified_hidden_history_values": 24576,
+          "passed": true,
+          "perturbation": "hidden",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        },
+        {
+          "evaluation_labels_changed": true,
+          "input_equalities": {
+            "data_identity": true,
+            "history_coordinates": true,
+            "history_metadata": true,
+            "history_site_ids": true,
+            "history_times": true,
+            "history_values": true,
+            "response_transform": true,
+            "target_coordinates": true,
+            "target_site_ids": true,
+            "target_times": true
+          },
+          "maximum_mean_absolute_difference": 0.0,
+          "maximum_sample_absolute_difference": 0.0,
+          "means_bitwise_equal": true,
+          "modified_future_values": 12800,
+          "modified_hidden_history_values": 24576,
+          "passed": true,
+          "perturbation": "both",
+          "physical_samples_bitwise_equal": true,
+          "read_calls": 2,
+          "samples_bitwise_equal": true
+        }
+      ],
+      "preprocessing_refit": {
+        "checks": {
+          "delivered_transform_identical": true,
+          "feature_fingerprint_identical": true,
+          "permitted_training_values_bitwise_equal": true,
+          "prepared_identity_identical": true,
+          "spatial_basis_bitwise_equal": true,
+          "temporal_features_bitwise_equal": true,
+          "training_identity_identical": true
+        },
+        "passed": true,
+        "perturbation_counts": {
+          "modified_future_values": 0,
+          "modified_hidden_values": 144000,
+          "read_calls": 1
+        },
+        "scope": "preprocessing/features refitted only; no likelihood or posterior refit; validation selection remains frozen"
+      },
+      "roles": [
+        "sensitivity"
+      ],
+      "samples_shape": [
+        16,
+        100,
+        12
+      ],
+      "track": "C",
+      "trajectory": 0
+    }
+  ],
+  "complete": true,
+  "expected_cases": 9,
+  "experiment_identity": "067aaf08f46d7a21895ce15876d482a4a837d58627026a59e07a63db37f5c376",
+  "failed_cases": 0,
+  "freeze_identity": "96774e83e2f737ceed30abc232b3a328b79894b0173a8e7a629c0289f0c3f4d2",
+  "identity": "826f8bdd9b6e271aa3a0463fce46e37e3f6daadb334ac0c418cf8de8506c164c",
+  "last_invocation_seconds": 25.797473270999035,
+  "new_posterior_fits": 0,
+  "passed": true,
+  "passed_cases": 9,
+  "pending": [],
+  "policy": {
+    "first_target": 6000,
+    "history": 512,
+    "horizon": 100,
+    "max_seconds": 180.0,
+    "partition": "validation",
+    "predictive_paths": 16,
+    "seed": 83,
+    "selected_roles": [
+      "main",
+      "anchor",
+      "sensitivity"
+    ],
+    "trajectory": 0
+  },
+  "reader_scope": "adversarial output separation; unchanged facade may internally construct labels",
+  "resource": {
+    "affinity_cpus": 9,
+    "disk_free_bytes": 34442383360,
+    "inode_available": 4163021,
+    "memory": {
+      "anon_bytes": 232370176,
+      "cpu.max": "800000 100000",
+      "inactive_file_bytes": 2287849472,
+      "memory.current": "3549966336",
+      "memory.max": "8589934592",
+      "memory.peak": "8590376960"
+    },
+    "process_peak_rss_bytes": 236531712,
+    "utc": "2026-11-05T12:29:35.345956+00:00"
+  },
+  "schema": "ks-improvement-selected-acceptance/1",
+  "selection_rerun": false,
+  "test_partition_opened": false,
+  "updated_utc": "2026-11-05T12:29:35.391686+00:00"
+}

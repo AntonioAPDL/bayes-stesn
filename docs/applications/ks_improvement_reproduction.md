@@ -19,6 +19,32 @@ validation intervals only. The 14 confirmation trajectories are excluded from
 the new selection; they are not a retrospectively untouched test experiment.
 The original results remain a separate snapshot.
 
+## Recorded completion and evidence
+
+The executed improvement campaign and its fixed-reference evaluations are now
+terminal. The [final metadata audit](evidence/ks_improvement_final_evidence_audit.json)
+records 758 terminal scheduler jobs: 752 complete and six inference-unqualified
+screening jobs. All 126 confirmation fits qualified and all 2,520 confirmation
+origins were finite. The matched-main-seed and additional-seed schedules retain
+24 fits/192 origins and 48 fits/384 origins respectively, with no missing or
+blocked outcomes. The selected-artifact boundary checks passed all nine cases.
+These counts describe completion and numerical eligibility, not predictive
+adequacy.
+
+The five fixed point-reference families contribute 210 terminal trajectory/model
+jobs: 191 complete and 19 failed. POD-NVAR retains two failed origins in A, three
+in B and 181 in C; its contiguous-site aggregate is undefined because no complete
+C trajectory remains. Successful-only results and the full outcome census stay
+separate. The [independent numerical audit](evidence/ks_improvement_final_numerical_audit.json)
+reconciles the compact exports against the retained receipts. The integrated
+report has 24 cohorts and 317 complete cohort episodes; this is not a count of
+independent scientific replicates across methods.
+
+The current human-readable report and movie review is a separate delivery step.
+An unpublished QA preview is not a published final PDF. Use the final source-bound
+visual review receipt, once present, for the exact inspected artifact hashes;
+the historical pre-render receipts below do not establish that review.
+
 ## Environment and data
 
 Use CPython 3.12 on Linux and a project environment. The observed compatible
@@ -73,7 +99,7 @@ not paths to recreate with symlinks. Use:
 | Project Python | `/data/ks_improvement_20261105/env/bin/python` |
 | Original comparator-selection freeze | `/data/ks_improvement_20261105/recovered_original_evidence/ks_frozen_specification_full.json` |
 | Preserved source campaign | `/data/ks_improvement_20261105/run_v2` |
-| Active campaign after verified migration | `/data/ks_improvement_20261105/run_v3` |
+| Terminal campaign after verified migration | `/data/ks_improvement_20261105/run_v3` |
 
 ```bash
 cd /data/ks_improvement_20261105/repo
@@ -117,8 +143,9 @@ elapsed-budget start.
 The first confirmation continuation began at 11:32:20.623753 UTC, under observed
 coordinator session 48611. Its immutable launcher record is
 `operations/bounded_launches/20261105T113220_524a265d73/invocation.json`.
-The command below records that launch; do not start a second coordinator while
-the existing one is active.
+The command below records that historical launch. That coordinator has finished;
+do not execute it merely to rebuild a report, or start another coordinator while
+any current writer is active.
 
 ```bash
 "$KS_PYTHON" tools/run_ks_improvement_bounded.py \
@@ -604,6 +631,59 @@ explicit compatible import with new job identities and preserved cumulative
 wall/worker accounting. Neither this restorer nor a new wrapper invocation
 rewrites those paths or renews an exhausted campaign budget.
 
+### Reassemble the 96 MiB transport edition before native restore
+
+The selected-native backup also has a transport edition for the storage
+connector's per-object limit. Its schema is `ks-native-package-transport/1`.
+The transport layout contains **88 uniquely named objects**: 79 binary fragments
+that reconstruct the original 14 canonical ZIP parts, five original package
+metadata/helper files, and four transport manifest/helper files. Preserve every
+filename when downloading the authorized backup into one directory. Use the
+final transfer receipt to confirm all objects are available and verified;
+creating the local transport layout alone does not prove remote upload completion.
+
+The transport manifest SHA-256 is
+`82aa2042ca028e4c023a234912bb0a897c6781590509e3029c93beddd08e6e41`.
+The supplied checksum sidecar binds the manifest only, so also verify the
+transport helper against its separately recorded hash before executing it.
+First verify both files, then reconstruct the canonical package into a
+**fresh destination**. The transport restorer checks every fragment and each
+assembled canonical file; it does not fit a model or reinterpret an NPZ payload.
+
+```bash
+cd /data/ks_downloaded_native_transport
+sha256sum -c KS_improvement_native_FINAL_20261105_transport_manifest.sha256
+sha256sum -c <<'KS_TRANSPORT_SHA256'
+82aa2042ca028e4c023a234912bb0a897c6781590509e3029c93beddd08e6e41  KS_improvement_native_FINAL_20261105_transport_manifest.json
+ddfb67c377522b42fbbc8b0bfc3580a2bcaa9fcb60a45aeeb274c779969d7578  KS_improvement_native_FINAL_20261105_restore_native_transport.py
+KS_TRANSPORT_SHA256
+
+python KS_improvement_native_FINAL_20261105_restore_native_transport.py restore \
+  --manifest KS_improvement_native_FINAL_20261105_transport_manifest.json \
+  --destination /data/ks_restored_native_package
+```
+
+The reconstructed canonical `manifest.json` must retain SHA-256
+`c001bba3d223fbb887f663b01b29fb8951acc38a1e7cea624e063324b67f96bb`.
+Verify that package and then restore its members into another **fresh
+destination**:
+
+```bash
+python /data/ks_restored_native_package/restore_ks_improvement_fits.py verify \
+  --package /data/ks_restored_native_package
+
+python /data/ks_restored_native_package/restore_ks_improvement_fits.py restore \
+  --package /data/ks_restored_native_package \
+  --destination /data/ks_restored_selected_fits
+```
+
+This selected edition preserves 228 completed native forecast states and their
+bound evidence. It is not a mid-chain RNG backup, and it does not make archived
+absolute-path jobs directly relocation-resumable. The unchanged native
+data/configuration/source/runtime checks described above still govern reuse.
+Keep the transport originals until the assembled canonical package and restored
+members have both passed verification.
+
 ### Reports and fixed-case animations
 
 For a partial native-only snapshot, build the report from retained receipts into
@@ -624,8 +704,9 @@ placeholder files or omit an unfinished auxiliary schedule to describe the
 whole requested application as complete.
 
 ```bash
-KS_ANCHOR_ROOT=/absolute/path/to/completed/point_reference_results
-KS_ACCEPTANCE_RECEIPT=/absolute/path/to/completed/selected_invariance.json
+KS_ANCHOR_ROOT=/data/ks_improvement_20261105/fixed_references
+KS_ACCEPTANCE_RECEIPT=/data/ks_improvement_20261105/acceptance/selected_invariance.json
+KS_REPORT_ROOT=/data/ks_improvement_20261105/repo/docs/applications/improvement_results
 
 "$KS_PYTHON" tools/build_ks_improvement_report.py \
   --results "$KS_RUN_ROOT" \
@@ -635,9 +716,10 @@ KS_ACCEPTANCE_RECEIPT=/absolute/path/to/completed/selected_invariance.json
   --acceptance "$KS_ACCEPTANCE_RECEIPT"
 ```
 
-The auxiliary variables above are placeholders until bound completed artifacts
-exist; use their recorded paths. The recorded campaign's `KS_RUN_ROOT` is its
-verified active run_v3 destination; run_v2 remains the historical source. The
+The auxiliary variables above name this recorded campaign's completed artifacts.
+For an independent reproduction, replace them with that run's actual bound
+outputs. The recorded campaign's `KS_RUN_ROOT` is its verified terminal run_v3
+destination; run_v2 remains the historical source. The
 report's `source_manifest.json` and
 `artifact_manifest.json` bind the numerical receipts and retained examples used
 by the animation tool. Generating a report does not fit, forecast, or rerun

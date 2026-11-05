@@ -49,7 +49,7 @@ def load(path):
 
 def fmt(value, digits=4):
     if value is None:
-        return "Pending / undefined"
+        return "Undefined"
     value = float(value)
     if not math.isfinite(value):
         raise ValueError("Nonfinite report summary")
@@ -174,7 +174,7 @@ class Renderer:
             self.story.append(PageBreak())
         self.p(html.escape(title), "h1")
 
-    def table(self, headings, rows, weights=None):
+    def table(self, headings, rows, weights=None, vertical_padding=6):
         weights = weights or [1] * len(headings)
         widths = [self.width * w / sum(weights) for w in weights]
         def cell(x, head=False):
@@ -187,8 +187,8 @@ class Renderer:
                               ("VALIGN", (0, 0), (-1, -1), "TOP"),
                               ("LEFTPADDING", (0, 0), (-1, -1), 6),
                               ("RIGHTPADDING", (0, 0), (-1, -1), 6),
-                              ("TOPPADDING", (0, 0), (-1, -1), 6),
-                              ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                              ("TOPPADDING", (0, 0), (-1, -1), vertical_padding),
+                              ("BOTTOMPADDING", (0, 0), (-1, -1), vertical_padding),
                               ("LINEBELOW", (0, 0), (-1, 0), .6, TEAL)]))
         self.story.extend([t, Spacer(1, 10)])
 
@@ -243,6 +243,95 @@ class Renderer:
                "and data protocol. This report makes no claim of universal optimality or state of the art.")
         self.p(f"Source revision: {html.escape(self.revision)}<br/>Experiment: {self.r['experiment_identity']}<br/>"
                f"Frozen selection: {self.r['freeze_identity'] or 'pending'}", "small")
+
+    def findings(self):
+        if self.r["status"] != "complete":
+            return
+        cohorts = self.r["confirmation"]
+        def selected(track, name):
+            return next((r for r in cohorts if r["track"] == track and name in r["roles"]), None)
+        def point(track, name):
+            return next((r for r in cohorts if r["track"] == track and r["candidate_id"] == name
+                         and "cheap_anchor" in r["roles"]), None)
+        def value(row, metric):
+            return row["metrics"][metric]["mean"]
+        def contrast(track, metric, purpose="preserved_prior_vs_old"):
+            return next(r for r in self.r["paired_comparisons"]
+                        if r["track"] == track and r["purpose"] == purpose and r["metric"] == metric)
+        selected_rows = {(t, name): selected(t, name) for t in TRACKS for name in ("main", "anchor")}
+        self.heading("Findings and interpretation")
+        if any(r is None or value(r, "rmse") is None or value(r, "crps") is None for r in selected_rows.values()):
+            self.p("Some native cohort scores are undefined. The reliability and qualification tables determine "
+                   "which comparisons can be interpreted; no missing result is replaced by a point forecast.")
+            return
+        self.p("The broader search improves the Bayesian models relative to their original settings, with different "
+               "tradeoffs across protocols. These are conditional, exploratory validation findings on 14 confirmation "
+               "trajectories. Differences below are new minus old, with paired trajectory-bootstrap 95% intervals; "
+               "point accuracy and probabilistic scores answer different questions.", "small")
+        a, old_a = selected_rows["A", "main"], selected_rows["A", "anchor"]
+        self.p(f"<b>A - interleaved unseen sites.</b> RMSE falls from {fmt(value(old_a, 'rmse'),3)} to "
+               f"{fmt(value(a, 'rmse'),3)} (difference {interval(contrast('A','rmse'),3)}); CRPS falls from "
+               f"{fmt(value(old_a,'crps'),3)} to {fmt(value(a,'crps'),3)} "
+               f"(difference {interval(contrast('A','crps'),3)}). These aggregate gains do not extend to every "
+               f"criterion: restricted valid-prediction time decreases from {fmt(value(old_a,'vpt_physical'),3)} "
+               f"to {fmt(value(a,'vpt_physical'),3)} physical units, while nominal 90% coverage rises from "
+               f"{fmt(100*value(old_a,'coverage90'),2)}% to {fmt(100*value(a,'coverage90'),2)}%, farther above its target.")
+        b, old_b = selected_rows["B", "main"], selected_rows["B", "anchor"]
+        b_rmse = contrast("B", "rmse")
+        crosses_zero = b_rmse.get("ci95") is not None and b_rmse["ci95"][0] <= 0 <= b_rmse["ci95"][1]
+        self.p(f"<b>B - all observed sites.</b> CRPS improves from {fmt(value(old_b,'crps'),3)} to "
+               f"{fmt(value(b,'crps'),3)} (difference {interval(contrast('B','crps'),3)}). RMSE changes from "
+               f"{fmt(value(old_b,'rmse'),3)} to {fmt(value(b,'rmse'),3)} "
+               f"(difference {interval(b_rmse,3)}). " +
+               ("The RMSE interval crosses zero, so the paired evidence is clearer for CRPS than for point accuracy. "
+                if crosses_zero else "The paired intervals, not the marginal means alone, describe the evidence. ") +
+               f"Nominal 90% coverage moves from {fmt(100*value(old_b,'coverage90'),2)}% to "
+               f"{fmt(100*value(b,'coverage90'),2)}%, with narrower intervals.")
+        c, old_c = selected_rows["C", "main"], selected_rows["C", "anchor"]
+        c_curve = self.horizon_index[("C", c["candidate_id"], c["seed"])]["curves"]
+        reference = ""
+        mean_c, var_c = point("C", "training_mean"), point("C", "linear_var")
+        if mean_c and var_c and value(mean_c,"rmse") is not None and value(var_c,"rmse") is not None:
+            reference = (f"It remains worse in RMSE than the training mean ({fmt(value(mean_c,'rmse'),3)}) "
+                         f"and fixed VAR ({fmt(value(var_c,'rmse'),3)}). ")
+        self.p(f"<b>C - contiguous withheld region.</b> The catastrophic old RMSE of {fmt(value(old_c,'rmse'),3)} "
+               f"drops to {fmt(value(c,'rmse'),3)}, and finite divergence falls from "
+               f"{old_c['finite_divergent_origins']}/{old_c['scheduled_origins']} to "
+               f"{c['finite_divergent_origins']}/{c['scheduled_origins']} origins. " + reference +
+               f"Calibration is still poor: nominal 90% coverage is {fmt(100*value(c,'coverage90'),2)}%, with "
+               f"average width {fmt(value(c,'width90'),2)}, yet lead-one coverage is only "
+               f"{fmt(100*c_curve['coverage90']['mean'][0],2)}% at physical lead 0.25. Reduced instability does "
+               "not establish adequate spatial prediction or calibrated uncertainty.")
+        var_a, var_b = point("A", "linear_var"), point("B", "linear_var")
+        nvars = [point(t, "pod_nvar") for t in TRACKS]
+        if var_a and var_b and all(nvars):
+            self.p(f"<b>Fixed point references.</b> VAR has lower mean RMSE in A and B "
+                   f"({fmt(value(var_a,'rmse'),3)} and {fmt(value(var_b,'rmse'),3)}). POD-NVAR's low successful-case "
+                   "scores have a reliability cost: A/B/C record " + "/".join(str(r["failed_rollout_origins"]) for r in nvars) +
+                   " failed origins and " + "/".join(str(r["complete_trajectories"]) for r in nvars) +
+                   " complete trajectories. Its C aggregate is undefined; incomplete-case scores cannot support an "
+                   "unconditional winner claim. These deterministic references have no invented predictive intervals.")
+        seed_rows = self.seed.get("rows", [])
+        matched_gains = []
+        for track in TRACKS:
+            mains = [r for r in seed_rows if r["track"] == track and "main" in r["roles"]]
+            for main in mains:
+                old = next((r for r in seed_rows if r["track"] == track and "anchor" in r["roles"] and r["seed"] == main["seed"]), None)
+                matched_gains.append(bool(old and main["trajectories"] == old["trajectories"]
+                    and main["origins"] == old["origins"] and main["complete_trajectories"] == old["complete_trajectories"] == 4
+                    and all(value(main,m) is not None and value(old,m) is not None and value(main,m) < value(old,m)
+                            for m in ("rmse","crps"))))
+        c_seed_values = [value(r,"rmse") for r in seed_rows if r["track"] == "C" and "main" in r["roles"] and value(r,"rmse") is not None]
+        seed_text = ("Every declared model seed improves old RMSE and CRPS on its matched four-trajectory cohort. "
+                     if len(matched_gains) == 9 and all(matched_gains) else
+                     "The seed analysis compares matched four-trajectory cohorts, separately from confirmation. ")
+        if c_seed_values:
+            seed_text += f"C's new RMSE ranges from {fmt(min(c_seed_values),3)} to {fmt(max(c_seed_values),3)} across those seeds; n=4 limits this sensitivity claim. "
+        prior_a, prior_b = contrast("A","rmse","prior_sensitivity_vs_old"), contrast("B","rmse","prior_sensitivity_vs_old")
+        self.p("<b>Interpretation limits.</b> " + seed_text +
+               f"The separate A/B prior-only controls change RMSE by {fmt(prior_a['mean'],4)} and {fmt(prior_b['mean'],4)}, "
+               "with paired intervals including zero. Passing posterior diagnostics does not establish predictive adequacy. "
+               "A/C joint configuration changes do not isolate a causal spatial-basis effect.", "small")
 
     def contract(self):
         self.heading("1. Scientific contract and preserved model")
@@ -383,7 +472,7 @@ class Renderer:
         self.p("Means and 95% trajectory-bootstrap intervals use each method's complete-trajectory population. "
                "The complete count and the preceding full-schedule census must accompany every accuracy comparison. "
                "No missing score is replaced with zero.", "small")
-        self.table(["Method / role", "Complete", "nRMSE", "Spatial energy", "Spatial variogram"], [
+        self.table(["Method / role", "n / N", "nRMSE", "Spatial energy", "Spatial variogram"], [
             [role(r), f"{r['complete_trajectories']}/{r['scheduled_trajectories']}",
              interval(r["metrics"]["nrmse"]),
              "Point only" if "cheap_anchor" in r.get("roles", []) else interval(r["metrics"]["spatial_energy"]),
@@ -704,8 +793,8 @@ class Renderer:
                 rows.append([f"{track}: {MODEL_NAMES.get(model, model)}", c["id"],
                              c["original_source_track"], str(plan["model_seeds"][model]),
                              json.dumps(c["config"], sort_keys=True, separators=(", ", ": "))])
-        self.table(["Track / reference", "Original ID", "Original track", "Seed", "Exact effective configuration"],
-                   rows, [1.55, .9, .6, .85, 3.1])
+        self.table(["Track / reference", "Original ID", "Source\ntrack", "Seed", "Exact effective configuration"],
+                   rows, [1.55, .9, .6, .85, 3.1], vertical_padding=5)
         self.p("A deterministic family's seed is an unused identity field, not a replicated fit. Exact configuration "
                "objects and the fixed-reference plan identity are retained in source_manifest.json. No Gaussian "
                "distribution is added to these point forecasts.", "small")
@@ -914,7 +1003,7 @@ class Renderer:
         canvas.restoreState()
 
     def build(self):
-        self.introduction(); self.contract(); self.search(); self.metric_definitions(); self.result_pages()
+        self.introduction(); self.findings(); self.contract(); self.search(); self.metric_definitions(); self.result_pages()
         self.parameter_pages(); self.sensitivity_pages(); self.figure_pages(); self.operations()
         self.horizon_appendix(); self.inference_appendix(); self.fixed_reference_appendix(); self.references()
         self.output.parent.mkdir(parents=True, exist_ok=True)

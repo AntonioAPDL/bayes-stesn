@@ -1,0 +1,762 @@
+{
+  "animations": {
+    "all3movies_complete": true,
+    "all_requested_panels_available": true,
+    "files": {
+      "A": {
+        "bytes": 615026,
+        "duration_seconds": 10.0,
+        "ffprobe": {
+          "avg_frame_rate": "10/1",
+          "codec_name": "h264",
+          "duration": "10.000000",
+          "height": 720,
+          "nb_read_frames": "100",
+          "pix_fmt": "yuv420p",
+          "width": 1280
+        },
+        "file": "ks_improvement_A_t01_a6000.mp4",
+        "fps": 10,
+        "frames": 100,
+        "geometry": {
+          "coordinate_unit": "physical x in [0,22)",
+          "input_grid_indices": [
+            2,
+            3,
+            4,
+            7,
+            8,
+            9,
+            12,
+            13,
+            14,
+            17,
+            18,
+            19,
+            21,
+            22,
+            23,
+            26,
+            27,
+            28,
+            31,
+            32,
+            33,
+            36,
+            37,
+            38,
+            41,
+            42,
+            43,
+            46,
+            47,
+            48,
+            51,
+            52,
+            53,
+            56,
+            57,
+            58,
+            61,
+            62,
+            63
+          ],
+          "no_repeated_endpoint": true,
+          "permitted_input_count": 39,
+          "target_grid_indices": [
+            0,
+            5,
+            10,
+            15,
+            20,
+            24,
+            29,
+            34,
+            39,
+            44,
+            49,
+            54,
+            59
+          ],
+          "validation_target_count": 13
+        },
+        "scale_policy": {
+          "all_finite_values_included": true,
+          "clipping": false,
+          "error_limit": 4.9276187381692385,
+          "error_scale": "linear",
+          "linear_threshold": 2.7183622192490464,
+          "value_limit": 5.518512902349127,
+          "value_scale": "linear"
+        },
+        "sha256": "8b93e4cacf7b51aa00a3169b0ef93d6b348a3985d7352fe639e8893cfa7ac029",
+        "visual_review": {
+          "checks": [
+            "old/new labels and predeclared trajectory1 firsttarget6000",
+            "official target sites and permitted input-site rug",
+            "physical time and target indices",
+            "marginal90%interval and signed-error labels",
+            "fixed common physical scales with all finite extremes retained",
+            "legible ticks and unclipped frame content"
+          ],
+          "encoded_frame_indices_zero_based": [
+            0,
+            49,
+            99
+          ],
+          "method": "direct earlier encoded-frame inspection plus exact final-file byte equality",
+          "physical_leads": [
+            0.25,
+            12.5,
+            25.0
+          ],
+          "status": "passed"
+        }
+      },
+      "B": {
+        "bytes": 1225420,
+        "duration_seconds": 10.0,
+        "ffprobe": {
+          "avg_frame_rate": "10/1",
+          "codec_name": "h264",
+          "duration": "10.000000",
+          "height": 720,
+          "nb_read_frames": "100",
+          "pix_fmt": "yuv420p",
+          "width": 1280
+        },
+        "file": "ks_improvement_B_t01_a6000.mp4",
+        "fps": 10,
+        "frames": 100,
+        "geometry": {
+          "coordinate_unit": "physical x in [0,22)",
+          "input_grid_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63
+          ],
+          "no_repeated_endpoint": true,
+          "permitted_input_count": 64,
+          "target_grid_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63
+          ],
+          "validation_target_count": 64
+        },
+        "scale_policy": {
+          "all_finite_values_included": true,
+          "clipping": false,
+          "error_limit": 3.673304560413105,
+          "error_scale": "linear",
+          "linear_threshold": 2.746327707588713,
+          "value_limit": 6.6974314392423,
+          "value_scale": "linear"
+        },
+        "sha256": "677dab771ddf245e1405a1a8cb3043f1bbacc0739796da33d5e528c1608b455c",
+        "visual_review": {
+          "checks": [
+            "old/new labels and predeclared trajectory1 firsttarget6000",
+            "official target sites and permitted input-site rug",
+            "physical time and target indices",
+            "marginal90%interval and signed-error labels",
+            "fixed common physical scales with all finite extremes retained",
+            "legible ticks and unclipped frame content"
+          ],
+          "encoded_frame_indices_zero_based": [
+            0,
+            49,
+            99
+          ],
+          "method": "direct earlier encoded-frame inspection plus exact final-file byte equality",
+          "physical_leads": [
+            0.25,
+            12.5,
+            25.0
+          ],
+          "status": "passed"
+        }
+      },
+      "C": {
+        "bytes": 560436,
+        "duration_seconds": 10.0,
+        "ffprobe": {
+          "avg_frame_rate": "10/1",
+          "codec_name": "h264",
+          "duration": "10.000000",
+          "height": 720,
+          "nb_read_frames": "100",
+          "pix_fmt": "yuv420p",
+          "width": 1280
+        },
+        "file": "ks_improvement_C_t01_a6000.mp4",
+        "fps": 10,
+        "frames": 100,
+        "geometry": {
+          "coordinate_unit": "physical x in [0,22)",
+          "input_grid_indices": [
+            0,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63
+          ],
+          "no_repeated_endpoint": true,
+          "permitted_input_count": 40,
+          "target_grid_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "validation_target_count": 12
+        },
+        "scale_policy": {
+          "all_finite_values_included": true,
+          "clipping": false,
+          "error_limit": 10766.049765049787,
+          "error_scale": "symlog",
+          "linear_threshold": 2.746327707588713,
+          "value_limit": 15450.311785452073,
+          "value_scale": "symlog"
+        },
+        "sha256": "18d77b2c484cbe80ae48218ba1d38618aaedf1b9f6119cca8f462a06c6950c50",
+        "visual_review": {
+          "checks": [
+            "old/new labels and predeclared trajectory1 firsttarget6000",
+            "official target sites and permitted input-site rug",
+            "physical time and target indices",
+            "marginal90%interval and signed-error labels",
+            "fixed common physical scales with all finite extremes retained",
+            "legible ticks and unclipped frame content"
+          ],
+          "encoded_frame_indices_zero_based": [
+            0,
+            49,
+            99
+          ],
+          "method": "direct encoded-frame inspection",
+          "physical_leads": [
+            0.25,
+            12.5,
+            25.0
+          ],
+          "status": "passed"
+        }
+      }
+    },
+    "full_frame_dumps_delivered": false,
+    "receipt_sha256": "2bfad592e71e18745bd75ebb1ea76bf014399876075456b7035a4025b31a1113",
+    "render_identity": "ec1800250b42a2238a61b7d6fa8a1274a221b18fb4ee33148c853aea3d0b0704",
+    "report_binding_verified": true,
+    "status": "passed"
+  },
+  "artifact_manifest_identity": "df8970911605791f3b03c61ea1ab53b12dcfbdd1aa516f0e026b1dbfa2e23b2a",
+  "artifact_manifest_sha256": "a39f81abb285743676b44ecda2371fa0f80fb0bba51c951cac0aa62607b8b231",
+  "created_utc": "2026-11-05T13:20:09.263929+00:00",
+  "experiment_identity": "067aaf08f46d7a21895ce15876d482a4a837d58627026a59e07a63db37f5c376",
+  "figures": {
+    "all_vector_exports_single_page": true,
+    "all_vector_text_within_bounds": true,
+    "files": {
+      "compute_A.png": {
+        "bytes": 102510,
+        "pdf": {
+          "bytes": 18493,
+          "name": "compute_A.pdf",
+          "pages": 1,
+          "sha256": "b7ad0fecef567844e1feee6014d4844c05f6d03c67c2855b8b2c114b8507b993",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1260,
+          1141
+        ],
+        "sha256": "72769fac8c73242fef83b7f1271e31681bf1b3e5a58ab082a6a9a4ce53a7e695"
+      },
+      "compute_B.png": {
+        "bytes": 101273,
+        "pdf": {
+          "bytes": 18699,
+          "name": "compute_B.pdf",
+          "pages": 1,
+          "sha256": "3b0d821809155380d4d6e9e3f991b6b01c24b2a07135af34d03db0cafd8a9b56",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1258,
+          1141
+        ],
+        "sha256": "21f252726f5f7d606df205254c353c17f8e63595120386538816d4b948c46bed"
+      },
+      "compute_C.png": {
+        "bytes": 103128,
+        "pdf": {
+          "bytes": 18308,
+          "name": "compute_C.pdf",
+          "pages": 1,
+          "sha256": "36696ecc0c49482b311c37def70e9bebc46e8d960f9d294f7c4c778c9c6a3163",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1259,
+          1141
+        ],
+        "sha256": "56981b81195c58fc27b63ffa8916d8361e7d467420328a72bbb5473b3ae2af33"
+      },
+      "example_A_t01_a6000.png": {
+        "bytes": 190444,
+        "pdf": {
+          "bytes": 62991,
+          "name": "example_A_t01_a6000.pdf",
+          "pages": 1,
+          "sha256": "c66c41af06ef68d60c5bef4e558249198322a6c4bf914012483f5f9f5bcd3b8c",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1785,
+          1431
+        ],
+        "sha256": "c62f3033bc86bb62397d40c60f648630e409e445dd4a1076a9ca9c636dd79815"
+      },
+      "example_B_t01_a6000.png": {
+        "bytes": 247896,
+        "pdf": {
+          "bytes": 106915,
+          "name": "example_B_t01_a6000.pdf",
+          "pages": 1,
+          "sha256": "f5e4d4ab6fd346fcfd615cba62b095747397e6ec89311ef460f5b5a78280bf33",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1785,
+          1431
+        ],
+        "sha256": "3cababa94f65df472dc1578ea560f2ff5669e9b8c38ac4587c2adecbc93ea86d"
+      },
+      "example_C_t01_a6000.png": {
+        "bytes": 191280,
+        "pdf": {
+          "bytes": 59973,
+          "name": "example_C_t01_a6000.pdf",
+          "pages": 1,
+          "sha256": "787b146a51f8ada07393b50a7db010cc3a9888bd1737811bf85f861ab263e13a",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1804,
+          1431
+        ],
+        "sha256": "578d608a8571df3d7f733b484fd3ea302520dad5967b618d0d7a01fe88b125f4"
+      },
+      "horizon_A.png": {
+        "bytes": 236467,
+        "pdf": {
+          "bytes": 54832,
+          "name": "horizon_A.pdf",
+          "pages": 1,
+          "sha256": "f1c40684cd4fce0ebafc226c9d5cb4883f6eeef48e4fec0ffd4e19004f0c97be",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1857,
+          1240
+        ],
+        "sha256": "0088e61f74bc80eb7710051801e822f19c7c23333e4f4d08b163db39092efac7"
+      },
+      "horizon_B.png": {
+        "bytes": 236644,
+        "pdf": {
+          "bytes": 55585,
+          "name": "horizon_B.pdf",
+          "pages": 1,
+          "sha256": "9bb5f32c4b77e540045e834d704bc51bd87ee6864e099a30c323eea0f83ba111",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1857,
+          1240
+        ],
+        "sha256": "3ed66e1265168c0bb65a03b32576ad7842c68458255a33dc1b7c1cf1727ca20a"
+      },
+      "horizon_C.png": {
+        "bytes": 211906,
+        "pdf": {
+          "bytes": 50444,
+          "name": "horizon_C.pdf",
+          "pages": 1,
+          "sha256": "a271a58fdaef439c9b5bc4a8a45608b3283575c5d4207f740027c836f43726ca",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1856,
+          1240
+        ],
+        "sha256": "c3b2b3860c7575d1ae3f82419e14f643cd552a84cdb24fb8f24a485ec9b755e1"
+      },
+      "intervals_A_t01_a6000.png": {
+        "bytes": 283528,
+        "pdf": {
+          "bytes": 32226,
+          "name": "intervals_A_t01_a6000.pdf",
+          "pages": 1,
+          "sha256": "19069806721156a4a9783f976e1e7bb2190df1b61689d81e84c426e38dcb2980",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1706,
+          1191
+        ],
+        "sha256": "3e26f559f15f25405108a3a8da20a9ca1d7c81970f1486363a6aedc5990886f3"
+      },
+      "intervals_B_t01_a6000.png": {
+        "bytes": 281915,
+        "pdf": {
+          "bytes": 31684,
+          "name": "intervals_B_t01_a6000.pdf",
+          "pages": 1,
+          "sha256": "b2bd1cf7c9aac3bc3dd390202a2fdd206a226a056e408a8bb31b2f2a2e7ca60d",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1706,
+          1191
+        ],
+        "sha256": "f586a66aa60a822132baffa3205e510c4e9b7646e3fb0900dfc72086c1d38389"
+      },
+      "intervals_C_t01_a6000.png": {
+        "bytes": 275253,
+        "pdf": {
+          "bytes": 32007,
+          "name": "intervals_C_t01_a6000.pdf",
+          "pages": 1,
+          "sha256": "4ddab9e340977efe59cca07f3a1a7082765bf6b7f3242e52c1a4a9013b79b7fb",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1684,
+          1191
+        ],
+        "sha256": "54273c613fdf16b7c5ce16ba10b39374c9195b67844f3b7588c10b8af88f1293"
+      },
+      "search_A.png": {
+        "bytes": 134652,
+        "pdf": {
+          "bytes": 22373,
+          "name": "search_A.pdf",
+          "pages": 1,
+          "sha256": "a09b238fc5d84ddbdb153b87f4c7d799a8ab3bf594644e9e431a9871f06896ab",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1688,
+          1245
+        ],
+        "sha256": "f7447163976c2e11eebc4cce74699d071ff8745f54822c4e52a22fa5fa160ef3"
+      },
+      "search_B.png": {
+        "bytes": 126784,
+        "pdf": {
+          "bytes": 21512,
+          "name": "search_B.pdf",
+          "pages": 1,
+          "sha256": "32ddc27d82ab00e4124203ffe7999d46a5cf1e3efc8682f9df95558eb8610944",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1688,
+          1245
+        ],
+        "sha256": "937d1416978d6090fb69c03ad81f7a78833ab5d30c454103ebe6ec8642d43e18"
+      },
+      "search_C.png": {
+        "bytes": 133961,
+        "pdf": {
+          "bytes": 19256,
+          "name": "search_C.pdf",
+          "pages": 1,
+          "sha256": "da34b4da8771534e2786ca294ec92e319bafce1d1e3dcd78ebe7c1c5b63cfd14",
+          "text_within_page_bounds": true
+        },
+        "pixels": [
+          1687,
+          1245
+        ],
+        "sha256": "9890272e21a9edae2a8bbd4f0eb12ee5189dbba4a8f16b5744a505e8045c6ef3"
+      }
+    },
+    "pdf_count": 15,
+    "png_count": 15,
+    "png_visual_review": "all15populatedfigures reviewed; all3 final heatmaps also byte-identical to inspected full-resolution private previews",
+    "status": "passed",
+    "vector_visual_samples": [
+      "horizon_C.pdf",
+      "intervals_C_t01_a6000.pdf",
+      "example_C_t01_a6000.pdf"
+    ],
+    "verified_manifest_members": 46
+  },
+  "freeze_identity": "96774e83e2f737ceed30abc232b3a328b79894b0173a8e7a629c0289f0c3f4d2",
+  "identity": "23fe2ac5514a5eb619973eb2030c4d87724002279dd5439e6e91e1117a31b08f",
+  "limitations": [
+    "Visual QA is presentation evidence, not a replacement for the independent numerical and inference audits.",
+    "Model examples are the predeclared validation case, not an aggregate ranking.",
+    "No full-study new test partition was opened."
+  ],
+  "pending": [
+    "render PDF with actual published source revision; compare every page to verified preview and visually inspect changed pages"
+  ],
+  "published_pdf": null,
+  "schema": "ks-improvement-final-presentation-qa/1",
+  "scientific_changes": {
+    "new_fits": 0,
+    "new_forecasts": 0,
+    "raw_dataset_access": false,
+    "score_recomputation": false,
+    "selection_changes": false
+  },
+  "source_manifest_sha256": "aedb6ab290e861e78b9ad7bca89f5df80b2c6ea1c45a949c1c2d3b9329fea0d7",
+  "sources": {
+    "docs/applications/ks_improvement_reproduction.md": {
+      "bytes": 42525,
+      "sha256": "a878a37f0b9115096455d15fe797ef030434c96505417159680a521b75150119"
+    },
+    "tests/test_ks_improvement_animation.py": {
+      "bytes": 6414,
+      "sha256": "474db5d3e93f305dad93d1015f5fd1c209d7e983bde8ebd0194ba1f8f7c42cb9"
+    },
+    "tests/test_ks_improvement_pdf.py": {
+      "bytes": 5672,
+      "sha256": "ef84799f4cb2afccf07f8335d0188e6142b73b78740d7c3768ffe7320a606568"
+    },
+    "tests/test_ks_improvement_report.py": {
+      "bytes": 9503,
+      "sha256": "223e8a7923152cbccaecbe786b2d4d2b7ad55fe32fa5bc468ea929d1cac97912"
+    },
+    "tools/animate_ks_improvement.py": {
+      "bytes": 25722,
+      "sha256": "9d39f546dcb47c082609fe9f96979ac72736d8ff95d28c52dddd25f73dfa321f"
+    },
+    "tools/build_ks_improvement_pdf.py": {
+      "bytes": 84908,
+      "sha256": "9dc00539aa2dfe13427bddba739a24e76014f9977c6bbcd14c87791007ded9ed"
+    },
+    "tools/build_ks_improvement_report.py": {
+      "bytes": 108020,
+      "sha256": "21a5a6513604073eb6903f8fd80ffd89ccf62a030762b435fd46844adbe77f45"
+    }
+  },
+  "status": "figures_movies_and_unpublished_pdf_passed; published_revision_pdf_pending",
+  "targeted_checks": {
+    "animation_signed_axis_test": {
+      "deselected": 7,
+      "elapsed_seconds": 0.97,
+      "initial_collection_retry": "initial command omitted PYTHONPATH; rerun with PYTHONPATH=src passed without a code workaround",
+      "passed": 1
+    },
+    "display_scale_tests_inherited": {
+      "deselected": 7,
+      "elapsed_seconds": 0.9,
+      "passed": 2,
+      "scope": "unchanged readable_scale implementation; later heatmap-only fix verified on all3 actual examples",
+      "tested_builder_sha256": "f4b4726b7a5861dc847649b4c9374c799911e6246d4e82d756240c7a2067f09f"
+    },
+    "pdf_presentation_tests": {
+      "elapsed_seconds": 0.12,
+      "passed": 2
+    },
+    "reproduction_bash_blocks_parsed": 23
+  },
+  "unpublished_pdf_preview": {
+    "all_pages_text_within_bounds": true,
+    "final_publication_claim": false,
+    "pages": 50,
+    "pdf_bytes": 3255483,
+    "pdf_sha256": "cf985b4b8466e9580d144d59a60fbaf3e6c1a132b72060ac5788bc98283a9817",
+    "review_method": {
+      "all50pages_covered": true,
+      "all_previous51pages_visually_inspected": true,
+      "changed_pages_visually_reinspected": [
+        1,
+        8,
+        12,
+        14,
+        16,
+        28,
+        32,
+        36,
+        49,
+        50
+      ],
+      "pixel_identical_previously_reviewed_pages": 40,
+      "previous51pagepreview_sha256": "3f63f7d579f9218309f79d88efefa364a4e9968f04ce7941769ec779c5222320"
+    },
+    "source_revision": "UNPUBLISHED_QA_PREVIEW",
+    "status": "passed"
+  }
+}

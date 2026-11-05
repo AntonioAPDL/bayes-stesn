@@ -148,12 +148,25 @@ def test_display_scale_detects_negative_extremes_without_changing_signed_values(
 
         def __init__(self):
             self.scale = None
+            self.yaxis = SimpleNamespace(get_major_locator=lambda: SimpleNamespace(set_params=lambda **kwargs: None))
 
         def set_yscale(self, name, **kwargs):
             self.scale = (name, kwargs)
 
         def text(self, *args, **kwargs):
             pass
+
+        def autoscale(self, **kwargs):
+            pass
+
+        def margins(self, **kwargs):
+            pass
+
+        def get_ylim(self):
+            return -1., 1.
+
+        def get_yticks(self):
+            return []
 
     values = np.array([-1e9, -1., 0., 1., 2., 3.])
     original = values.copy()
@@ -166,3 +179,26 @@ def test_display_scale_detects_negative_extremes_without_changing_signed_values(
     report.readable_scale(ordinary, [np.array([-3., -1., 0., 1., 2.])])
     report.readable_scale(empty, [None])
     assert ordinary.scale is None and empty.scale is None
+
+
+def test_display_scale_keeps_small_curve_visible_amid_large_majority():
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    small = np.array([1., 2., 3.])
+    large = np.array([1000., 2000., 3000.])
+    fig, axis = plt.subplots()
+    try:
+        for values in (small, large, large * 2):
+            axis.plot(values)
+        originals = [line.get_ydata().copy() for line in axis.lines]
+        report.readable_scale(axis, (small, large, large * 2))
+        assert axis.get_yscale() == "symlog"
+        assert axis.yaxis.get_transform().linthresh == 2.
+        assert axis.get_ylim()[0] < small.min()
+        assert axis.get_ylim()[1] > (large * 2).max()
+        for line, original in zip(axis.lines, originals):
+            np.testing.assert_array_equal(line.get_ydata(), original)
+    finally:
+        plt.close(fig)
