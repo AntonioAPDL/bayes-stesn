@@ -7,6 +7,7 @@ import importlib.util
 import json
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -224,6 +225,90 @@ class BudgetExtensionContracts(unittest.TestCase):
             (a/"new").write_text("new")
             with self.assertRaises(FileExistsError):M.publish_new(a,b)
             self.assertTrue(a.exists());self.assertEqual(list(b.iterdir()),[])
+
+    def test_explicit_missing_source_cache_relocation_rebinds_only_location_and_job_ids(self):
+        with tempfile.TemporaryDirectory() as folder:
+            original_args,jobs,old,frozen=fixture(folder)
+            original_cache=original_args[3];original_cache.rmdir()
+            restored_cache=Path(folder)/"restored-cache";restored_cache.mkdir()
+            args=(*original_args[:3],restored_cache,*original_args[4:])
+            source,destination=args[:2]
+            before={p.relative_to(source).as_posix():M.N.digest(p)
+                for p in source.rglob("*") if p.is_file()}
+            # A changed location is never inferred from --cache alone.
+            with self.assertRaisesRegex(ValueError,"job/source/cache/candidate"):
+                M.migrate(*args)
+            with patch.object(M,"verify_runtime_cache",return_value={"fixture":True}) as verify:
+                result=M.migrate(*args,source_cache_path=original_cache,apply=True)
+            verify.assert_called_once_with(old,restored_cache)
+            self.assertTrue(result["cache_path_relocated"])
+            self.assertTrue(result["cache_relocation"]["explicit_source_path"])
+            self.assertEqual(result["cache_relocation"]["source_job_cache"],str(original_cache))
+            self.assertEqual(result["cache_relocation"]["destination_cache"],str(restored_cache))
+            self.assertEqual(result["cache_relocation"]["expected_cache_identity"],old["cache_identity"])
+            receipt=M.read(destination/"migration/receipt.json")
+            for original in jobs.values():
+                new_id=receipt["job_id_mapping"][original["job_id"]]
+                adopted=M.read(destination/"jobs"/(new_id+".json"))
+                self.assertEqual(adopted["cache"],str(restored_cache))
+                excluded={"cache","output","experiment_identity","job_id"}
+                self.assertEqual({k:v for k,v in original.items() if k not in excluded},
+                    {k:v for k,v in adopted.items() if k not in excluded})
+            adopted_freeze=M.read(destination/"freeze.json")
+            self.assertEqual({k:v for k,v in frozen.items() if k not in {"identity","experiment_identity"}},
+                {k:v for k,v in adopted_freeze.items() if k not in {"identity","experiment_identity"}})
+            self.assertEqual(result["carried_worker_seconds"],191.500000000001)
+            for relative,digest in before.items():
+                self.assertEqual(M.N.digest(source/relative),digest)
+                if relative.startswith(("attempts/","forecasts/")) or (
+                        relative.startswith("fits/") and Path(relative).name in M.N.CANONICAL):
+                    self.assertEqual(M.N.digest(destination/relative),digest)
+
+    def test_cache_relocation_rejects_wrong_relative_traversal_and_symlink_source_paths(self):
+        with tempfile.TemporaryDirectory() as folder:
+            original_args,_,_,_=fixture(folder)
+            restored=Path(folder)/"restored-cache";restored.mkdir()
+            alias=Path(folder)/"linked-cache";alias.symlink_to(restored,target_is_directory=True)
+            args=(*original_args[:3],restored,*original_args[4:])
+            rejected=[(Path(folder)/"wrong-recorded-cache","job/source/cache/candidate"),
+                (Path("relative-cache"),"absolute path"),
+                (Path(folder)/"missing"/".."/"cache","parent traversal"),
+                (alias,"Symlink")]
+            for recorded,message in rejected:
+                with self.subTest(recorded=recorded):
+                    with self.assertRaisesRegex(ValueError,message):
+                        M.migrate(*args,source_cache_path=recorded)
+                    self.assertFalse(args[1].exists())
+            linked_args=(*args[:3],alias,*args[4:])
+            with self.assertRaisesRegex(ValueError,"Symlink"):
+                M.migrate(*linked_args,source_cache_path=original_args[3])
+
+    def test_current_cache_and_runtime_must_match_the_original_content_identities(self):
+        with tempfile.TemporaryDirectory() as folder:
+            cache=Path(folder)/"restored-cache";cache.mkdir()
+            expected_source={"fixture":"unchanged-runtime"}
+            audit={"passed":True,"fixture":"same-cache-content"}
+            old={"source":expected_source,"cache_identity":M.N.identity(audit)}
+            current=[copy.deepcopy(expected_source)];checked=[copy.deepcopy(audit)];calls=[]
+            def audit_cache(path):
+                calls.append(path)
+                return checked[0]
+            modules={"bayes_stesn.applications.ks_improvement_runner":SimpleNamespace(source_identity=lambda:current[0]),
+                "bayes_stesn.applications.ks_data":SimpleNamespace(audit_cache=audit_cache)}
+            environment={name:"1" for name in ("OMP_NUM_THREADS","OPENBLAS_NUM_THREADS","MKL_NUM_THREADS","NUMEXPR_NUM_THREADS","VECLIB_MAXIMUM_THREADS")}
+            with patch.dict("sys.modules",modules),patch.dict(M.os.environ,environment):
+                result=M.verify_runtime_cache(old,cache)
+                self.assertEqual(result["cache_identity"],old["cache_identity"])
+                self.assertEqual(calls,[cache])
+                current[0]={"fixture":"changed-runtime"}
+                with self.assertRaisesRegex(ValueError,"source, packages or native runtime"):
+                    M.verify_runtime_cache(old,cache)
+                self.assertEqual(calls,[cache])
+                current[0]=copy.deepcopy(expected_source)
+                for replacement in [{"passed":False},{"passed":True,"fixture":"different-cache-content"}]:
+                    checked[0]=replacement
+                    with self.assertRaisesRegex(ValueError,"cache identity changed"):
+                        M.verify_runtime_cache(old,cache)
 
 
 if __name__=="__main__":unittest.main()

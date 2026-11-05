@@ -1,0 +1,107 @@
+{
+  "attempt_elapsed_seconds": 31048.42515946799,
+  "budgets_reset": false,
+  "cache_relocation_tests_sha256": "639d83154cfe5ad91cc637de72473ff2d2c52480ef6fcbe01e2e6fa0a337c430",
+  "cache_relocation_tool_sha256": "4fb09f2a3750b0184e985a550852499e2547abcb352dffbb240e77777727cc9b",
+  "cache_verification_receipt_sha256": "71a304c0a30c153a4f933af28eb8475de173be7477f8198c09099371a1fc632e",
+  "carried_worker_seconds": 31138.42515946799,
+  "confirmation_performance_used_to_modify_design": false,
+  "coordinator_summary_sha256": "95b12376edcb0d42ace72c69b2574e90fc9d09cd8a9e23a01e74854929c2bb5a",
+  "environment_receipt_sha256": "4c149e9578bbcb83038664d6d254dd6297b912872bdf9aa0be450f5f8d4f1369",
+  "incident": "Scratch repository, environment and data-cache paths became unavailable during execution; cause was not established. The numerical run under the data filesystem survived.",
+  "independent_relocation_review": {
+    "passed": true,
+    "production_migration_performed": false,
+    "subtests": 4,
+    "test_seconds": 1.39,
+    "tests": 9
+  },
+  "interrupted_jobs": [
+    {
+      "candidate": "imp_b_lag_1_886dd32b",
+      "completed_origins": [
+        6000,
+        6100,
+        6200,
+        6300,
+        6400,
+        6500,
+        6600,
+        6700,
+        6800,
+        6900,
+        7000,
+        7100,
+        7200
+      ],
+      "remaining_origins": [
+        7300,
+        7400,
+        7500,
+        7600,
+        7700,
+        7800,
+        7900
+      ],
+      "retained_qualified_fit": true,
+      "track": "B",
+      "trajectory": 16
+    },
+    {
+      "candidate": "imp_b_lag_1_886dd32b",
+      "completed_origins": [
+        6000,
+        6100,
+        6200,
+        6300,
+        6400,
+        6500,
+        6600,
+        6700,
+        6800,
+        6900,
+        7000,
+        7100,
+        7200
+      ],
+      "remaining_origins": [
+        7300,
+        7400,
+        7500,
+        7600,
+        7700,
+        7800,
+        7900
+      ],
+      "retained_qualified_fit": true,
+      "track": "B",
+      "trajectory": 17
+    }
+  ],
+  "last_coordinator_session": 8465,
+  "observed_coordinator_exit_code": 1,
+  "original_cache_identity": "398cc9ffbd9025573be430c2dbe67a7e5e84c786d70ce031a46cfff890cae465",
+  "preparation_seconds": 90,
+  "production_migration_at_receipt_creation": "pending actual application checks; receipt is not proof of completed migration",
+  "recorded_utc": "2026-11-05T10:57:05.530694+00:00",
+  "restored_cache_identity_equal": true,
+  "restored_code_revision": "00e108b1b349314395778c6ac6080186ef077769",
+  "restored_code_tree": "d918c71c69bb80c7d1b2de5bbd50c386e8a430d7",
+  "restored_entire_numerical_source_runtime_identity_equal": true,
+  "retrieval_receipt_sha256": "b50fb479655a8c7f7e81187c2b6f2a122ccafc9c1a15360cd699baf9b34dd74c",
+  "sampled_oom_events": 0,
+  "schema": "ks-improvement-workspace-recovery/1",
+  "scientific_model_changes": false,
+  "state_fabrication": false,
+  "surviving_counts": {
+    "attempts": 680,
+    "closed_complete_process_attempts": 678,
+    "closed_interrupted_process_attempts": 2,
+    "complete": 644,
+    "inference_unqualified": 6,
+    "jobs": 652,
+    "terminal": 650
+  },
+  "worker_error": "BatchUnavailableError while loading evaluation labels after the KS data directory disappeared",
+  "worker_log_sha256": "9e206e3af52b90a0fc14df4cf833ee031dccd368311744b3d072229ab97a6010"
+}

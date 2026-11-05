@@ -78,6 +78,7 @@ export PYTHONHASHSEED=0 MPLBACKEND=Agg
   --output /data/ks_improvement_20261105/run_v2 \
   --additional-run /workspace/scratch/ks_improvement_20261105/run_v1 \
   --closed-session-receipt /data/ks_improvement_20261105/operations/closed_sessions_after_97432.json \
+  --minimum-mib 0.0625 --include-fit-receipts \
   --max-retries 6 --execute
 ```
 
@@ -184,7 +185,7 @@ hours after the original start, not five additional hours from migration. The
 final report derives active limits from the recorded budget and shows both the
 original and extended policy.
 
-For status without scheduling fits:
+Historical v1/run_v2 status, without scheduling fits:
 
 ```bash
 /workspace/scratch/ks_recovery_20261105T0615/env/bin/python \
@@ -205,8 +206,13 @@ for the original run's status-file inconsistency and its bounded recovery.
 
 A new reproduction needs a new output root and a new dated configuration. The
 historical configuration's elapsed-time start cannot serve as a future run's
-start. Copy it prospectively before any new fit, preserving its scientific
-registry, seeds, selection rule, schedules, and finite limits. For example:
+start. Copy the original v1 specification prospectively before any new fit,
+preserving its scientific registry, seeds, selection rule and schedules, and
+declare a fresh allocation of **15 total worker hours, five elapsed hours and
+six search worker hours**. This is the initial allocation of an independent
+reproduction, not another extension of the historical run. Starting from v1
+avoids carrying the historical `operational_extension` record into a new study.
+The example refuses to replace an existing configuration:
 
 ```bash
 python - <<'PY'
@@ -218,8 +224,20 @@ destination.parent.mkdir(parents=True, exist_ok=True)
 if destination.exists():
     raise FileExistsError('Use the existing configuration to resume; do not reset its budget')
 config = json.loads(source.read_text())
-config['name'] = 'ks_bayesian_improvement_independent_reproduction'
-config['budget']['campaign_started_utc'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+config['name'] = 'ks_bayesian_improvement_independent_15workerh_5elapsedh'
+config['budget'].update(
+    campaign_started_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    total_worker_seconds_cap=15 * 3600,
+    wall_seconds_cap=5 * 3600,
+    search_worker_seconds_cap=6 * 3600,
+    initial_worker_seconds=15 * 3600,
+    preparation_worker_seconds=0.0,
+    extension_reason=(
+        'Prospective initial allocation for an independent reproduction: '
+        '15 worker hours, 5 elapsed hours and 6 search worker hours, based on '
+        'the recorded campaign cost projection; no historical clock reset or extension.'
+    ),
+)
 destination.write_text(json.dumps(config, indent=2, sort_keys=True) + '\n')
 PY
 
@@ -232,6 +250,7 @@ PY
   --config /data/ks-improvement-reproduction/config.json \
   --cache CACHE_ROOT \
   --output /data/ks-improvement-reproduction/run \
+  --minimum-mib 0.0625 --include-fit-receipts \
   --max-retries 6 --execute
 ```
 
@@ -240,6 +259,13 @@ launcher requires that existing root and does not invent a new experiment or
 reset its start time. An additional historical run root requires a genuine
 closed-session observation receipt as well as acquiring all existing locks;
 do not fabricate that receipt for an unobserved process.
+
+This fresh configuration begins with no separately incurred preparation time;
+if new resource profiling is performed before launch, record its measured time
+prospectively in this new configuration. Historical preparation time is not
+claimed as work performed by the independent reproduction. The original v1/v2
+configuration files and all existing run roots remain unchanged. An existing
+independent run must resume with its already bound configuration and start.
 
 Before doing this, inspect actual CPU quota, container memory, free disk and
 other jobs. The recorded resource admission values are feasible measurements
@@ -438,8 +464,8 @@ rewrites those paths or renews an exhausted campaign budget.
 
 ### Reports and fixed-case animations
 
-Build the report from retained receipts into a location outside the numerical
-run root:
+For a partial native-only snapshot, build the report from retained receipts into
+a location outside the numerical run root:
 
 ```bash
 "$KS_PYTHON" tools/build_ks_improvement_report.py \
@@ -448,9 +474,29 @@ run root:
   --operations /data/ks_improvement_20261105/operations/bounded_launches
 ```
 
-The report builder also accepts `--anchors PATH` for the separately generated
-cheap-anchor results and `--acceptance PATH` for a completed acceptance receipt.
-Pass these only when those artifacts exist. Its `source_manifest.json` and
+For the final integrated report, set the following variables to the **actual
+completed** fixed-reference output and selected-artifact acceptance receipt,
+then include both arguments. Completion means every scheduled job is terminal;
+observed numerical or inference failures must remain visible. Do not create
+placeholder files or omit an unfinished auxiliary schedule to describe the
+whole requested application as complete.
+
+```bash
+KS_ANCHOR_ROOT=/absolute/path/to/completed/point_reference_results
+KS_ACCEPTANCE_RECEIPT=/absolute/path/to/completed/selected_invariance.json
+
+"$KS_PYTHON" tools/build_ks_improvement_report.py \
+  --results "$KS_RUN_ROOT" \
+  --output "$KS_REPORT_ROOT" \
+  --operations /data/ks_improvement_20261105/operations/bounded_launches \
+  --anchors "$KS_ANCHOR_ROOT" \
+  --acceptance "$KS_ACCEPTANCE_RECEIPT"
+```
+
+The variables above are placeholders until bound completed artifacts exist;
+use their recorded paths. After the budget-only migration passes, the recorded
+campaign's `KS_RUN_ROOT` must refer to its verified run_v3 destination rather
+than the historical run_v2 source. The report's `source_manifest.json` and
 `artifact_manifest.json` bind the numerical receipts and retained examples used
 by the animation tool. Generating a report does not fit, forecast, or rerun
 selection.

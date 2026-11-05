@@ -4,7 +4,8 @@
 Default: metadata-only dry-run, requiring genuine closure evidence and all
 existing source locks. --apply verifies current numerical source/runtime/cache,
 then copies canonical checkpoint and evidence bytes to a new atomic run root.
-Only experiment/output/job identities and their terminal bindings are rebased.
+Only experiment/output/job identities and their terminal bindings are rebased;
+an explicit --source-cache-path also permits relocating the byte-identical cache.
 The scientific freeze, original start, all attempt charges, forecasts and fits
 are preserved. No fitting, forecasting, selection, or resource-gate change runs.
 """
@@ -63,6 +64,18 @@ def date(value):
     if parsed.tzinfo is None:
         raise ValueError("Evidence timestamps must be timezone-aware")
     return parsed
+
+
+def recorded_cache_path(value):
+    """Validate an explicit historical location without requiring it to exist."""
+    path = Path(value)
+    if not path.is_absolute() or ".." in path.parts:
+        raise ValueError("The recorded source cache path must be an absolute path without parent traversal")
+    if any(p.is_symlink() for p in (path, *path.parents)):
+        raise ValueError("Symlink paths are forbidden for the recorded source cache")
+    if path.exists():
+        N.safe_path(path, directory=True)
+    return path
 
 
 def verify_extension(old, new, previous_config_path, projection_path, decision_path, frozen):
@@ -339,8 +352,10 @@ def publish_new(staging, destination):
     finally:os.close(descriptor)
 
 
-def migrate(source, destination, config, cache, closure, session_id, projection, decision, previous_config, *, apply=False):
+def migrate(source, destination, config, cache, closure, session_id, projection, decision, previous_config, *, apply=False, source_cache_path=None):
     source = N.safe_path(source, directory=True); cache = N.safe_path(cache, directory=True)
+    original_cache = cache if source_cache_path is None else recorded_cache_path(source_cache_path)
+    cache_relocated = original_cache != cache
     destination = Path(os.path.abspath(destination))
     if (destination.exists() or source == destination or source in destination.parents or destination in source.parents
             or any(p.is_symlink() for p in (destination, *destination.parents))):
@@ -348,7 +363,7 @@ def migrate(source, destination, config, cache, closure, session_id, projection,
     N.safe_path(destination.parent, directory=True)
     with ExitStack() as stack:
         locks = N.acquire_locks(source, stack)
-        old, frozen, jobs, terminals, attempts, ledgers = source_records(source, cache)
+        old, frozen, jobs, terminals, attempts, ledgers = source_records(source, original_cache)
         closed = closure_proof(closure, session_id, source, attempts, terminals)
         new_config = read(config)
         ext, approved = verify_extension(old, new_config, previous_config, projection, decision, frozen)
@@ -375,6 +390,11 @@ def migrate(source, destination, config, cache, closure, session_id, projection,
             "copy_files": len(files), "copy_bytes": sum(r["bytes"] for r in files.values()),
             "skipped_locks_and_staging_count": len(skipped), "closure": closed,
             "source_locks_acquired": len(locks), "scientific_recomputation": False,
+            "cache_path_relocated": cache_relocated,
+            "cache_relocation": {"explicit_source_path": source_cache_path is not None,
+                "source_job_cache": str(original_cache), "destination_cache": str(cache),
+                "expected_cache_identity": old["cache_identity"],
+                "same_verified_cache_and_runtime_required": True},
             "confirmation_score_objects_decoded": 0, "source_root_modified_or_deleted": False,
             "timing_receipt_sha256": N.digest(projection), "decision_receipt_sha256": N.digest(decision),
             "extended_configuration_sha256": N.digest(config), "binary_payload_reads": 0 if not apply else "guarded checksum validation and exact copy only"}
@@ -409,6 +429,8 @@ def migrate(source, destination, config, cache, closure, session_id, projection,
         mapping = {}; destination_states = Counter()
         for old_id, j in sorted(jobs.items()):
             adopted = {**j, "output": str(destination), "experiment_identity": new_identity}
+            if cache_relocated:
+                adopted["cache"] = str(cache)
             adopted["job_id"] = N.identity({k: v for k, v in adopted.items() if k != "job_id"})[:24]
             new_id = adopted["job_id"]
             if new_id in mapping.values():raise ValueError("Job identity collision")
@@ -465,12 +487,15 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("source", "destination", "config", "cache", "closed-session-receipt", "projection-receipt", "decision-receipt"):
         parser.add_argument("--"+name, type=Path, required=True)
+    parser.add_argument("--source-cache-path", type=Path,
+        help="Explicit absolute cache path recorded in source jobs; may be missing. --cache must verify as the identical restored cache.")
     parser.add_argument("--closed-session-id", type=int, required=True)
     parser.add_argument("--previous-config", type=Path, default=Path(__file__).resolve().parents[1]/"configs/applications/ks_improvement_v1.json")
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args(argv)
     result = migrate(args.source, args.destination, args.config, args.cache, args.closed_session_receipt,
-        args.closed_session_id, args.projection_receipt, args.decision_receipt, args.previous_config, apply=args.apply)
+        args.closed_session_id, args.projection_receipt, args.decision_receipt, args.previous_config,
+        apply=args.apply, source_cache_path=args.source_cache_path)
     print(json.dumps(result, indent=2, sort_keys=True))
 
 

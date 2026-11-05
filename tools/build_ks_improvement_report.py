@@ -659,11 +659,22 @@ def operation_evidence(reader, operations_root=None):
 
 
 def save_figure(fig, path):
+    """Export the same figure to PNG and a publication PDF before publishing either."""
+    import matplotlib
+    path = Path(path)
     buffer = io.BytesIO()
     fig.savefig(buffer, format="png", dpi=170, facecolor="white", bbox_inches="tight")
     data = buffer.getvalue()
     if not data.startswith(b"\x89PNG\r\n\x1a\n") or len(data) < 1000:
         raise RuntimeError("Invalid rendered PNG")
+    vector = io.BytesIO()
+    with matplotlib.rc_context({"pdf.fonttype": 42}):
+        fig.savefig(vector, format="pdf", dpi=300, facecolor="white", bbox_inches="tight",
+                    metadata={"Title": path.stem, "Creator": "KS improvement report; retained scores only"})
+    pdf = vector.getvalue()
+    if not pdf.startswith(b"%PDF-") or not pdf.rstrip().endswith(b"%%EOF") or len(pdf) < 1000:
+        raise RuntimeError("Invalid rendered figure PDF")
+    atomic_bytes(path.with_suffix(".pdf"), pdf)
     atomic_bytes(path, data)
 
 
@@ -943,7 +954,9 @@ def render_markdown(report, cohorts, comparisons, figures, diagnosis):
             text += ["", "Negative RMSE/CRPS differences favor the left candidate. Incomplete intersections support only conditional comparisons.", ""]
         for name in figures:
             if f"_{track}" in name:
-                text += [f"![{name.removesuffix('.png').replace('_', ' ')}]({name})", ""]
+                pdf_name = str(Path(name).with_suffix(".pdf"))
+                text += [f"![{name.removesuffix('.png').replace('_', ' ')}]({name})", "",
+                         f"[Publication PDF: {pdf_name}]({pdf_name})", ""]
     text += ["## Screening, selected settings, and inference", "",
         "`search_candidates.csv` retains every completed stage row, including ineligible candidates and their failure/qualification counts. "
         "`candidate_registry.json` contains the exact original proposal roster and `selected_configurations.json` the frozen choices. "
@@ -1168,6 +1181,7 @@ def main(argv=None):
             "selection_rerun", "test_partition_opened", "reader_scope", "last_invocation_seconds")}
         acceptance["sha256"] = sha256(acceptance_path)
     figures = [] if args.no_plots else plot_report(reader, cohorts, search_rows, output)
+    vector_figures = [str(Path(name).with_suffix(".pdf")) for name in figures]
     manifest = {"schema": "ks-improvement-report-source-manifest/1", "experiment_identity": reader.experiment["identity"],
                 "results_receipts": reader.manifest, "builder_sha256": sha256(__file__),
                 "initial_diagnosis_sha256": sha256(diagnosis_path) if diagnosis_path.exists() else None,
@@ -1199,6 +1213,8 @@ def main(argv=None):
               "primary_rmse": "mean across trajectories of sqrt(pooled within-trajectory squared error)",
               "confirmation": [{k: v for k, v in r.items() if k not in ("episodes", "curves")} for r in cohorts],
               "paired_comparisons": comparisons, "operations": operations, "figures": figures,
+              "vector_figures": vector_figures,
+              "figure_export_policy": "PNG and PDF from the same matplotlib figure; PDF axes, text and paths are vector, while heatmaps retain image layers",
               "controlled_screen_contrasts": controls,
               "realized_parameter_ranges": ranges, "selected_parameter_summary": selected_parameters,
               "immutable_job_states_by_stage": stage_states,
@@ -1232,7 +1248,7 @@ def main(argv=None):
     write_csv(output / "confirmation.csv", flat, list(flat[0]) if flat else ("track", "candidate_id", "complete_trajectories"))
     write_csv(output / "paired_comparisons.csv", comparisons, ("track", "purpose", "left", "right", "left_seed", "right_seed", "metric", "n", "mean", "ci95", "paired_trajectories"))
     atomic_bytes(output / "README.md", render_markdown(report, cohorts, comparisons, figures, diagnosis).encode())
-    artifact_files = list(files) + ["search_candidates.csv", "controlled_screen_contrasts.csv", "confirmation.csv", "paired_comparisons.csv", "README.md"] + figures
+    artifact_files = list(files) + ["search_candidates.csv", "controlled_screen_contrasts.csv", "confirmation.csv", "paired_comparisons.csv", "README.md"] + figures + vector_figures
     artifact_manifest = {"schema": "ks-improvement-report-artifacts/1", "experiment_identity": report["experiment_identity"],
                          "freeze_identity": report["freeze_identity"], "source_manifest_identity": manifest["identity"],
                          "files": {name: {"bytes": (output / name).stat().st_size, "sha256": sha256(output / name)} for name in artifact_files}}
