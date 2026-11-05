@@ -66,6 +66,53 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def main_subset_bindings(summary, episodes, horizon_curves, main_seed):
+    """Fingerprint completed primary A/B results without later extensions.
+
+    Scheduler paired comparisons are primary-seed comparisons and do not have
+    a seed field. Keep their A/B rows; do not bind extension-inclusive files.
+    """
+    groups = {
+        "summary_rows": ([r for r in summary["rows"]
+            if r["track"] in ("A", "B") and r["seed"] == main_seed],
+            ("track", "model", "seed")),
+        "episodes": ([r for r in episodes
+            if r["track"] in ("A", "B") and r["seed"] == main_seed],
+            ("track", "model", "seed", "trajectory")),
+        "horizon_curves": ([r for r in horizon_curves
+            if r["track"] in ("A", "B") and r["seed"] == main_seed],
+            ("track", "model", "seed", "trajectory")),
+        "paired_comparisons": ([r for r in summary["paired_comparisons"]
+            if r["track"] in ("A", "B")],
+            ("track", "reference", "comparator", "metric")),
+    }
+    fingerprints = {}
+    for name, (records, keys) in groups.items():
+        identities = [tuple(row[k] for k in keys) for row in records]
+        if len(set(identities)) != len(identities):
+            raise ValueError("Duplicate main-audit record identity in " + name)
+        ordered = sorted(records, key=lambda row: tuple(row[k] for k in keys))
+        raw = json.dumps(ordered, sort_keys=True, separators=(",", ":"),
+                         allow_nan=False).encode()
+        fingerprints[name] = {"count": len(ordered), "records_sorted_by": list(keys),
+                              "sha256": hashlib.sha256(raw).hexdigest()}
+    return {"schema": "ks-main-audit-subset-bindings/1",
+            "tracks": ["A", "B"], "main_seed": main_seed,
+            "canonicalization": "sort records by declared keys; JSON sort_keys=True, separators=(',',':'), allow_nan=False; UTF-8",
+            "fingerprints": fingerprints}
+
+
+def verify_main_audit_receipt(audit, frozen, summary, episodes, horizon_curves):
+    if (audit.get("freeze_identity") != frozen["identity"] or
+            audit.get("experiment_identity") != frozen["experiment_identity"] or
+            audit.get("passed") is not True or audit.get("discrepancies")):
+        raise ValueError("Main-track audit is unqualified or belongs to a different frozen experiment")
+    actual = main_subset_bindings(summary, episodes, horizon_curves, frozen["model_seed"])
+    if audit.get("main_subset_bindings") != actual:
+        raise ValueError("The audited main A/B results changed; repeat their independent reconciliation")
+    return True
+
+
 def clean(text):
     return str(text).replace("\u2011", "-").replace("\u2013", "-").replace("\u2014", "-").replace("\u2212", "-")
 
@@ -356,6 +403,7 @@ class Inputs:
         self.promotion_audit = extra.get("ks_validation_promotion_A_audit") or self.read(self.repo/"docs/applications/evidence/ks_validation_promotion_A_audit.json", optional=True) or {}
         self.contiguous_history = extra.get("ks_contiguous_history_check") or self.read(self.repo/"docs/applications/evidence/ks_contiguous_history_check.json", optional=True) or {}
         self.memory_recovery = extra.get("ks_memory_recovery_20261105") or self.read(self.repo/"docs/applications/evidence/ks_memory_recovery_20261105.json", optional=True) or {}
+        self.main_audit = extra.get("ks_main_tracks_audit_v2") or self.read(self.repo/"docs/applications/evidence/ks_main_tracks_audit_v2.json", optional=True) or {}
         self.cfg = self.experiment["config"]
         self.seed, self.rows = self.frozen["model_seed"], self.summary["rows"]
         identity = self.frozen["identity"]
@@ -372,6 +420,9 @@ class Inputs:
             raise ValueError("Precision receipt belongs to a different experiment")
         if self.memory_recovery.get("experiment_identity") not in (None,self.experiment["identity"]):
             raise ValueError("Operational memory-recovery receipt belongs to a different experiment")
+        if self.main_audit:
+            verify_main_audit_receipt(self.main_audit, self.frozen, self.summary,
+                self.episodes, self.read(self.results/"horizon_curves.json"))
         if self.contiguous_history and (
                 self.contiguous_history.get("freeze_identity") != identity or
                 self.contiguous_history.get("freeze_sha256") != digest(self.results/"freeze.json")):
@@ -989,6 +1040,15 @@ class Writer:
             audit=i.promotion_audit
             self.p("The independent Track A promotion audit reconstructed all saved four-band losses and episode means before test access, checked eligibility and the declared 1% complexity rule, and preserved optimizer limitations. It is validation-only historical evidence; final test conclusions come from the main result tables.","small")
             self.table(["Validation audit check", "Recorded result"],[[k,compact(v)] for k,v in audit.get("checks",{}).items()],[240,270])
+        if i.main_audit:
+            audit=i.main_audit; checks=audit.get("checks",{})
+            self.h("Post-test independent main-track reconciliation",2)
+            self.p("A separate read-only audit reconstructed both completed primary-seed main tracks from their saved origin and fit receipts. It reconciled episode-balanced scalars, all 100 horizon values, paired trajectory comparisons and the predeclared physical-unit examples against the scheduler outputs. The historical Track A scalar and lead audit also agrees. This is post-test verification of completed main results, not pretest acceptance or evidence that later seed/contiguous stages were already complete.")
+            self.table(["Track", "Scheduled", "Finite", "Failed", "Finite divergent", "Unqualified finite"],[
+                [track,r.get("scheduled_origins"),r.get("finite_successful_origins"),r.get("failed_origins"),r.get("finite_divergent_origins"),r.get("inference_unqualified_successful_origins")]
+                for track,r in sorted(audit.get("main_origin_census",{}).items())],[40,80,70,70,120,130])
+            self.p("The audit records "+str(checks.get("numeric_checks"))+" numerical comparisons, "+str(checks.get("exact_metadata_checks"))+" metadata checks and "+str(checks.get("predeclared_examples_checked"))+" predeclared examples, with zero discrepancies. Numerical comparisons use relative/absolute tolerances of "+compact(audit.get("numeric_tolerance",{}))+". Finite extremes remain in all eligible score populations; a nonfinite origin prevents a full-schedule RMSE. No fits, forecasts, reselection or summary commands were performed by the audit.","small")
+            self.p("The original aggregate-file hashes remain as historical provenance. This report separately checks canonical hashes of the unchanged primary-seed A/B rows, episodes, full horizon curves and paired comparisons; adding completed seed or contiguous results does not invalidate those main-only bindings.","small")
         if i.contiguous_history:
             check=i.contiguous_history
             self.h("Post-freeze contiguous-history confirmation",2)
