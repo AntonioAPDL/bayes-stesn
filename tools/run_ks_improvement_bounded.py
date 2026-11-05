@@ -5,9 +5,10 @@ Dry-run is the default. --execute enables runner launches and guarded file-cache
 advice. A retry is allowed only after this wrapper's child exits nonzero with a
 terminal ``RuntimeError: Memory admission gate:`` traceback. --reclaim-first
 additionally requires a supplied observation of completed coordinator sessions.
-Every existing scheduler and fit-writer lock is held during advice. Only large,
+Every existing scheduler and fit-writer lock is held during advice. Only
 regular, current-user .npz/.h5 files under explicit run roots' fits directories
-are eligible. No payload is read, changed or deleted. No /proc access, global
+are eligible; --include-fit-receipts additionally permits closed .json receipts
+there. No payload is read, changed or deleted. No /proc access, global
 cache control, experiment modification or weakening of resource gates occurs.
 """
 from __future__ import annotations
@@ -18,6 +19,7 @@ from datetime import datetime, timezone
 import fcntl
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import stat
@@ -129,8 +131,9 @@ def acquire_locks(roots, stack):
     return locked
 
 
-def inventory(roots, minimum_bytes):
+def inventory(roots, minimum_bytes, include_fit_receipts=False):
     result, seen = [], set()
+    suffixes = {".npz", ".h5"} | ({".json"} if include_fit_receipts else set())
     skipped = {"non_payload": 0, "small": 0, "duplicate_inode": 0}
     for root in roots:
         for directory, folders, files in os.walk(root/"fits", followlinks=False):
@@ -139,7 +142,7 @@ def inventory(roots, minimum_bytes):
                 safe_existing_path(parent/name, directory=True)
             for name in files:
                 path = parent/name
-                if path.suffix.lower() not in {".npz", ".h5"}:
+                if path.suffix.lower() not in suffixes:
                     skipped["non_payload"] += 1; continue
                 safe_existing_path(path)
                 info = path.lstat()
@@ -156,11 +159,13 @@ def inventory(roots, minimum_bytes):
     return sorted(result, key=lambda row: (row["root"], row["path"])), skipped
 
 
-def advise_cache(roots, *, apply, minimum_bytes=MIB):
-    if minimum_bytes < MIB:
-        raise ValueError("Minimum eligible payload is 1 MiB")
+def advise_cache(roots, *, apply, minimum_bytes=MIB, include_fit_receipts=False):
+    if not isinstance(minimum_bytes, int) or isinstance(minimum_bytes, bool) or minimum_bytes < 64*1024:
+        raise ValueError("Minimum eligible payload is 64 KiB")
     receipt = {"schema": "ks-improvement-guarded-cache-advice/1", "utc": utc(),
         "apply": apply, "run_roots": list(map(str, roots)), "before": memory_snapshot(),
+        "minimum_eligible_bytes": minimum_bytes,
+        "include_closed_fit_receipts": bool(include_fit_receipts),
         "payload_bytes_read": 0, "file_content_changes": 0, "files_deleted": 0,
         "global_kernel_cache_operation": False, "proc_access_attempted": False,
         "files_advised": 0, "logical_bytes_advised": 0, "file_fsync_calls": 0,
@@ -168,7 +173,7 @@ def advise_cache(roots, *, apply, minimum_bytes=MIB):
     with ExitStack() as locks:
         receipt["locks"] = acquire_locks(roots, locks)
         receipt["quiescent_under_owned_run_locks"] = True
-        rows, skipped = inventory(roots, minimum_bytes)
+        rows, skipped = inventory(roots, minimum_bytes, include_fit_receipts)
         receipt.update(files=rows, skipped=skipped, eligible_files=len(rows),
                        eligible_logical_bytes=sum(row["bytes"] for row in rows))
         if apply:
@@ -247,12 +252,14 @@ def main(argv=None):
     parser.add_argument("--closed-session-receipt", type=Path)
     parser.add_argument("--logs-root", type=Path)
     parser.add_argument("--max-retries", type=int, default=6)
-    parser.add_argument("--minimum-mib", type=int, default=1)
+    parser.add_argument("--stage", choices=("all", "precision", "confirm", "sensitivity"), default="all")
+    parser.add_argument("--minimum-mib", type=float, default=1.)
+    parser.add_argument("--include-fit-receipts", action="store_true")
     parser.add_argument("--reclaim-first", action="store_true")
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args(argv)
-    if not 0 <= args.max_retries <= 6 or args.minimum_mib < 1:
-        parser.error("max-retries must be 0..6 and minimum-mib >=1")
+    if not 0 <= args.max_retries <= 6 or not math.isfinite(args.minimum_mib) or args.minimum_mib < .0625:
+        parser.error("max-retries must be 0..6 and finite minimum-mib >=0.0625")
     repository = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(repository/"src"))
     output = safe_existing_path(args.output, directory=True)
@@ -270,12 +277,13 @@ def main(argv=None):
     launch = logs/(datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")+"_"+uuid.uuid4().hex[:10])
     launch.mkdir()
     binding = bind_frozen(repository, config_path, output)
-    command = [sys.executable, "-u", "-m", MODULE, "all", "--config", str(config_path),
+    command = [sys.executable, "-u", "-m", MODULE, args.stage, "--config", str(config_path),
         "--cache", str(cache), "--output", str(output)]
     invocation = {"schema": "ks-improvement-bounded-launcher/1", "utc": utc(),
         "execute": args.execute, "command": command, "binding": binding,
         "run_roots": list(map(str, roots)), "closed_session_proof": proof,
         "max_retries": args.max_retries, "reclaim_first": args.reclaim_first,
+        "runner_stage": args.stage,
         "runner_modified": False, "budgets_reset": False, "gates_weakened": False,
         "launcher_sha256": sha256(Path(__file__))}
     write_new_json(launch/"invocation.json", invocation)
@@ -285,7 +293,8 @@ def main(argv=None):
     def recover(label):
         if bind_frozen(repository, config_path, output) != binding:
             raise RuntimeError("Frozen bindings changed; recovery refused")
-        receipt = advise_cache(roots, apply=args.execute, minimum_bytes=args.minimum_mib*MIB)
+        receipt = advise_cache(roots, apply=args.execute, minimum_bytes=int(args.minimum_mib*MIB),
+            include_fit_receipts=args.include_fit_receipts)
         receipt.update(closed_session_proof=proof,
             trigger=("dry_run_inventory_only" if not args.execute else
                 "recorded_closed_sessions" if label == "initial" else

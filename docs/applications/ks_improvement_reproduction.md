@@ -83,6 +83,40 @@ pages of closed fit files after an observed child memory-admission failure;
 it never deletes those files or weakens the admission rule. A finite retry limit
 is operational, and does not renew the scientific time budget.
 
+The wrapper defaults to `--stage all`. Its optional stage selector accepts
+`all`, `precision`, `confirm`, or `sensitivity` and dispatches the unchanged
+runner entrypoint. With a frozen selection already present, `--stage confirm`
+skips the screening and promotion stage passes while rechecking the retained
+promotion, precision, and frozen-selection records.
+**`confirm` does not run seed sensitivity.** After that coordinator exits,
+invoke the wrapper separately with `--stage sensitivity`, retaining the same
+configuration, cache, output root, and original budget. Do not run the two
+coordinators concurrently. A zero exit from either individual stage does not
+certify completion of the other stage or of budget-limited pending work.
+
+Two explicit options extend file-cache advice without changing that sequence:
+
+| Option | Effect |
+|---|---|
+| `--minimum-mib 0.0625` | Includes eligible files of at least 64 KiB. The default remains 1 MiB; the supplied cutoff must be finite and at least 0.0625 MiB. |
+| `--include-fit-receipts` | Also permits closed JSON files under the explicitly listed run roots' `fits/` directories. Without it, only NPZ and HDF5 files are eligible. |
+
+For example, add `--stage confirm --minimum-mib 0.0625
+--include-fit-receipts` to the resume command above, then use the same command
+with `--stage sensitivity` after confirmation has exited. Every existing
+scheduler and fit-writer lock must be acquired before inventory and advice.
+Eligible files must be regular, owned by the current user, and reached without
+symlinks. The tool checks file identity, flushes each existing file, and issues
+`POSIX_FADV_DONTNEED`; it does not read, rewrite, or delete checkpoint or receipt
+contents. JSON outside `fits/` remains outside this advice scope.
+
+Recovery retries still require this launcher's own child to have exited with
+the exact terminal memory-admission traceback. Initial advice using
+`--reclaim-first` additionally requires genuine recorded coordinator-completion
+observations covering every declared run root. After advice, the unchanged
+memory and disk admission check must pass before any retry. The advice is a
+kernel hint, so it cannot guarantee that pages are released.
+
 The original campaign's four-hour elapsed scheduling budget starts at
 `2026-11-05T07:38:04.272689+00:00`; its cumulative worker cap is 12 hours, with six
 reserved for confirmation and subsequent diagnostics. Resuming preserves those

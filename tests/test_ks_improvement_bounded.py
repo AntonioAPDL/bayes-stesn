@@ -66,6 +66,41 @@ class BoundedRecoveryGuards(unittest.TestCase):
             with self.assertRaises(ValueError):
                 M.closed_session_proof(receipt, [root/"unobserved"])
 
+    def test_explicit_small_checkpoint_advice_retains_locks_and_payload(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder); fit = root/"fits"/"fit1"; fit.mkdir(parents=True)
+            (root/"scheduler.lock").touch(); (fit/"writer.lock").touch()
+            p = fit/"fit.npz.chains.npz"; p.write_bytes(b"closed!!"*(128*1024//8))
+            before = hashlib.sha256(p.read_bytes()).hexdigest()
+            with patch.object(M.os, "posix_fadvise") as advice:
+                self.assertEqual(M.advise_cache([root], apply=False)["eligible_files"], 0)
+                done = M.advise_cache([root], apply=True, minimum_bytes=64*1024)
+                self.assertEqual(done["files_advised"], 1); advice.assert_called_once()
+                self.assertEqual(done["minimum_eligible_bytes"], 64*1024)
+            self.assertEqual(hashlib.sha256(p.read_bytes()).hexdigest(), before)
+            with self.assertRaises(ValueError):
+                M.advise_cache([root], apply=False, minimum_bytes=1024)
+            with (fit/"writer.lock").open("rb") as busy:
+                fcntl.flock(busy, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                with self.assertRaises(BlockingIOError):
+                    M.advise_cache([root], apply=True, minimum_bytes=64*1024)
+
+    def test_closed_fit_receipt_scope_is_explicit_and_does_not_read_payloads(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder); fit = root/"fits"/"fit1"; fit.mkdir(parents=True)
+            (root/"scheduler.lock").touch(); (fit/"writer.lock").touch()
+            p = fit/"fit.json"; p.write_bytes(b"receipt!"*(128*1024//8))
+            outside = root/"unrelated.json"; outside.write_bytes(p.read_bytes())
+            before = hashlib.sha256(p.read_bytes()).hexdigest()
+            with patch.object(M.os, "posix_fadvise") as advice:
+                self.assertEqual(M.advise_cache([root], apply=False, minimum_bytes=64*1024)["eligible_files"], 0)
+                done = M.advise_cache([root], apply=True, minimum_bytes=64*1024, include_fit_receipts=True)
+                self.assertEqual(done["files_advised"], 1); advice.assert_called_once()
+                self.assertEqual(done["payload_bytes_read"], 0)
+                self.assertEqual(done["files"][0]["path"], "fits/fit1/fit.json")
+            self.assertEqual(hashlib.sha256(p.read_bytes()).hexdigest(), before)
+            self.assertEqual(hashlib.sha256(outside.read_bytes()).hexdigest(), before)
+
 
 if __name__ == "__main__":
     unittest.main()
