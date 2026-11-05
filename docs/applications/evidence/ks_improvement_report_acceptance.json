@@ -1,0 +1,72 @@
+{
+  "anchor_preparation": {
+    "cache_opened": false,
+    "execution_authorized_by_this_receipt": false,
+    "fits_run": 0,
+    "models": [
+      "training_mean",
+      "persistence",
+      "linear_var",
+      "ridge_esn",
+      "pod_nvar"
+    ],
+    "scheduled_jobs": 210,
+    "state": "prepared_only"
+  },
+  "created_utc": "2026-11-05T08:40:20.396815+00:00",
+  "focused_tests": {
+    "cases": [
+      "within-trajectory pooled MSE then mean trajectory RMSE",
+      "failed rollout versus blocked fit versus pending census",
+      "terminal unqualified jobs never enter accuracy",
+      "paired trajectory intersection",
+      "finite metrics and consistent training scale",
+      "same-window controlled contrasts",
+      "physical nonfinite guard preserves shape errors"
+    ],
+    "elapsed_seconds": 0.89,
+    "failed": 0,
+    "file": "tests/test_ks_improvement_report.py",
+    "passed": 7
+  },
+  "frozen_application_hash_checks": {
+    "ks_data.py": true,
+    "ks_improvement_candidates.py": true,
+    "ks_improvement_diagnostics.py": true,
+    "ks_improvement_runner.py": true,
+    "ks_metrics.py": true,
+    "ks_runtime.py": true
+  },
+  "new_model_fits": 0,
+  "new_model_forecasts": 0,
+  "numerical_source_modified": false,
+  "partial_report_check": {
+    "artifact_bytes_and_sha256_all_verified": true,
+    "artifact_identity": "d2a58cc1b95f5088cfce3355d28ead4e8264da756bde9ec771405fe55871f245",
+    "builder_sha256_at_preview": "bbc2e3de344f89f2921f08bbbff350d309f51f4268101f7cb609583d7ca3fa45",
+    "confirmation_cohorts": 0,
+    "elapsed_seconds": 6.213700506999885,
+    "figures_generated": 0,
+    "freeze_present": false,
+    "note": "No final-stage figures exist before frozen confirmation outputs. A later wording-only clarification of the conditioning prefix is included in the final builder source.",
+    "peak_rss_bytes": 144990208,
+    "production_report": false,
+    "source_receipt_count": 1368,
+    "status": "incomplete"
+  },
+  "schema": "ks-improvement-report-acceptance/1",
+  "source_files": {
+    "tests/test_ks_improvement_report.py": {
+      "bytes": 7424,
+      "sha256": "4b9dca6c0e4534a024c7f124f661c53ef92399d66210d579eb43ce135905736f"
+    },
+    "tools/build_ks_improvement_report.py": {
+      "bytes": 82866,
+      "sha256": "27070cb6f74291397f985e8f90f782773c09e7145e50fe5de3df2f4bee4db105"
+    },
+    "tools/evaluate_ks_improvement_anchors.py": {
+      "bytes": 15196,
+      "sha256": "173704b681fee550e28239916d3547c3abc7b87accfcb22c9c8e347c0954ca5e"
+    }
+  }
+}

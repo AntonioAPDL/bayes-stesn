@@ -1,0 +1,201 @@
+{
+  "existing_tests_reviewed_not_rerun": [
+    "tests/test_ks_improvement_runner.py",
+    "tests/test_ks_improvement_candidates.py",
+    "tests/test_ks_improvement_diagnostics.py"
+  ],
+  "experiment_identity": "2b805c3ee9c0b8fdb555fe1abc3e26d5fb80e32c2cab62ce1c36e40d20a705fa",
+  "findings": [
+    {
+      "current_locations": [
+        "133-147"
+      ],
+      "description": "The original new acceptance helper skipped a previously completed case before rechecking its current fitted payload/receipt. It could retain a passed acceptance result after payload deletion/replacement or changed native identity. The fix verifies receipt metadata and payload checksum before reuse, then compares retained-case checksum, native identity and qualification. No prior real acceptance result was invalidated because this new helper had not yet been executed on the study.",
+      "file": "tools/check_ks_improvement_selected.py",
+      "id": "acceptance-reuse-artifact-binding",
+      "severity": "material_acceptance_resumption_bug_fixed_before_use",
+      "status": "fixed_by_parent_and_verified_with_mock_only_tests"
+    },
+    {
+      "description": "Worker/search/wall budgets prevent new admission after their thresholds; they do not interrupt already admitted jobs at the aggregate threshold. A four-job batch admitted just below a threshold can incur nominally up to 4*1800=7200 additional worker-seconds, plus monitoring and shutdown allowance. Monitoring is about every 5 seconds, then up to 20 seconds after SIGINT and 10 seconds after SIGTERM. Wall-threshold overrun is one batch duration. There is no duration reservation at admission; launcher retries preserve the same budgets. Current observed execution was far below the limits when reviewed. This is a finite scheduling policy, not an exact running-job hard cap.",
+      "file": "src/bayes_stesn/applications/ks_improvement_runner.py",
+      "id": "budget-admission-threshold",
+      "locations": [
+        "260-285",
+        "303-316",
+        "333-355"
+      ],
+      "severity": "operational_and_reporting_limitation",
+      "status": "frozen_source_unchanged; parent_notified_to_monitor_and_describe_correctly"
+    }
+  ],
+  "frozen_application_hash_checks": {
+    "ks_data.py": true,
+    "ks_improvement_candidates.py": true,
+    "ks_improvement_diagnostics.py": true,
+    "ks_improvement_runner.py": true,
+    "ks_metrics.py": true,
+    "ks_runtime.py": true
+  },
+  "limitations": [
+    "Active campaign was not terminal at review. No final rankings, confirmation outcomes or all-fit qualification claims are certified here.",
+    "No original or follow-up test-partition outcomes were opened by this reviewer.",
+    "Recorded contract review and four synthetic acceptance checks do not replace the later actual selected-model adversarial check."
+  ],
+  "review_status": "focused_review_completed_with_one_fixed_acceptance_reuse_bug_and_explicit_budget_limitation",
+  "reviewed_utc": "2026-11-05T08:38:40.256955+00:00",
+  "schema": "ks-improvement-independent-scientific-review/1",
+  "scientific_actions": {
+    "data_windows_read_by_reviewer": 0,
+    "forecasts": 0,
+    "frozen_numerical_source_or_configuration_modified": false,
+    "posterior_fits": 0,
+    "selection_repeated": false
+  },
+  "scope": "Read-only review of numerical source, frozen candidate/configuration records, active validation receipts and focused synthetic acceptance tests. This is not a completed-study audit or certification of every future fitted model.",
+  "source_receipts": [
+    {
+      "bytes": 41646,
+      "path": "src/bayes_stesn/applications/ks_improvement_runner.py",
+      "sha256": "9bfc8343feb7e49fa8c026c105e3b3959416483a711f687c90e2a09bde26c2a8"
+    },
+    {
+      "bytes": 28353,
+      "path": "src/bayes_stesn/applications/ks_improvement_candidates.py",
+      "sha256": "f2b1d96b3ef0e2ea575e070c5bece2c48600c01bf05d7405b91983705da2d41c"
+    },
+    {
+      "bytes": 23866,
+      "path": "src/bayes_stesn/applications/ks_improvement_diagnostics.py",
+      "sha256": "de639b9fd3acf214a0d6e4530860cd609286aaf01a128c61521d5b1a01c8cc19"
+    },
+    {
+      "bytes": 40238,
+      "path": "src/bayes_stesn/applications/ks_native.py",
+      "sha256": "dfb6e8c2d9baefa54cb87b162175ac3672f8bc17f9e8951272ba6e329798fd6e"
+    },
+    {
+      "bytes": 4686,
+      "path": "src/bayes_stesn/applications/ks_metrics.py",
+      "sha256": "0a4f709931cbd91f42e76e8e34497ac539f302d79113ba9720972f33edb90400"
+    },
+    {
+      "bytes": 3892,
+      "path": "src/bayes_stesn/applications/ks_runtime.py",
+      "sha256": "ff70f020dcb877975cf246e3264cafe01372121d1114532d34e18fa455eb9aa0"
+    },
+    {
+      "bytes": 10408,
+      "path": "tools/check_ks_improvement_selected.py",
+      "sha256": "28b31d3815beee3db0436446a28dec53860d683af2bdef5658112f1970a9bda7"
+    },
+    {
+      "bytes": 14040,
+      "path": "tools/check_ks_selected_invariance.py",
+      "sha256": "fbeac52385d1c0cea4fe29b7e56c0eb8396ef7b439261be9f8fe34eaba06b97a"
+    },
+    {
+      "bytes": 18281,
+      "path": "tools/run_ks_improvement_bounded.py",
+      "sha256": "8517e34963cc8639df65c34c9fa7470d7fb054dc2fff672cea9ae638d0a650be"
+    },
+    {
+      "bytes": 82756,
+      "path": "tools/build_ks_improvement_report.py",
+      "sha256": "9d8094bd5823e211533d010d0ffcee587d5b9ef6c6828c03a90422397224d468"
+    },
+    {
+      "bytes": 23430,
+      "path": "tests/test_ks_improvement_runner.py",
+      "sha256": "39870f6f7518a29b5a19dbccd4c67b8ceab754a8812a7375d29698c362759c2b"
+    },
+    {
+      "bytes": 10808,
+      "path": "tests/test_ks_improvement_candidates.py",
+      "sha256": "84f9a1f8125d9523ab8523be2b2a4951316403b54dbff5717e0e6a31f1e4805d"
+    },
+    {
+      "bytes": 10577,
+      "path": "tests/test_ks_improvement_diagnostics.py",
+      "sha256": "0d2066965ca019e43ed0a3f1f0636c7f3d878897a5160e7c7d9c7e58fb406a03"
+    },
+    {
+      "bytes": 5131,
+      "path": "tests/test_ks_improvement_selected_checks.py",
+      "sha256": "d621036b45bc92815f57e17cd202d558edcf313b19856a37c72f55c183b60114"
+    }
+  ],
+  "targeted_test_execution": {
+    "coverage": [
+      "unchanged retained case reuses without any scientific call",
+      "missing fitted payload refuses reuse and preserves old receipt",
+      "changed payload refuses reuse and preserves old receipt",
+      "changed native identity refuses reuse and preserves old receipt"
+    ],
+    "file": "tests/test_ks_improvement_selected_checks.py",
+    "fixture": "Opaque synthetic checkpoint bytes; KSAdapter, admission, fixed-fit forecast check and preprocessing function all mocked to fail if called. No dataset or fitted-model deserialization.",
+    "invocation": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_ks_improvement_selected_checks.py",
+    "pytest_reported_seconds": 1.05,
+    "tests_failed": 0,
+    "tests_passed": 4
+  },
+  "training_only_history_receipt": {
+    "checked_jobs": 208,
+    "excluded_candidates": {},
+    "history": 512,
+    "passed_jobs": 208,
+    "scope": "208 candidate/trajectory-0-or-5 training-only checks; not universal reservoir synchronization proof",
+    "sha256": "30862f68b52a906cf0a7638302a16cd3b2db3c901df24e80761fa5b3be035450"
+  },
+  "verified_contracts": [
+    {
+      "evidence": [
+        "ks_improvement_candidates.py:352-355,369-401,427-459",
+        "ks_native.py:142-169"
+      ],
+      "finding": "Main candidates retain the selected track coefficient/noise/covariance prior hyperparameters in the accepted iid Gaussian scalar-ridge, stationary relative-scale Matern hierarchy. Legacy different-prior references and four explicit prior sensitivities have separate strata. Changing feature or spatial bases changes the induced function prior even with the same coefficient-prior family and constants.",
+      "name": "preserved_likelihood_and_prior_strata"
+    },
+    {
+      "evidence": [
+        "ks_improvement_runner.py:124-138,185-198,357-382,586-597",
+        "ks_native.py:185-227"
+      ],
+      "finding": "Model fitting receives the permitted per-trajectory training panel. Forecast input and evaluation labels are separated; histories are passed before evaluation_window is called by the worker. Shared history is selected from training-only synchronization, and confirmation uses the 14 trajectories outside the six promotion trajectories. The unchanged facade can internally construct labels; no future-free physical-disk-access claim is made.",
+      "name": "data_and_history_boundary"
+    },
+    {
+      "evidence": [
+        "ks_improvement_runner.py:137-162,185-198",
+        "ks_native.py:384-445,475-511",
+        "ks_metrics.py:15-61"
+      ],
+      "finding": "Inference-unqualified fits stop before forecasting and cannot obtain an eligible selection loss. Qualified runs use original native joint predictive paths, fixed parameter draws along each path and each path own predicted input-site state. Physical-unit means average all returned paths. Empirical CRPS has no iid unbiased-correction claim; point and probabilistic scoring use the same path ensemble.",
+      "name": "qualification_and_full_predictive_distribution"
+    },
+    {
+      "evidence": [
+        "ks_improvement_runner.py:470-498,517-583",
+        "tests/test_ks_improvement_runner.py:442-520"
+      ],
+      "finding": "Four named independent predictive ensembles use paired seeds across eligible main candidates on the two prespecified trajectory-0 validation origins. Each candidate tolerance is max(1% of best promotion loss, twice the paired-replicate SD against that promotion winner), and lower coefficient count resolves admitted near ties. This is a predeclared local conditional-simulation heuristic, not a confidence interval for the complete six-trajectory promotion objective, MCMC error, or scientific sampling uncertainty.",
+      "name": "declared_paired_MC_near_tie_rule"
+    },
+    {
+      "evidence": [
+        "ks_improvement_diagnostics.py:78-121,157-242,262-304",
+        "tests/test_ks_improvement_diagnostics.py:73-164"
+      ],
+      "finding": "Only full_predictive is eligible as the original predictive distribution. Plug-in deterministic, zero-innovation parameter-only, fixed-parameter innovation and teacher-forced outputs are labeled diagnostic. The conditional coefficient mean is not mislabeled as a posterior predictive mean, and nonlinear intervention variances are not claimed to be additive. Teacher-forced predictions use permitted input sites strictly before their prediction time and are restricted away from the delivered test interval.",
+      "name": "diagnostic_interventions_not_model_replacements"
+    },
+    {
+      "evidence": [
+        "ks_improvement_runner.py:74-82,104-225,333-355,385-425",
+        "tools/build_ks_improvement_report.py:183-245,300-418"
+      ],
+      "finding": "Immutable terminal jobs are not rerun; same-fit writes are serialized; source, training/transform/configuration and forecast identities protect reused numerical artifacts. An origin failure makes its trajectory ineligible for the selection loss. The report census separately retains observed nonfinite rollouts, finite divergence, unqualified-blocked, failed-job-blocked and pending origins, with all scheduled denominators. Campaign.loss alone is not the full reliability census: missing outcomes from a terminal scientific fit/synchronization failure can remain labeled pending there, so terminal-aware report counts are required.",
+      "name": "replay_and_failure_denominators"
+    }
+  ]
+}

@@ -192,18 +192,23 @@ must be profiled before using that estimate.
 The new training-only 512-unit profile recorded approximately **64.82 seconds
 for a qualified fit**, **5.53 seconds for one 100-step, 256-path forecast**, and
 **537,538,560 bytes of peak RSS**. This profile motivated the explicitly recorded
-extension from the initial eight-worker-hour allocation to a **hard twelve-worker-hour
-cap**. It is resource evidence, not validation evidence for choosing that
+extension from the initial eight-worker-hour allocation to a **twelve-worker-hour
+scheduling threshold**. It is resource evidence, not validation evidence for choosing that
 configuration.
 
 The configured limits are six worker hours for preflight, screening, promotion
 and precision combined, reserving six for confirmation and subsequent
-diagnostics; a separate four-hour wall cap; and at most four workers with one
+diagnostics; a separate four-hour wall scheduling threshold; and at most four workers with one
 numerical thread each. The per-worker admission estimate is 600 MiB, checked
 with the existing 1.5 multiplier against a combined allowance of
 4,531,695,001 bytes and current container headroom. The disk reserve is
 12,565,873,460 bytes. These are finite limits, not a promise that every planned
-stage will fit. Pending work must remain explicitly pending when a limit binds.
+stage will fit. The coordinator checks cumulative worker and wall budgets before
+admitting a batch, while each running job has a 1,800-second timeout. Already
+admitted work can therefore exceed a scheduling threshold by at most one such
+batch: up to 7,200 worker seconds or 1,800 wall seconds, plus bounded shutdown
+overhead. Report actual consumption and retain any unfinished work as pending;
+do not describe these admission checks as exact running-job cutoffs.
 
 Source review identifies these practical constraints:
 
