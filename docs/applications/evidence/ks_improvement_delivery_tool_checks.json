@@ -1,0 +1,39 @@
+{
+  "checks": [
+    {
+      "observed_by": "ks_data_adapter",
+      "passed": 7,
+      "scope": "synthetic fixtures; no production animation generated",
+      "seconds": 0.79,
+      "suite": "test_ks_improvement_animation.py"
+    },
+    {
+      "observed_by": "ks_literature",
+      "passed": 9,
+      "scope": "synthetic fixtures; no production native payload read or backup created",
+      "seconds": 1.1,
+      "subtests_passed": 2,
+      "suite": "test_ks_improvement_fits.py"
+    }
+  ],
+  "created_utc": "2026-11-05T09:11:00.074185+00:00",
+  "files": {
+    "tests/test_ks_improvement_animation.py": "d780d3d43fe3b3d56a0d88b75266f86d74f95f23925a4ca1e8123756a4703495",
+    "tests/test_ks_improvement_fits.py": "54ba79fa1dcf9a3f1ab7d375527db88e83298bc59dc91a862ed9b5b86991e99d",
+    "tools/animate_ks_improvement.py": "bfb284e48a493f0d4e57d8e0a6c1c79bac314c9f0426b435befcfda46f02ad92",
+    "tools/build_ks_improvement_pdf.py": "5fa700c335dff035953864a4a31393038eebde1c49a02f6f6f9b9d008515eb48",
+    "tools/package_ks_improvement_fits.py": "41bef20e9a0a9ee9671da5e96bf242d0eb1d4f887cd3259ec06e2629b690c907"
+  },
+  "pending": [
+    "Actual selected-artifact invariance checks",
+    "Production backup verification",
+    "Final PDF visual inspection",
+    "Production animation visual inspection"
+  ],
+  "review_fixes": [
+    "Native backup binds exact closed-attempt and terminal receipt inventories and byte hashes, including interrupted work without a terminal.",
+    "PDF labels point-only CRPS only for deterministic reference roles; unavailable native CRPS remains undefined."
+  ],
+  "schema": "ks-improvement-delivery-tool-review-1",
+  "scope": "Delivery/report tooling only; frozen numerical modules and scientific configuration unchanged."
+}

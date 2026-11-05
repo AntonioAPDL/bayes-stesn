@@ -72,6 +72,7 @@ export PYTHONHASHSEED=0 MPLBACKEND=Agg
   --cache /workspace/scratch/ks_recovery_20261105T0615/cache \
   --output /data/ks_improvement_20261105/run_v2 \
   --additional-run /workspace/scratch/ks_improvement_20261105/run_v1 \
+  --closed-session-receipt /data/ks_improvement_20261105/operations/closed_sessions_after_97432.json \
   --max-retries 6 --execute
 ```
 
@@ -133,12 +134,23 @@ config['budget']['campaign_started_utc'] = datetime.datetime.now(datetime.timezo
 destination.write_text(json.dumps(config, indent=2, sort_keys=True) + '\n')
 PY
 
+/data/ks-improvement-env/bin/python -m bayes_stesn.applications.ks_improvement_runner preflight \
+  --config /data/ks-improvement-reproduction/config.json \
+  --cache CACHE_ROOT \
+  --output /data/ks-improvement-reproduction/run
+
 /data/ks-improvement-env/bin/python tools/run_ks_improvement_bounded.py \
   --config /data/ks-improvement-reproduction/config.json \
   --cache CACHE_ROOT \
   --output /data/ks-improvement-reproduction/run \
   --max-retries 6 --execute
 ```
+
+The first command creates and binds the fresh experiment root. The bounded
+launcher requires that existing root and does not invent a new experiment or
+reset its start time. An additional historical run root requires a genuine
+closed-session observation receipt as well as acquiring all existing locks;
+do not fabricate that receipt for an unobserved process.
 
 Before doing this, inspect actual CPU quota, container memory, free disk and
 other jobs. The recorded resource admission values are feasible measurements
@@ -165,6 +177,17 @@ boundaries, diagnostic interventions, selection/resume behavior, and the cache
 launcher. They do not replace actual chain diagnostics, forecast qualification,
 or completed scientific results.
 
+The native-backup and animation contracts have a separate, small fixture suite:
+
+```bash
+PYTHONPATH=src /data/ks-improvement-env/bin/python -m pytest -q \
+  tests/test_ks_improvement_fits.py \
+  tests/test_ks_improvement_animation.py
+```
+
+These 14 checks use synthetic checkpoint/geometry files. They do not open a real
+fit, run MCMC, produce new forecasts, package the live campaign, or render movies.
+
 ## Evidence and reporting
 
 Keep bulk data, posterior checkpoints, full run logs, and private retrieval
@@ -173,7 +196,205 @@ identities, diagnostic summaries, metrics, selected examples, and report in the
 application-results area. Large checkpoint snapshots need their own checksum
 manifest and authorized private storage.
 
-The report-building and optional fixed-anchor commands are documented with their
-delivered tools once those stages are complete. A report from a running campaign
-must state its partial status and preserve the expected denominators. Inference
-failures are never replaced by point forecasts or removed from those counts.
+A report from a running campaign must state its partial status and preserve the
+expected denominators. Inference failures are never replaced by point forecasts
+or removed from those counts. A process that exits cleanly may still have
+budget-limited pending jobs; retain the recorded status and coverage counts.
+
+### Compact evidence snapshots
+
+The compact package captures a fixed frontier of immutable completed, failed,
+and inference-unqualified terminal receipts, their bound jobs and forecast
+scores, source/configuration identities, available history/selection/freeze
+records, closed attempts, migration evidence, and the original diagnostic
+summary. It excludes mutable status ledgers, live attempts, locks, raw data,
+and native/posterior checkpoints. **It is evidence storage, not numerical
+resumability by itself.** A later immutable terminal receipt is deferred to the
+next snapshot, so compact snapshots can be made while the campaign is running.
+
+For the recorded workspace, use its compatible Python and the thread settings
+above. Set these task-specific paths once:
+
+```bash
+KS_PYTHON=/workspace/scratch/ks_recovery_20261105T0615/env/bin/python
+KS_RUN_ROOT=/data/ks_improvement_20261105/run_v2
+KS_EXPORT_ROOT=/data/ks_improvement_20261105/exports
+KS_REPORT_ROOT=/data/ks_improvement_20261105/report
+
+"$KS_PYTHON" tools/package_ks_improvement_checkpoint.py create \
+  --run-root "$KS_RUN_ROOT" \
+  --destination "$KS_EXPORT_ROOT" \
+  --diagnostic-summary docs/applications/evidence/ks_improvement_initial_diagnosis.json
+```
+
+The command prints the unique package directory and `manifest` path. Set
+`KS_COMPACT_MANIFEST` to that exact returned path, then verify it:
+
+```bash
+KS_COMPACT_MANIFEST=/absolute/path/to/the/returned/manifest.json
+"$KS_PYTHON" tools/package_ks_improvement_checkpoint.py verify \
+  --manifest "$KS_COMPACT_MANIFEST"
+```
+
+### Native fit and sampler checkpoint backups
+
+`tools/package_ks_improvement_fits.py plan` reads small experiment/job/freeze
+metadata and stats canonical binary files; it does not open checkpoint payloads
+and can be used during execution. Its byte counts are provisional until writers
+stop. Selection must be frozen before the selected-only subset is meaningful.
+
+```bash
+"$KS_PYTHON" tools/package_ks_improvement_fits.py plan \
+  --run-root "$KS_RUN_ROOT" --selected-only
+
+"$KS_PYTHON" tools/package_ks_improvement_fits.py plan \
+  --run-root "$KS_RUN_ROOT" --all-fit-checkpoints
+```
+
+Create a native package **after the coordinator and fit workers have exited**.
+The tool must acquire the existing scheduler lock and every fit writer lock; it
+does not create substitute locks. A busy, missing, or incompatible lock stops
+the operation before checkpoint payload validation. Run the compact creation
+command again after this exit and use its **fresh manifest**. The native tool
+rejects stale experiment/history/freeze bindings or a changed terminal frontier.
+Locks establish quiescence; the manifests separately disclose missing fits and
+inference qualification rather than assuming every requested job completed.
+
+Choose the scope needed for the private backup:
+
+| Mode | Included native state | Resume meaning |
+|---|---|---|
+| `--selected-only` | Receipted `fit.npz` files for frozen main, anchor, and selected prior-sensitivity configurations, across available trajectory/model-seed fits; original receipts, synchronization records, bound jobs, and compact evidence | Completed forecast state, including declared seed-sensitivity fits when present; sampler sidecars intentionally excluded |
+| `--all-fit-checkpoints` | Every unique closed canonical `fit.npz`, `fit.npz.chains.npz`, and `fit.npz.chains.npz.ks-fit-phase.npz` available in this run, with receipts/provenance and compact evidence | Completed forecasts plus retained exact sampler RNG/proposal/phase state for interrupted inference, subject to the original continuation allowance |
+
+For a selected-fit package:
+
+```bash
+"$KS_PYTHON" tools/package_ks_improvement_fits.py create \
+  --run-root "$KS_RUN_ROOT" \
+  --output "$KS_EXPORT_ROOT/ks_native_selected_final" \
+  --compact-manifest "$KS_COMPACT_MANIFEST" \
+  --selected-only --part-mib 512 --apply
+```
+
+For the broader package, use this alternative. It already includes the selected
+files, so making both packages is unnecessary unless separate delivery subsets
+are useful:
+
+```bash
+"$KS_PYTHON" tools/package_ks_improvement_fits.py create \
+  --run-root "$KS_RUN_ROOT" \
+  --output "$KS_EXPORT_ROOT/ks_native_all_final" \
+  --compact-manifest "$KS_COMPACT_MANIFEST" \
+  --all-fit-checkpoints --part-mib 512 --apply
+```
+
+`--apply` is the tool's explicit execution flag. The output directory must be
+new and outside the run. There is no force-overwrite mode. The tool verifies
+current receipt hashes, native internal state checksums, ZIP CRCs, and
+data/configuration/source/runtime identities; chain/phase checks preserve the
+original bounded draw allowance and qualification. It writes independent ZIP
+segments capped at 512 MiB, a per-member/per-part SHA-256 manifest, verification
+receipt, standalone restore helper, and restore instructions. Already compressed
+NPZ files are stored unchanged without a giant intermediate archive. A single
+member must fit within the requested segment cap; the stat plan reports its
+minimum size. Original data/checkpoints are retained, and creation preserves at
+least the recorded disk reserve or 2 GiB, whichever is larger.
+
+The native serializer embeds the permitted training panel, derived features,
+frozen basis and posterior because these are needed by the accepted forecast
+implementation. The separate raw/canonical KS cache and environment are not
+included. An inference-unqualified completed fit remains unqualified; archiving
+its chain/phase state does not authorize additional draws or a changed prior.
+The compact archive is included under `evidence/` with its own verified manifest.
+
+### Verify and restore a native package
+
+Keep all numbered parts, `manifest.json`, `manifest.sha256`,
+`restore_ks_improvement_fits.py`, and `RESTORE.md` together. For example, for the
+selected package:
+
+```bash
+KS_PACKAGE="$KS_EXPORT_ROOT/ks_native_selected_final"
+"$KS_PYTHON" "$KS_PACKAGE/restore_ks_improvement_fits.py" verify \
+  --package "$KS_PACKAGE"
+
+"$KS_PYTHON" "$KS_PACKAGE/restore_ks_improvement_fits.py" restore \
+  --package "$KS_PACKAGE" \
+  --destination /data/ks_improvement_restored_native
+```
+
+Verification and extraction need only the Python standard library. Restore
+checks every part/member SHA-256 and ZIP CRC, rejects unsafe paths, preserves
+the recorded disk reserve, and writes atomically to a **new destination**. It
+does not merge with or overwrite an existing run. Extract the nested compact
+evidence ZIP separately for inspection if required.
+
+For forecast reuse, supply the original verified KS data, protocol, trajectory,
+configuration, seed, and compatible numerical runtime to the unchanged
+`fit_native('bayes_stesn', training.panel, config, seed,
+checkpoint_path=RESTORED_FIT_PATH)`. Its existing identity guard decides whether
+the completed checkpoint is reusable. When native `fit.npz` is absent, retain
+the canonical chain and phase filenames beside that intended path so the same
+adapter can resume the recorded inference phase within its original allowance.
+Some phase-only files contain no saved chain progress; the manifest distinguishes
+these cases. The original sampler rechecks its transition signature against the
+reconstructed prepared model.
+
+Archived job JSON contains original absolute paths. **Restored worker jobs are
+not directly relocation-resumable.** A coordinator in another root needs an
+explicit compatible import with new job identities and preserved cumulative
+wall/worker accounting. Neither this restorer nor a new wrapper invocation
+rewrites those paths or renews an exhausted campaign budget.
+
+### Reports and fixed-case animations
+
+Build the report from retained receipts into a location outside the numerical
+run root:
+
+```bash
+"$KS_PYTHON" tools/build_ks_improvement_report.py \
+  --results "$KS_RUN_ROOT" \
+  --output "$KS_REPORT_ROOT" \
+  --operations /data/ks_improvement_20261105/operations/bounded_launches
+```
+
+The report builder also accepts `--anchors PATH` for the separately generated
+cheap-anchor results and `--acceptance PATH` for a completed acceptance receipt.
+Pass these only when those artifacts exist. Its `source_manifest.json` and
+`artifact_manifest.json` bind the numerical receipts and retained examples used
+by the animation tool. Generating a report does not fit, forecast, or rerun
+selection.
+
+With the frozen selection and report-bound example arrays present, render the
+three tracks separately in compact MP4s:
+
+```bash
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export PYTHONPATH="$PWD/src" MPLBACKEND=Agg
+"$KS_PYTHON" tools/animate_ks_improvement.py \
+  --results "$KS_RUN_ROOT" \
+  --report "$KS_REPORT_ROOT" \
+  --output "$KS_REPORT_ROOT/animations" \
+  --tracks A B C --fps 10
+```
+
+The tool uses existing `ffmpeg` and `ffprobe`; it does not install codecs. The
+output must be outside the numerical run root. The fixed example is trajectory
+1, validation first target 6000, horizon 100, comparing the old selected anchor
+with the new preserved-prior main selection. It reads only saved example arrays
+and their report/freeze bindings: no dataset, posterior checkpoint, new forecast,
+or selection access is needed. A/B/C remain separate protocols, with 13/64/12
+validation target sites and 39/64/40 input sites respectively. Withheld target
+sites and permitted input sites are marked; the display does not interpolate
+unscored locations.
+
+Each movie contains all 100 frames at 1280 by 720 pixels using H.264/yuv420p.
+At 10 fps its playback lasts 10 seconds; the forecast spans 25 physical time
+units. `--fps 8` is the other supported playback rate. The physical amplitude
+scale is shared across the two panels; extreme finite forecasts use an explicitly
+labeled symmetric log scale rather than clipping. Missing cases remain missing
+and are recorded in `animation_receipt.json`; an entirely missing track gets no
+empty movie. Matching completed movies are checksum-verified and reused.
+Incompatible outputs require a new directory; the tool does not overwrite them
+or substitute a more favorable example.

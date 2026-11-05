@@ -977,7 +977,7 @@ def render_markdown(report, cohorts, comparisons, figures, diagnosis):
             text.append(f"| {row['track']} | {', '.join(row['aliases'])} | {', '.join(row['changed_effective_fields'])} | "
                         f"{format_number(row['screen_band_crps'])} | {format_number(row['delta_band_crps'])} | "
                         f"{format_number(row['screen_band_mse'])} | {format_number(row['delta_band_mse'])} | {len(row['paired_trajectories'])} |")
-    text += ["", 
+    text += ["",
         "## Model-seed sensitivity", "",
         "The two additional seeds are evaluated on four declared selection trajectories and eight validation origins. "
         "`seed_sensitivity.json` includes the main seed on exactly those same four trajectories and origins, all scheduled denominators, "

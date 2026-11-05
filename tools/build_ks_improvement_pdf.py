@@ -210,9 +210,18 @@ class Renderer:
                "hierarchy uses σ² ~ inverse-gamma(2,0.05), log λ ~ Normal(log(0.1),1.5²), log q ~ Normal(0,1.25²), "
                "and a lognormal range hierarchy with standard deviation 0.65. The track-specific original selected "
                "range-prior median is preserved in the main stratum; changes are explicitly labeled sensitivity.")
+        self.p("Fixed prior means that these coefficient, noise and covariance hyperpriors remain unchanged conditional "
+               "on each architecture. Changing a spatial basis or its dimension changes the induced prior over fields; "
+               "it does not make two architectures the same stochastic process.", "small")
         self.p("Native PCA-ESN features combine lagged permitted-site scores, sparse leaky tanh reservoirs and declared "
                "squared-state terms. Inference uses the existing exact collapsed random-walk Metropolis target with "
                "conditional Gaussian/inverse-gamma parameter recovery. It is not HMC or a deterministic substitute.")
+        self.p("The reservoir receives raw conditioning-prefix whitened PCA scores. The bounded map 3 tanh(a/3) "
+               "applies only to score terms in the readout. Recurrent weights are sparse Gaussian draws scaled to "
+               "the declared operator norm; input-weight standard deviation is input_scale divided by the square "
+               "root of the incoming dimension, and fixed biases are uniform on [-0.3,0.3]. Readout feature centering "
+               "and scaling use the final two thirds of the conditioning prefix, with scale floor 0.04. The spectral "
+               "radius is measured separately and must not be confused with the configured operator norm.", "small")
         self.p("Each predictive path holds its static parameter draw fixed, generates the accepted spatially correlated "
                "innovations, and feeds back its own generated input-site field. Primary point forecasts average complete "
                "paths. Residual uncertainty remains part of this fitted clean-field predictive model; it is not an "
@@ -242,7 +251,7 @@ class Renderer:
         self.p("Selection minimizes episode-balanced CRPS, with equal weights for the mean losses in leads 1-10, 11-25, "
                "26-50 and 51-100. Reported ordinary 100-step CRPS and RMSE are distinct summaries. MCMC keeps four chains, "
                "1000 warmup and 2000 retained states per chain, with one bounded 2000-draw continuation. Qualification "
-               "requires rank-normalized split R-hat ≤ 1.01 and bulk/tail ESS ≥ 400 for monitored quantities [3].")
+               "requires rank-normalized split R-hat below 1.01 and bulk/tail ESS ≥ 400 for monitored quantities [3].")
         self.p("All sampled hyperstates are checked. All readout coefficients and ten scale/readout/predictive functionals "
                "are checked using 512 evenly spaced retained states per chain. Predictive precision repetitions measure "
                "conditional simulation variability; they are not substitutes for chain convergence or trajectory-level uncertainty.")
@@ -256,7 +265,9 @@ class Renderer:
                 continue
             self.table(["Method / role", "Complete trajectories", "RMSE", "MAE", "CRPS", "90% coverage / width"], [
                 [role(r), f"{r['complete_trajectories']}/14", fmt(r["metrics"]["rmse"]["mean"]),
-                 fmt(r["metrics"]["mae"]["mean"]), fmt(r["metrics"]["crps"]["mean"]) if r["metrics"]["crps"]["mean"] is not None else "Point only",
+                 fmt(r["metrics"]["mae"]["mean"]),
+                 ("Point only" if "cheap_anchor" in r.get("roles", [])
+                  else fmt(r["metrics"]["crps"]["mean"])),
                  (fmt(100*r["metrics"]["coverage90"]["mean"],1)+"% / "+fmt(r["metrics"]["width90"]["mean"]))
                  if r["metrics"]["coverage90"]["mean"] is not None else "Not defined"] for r in rows], [2.25,1,1,1,1,1.4])
             self.table(["Role", "Finite /280", "Rollout failed", "Inference blocked", "Pending / other blocked", "Finite divergent"], [
@@ -293,8 +304,8 @@ class Renderer:
                         "Squared terms": f["squares"], "Conditioning rows": c["conditioning"],
                         "Usable likelihood targets": 6000-c["conditioning"], "Spatial columns": p,
                         "Spatial width": s["width"], "Temporal columns": d, "Readout coefficients": p*d,
-                        "Range-prior median": math.exp(c["covariance"]["log_ell_mean"]),
-                        "Precision-prior median": math.exp(c["prior"]["mean_log_precision"])}
+                        "Range-prior median": f"{math.exp(c['covariance']['log_ell_mean']):.6g}",
+                        "Precision-prior median": f"{math.exp(c['prior']['mean_log_precision']):.6g}"}
             old, new = map(values, configs)
             self.table(["Effective parameter", "Original selected", "New fixed-prior selected"],
                        [[k, old[k], new[k]] for k in old], [1.65,1.35,1.5])
