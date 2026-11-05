@@ -1,0 +1,46 @@
+{
+  "applied": false,
+  "confirmation_scores_used_for_decision": false,
+  "execution_scope": "Implementation decision only; migration will require fresh observed coordinator closure and all existing source locks.",
+  "extended_caps": {
+    "search_worker_seconds_cap": 21600,
+    "total_worker_seconds_cap": 54000,
+    "wall_seconds_cap": 18000
+  },
+  "extended_configuration_sha256": "a7dc9ec1f22b2ce5b8e712f5db0b401a9c38b9ee8ec75be5f9e6a1a05afd0c39",
+  "forecast_seed": 11622026,
+  "frozen_selection_identity": "6c07b2a7473ad161cd781d873e68bd72e4c0fcc7b692149cc1a6fcc03183bf18",
+  "identity": "179380f67d78f105fe21e0fab4256a8d86686c52e8b6784c25c5da74fa986812",
+  "model_seed": 20261105,
+  "one_prospective_extension": true,
+  "original_campaign_started_utc": "2026-11-05T07:38:04.272689+00:00",
+  "previous_caps": {
+    "search_worker_seconds_cap": 21600,
+    "total_worker_seconds_cap": 43200,
+    "wall_seconds_cap": 14400
+  },
+  "previous_configuration_sha256": "ed50c944a5e108046ed5c7e74a31fe2254887f576e17d52e8c835e36e870408a",
+  "reason": "One prospective timing-only extension to finish the already-frozen confirmation and seed-sensitivity roster. Promotion-based cost projection exceeds the original12worker-hour/4elapsed-hour limits; no additional search, model changes, changed inference gates, or confirmation-score-based decision.",
+  "recorded_utc": "2026-11-05T10:19:59.468410+00:00",
+  "schema": "ks-improvement-budget-extension-decision/1",
+  "science_configuration_identity": "221c7b55e3ac5a771c84e729108fd74dd1fca894c77c9455adde9a30bdee3448",
+  "test_results_used_for_extension": false,
+  "threads_per_worker": 1,
+  "timing_receipt_sha256": "c58bd437defb5c2126ff15ba7b2d5862aa64d41fc6ce8cb341b54f75ff91f175",
+  "unchanged": [
+    "likelihood",
+    "prior_strata",
+    "candidate_registry",
+    "frozen_selected_ids",
+    "seeds",
+    "histories",
+    "origin_schedules",
+    "metrics",
+    "inference_qualification",
+    "memory_and_disk_gates",
+    "original_campaign_start",
+    "all_recorded_spent_time",
+    "search_cap"
+  ],
+  "workers": 4
+}
