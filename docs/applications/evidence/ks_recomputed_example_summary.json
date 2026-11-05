@@ -1,0 +1,168 @@
+{
+  "artifact_receipt_sha256": "d53d5d6a77c2460c99faba5a53679133fe1e463d4598d1506f66988bc6797005",
+  "binding": {
+    "case": {
+      "first_target": 8000,
+      "history": 128,
+      "horizon": 100,
+      "model": "bayes_stesn",
+      "model_seed": 20261105,
+      "path_batch": 64,
+      "paths": 512,
+      "phase": "core",
+      "track": "A",
+      "trajectory": 0
+    },
+    "check_count": 24,
+    "checks": {
+      "all_51_frozen_numerical_source_files": true,
+      "bayesian_and_reader_package_versions": true,
+      "experiment_identity": true,
+      "fit_file_sha256": true,
+      "forecast_seed_and_batch": true,
+      "freeze_file_sha256": true,
+      "freeze_identity": true,
+      "frozen_case": true,
+      "frozen_schedule": true,
+      "history_and_target_shapes": true,
+      "history_target_time_indices": true,
+      "native_computation": true,
+      "native_identity": true,
+      "permitted_history_only": true,
+      "permitted_training_identity": true,
+      "qualified_original_fit": true,
+      "raw_trajectory_sha256": true,
+      "runner_fit_identity": true,
+      "same_model_seed": true,
+      "selected_effective_config": true,
+      "stored_training_geometry": true,
+      "stored_training_times": true,
+      "stored_training_values": true,
+      "training_bounds_and_sites": true
+    },
+    "configuration_id": "bayes_03",
+    "experiment_identity": "7604e42da7265f3d3891aa73491affc2d851738003bf8264647ac4a01ba182e5",
+    "fit_sha256": "cfe7b6598deaf76beb7198232ac8a98c17eb22861956cf811808b78ea0d38049",
+    "forecast_seed_root": 11622026,
+    "forecast_stream": 1201409207738933048,
+    "freeze_file_sha256": "90e9a5e82e077eae15c19ae887496f1ec4b4fc706925d961ae539852efd699e8",
+    "freeze_identity": "ca6d8dac49208767f0073a747a3fbc7ee37648715a22abc32e539378b75756dc",
+    "full_study_runtime_reproduced": false,
+    "native_computation": {
+      "runtime": {
+        "blas": [
+          {
+            "architecture": "SkylakeX",
+            "internal_api": "openblas",
+            "num_threads": 1,
+            "version": "0.3.30"
+          },
+          {
+            "architecture": "SkylakeX",
+            "internal_api": "openblas",
+            "num_threads": 1,
+            "version": "0.3.30"
+          }
+        ],
+        "blas_threads": {
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1"
+        },
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+        "python": "3.12.14",
+        "scipy": "1.17.0"
+      },
+      "source_sha256": "ee8f7273bc4d3f7e8f523680e77681406dd5a5848e5909bf118497734f3a5319"
+    },
+    "native_fit_identity": "31ed706dc9abc19821f7d11b60afecd9aa43096ce5ee064e1b7b42627c7d92c1",
+    "runner_fit_identity": "5d53d036c33a862f26600a48956abb1282d0e5368282290d4aa7ab13ce76b280",
+    "scope_reason": "Exact native Bayesian runtime, permitted data, configuration and all 51 frozen source files verified; no neural module is executed. Original runner guards are unchanged.",
+    "torch_version_in_recovery_environment": null
+  },
+  "created_utc": "2026-11-05T06:38:37.712534+00:00",
+  "files": [
+    {
+      "bytes": 400876,
+      "name": "recomputed_A_bayes_t00_a8000.npz",
+      "sha256": "0a8e47a7b286b33c6a61b71898502821de55739b36113b4d54cf9dc6dcaf467a"
+    },
+    {
+      "bytes": 62265,
+      "name": "reconstruction.json",
+      "sha256": "f2d215578071d7f2e8a6fbb1768431effce661e7882c5e6ff10b65d8b3677293"
+    },
+    {
+      "bytes": 166022,
+      "name": "recomputed_A_bayes_t00_a8000_heatmap.png",
+      "sha256": "ad6c5442ea55184daecf4d8e89939989ddb99e18136d4a1def85e2a436f06d93"
+    },
+    {
+      "bytes": 34405,
+      "name": "recomputed_A_bayes_t00_a8000_heatmap.pdf",
+      "sha256": "2f86c933b22c2f09ca7bcb955157bcd40359722a475c289917da913aff8aef07"
+    },
+    {
+      "bytes": 485371,
+      "name": "recomputed_A_bayes_t00_a8000.mp4",
+      "sha256": "803bad9c4a11566b04b6541997848a42d2c62fe200faff712d440ac4f53d58b9"
+    },
+    {
+      "bytes": 2789,
+      "name": "visual_qa.json",
+      "sha256": "b1466a32f881375077d8cf131c98d05acc88349cc12e62f415fddee3b4399bbc"
+    },
+    {
+      "bytes": 4702,
+      "name": "README.md",
+      "sha256": "8288d2e6ffccc6d80ed78510db0f6823febcd4c5a79608982b0a9e9347cdd1c8"
+    },
+    {
+      "bytes": 311356,
+      "name": "recomputed_A_bayes_t00_a8000_intervals.png",
+      "sha256": "8a0af70d35d79759bce0e0d409d1966ac53c7337483c6f1d7a0ef2b59364c146"
+    },
+    {
+      "bytes": 34873,
+      "name": "recomputed_A_bayes_t00_a8000_intervals.pdf",
+      "sha256": "5db8b11694bc6f39bae64298928b7eab28698760c31339d841281341b30bfd2d"
+    }
+  ],
+  "forecast_seconds": 5.37821686299867,
+  "historical_value_comparison": {
+    "leads": [
+      1,
+      5,
+      10,
+      25,
+      50,
+      100
+    ],
+    "mean_abs_max_difference": 0.0,
+    "rmse_max_absolute_difference": 0.0,
+    "source": "selected numerical values retained in the pre-outage conversation; not original prediction bytes",
+    "truth_abs_max_difference": 0.0,
+    "width90_max_absolute_difference": 8.881784197001252e-16
+  },
+  "interpretation": "A newly recomputed, frozen single case from the retained original fit. Does not restore or replace missing original main-study forecasts. Bayesian runtime identity and all numerical source hashes match; the full study runtime is not installed.",
+  "movie_probe": {
+    "avg_frame_rate": "10/1",
+    "codec_name": "h264",
+    "duration": "10.000000",
+    "height": 672,
+    "nb_read_frames": "100",
+    "pix_fmt": "yuv420p",
+    "width": 1200
+  },
+  "new_fit_count": 0,
+  "new_forecast_origin_count": 1,
+  "new_selection_count": 0,
+  "original_prediction_file_bytes_recovered": false,
+  "physical_crps": 0.7714993446252862,
+  "physical_rmse": 1.3024696675929723,
+  "reproduction_source_sha256": "fd0cac0aacd1581b8b12ef611a855e145d3e63992e7d2984c4d375f62eb8c2d1",
+  "schema": "ks-recomputed-example-public-summary/1",
+  "scientific_scope": "one predeclared diagnostic example; no new main aggregate or ranking",
+  "visual_qa_sha256": "b1466a32f881375077d8cf131c98d05acc88349cc12e62f415fddee3b4399bbc"
+}

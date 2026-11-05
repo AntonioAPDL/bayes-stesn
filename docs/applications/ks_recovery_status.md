@@ -4,7 +4,7 @@
 
 The original campaign reached its terminal schedule on 2026-11-05 at 05:51:54 UTC. The recorded final ledger contained 900 terminal jobs: 870 complete, 29 failed, and one inference-unqualified. The completed schedule included both main tracks, the prespecified extra model seeds, and contiguous-site robustness. Scientific failures remain failures; terminal execution does not mean successful forecasting.
 
-Before the final report render and full result-backup upload, the original execution workspace became unavailable. Read-only checks of its known location and possible exposed recovery locations did not recover it. The cause and recoverability of the original execution host are not established. No restoration of the old directory, model reset, result substitution, or repeated full campaign has been performed.
+Before the final report render and full result-backup upload, the original execution workspace became unavailable. The runtime subsequently reported that automated workspace maintenance had pruned previous scratch directories to recover storage. This was not a user deletion or a model-convergence failure. Read-only checks and authorized backup retrieval did not recover the complete result directory. No model reset, result substitution, or repeated full campaign has been performed.
 
 **The original per-origin results, most fitted models, full chain/optimizer checkpoints, final extension-audit file, original example predictions, and observer/log archive are currently unavailable. The complete original result package must not be described as delivered.** The command-line tools for producing that package remain in this branch.
 
